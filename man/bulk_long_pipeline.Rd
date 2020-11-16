@@ -16,24 +16,27 @@ bulk_long_pipeline(
 )
 }
 \arguments{
-\item{annot}{gene annotations in gff3 file format}
+\item{annot}{gene annotations in gff3 file format. str}
 
-\item{fastq_dir}{the folder containing fastq files, each containing data from one sample}
+\item{fastq_dir}{the folder containing fastq files, each containing data from one sample. str}
 
-\item{bam}{aligned bam file (sorted and indexed). Overwrite --infq?}
+\item{bam}{aligned bam file (sorted and indexed). Overwrite --infq? str}
 
-\item{outdir}{directory to deposite all results in rootdir. Absolute path}
+\item{outdir}{directory to deposite all results in rootdir. Use absolute path? str}
 
-\item{genome_fa}{genome fasta file}
+\item{genome_fa}{genome fasta file. str}
 
-\item{minimap2_dir}{directory containing minimap2, k8 and paftools.js program. k8 and paftools.js are used to convert gff3 to bed12}
+\item{minimap2_dir}{directory containing minimap2, k8 and paftools.js program. k8 and paftools.js are used to convert gff3 to bed12. str}
 
-\item{config_file}{json configuration files}
+\item{config_file}{json configuration files. str}
 
-\item{downsample_ratio}{downsampling ratio if performing downsampling analysis}
+\item{downsample_ratio}{downsampling ratio if performing downsampling analysis. str}
 }
 \description{
-Desc
+Semi-supervised isofrom detection and annotation from long read data.
+This variant is meant for bulk samples. THIS FUNCTION IS GOING TO BE THE ENTIRE
+FLAMES PROCESS. IT SHOULD BE BUILT FROM THE SMALLER FUNCTIONS THAT PREVIOUSLY WERE
+CARRIED OUT UNDER THE HOOD. MOST FUNCTIONS THAT THIS ONE USES SHOULD BE AVAILABLE TO THE USER.
 }
 \details{
 THIS NEED PROPER TYPES

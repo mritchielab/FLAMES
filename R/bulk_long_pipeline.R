@@ -1,7 +1,9 @@
 #' Title
 #'
 #' Semi-supervised isofrom detection and annotation from long read data.
-#' This variant is meant for bulk samples.
+#' This variant is meant for bulk samples. THIS FUNCTION IS GOING TO BE THE ENTIRE 
+#' FLAMES PROCESS. IT SHOULD BE BUILT FROM THE SMALLER FUNCTIONS THAT PREVIOUSLY WERE
+#' CARRIED OUT UNDER THE HOOD. MOST FUNCTIONS THAT THIS ONE USES SHOULD BE AVAILABLE TO THE USER.
 #'
 #'  THIS NEED PROPER TYPES
 #' @param annot gene annotations in gff3 file format. str
@@ -19,10 +21,8 @@
 #' @param config_file json configuration files. str
 #'
 #' @param downsample_ratio downsampling ratio if performing downsampling analysis. str
-#'
-#' @importFrom basilisk basiliskStart basiliskStop basiliskRun
 #' @importFrom reticulate import_from_path
-
+#' @export
 bulk_long_pipeline <- function(annot, fastq_dir, bam, outdir, genome_fa,
                                 minimap2_dir, config_file, downsample_ratio) {
     # most of this is transcribed from bulk_long_pipeline
@@ -37,25 +37,25 @@ bulk_long_pipeline <- function(annot, fastq_dir, bam, outdir, genome_fa,
         dir.create(outdir)
     }
 
-    # basilisk setup. flames_env contains all modules needed to run FLAMES python code
-    # py_path is the location of that code
-    py_path <- system.file("python", package="FlamesR")
-    proc <- basiliskStart(flames_env)
-    on.exit(basiliskStop(proc))
-    # run the python script
-    python_bulk_long <- basiliskStart(proc, function(a, i, b, o, f, m, c, d, fq_dir, bc_f, in_fastq) {
-        source_python("merge_bulk_fq", path=paste(py.path, "merge_bulk_fq.py", sep="/"))
-        merge_bulk_fq(fq_dir, bc_f, in_fastq)
+    # run the merge_bulk_fastq function as preprocessing
+    merge_bulk_fastq(fastq_dir, bc_file, infq)
 
-        source_python("bulk_long_pipeline", path=paste(py_path, "bulk_long_pipeline.py", sep="/"))
+    # basilisk setup. flames_env contains all modules needed to run FLAMES python code
+    callBasilisk(flames_env, function(a, i, b, o, fa, m, c,
+                                        d, bc_f, infastq) {
+        print('here')
+        python_path <- system.file("python", package="FlamesR")
+
+        bulk_long <-
+            reticulate::import_from_path("bulk_long_pipeline", python_path)
+
+        #source_python(file=paste(py, "bulk_long_pipeline.py", sep="/"))
         print("Running FLAMES pipeline...")
         # call the python function. DO THESE ARGUMENTS NEED CONVERSION?
-        bulk_long_pipeline(a, i, b, o, f, m, c, d, bc_f, in_fastq)
-    }, a=annot, i=fastq_dir, b=bam, o=outdir, f=genome_fa, m=minimap2_dir, c=config_file, d=downsample_ratio,
-        fq_dir=fastq_dir, bc_f=bc_file, in_fastq=infq)
+        bulk_long$bulk_long_pipeline(a, i, b, o, f, m, c, d, bc_f, infastq)
 
-    # do we need to display the python_bulk_long return?
-    #python_bulk_long
+        print("finished")
+        10
+    }, a=annot, i=fastq_dir, b=bam, o=outdir, fa=genome_fa, m=minimap2_dir,
+        c=config_file, d=downsample_ratio, bc_f=bc_file, infastq=infq)
 }
-
-

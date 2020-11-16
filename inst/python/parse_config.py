@@ -42,7 +42,4 @@ def print_config(decoded_dict):
                 print "\t",cat2,":",decoded_dict[cat1][cat2]
         else:
             print cat1,":",decoded_dict[cat1]
-
-if __name__ == "__main__":
-    decoded_dict = parse_json_config("config_sclr_nanopore_default.json")
-    print_config(decoded_dict)
+            

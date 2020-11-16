@@ -1,9 +1,12 @@
 import subprocess
 import os
-import pysam
+#import pysam
 
 
 def gff3_to_bed12(mm2_prog_path, gff3_file, bed12_file):
+    print(mm2_prog_path)
+    print gff3_file
+    print bed12_file
     if mm2_prog_path != "":
         cmd = "{_k8} {_paftools} gff2bed {_gff3} > {_bed}".format(
             _k8=os.path.join(mm2_prog_path, "k8"),
@@ -14,7 +17,7 @@ def gff3_to_bed12(mm2_prog_path, gff3_file, bed12_file):
         cmd = "paftools.js gff2bed {_gff3} > {_bed}".format(
             _gff3=gff3_file,
             _bed=bed12_file)
-    print subprocess.check_output([cmd], shell=True, stderr=subprocess.STDOUT)
+    #print subprocess.check_output([cmd], shell=True, stderr=subprocess.STDOUT)
 
 
 def minimap2_align(mm2_prog_path, fa_file, fq_in, bam_out, no_flank=False, bed12_junc=None):
