@@ -168,7 +168,7 @@ def remove_similar_tr(transcript_dict, gene_to_transcript, transcript_to_exon, t
         if len(dup_list) > 0:
             dup_list = list(set(dup_list))
             gene_to_transcript[g] = [i for j, i in enumerate(gene_to_transcript[g]) if j not in dup_list]
-    print "remove similar transcripts in gene annotation:", dup_stat
+    print "Removed similar transcripts in gene annotation:", dup_stat
 
 
 def if_exon_contains(s1, s2, max_tol):

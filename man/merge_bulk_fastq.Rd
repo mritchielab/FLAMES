@@ -17,5 +17,5 @@ merge_bulk_fastq(fastq_dir, anno_csv, out_fastq)
 Merges all fastq files in the given folder into a single file
 }
 \details{
-THIS NEED PROPER TYPES
+THIS NEED PROPER TYPES | Need any printing?
 }

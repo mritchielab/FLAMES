@@ -11,11 +11,13 @@ align_reads_to_genome(
   genome_bam,
   minimap2_dir,
   out_dir,
-  use_junctions,
-  no_flank
+  use_junctions = TRUE,
+  no_flank = TRUE
 )
 }
 \arguments{
+\item{genome_bam}{Output Bam file, MORE}
+
 \item{name}{desc}
 }
 \description{

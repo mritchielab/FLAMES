@@ -2,7 +2,7 @@
 #'
 #' Merges all fastq files in the given folder into a single file
 #'
-#'  THIS NEED PROPER TYPES
+#'  THIS NEED PROPER TYPES | Need any printing?
 #' @param fastq_dir The folder containing fastq files to merge
 #' @param anno_csv a
 #' @param out_fastq A file which will be created to store all fastq entries

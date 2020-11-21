@@ -7,12 +7,17 @@
 bulk_long_pipeline(
   annot,
   fastq_dir,
-  bam,
+  in_bam = NULL,
   outdir,
   genome_fa,
-  minimap2_dir,
-  config_file,
-  downsample_ratio
+  minimap2_dir = NULL,
+  downsample_ratio,
+  use_junctions = TRUE,
+  no_flank = TRUE,
+  do_genome_align = TRUE,
+  do_isoform_id = TRUE,
+  do_read_realign = TRUE,
+  do_transcript_quantification = TRUE
 )
 }
 \arguments{
@@ -20,7 +25,7 @@ bulk_long_pipeline(
 
 \item{fastq_dir}{the folder containing fastq files, each containing data from one sample. str}
 
-\item{bam}{aligned bam file (sorted and indexed). Overwrite --infq? str}
+\item{in_bam}{aligned bam file (sorted and indexed). Overwrite --infq? str}
 
 \item{outdir}{directory to deposite all results in rootdir. Use absolute path? str}
 
@@ -28,9 +33,9 @@ bulk_long_pipeline(
 
 \item{minimap2_dir}{directory containing minimap2, k8 and paftools.js program. k8 and paftools.js are used to convert gff3 to bed12. str}
 
-\item{config_file}{json configuration files. str}
-
 \item{downsample_ratio}{downsampling ratio if performing downsampling analysis. str}
+
+\item{config_file}{json configuration files. str}
 }
 \description{
 Semi-supervised isofrom detection and annotation from long read data.

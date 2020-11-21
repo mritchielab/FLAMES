@@ -2,18 +2,18 @@
 % Please edit documentation in R/minimap2_align.R
 \name{gff3_to_bed12}
 \alias{gff3_to_bed12}
-\title{Title}
+\title{GFF3 to BED12}
 \usage{
-gff3_to_bed12(minimap2_prog_path, gff3_file, bed12_file)
+gff3_to_bed12(minimap2_prog_path = NULL, gff3_file, bed12_file)
 }
 \arguments{
-\item{minimap2_prog_path}{Directory containing minimap2, k8 and paftools.js. These are
-used to convert gff3 to bed12.}
+\item{minimap2_prog_path}{Absolute path to the directory containing k8, paftools,js and minimap2
+executables from the minimap2 package. Leave as default if these are in the current working directory}
 
 \item{gff3_file}{The gff3_file to convert}
 
 \item{bed12_file}{The filename of the bed12 output file.}
 }
 \description{
-DESC
+Converts a gff3 file to a bed12, using paftools.js from the minimap2 package
 }
