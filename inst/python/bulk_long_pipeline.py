@@ -108,30 +108,30 @@ def bulk_long_pipeline(args):
             os.remove(tmp_bed)
     else:
         print "### skip aligning reads to genome", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    """
+    
     # find isoform
-    print "### read gene annotation", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    #print "### read gene annotation", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     #chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = parse_gff_tree(args.gff3)
-    #transcript_to_junctions = {tr: blocks_to_junctions(transcript_to_exon[tr]) for tr in transcript_to_exon}
-    remove_similar_tr(transcript_dict, gene_to_transcript, transcript_to_exon)
-    gene_dict = get_gene_flat(gene_to_transcript, transcript_to_exon)
-    chr_to_blocks = get_gene_blocks(gene_dict, chr_to_gene, gene_to_transcript)
-    if config_dict["pipeline_parameters"]["do_isoform_identification"]:
-        print "### find isoforms", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        group_bam2isoform(genome_bam, isoform_gff3, tss_tes_stat, "", chr_to_blocks, gene_dict, transcript_to_junctions, transcript_dict, args.genomefa,
-        config=config_dict["isoform_parameters"], 
-        downsample_ratio=args.downsample_ratio,
-        raw_gff3=raw_splice_isoform if config_dict["global_parameters"]["generate_raw_isoform"] else None)
-    else:
-        print "### skip finding isoforms", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    ##transcript_to_junctions = {tr: blocks_to_junctions(transcript_to_exon[tr]) for tr in transcript_to_exon}
+    #?remove_similar_tr(transcript_dict, gene_to_transcript, transcript_to_exon)
+    ##gene_dict = get_gene_flat(gene_to_transcript, transcript_to_exon)
+    ##chr_to_blocks = get_gene_blocks(gene_dict, chr_to_gene, gene_to_transcript)
+    #if config_dict["pipeline_parameters"]["do_isoform_identification"]:
+    #    print "### find isoforms", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    #    group_bam2isoform(genome_bam, isoform_gff3, tss_tes_stat, "", chr_to_blocks, gene_dict, transcript_to_junctions, transcript_dict, args.genomefa,
+    #    config=config_dict["isoform_parameters"], 
+    #    downsample_ratio=args.downsample_ratio,
+    #    raw_gff3=raw_splice_isoform if config_dict["global_parameters"]["generate_raw_isoform"] else None)
+    #else:
+    #    print "### skip finding isoforms", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     # get fasta
-    chr_to_gene_i, transcript_dict_i, gene_to_transcript_i, transcript_to_exon_i = parse_gff_tree(isoform_gff3)
+    #chr_to_gene_i, transcript_dict_i, gene_to_transcript_i, transcript_to_exon_i = parse_gff_tree(isoform_gff3)
     ref_dict = {"chr_to_gene":chr_to_gene, "transcript_dict":transcript_dict, "gene_to_transcript":gene_to_transcript, "transcript_to_exon":transcript_to_exon}
     if not config_dict["realign_parameters"]["use_annotation"]:
         ref_dict = None
     get_transcript_seq(args.genomefa, transcript_fa, chr_to_gene_i, transcript_dict_i, gene_to_transcript_i, transcript_to_exon_i,ref_dict=ref_dict)
-
+    
     # realign to transcript using minimap2
     if config_dict["pipeline_parameters"]["do_read_realignment"]:
         print "### realign to transcript using minimap2", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -140,7 +140,7 @@ def bulk_long_pipeline(args):
         os.remove(tmp_bam)
     else:
         print "### skip read realignment", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
+    """
     # quantification
     if config_dict["pipeline_parameters"]["do_transcript_quantification"]:
         print "### generate transcript count matrix", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")

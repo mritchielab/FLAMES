@@ -72,3 +72,24 @@ samtools_sort_index <- function(bam_in, bam_out) {
     bam_out
 }
 
+#' Title
+#'
+#' DESC
+#' 
+#' @param name desc
+#'
+#' @param name desc
+#' @importFrom reticulate import_from_path
+#' @export
+minimap2_tr_align <- function(mm2_prog_path, fa_file, fq_in, bam_out) {
+    callBasilisk(flames_env, function(mm2, fa, fq, bam) {
+        python_path <- system.file("python", package="FlamesR")
+
+        align <- reticulate::import_from_path("minimap2_align", python_path)
+        align$minimap2_tr_align(mm2, fa, fq, bam)
+    }, mm2=mm2_prog_path, fa=fa_file, fq=fq_in, bam=bam_out)
+
+    bam_out # output file
+}
+
+

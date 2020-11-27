@@ -111,9 +111,9 @@ def get_transcript_seq(fa_file, fa_out_f, chr_to_gene, transcript_dict,
 
 
 
-if __name__ == '__main__':
-    gff_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoforms/isoform_annotated.sample.nofilter.gff3"
-    fa_file = "/stornext/General/data/user_managed/grpu_mritchie_1/LuyiTian/Index/Homo_sapiens.GRCh38.dna.primary_assembly.fa"
-    fa_out_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoforms/human_GRCh38_transcript.sample.fa"
-    chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = parse_gff_tree(gff_f)
-    get_transcript_seq(fa_file, fa_out_f, chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon)
+#if __name__ == '__main__':
+#    gff_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoforms/isoform_annotated.sample.nofilter.gff3"
+#    fa_file = "/stornext/General/data/user_managed/grpu_mritchie_1/LuyiTian/Index/Homo_sapiens.GRCh38.dna.primary_assembly.fa"
+#    fa_out_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoforms/human_GRCh38_transcript.sample.fa"
+#    chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = parse_gff_tree(gff_f)
+#    get_transcript_seq(fa_file, fa_out_f, chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon)

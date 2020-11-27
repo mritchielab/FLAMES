@@ -87,14 +87,81 @@ bulk_long_pipeline <- function(annot, fastq_dir, in_bam=NULL, outdir, genome_fa,
     # align reads to genome
     if (in_bam=="" && do_genome_align) {
         cat("Aligning reads to genome using minimap2\n")
-        align_reads_to_genome(annot, infq, genome_fa, genome_bam, minimap2_dir, outdir, use_junctions, no_flank)
+
+        tmp_bed <- paste(outdir, "tmp.splice_anno.bed12", sep=.Platform$file.sep)
+        tmp_bam <- paste(outdir, "tmp.align.bam", sep=.Platform$file.sep)
+
+        if (use_junctions) {
+            gff3_to_bed12(minimap2_dir, annot, tmp_bed)
+        }
+        minimap2_align(minimap2_dir, genome_fa, infq, tmp_bam, no_flank=no_flank, bed12_junc = if (use_junctions) tmp_bed else NULL)
+        samtools_sort_index(tmp_bam, genome_bam)
+        file.remove(tmp_bam)
+        if (use_junctions) file.remove(tmp_bed)
     } else {
         cat("Skip aligning reads to genome\n")
     }
 
-    
+    #find_isoform(annot, genome_bam, isoform_gff3, tss_tes_stat, genome_fa, do_isoform_identification)
+    #anno, genome_bam, isoform_gff3, tss_tes_stat, genomefa, do_isoform_identification
     # find isofrom
+    cat("Read genne annotations\n")
+    gff3_parse_result <- parse_gff_tree(annot)
+    chr_to_gene = gff3_parse_result$chr_to_gene
+    transcript_dict = gff3_parse_result$transcript_dict
+    gene_to_transcript = gff3_parse_result$gene_to_transcript
+    transcript_to_exon = gff3_parse_result$transcript_to_exon
 
+    if (do_isoform_identification) {
+        cat("Find isoforms\n")
+        transcript_to_junctions = list()
+        for (tr in names(transcript_to_exon)) {
+            transcript_to_junctions[[tr]] = blocks_to_junctions(transcript_to_exon[[tr]])
+        }
 
+        remove_similar_tr(transcript_dict, gene_to_transcript, transcript_to_exon)
+        gene_dict <- get_gene_flat(gene_to_transcript, transcript_to_exon)
+        chr_to_blocks <- get_gene_blocks(gene_dict, chr_to_gene, gene_to_transcript)
+
+        ## WE NEED isofrom_parameters_config file somwhere
+        cat("\nFind isoform")
+        group_bam2isoform(genome_bam, isoform_gff3, tss_tes_stat, "", chr_to_blocks, 
+                gene_dict, transcript_to_junctions, transcript_dict, genomefa,
+                config=isoform_parameters_config, downsample_ratio=downsample_ratio, 
+                raw_gff3=if (generate_raw_isoform) raw_splice_isoform else NULL)
+    } else {
+        ## skip finding isoform.
+        cat("Skip finding isoforms")
+    }
+
+    # get fasta
+    isoform_gff3_parse <- parse_gff_tree(isoform_gff3)
+    chr_to_gene_i <- isoform_gff3_parse$chr_to_gene
+    transcript_dict_i <- isoform_gff3_parse$transcript_dict
+    gene_to_transcript_i <- isoform_gff3_parse$gene_to_transcript
+    transcript_to_exon_i <- isoform_gff3_parse$transcript_to_exon
+
+    if (!use_annotation) isoform_gff3_parse = NULL
+    get_transcript_seq(genome_fa, transcript_fa, chr_to_gene_i, transcript_to_dict_i, 
+            gene_to_transcript_i, transcript_to_exon_i, ref_dict=isoform_gff3_parse)
+    
+    # realign to transcript
+    if (do_read_realign) {
+        cat("Realign to transcript using minimap2")
+        tmp_bam <- paste(outdir, "tmp.align.bam", sep=.Platform$file.sep)
+        minimap2_tr_align(minimap2_dir, transcript_fa, infq, tmp_bam)
+        samtools_sort_index(tmp_bam, realign_bam)
+        file.remove(tmp_bam)
+    } else {
+        cat("Skip read realignment")
+    }
+
+    #quantification
+    if (do_transcript_quantification) {
+        cat("Generating transcript count matrix")
+
+    } else {
+        cat("SKip transcript quantification")
+    }
     invisible()
 }
