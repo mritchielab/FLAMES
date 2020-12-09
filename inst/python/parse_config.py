@@ -33,13 +33,13 @@ def parse_json_config(json_file):
 
 
 def print_config(decoded_dict):
-    print("Parameters in configuration file:")
+    print("\tParameters in configuration file:")
     for cat1 in decoded_dict:
         if type(decoded_dict[cat1]) == dict:
-            print(cat1)
+            print("\t" + str(cat1))
             for cat2 in decoded_dict[cat1]:
                 #print("\t",cat2,": ",decoded_dict[cat1][cat2],sep="")
-                print "\t",cat2,":",decoded_dict[cat1][cat2]
+                print "\t\t"+str(cat2),":",decoded_dict[cat1][cat2]
         else:
-            print cat1,":",decoded_dict[cat1]
+            print "\t"+str(cat1),":",decoded_dict[cat1]
             

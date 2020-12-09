@@ -67,7 +67,6 @@ def make_bc_dict(bc_anno):
 def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_read_coverage, kwargs):
     """
     """
-    print(kwargs)
     fa_idx = dict((it.strip().split()[0],int(it.strip().split()[1]) ) for it in open(fa_idx_f))
     bc_tr_count_dict = {}
     bc_tr_badcov_count_dict = {}
@@ -98,7 +97,7 @@ def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_re
                 read_dict[rec.query_name].append((tr, rec.get_tag("AS"), tr_cov, float(rec.query_alignment_length)/rec.infer_read_length(), rec.mapping_quality))
         if tr not in fa_idx:
             cnt_stat["not_in_annotation"] += 1
-            print tr, "not in annotation ???"
+            print "\t" +str(tr), "not in annotation ???"
     tr_kept = dict((tr,tr) for tr in tr_cov_dict if len([it for it in tr_cov_dict[tr] if it > 0.9])>min_sup_reads)
     unique_tr_count = Counter(read_dict[r][0][0] for r in read_dict if read_dict[r][0][2]>0.9)
     for r in read_dict:
@@ -138,7 +137,7 @@ def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_re
                 bc_tr_count_dict[bc] = {}
             bc_tr_count_dict[bc].setdefault(hit[0], []).append(umi)
             cnt_stat["counted_reads"] += 1
-    print cnt_stat
+    print("\t" + str(cnt_stat))
     return bc_tr_count_dict, bc_tr_badcov_count_dict, tr_kept
 
 
@@ -174,7 +173,7 @@ def parse_realigned_bam1(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_r
             bc_tr_count_dict[bc].setdefault(tr, []).append(umi)
         cnt_stat["counted_reads"] += 1
     tr_kept = dict((tr,tr) for tr in tr_cov_dict if len([it for it in tr_cov_dict[tr] if it > 0.9])>min_sup_reads)
-    print cnt_stat
+    print("\t" + str(cnt_stat))
     return bc_tr_count_dict, bc_tr_badcov_count_dict, tr_kept
 
 
@@ -204,7 +203,7 @@ def parse_realigned_bam_raw(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, mi
         bc_tr_count_dict[bc].setdefault(tr, []).append(umi)
         cnt_stat["counted_reads"] += 1
     tr_kept = dict((tr,tr) for tr in tr_cov_dict if len([it for it in tr_cov_dict[tr] if it > 0.9])>min_sup_reads)
-    print cnt_stat
+    print("\t" + str(cnt_stat))
     return bc_tr_count_dict, bc_tr_badcov_count_dict, tr_kept
 
 

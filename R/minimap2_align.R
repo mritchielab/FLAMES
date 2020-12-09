@@ -15,7 +15,6 @@
 #' @export
 gff3_to_bed12 <- function(minimap2_prog_path=NULL, gff3_file, bed12_file) {
     python_path <- system.file("python", package="FlamesR")
-    cat("\tConverting file", gff3_file, "to bed12:", bed12_file, "\n")
     subprocess_out <- callBasilisk(flames_env, function(mm2_path, gff3, bed12) {
         align <-reticulate::import_from_path("minimap2_align", python_path)
      #   reticulate::source_python(paste(python_path, "minimap2_align.py", sep=.Platform$file.sep))
@@ -41,7 +40,6 @@ gff3_to_bed12 <- function(minimap2_prog_path=NULL, gff3_file, bed12_file) {
 #'
 #' @export
 minimap2_align <- function(minimap2_prog_path=NULL, fa_file, fq_in, bam_out, no_flank=FALSE, bed12_junc=NULL) {
-    cat("\tAligning using minimap2. Files:", fa_file, ",", fq_in, "\n")
     callBasilisk(flames_env, function (mm2_path, fa, fq, bam, flank, bed12_junc) {
         python_path <- system.file("python", package="FlamesR")
         mm2 <- reticulate::import_from_path("minimap2_align", python_path)
@@ -62,7 +60,6 @@ minimap2_align <- function(minimap2_prog_path=NULL, fa_file, fq_in, bam_out, no_
 #' @importFrom reticulate import_from_path
 #' @export
 samtools_sort_index <- function(bam_in, bam_out) {
-    cat("\tWHAT?\n")
     callBasilisk(flames_env, function(bin, bout) {
         python_path <- system.file("python", package="FlamesR")
         sam <- reticulate::import_from_path("minimap2_align", python_path)

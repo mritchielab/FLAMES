@@ -111,7 +111,8 @@ bulk_long_pipeline <- function(annot, fastq_dir, in_bam=NULL, outdir, genome_fa,
     tr_cnt_csv = paste(outdir, "transcript_count.csv.gz", sep="/")
     tr_badcov_cnt_csv = paste(outdir, "transcript_count.bad_coverage.csv.gz", sep="/")
 
-    cat("Input parameters:\n")
+    cat("#### Input parameters:\n")
+    print_config(config)
     cat("\tgene annotation:", annot, "\n")
     cat("\tgenome fasta:", genome_fa, "\n")
     if (in_bam != "") {
@@ -123,7 +124,7 @@ bulk_long_pipeline <- function(annot, fastq_dir, in_bam=NULL, outdir, genome_fa,
 
     # align reads to genome
     if (in_bam=="" && config$pipeline_parameters$do_genome_alignment) {
-        cat("Aligning reads to genome using minimap2\n")
+        cat("#### Aligning reads to genome using minimap2\n")
 
         tmp_bed <- paste(outdir, "tmp.splice_anno.bed12", sep=.Platform$file.sep)
         tmp_bam <- paste(outdir, "tmp.align.bam", sep=.Platform$file.sep)
@@ -137,23 +138,24 @@ bulk_long_pipeline <- function(annot, fastq_dir, in_bam=NULL, outdir, genome_fa,
         file.remove(tmp_bam)
         if (config$alignment_parameters$use_junctions) file.remove(tmp_bed)
     } else {
-        cat("Skip aligning reads to genome\n")
+        cat("#### Skip aligning reads to genome\n")
     }
+
     # find isofrom
-    cat("Read genne annotations\n")
+    cat("#### Read genne annotations\n")
     gff3_parse_result <- parse_gff_tree(annot)
     chr_to_gene = gff3_parse_result$chr_to_gene # chr_to_gene appears to be the exact same as python returns, so not sure what the issue is
     transcript_dict = gff3_parse_result$transcript_dict
     gene_to_transcript = gff3_parse_result$gene_to_transcript
     transcript_to_exon = gff3_parse_result$transcript_to_exon
+    remove_similar_tr(transcript_dict, gene_to_transcript, transcript_to_exon)
 
     if (config$pipeline_parameters$do_isoform_identification) {
-        cat("Find isoforms\n")
+        cat("#### Find isoforms\n")
         transcript_to_junctions = list()
         for (tr in names(transcript_to_exon)) {
             transcript_to_junctions[[tr]] = blocks_to_junctions(transcript_to_exon[[tr]])
         }
-        remove_similar_tr(transcript_dict, gene_to_transcript, transcript_to_exon)
         gene_dict <- get_gene_flat(gene_to_transcript, transcript_to_exon)
         chr_to_blocks <- get_gene_blocks(gene_dict, chr_to_gene, gene_to_transcript)
         group_bam2isoform(genome_bam, isoform_gff3, tss_tes_stat, "", chr_to_blocks, 
@@ -162,7 +164,7 @@ bulk_long_pipeline <- function(annot, fastq_dir, in_bam=NULL, outdir, genome_fa,
                 raw_gff3=if (config$global_parameters$generate_raw_isoform) raw_splice_isoform else NULL)
     } else {
         ## skip finding isoform.
-        cat("Skip finding isoforms\n")
+        cat("#### Skip finding isoforms\n")
     }
     # get fasta
     isoform_gff3_parse <- parse_gff_tree(isoform_gff3)
@@ -177,18 +179,18 @@ bulk_long_pipeline <- function(annot, fastq_dir, in_bam=NULL, outdir, genome_fa,
     
     # realign to transcript
     if (do_read_realign) {
-        cat("Realign to transcript using minimap2\n")
+        cat("#### Realign to transcript using minimap2\n")
         tmp_bam <- paste(outdir, "tmp.align.bam", sep=.Platform$file.sep)
         minimap2_tr_align(minimap2_dir, transcript_fa, infq, tmp_bam)
         samtools_sort_index(tmp_bam, realign_bam)
         file.remove(tmp_bam)
     } else {
-        cat("Skip read realignment\n")
+        cat("#### Skip read realignment\n")
     }
 
     #quantification
     if (config$pipeline_parameters$do_transcript_quantification) {
-        cat("Generating transcript count matrix\n")
+        cat("#### Generating transcript count matrix\n")
         parse_realign <- parse_realigned_bam(realign_bam, transcript_fa_idx,
             config$isoform_parameters$Min_sup_cnt,
             config$transcript_counting$min_tr_coverage,
@@ -198,7 +200,7 @@ bulk_long_pipeline <- function(annot, fastq_dir, in_bam=NULL, outdir, genome_fa,
         wrt_tr_to_csv(parse_realign$bc_tr_badcov_count_dict, transcript_dict_i, tr_badcov_cnt_csv, transcript_dict, config$global_parameters$has_UMI)
         annotate_filter_gff(isoform_gff3, annot, isoform_gff3_f, FSM_anno_out, tr_cnt, config$isoform_parameters$Min_sup_cnt)
     } else {
-        cat("Skip transcript quantification\n")
+        cat("#### Skip transcript quantification\n")
     }
 
     ## after all this, we need to read in the output data and return R usable datatypes
