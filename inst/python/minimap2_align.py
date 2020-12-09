@@ -2,8 +2,6 @@ import subprocess
 import os
 import pysam
 
-# DOCUMENT THIS?
-# edited version of gff3 to bed12
 def gff3_to_bed12(mm2_prog_path, gff3_file, bed12_file):
     if mm2_prog_path != "":
         cmd = "{_k8} {_paftools} gff2bed {_gff3} > {_bed}".format(

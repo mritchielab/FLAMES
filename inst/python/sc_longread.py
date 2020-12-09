@@ -974,11 +974,9 @@ def group_bam2isoform(bam_in, out_gff3, out_stat, summary_csv, chr_to_blocks, ge
     for c in get_fa(fa_f):
         fa_dict[c[0]] = c[1]
     for ch in chr_to_blocks:
-        # print ch
         #if ch != "5":
         #    continue
         for ith, bl in enumerate(chr_to_blocks[ch]):
-            #print ith, bl
             it_region = bamfile.fetch(ch, bl.s, bl.e)
             TSS_TES_site = get_TSS_TES_site(transcript_to_junctions, bl.transcript_list)
             tmp_isoform = Isoforms(ch, config)

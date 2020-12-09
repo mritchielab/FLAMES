@@ -2,12 +2,18 @@
 % Please edit documentation in R/minimap2_align.R
 \name{minimap2_tr_align}
 \alias{minimap2_tr_align}
-\title{Title}
+\title{Minimap2 Align to Transcript}
 \usage{
 minimap2_tr_align(mm2_prog_path, fa_file, fq_in, bam_out)
 }
 \arguments{
-\item{name}{desc}
+\item{mm2_prog_path}{Absolute path to the directory containing minimap2}
+
+\item{fa_file}{Input fasta file used as a reference database}
+
+\item{fq_in}{Input fastq used as a query sequence file}
+
+\item{bam_out}{Output BAM file, containing aligned sequences}
 }
 \description{
 DESC

@@ -11,7 +11,7 @@ bulk_long_pipeline(
   outdir,
   genome_fa,
   minimap2_dir = NULL,
-  downsample_ratio,
+  downsample_ratio = 1,
   config_file = NULL,
   do_genome_align = TRUE,
   do_isoform_id = TRUE,
@@ -49,7 +49,7 @@ bulk_long_pipeline(
 
 \item{minimap2_dir}{directory containing minimap2, k8 and paftools.js program. k8 and paftools.js are used to convert gff3 to bed12. str}
 
-\item{downsample_ratio}{downsampling ratio if performing downsampling analysis. str}
+\item{downsample_ratio}{downsampling ratio if performing downsampling analysis.}
 
 \item{config_file}{json configuration files. str}
 }

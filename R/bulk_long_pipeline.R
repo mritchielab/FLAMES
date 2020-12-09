@@ -20,8 +20,7 @@
 #'
 #' @param config_file json configuration files. str
 #'
-#' @param downsample_ratio downsampling ratio if performing downsampling analysis. str
-#' @importFrom reticulate import_from_path
+#' @param downsample_ratio downsampling ratio if performing downsampling analysis.
 #' @export
 bulk_long_pipeline <- function(annot, fastq_dir, in_bam=NULL, outdir, genome_fa,
                                 minimap2_dir=NULL, downsample_ratio=1, config_file=NULL,

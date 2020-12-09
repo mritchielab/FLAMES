@@ -2,13 +2,17 @@
 % Please edit documentation in R/parse_gene_anno.R
 \name{parse_gff_tree}
 \alias{parse_gff_tree}
-\title{Title}
+\title{Parse GFF3 file formats}
 \usage{
 parse_gff_tree(gff_file)
 }
 \arguments{
 \item{gff_file}{File path in gff, gtf.gz or gtf format to parse.}
 }
+\value{
+List object with four elements: chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon.
+}
 \description{
-DESC
+Parses GFF3 file formats into a usable list of four elements. Accepts \code{.gtf}, \code{.gff} formats as
+well as \code{.gz} compressed versions.
 }

@@ -14,18 +14,18 @@ minimap2_align(
 )
 }
 \arguments{
-\item{minimap2_prog_path}{Absolute path to the directory containing k8, paftools,js and minimap2}
+\item{minimap2_prog_path}{Absolute path to the directory containing minimap2}
 
-\item{fa_file}{d}
+\item{fa_file}{Fasta file used as a reference database for alignment}
 
-\item{fq_in}{d}
+\item{fq_in}{Fastq file used as a query sequence file}
 
 \item{bam_out}{Output BAM file}
 
-\item{no_flank}{d}
+\item{no_flank}{Boolean; used if studying SIRV, to let minimap2 ignore additional bases}
 
-\item{bed12_junc}{d}
+\item{bed12_junc}{Gene annotations in BED12 format. If specified, minmap2 prefers splicing in annotations.}
 }
 \description{
-DESC
+Uses minimap2 to align sequences agains a reference databse.
 }

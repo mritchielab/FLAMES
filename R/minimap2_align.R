@@ -2,8 +2,7 @@
 #'
 #' Converts a gff3 file to a bed12, using paftools.js from the minimap2 package
 #' 
-#' @param minimap2_prog_path Directory containing minimap2, k8 and paftools.js. These are 
-#' used to convert gff3 to bed12.
+#' @param minimap2_prog_path Directory containing paftools.js and k8
 #'
 #' @param minimap2_prog_path Absolute path to the directory containing k8, paftools,js and minimap2 
 #'      executables from the minimap2 package. Leave as default if these are in the current working directory
@@ -27,14 +26,14 @@ gff3_to_bed12 <- function(minimap2_prog_path=NULL, gff3_file, bed12_file) {
 
 #' Minimap2 Align to Genome
 #'
-#' DESC
+#' Uses minimap2 to align sequences agains a reference databse. 
 #' 
-#' @param minimap2_prog_path Absolute path to the directory containing k8, paftools,js and minimap2
-#' @param fa_file d
-#' @param fq_in d
+#' @param minimap2_prog_path Absolute path to the directory containing minimap2
+#' @param fa_file Fasta file used as a reference database for alignment
+#' @param fq_in Fastq file used as a query sequence file
 #' @param bam_out Output BAM file
-#' @param no_flank d
-#' @param bed12_junc  d
+#' @param no_flank Boolean; used if studying SIRV, to let minimap2 ignore additional bases
+#' @param bed12_junc Gene annotations in BED12 format. If specified, minmap2 prefers splicing in annotations.
 #'
 #' @importFrom reticulate import_from_path
 #'
@@ -52,12 +51,13 @@ minimap2_align <- function(minimap2_prog_path=NULL, fa_file, fq_in, bam_out, no_
 
 #' Samtools Sort Index
 #'
-#' Sorts and then indexs alignments for fast random access using samtools.
+#' Sorts and then indexes alignments for fast random access using samtools. Requires samtools to 
+#' be in PATH
 #' 
-#' @param bam_in Input BAM File; MORE
-#'
-#' @param name Output BAM file; MORE
+#' @param bam_in Input BAM File
+#' @param bam_out Output BAM file
 #' @importFrom reticulate import_from_path
+#' @return the path to the output file, given as \code{bam_out}
 #' @export
 samtools_sort_index <- function(bam_in, bam_out) {
     callBasilisk(flames_env, function(bin, bout) {
@@ -69,13 +69,14 @@ samtools_sort_index <- function(bam_in, bam_out) {
     bam_out
 }
 
-#' Title
+#' Minimap2 Align to Transcript
 #'
 #' DESC
 #' 
-#' @param name desc
-#'
-#' @param name desc
+#' @param mm2_prog_path Absolute path to the directory containing minimap2
+#' @param fa_file Input fasta file used as a reference database
+#' @param fq_in Input fastq used as a query sequence file
+#' @param bam_out Output BAM file, containing aligned sequences
 #' @importFrom reticulate import_from_path
 #' @export
 minimap2_tr_align <- function(mm2_prog_path, fa_file, fq_in, bam_out) {

@@ -1,35 +1,43 @@
-#' Title
+#' Parse Json Configuration File
 #'
-#' DESC
+#' @description Convert a json configuration file into a named R list, grouped into sub lists according to their 
+#'      usage in the Flames pipeline.
 #' 
-#' @param name desc
+#' @param json_file The file name to convert into an R list.
 #'
-#' @param name desc
+#' @return A named R list of the parameters in \code{json_file}. Subsections are: \code{pipeline_parameters},
+#'      \code{global_parameters}, \code{isoform_parameters}, \code{alignment_parameters}, \code{realign_parameters} and
+#'      \code{transcript_counting}.
 #' @importFrom basilisk basiliskStart basiliskStop basiliskRun
 #' @importFrom reticulate import_from_path
 #' @export
 parse_json_config <- function(json_file) {
-    callBasilisk(flames_env, function(json) {
-        
-    }, json=json_file)
-}
-
-#' Title
-#'
-#' DESC
-#' 
-#' @param name desc
-#'
-#' @param name desc
-#' @importFrom reticulate import_from_path
-#' @export
-print_config <- function(decoded_dict) {
-    callBasilisk(flames_env, function(decoded_dict) {
+    config <- callBasilisk(flames_env, function(json) {
         python_path <- system.file("python", package="FlamesR")
 
         conf <- reticulate::import_from_path("parse_config", python_path)
-        conf$print_config(decoded_dict)
-    }, decoded_dict=decoded_dict)
+
+        conf$parse_json_config(json)
+    }, json=json_file)
+
+    config
+}
+
+#' Print Configuration File
+#'
+#' @details Print the configuration file, represented as a named list used for the Flames pipeline.
+#' 
+#' @param config List; the configuration list to print.
+#'
+#' @importFrom reticulate import_from_path
+#' @export
+print_config <- function(config) {
+    callBasilisk(flames_env, function(config) {
+        python_path <- system.file("python", package="FlamesR")
+
+        conf <- reticulate::import_from_path("parse_config", python_path)
+        conf$print_config(config)
+    }, config=config)
     invisible()
 }
 

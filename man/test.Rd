@@ -4,7 +4,7 @@
 \alias{test}
 \title{Title}
 \usage{
-test(g)
+test(first, ...)
 }
 \arguments{
 \item{name}{desc}

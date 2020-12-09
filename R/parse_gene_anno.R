@@ -1,13 +1,15 @@
-#' Title
+#' Parse GFF3 file formats
 #'
-#' DESC
+#' Parses GFF3 file formats into a usable list of four elements. Accepts \code{.gtf}, \code{.gff} formats as 
+#' well as \code{.gz} compressed versions.
 #' 
 #' @param gff_file File path in gff, gtf.gz or gtf format to parse.
 #'
 #' @importFrom reticulate import_from_path
-#' @export
 #'
-#' @value List object with four elements: chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon
+#' @return List object with four elements: chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon. 
+#'      
+#' @export
 parse_gff_tree <- function(gff_file) {
     ret <- callBasilisk(flames_env, function(args) {
         python_path <- system.file("python", package="FlamesR")

@@ -5,7 +5,7 @@
 #' @param name desc
 #'
 #' @param name desc
-#' @import reticulate import_from_path py_dict
+#' @importFrom reticulate import_from_path dict
 #' @export
 test <- function(first, ...) {
     kwargs=reticulate::dict(...)
