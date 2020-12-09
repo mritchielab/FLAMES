@@ -41,7 +41,6 @@ __MAN = \
 def bulk_long_pipeline(args):
     # parse configuration file
      # REMOVE ALL THIS CONFIG FILE STUFF< REPLACE WITH ARGUMENTS
-     """
     if os.path.isfile(args.config_file):
         print("Use config file: {}".format(args.config_file))
         config_dict = parse_json_config(args.config_file)
@@ -111,22 +110,23 @@ def bulk_long_pipeline(args):
     
     # find isoform
     #print "### read gene annotation", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    #chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = parse_gff_tree(args.gff3)
-    ##transcript_to_junctions = {tr: blocks_to_junctions(transcript_to_exon[tr]) for tr in transcript_to_exon}
-    #?remove_similar_tr(transcript_dict, gene_to_transcript, transcript_to_exon)
-    ##gene_dict = get_gene_flat(gene_to_transcript, transcript_to_exon)
-    ##chr_to_blocks = get_gene_blocks(gene_dict, chr_to_gene, gene_to_transcript)
-    #if config_dict["pipeline_parameters"]["do_isoform_identification"]:
-    #    print "### find isoforms", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    #    group_bam2isoform(genome_bam, isoform_gff3, tss_tes_stat, "", chr_to_blocks, gene_dict, transcript_to_junctions, transcript_dict, args.genomefa,
-    #    config=config_dict["isoform_parameters"], 
-    #    downsample_ratio=args.downsample_ratio,
-    #    raw_gff3=raw_splice_isoform if config_dict["global_parameters"]["generate_raw_isoform"] else None)
-    #else:
-    #    print "### skip finding isoforms", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = parse_gff_tree(args.gff3)
+    # so chr_to_gene is literally just a dictionary of labels with the values being the same label? 
+    transcript_to_junctions = {tr: blocks_to_junctions(transcript_to_exon[tr]) for tr in transcript_to_exon}
+    remove_similar_tr(transcript_dict, gene_to_transcript, transcript_to_exon)
+    gene_dict = get_gene_flat(gene_to_transcript, transcript_to_exon)
+    chr_to_blocks = get_gene_blocks(gene_dict, chr_to_gene, gene_to_transcript)
+    if config_dict["pipeline_parameters"]["do_isoform_identification"]:
+        print "### find isoforms", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        group_bam2isoform(genome_bam, isoform_gff3, tss_tes_stat, "", chr_to_blocks, gene_dict, transcript_to_junctions, transcript_dict, args.genomefa,
+        config=config_dict["isoform_parameters"], 
+        downsample_ratio=args.downsample_ratio,
+        raw_gff3=raw_splice_isoform if config_dict["global_parameters"]["generate_raw_isoform"] else None)
+    else:
+        print "### skip finding isoforms", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     # get fasta
-    #chr_to_gene_i, transcript_dict_i, gene_to_transcript_i, transcript_to_exon_i = parse_gff_tree(isoform_gff3)
+    chr_to_gene_i, transcript_dict_i, gene_to_transcript_i, transcript_to_exon_i = parse_gff_tree(isoform_gff3)
     ref_dict = {"chr_to_gene":chr_to_gene, "transcript_dict":transcript_dict, "gene_to_transcript":gene_to_transcript, "transcript_to_exon":transcript_to_exon}
     if not config_dict["realign_parameters"]["use_annotation"]:
         ref_dict = None
@@ -140,7 +140,6 @@ def bulk_long_pipeline(args):
         os.remove(tmp_bam)
     else:
         print "### skip read realignment", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    """
     # quantification
     if config_dict["pipeline_parameters"]["do_transcript_quantification"]:
         print "### generate transcript count matrix", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -156,3 +155,73 @@ def bulk_long_pipeline(args):
         annotate_filter_gff(isoform_gff3,args.gff3,isoform_gff3_f,FSM_anno_out,tr_cnt,config_dict["isoform_parameters"]["Min_sup_cnt"])
     else:
         print "### skip transcript quantification", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+"""
+def get_args():
+    parser = argparse.ArgumentParser(
+        prog=__PROG,
+        description=__MAN,
+        epilog="NOTE: make sure samtools is in PATH.",
+        formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+
+    parser.add_argument(
+        "-a", "--gff3",
+        help="The gene annotation in gff3 format.",
+        type=str,
+        required=True
+    )
+
+    parser.add_argument(
+        "-i", "--fq_dir",
+        help="folder containing fastq files, each containing data from one sample.",
+        type=str,
+        default=True
+    )
+
+    parser.add_argument(
+        "-b", "--inbam",
+        help="aligned bam file (should be sorted and indexed). it will overwrite the `--fq_dir` parameter and skip the first alignment step. This is only for advanced user.",
+        type=str,
+        default=""
+    )
+
+    parser.add_argument(
+        "--outdir", "-o",
+        help="directory to deposite all results in rootdir, use absolute path",
+        type=str,
+        required=True
+    )
+
+    parser.add_argument(
+        "--genomefa", "-f",
+        help="genome fasta file",
+        type=str,
+        required=True
+    )
+
+    parser.add_argument(
+        "--minimap2_dir", "-m",
+        help="directory contains minimap2, k8 and paftools.js program. k8 and paftools.js are used to convert gff3 to bed12.",
+        type=str,
+        required=False,
+        default=""
+    )
+
+    parser.add_argument(
+        "--config_file", "-c",
+        help="json configuration files (default %(default)s)",
+        type=str,
+        default="config_sclr_nanopore_default.json"
+    )
+
+    parser.add_argument(
+        "--downsample_ratio", "-d",
+        help="downsampling ratio if performing downsampling analysis",
+        type=float,
+        default=1
+    )
+
+    args = parser.parse_args()
+    return args
+"""

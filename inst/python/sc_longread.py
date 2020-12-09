@@ -168,7 +168,7 @@ def remove_similar_tr(transcript_dict, gene_to_transcript, transcript_to_exon, t
         if len(dup_list) > 0:
             dup_list = list(set(dup_list))
             gene_to_transcript[g] = [i for j, i in enumerate(gene_to_transcript[g]) if j not in dup_list]
-    print "Removed similar transcripts in gene annotation:", dup_stat
+    print "\tRemoved similar transcripts in gene annotation:", dup_stat
 
 
 def if_exon_contains(s1, s2, max_tol):
@@ -257,7 +257,7 @@ class GeneBlocks(object):
         self.transcript_list.extend(transcript_list)
         self.gene_to_tr[a_gene] = tuple(transcript_list)
     def __str__(self):
-        print("GeneBlocks({},{}): {} transcripts, {} genes.".format(self.s, self.e, len(self.transcript_list), len(self.gene_to_tr)))
+        return "GeneBlocks({},{}): {} transcripts, {} genes.".format(self.s, self.e, len(self.transcript_list), len(self.gene_to_tr))
     def __repr__(self):
         return "GeneBlocks({},{}): {} transcripts, {} genes.".format(self.s, self.e, len(self.transcript_list), len(self.gene_to_tr))
 
@@ -273,10 +273,15 @@ def blocks_to_junctions(blocks):
         junctions["junctions"] = tuple()
     return junctions
 
-
 def get_gene_blocks(gene_dict, chr_to_gene, gene_to_transcript):
     chr_to_blocks = {}
     for ch in chr_to_gene:
+        # ensure that chr_to_gene dictionary contains lists as values.
+        # any non-list type gets represented as a one item list
+        # this is necessary due to R to python conversion from a list of length 1 to a 
+        # non list type when passing arguments
+        if type(chr_to_gene[ch]) != type([]):
+            chr_to_gene[ch] = [chr_to_gene[ch]]
         gene_l = []
         chr_to_blocks[ch] = []
         for g in chr_to_gene[ch]:
@@ -636,7 +641,9 @@ class Isoforms(object):
         Iso = namedtuple('Iso', ["support_cnt", "transcript_id","gene_id"])
         splice_site = get_splice_site(transcript_to_junctions, one_block.transcript_list)
         junc_list = [transcript_to_junctions[it]["junctions"] for it in one_block.transcript_list]
-        junc_dict = dict((transcript_to_junctions[tr]["junctions"], tr) for tr in one_block.transcript_list)
+        # issue with below line. first part of tuple should not be a list, yet for some reason in both
+        # R (and python)? the value is a list. Need to check original python code to find issue in transcript_to_junctions
+        junc_dict = dict((tuple(transcript_to_junctions[tr]["junctions"]), tr) for tr in one_block.transcript_list)
         exons_list = [list(it) for it in junc_list]
         [exons_list[ith].append(transcript_to_junctions[tr]["right"]) for ith, tr in enumerate(one_block.transcript_list)]
         [exons_list[ith].insert(0,transcript_to_junctions[tr]["left"]) for ith, tr in enumerate(one_block.transcript_list)]
@@ -970,8 +977,8 @@ def group_bam2isoform(bam_in, out_gff3, out_stat, summary_csv, chr_to_blocks, ge
         # print ch
         #if ch != "5":
         #    continue
-        print ch
         for ith, bl in enumerate(chr_to_blocks[ch]):
+            #print ith, bl
             it_region = bamfile.fetch(ch, bl.s, bl.e)
             TSS_TES_site = get_TSS_TES_site(transcript_to_junctions, bl.transcript_list)
             tmp_isoform = Isoforms(ch, config)
@@ -988,6 +995,7 @@ def group_bam2isoform(bam_in, out_gff3, out_stat, summary_csv, chr_to_blocks, ge
                 tmp_isoform.update_all_splice()
                 tmp_isoform.filter_TSS_TES(tss_tes_stat,known_site=TSS_TES_site,fdr_cutoff=0.1)
                 #tmp_isoform.site_stat(tss_tes_stat)
+                # issue
                 tmp_isoform.match_known_annotation(transcript_to_junctions, transcript_dict, gene_dict, bl, fa_dict)
                 isoform_dict[(ch, bl.s, bl.e)] =tmp_isoform
                 if raw_gff3 is not None:

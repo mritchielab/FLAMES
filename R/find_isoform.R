@@ -24,5 +24,7 @@ find_isoform <- function(anno, genome_bam, isoform_gff3, tss_tes_stat, genomefa,
                 gene_dict, transcript_to_junctions, parse_res$transcript_dict, genomefa,
                 config=isoform_parameters, downsample_ratio=downsample_ratio, 
                 raw_gff3=if (generate_raw_isoform) raw_splice_isoform else NULL)
+    } else {
+        ## skip finding isoform.
     }
 }

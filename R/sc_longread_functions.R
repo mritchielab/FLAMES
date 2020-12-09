@@ -72,6 +72,7 @@ get_gene_blocks <- function(gene_dict, chr_to_gene, gene_to_transcript) {
         python_path <- system.file("python", package="FlamesR")
 
         sc <- reticulate::import_from_path("sc_longread", python_path)
+        
         sc$get_gene_blocks(g_dict, chr_gene, gene_tran)
     }, g_dict=gene_dict, chr_gene=chr_to_gene, gene_tran=gene_to_transcript)
 
@@ -89,7 +90,7 @@ get_gene_blocks <- function(gene_dict, chr_to_gene, gene_to_transcript) {
 #' @export
 group_bam2isoform <- function(bam_in, out_gff3, out_stat, summary_csv, chr_to_blocks, gene_dict,
                              transcript_to_junctions, transcript_dict, fa_f, config, downsample_ratio, 
-                             raw_gff3=NULL {
+                             raw_gff3=NULL) {
     # config is a dictionary containing: random_seed, min_cnt_pct
     #["MAX_DIST"]
     #["MAX_TS_DIST"]

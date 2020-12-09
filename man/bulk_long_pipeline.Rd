@@ -12,12 +12,28 @@ bulk_long_pipeline(
   genome_fa,
   minimap2_dir = NULL,
   downsample_ratio,
-  use_junctions = TRUE,
-  no_flank = TRUE,
+  config_file = NULL,
   do_genome_align = TRUE,
   do_isoform_id = TRUE,
   do_read_realign = TRUE,
-  do_transcript_quantification = TRUE
+  do_transcript_quanti = TRUE,
+  gen_raw_isoform = TRUE,
+  has_UMI = FALSE,
+  MAX_DIST = 10,
+  MAX_TS_DIST = 100,
+  MAX_SPLICE_MATCH_DIST = 10,
+  min_fl_exon_len = 40,
+  Max_site_per_splice = 3,
+  Min_sup_cnt = 10,
+  Min_cnt_pct = 0.01,
+  Min_sup_pct = 0.2,
+  strand_specific = 1,
+  remove_incomp_reads = 5,
+  use_junctions = TRUE,
+  no_flank = TRUE,
+  use_annotation = TRUE,
+  min_tr_coverage = 0.75,
+  min_read_coverage = 0.75
 )
 }
 \arguments{

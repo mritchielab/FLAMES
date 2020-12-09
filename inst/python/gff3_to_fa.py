@@ -45,11 +45,12 @@ def get_transcript_seq(fa_file, fa_out_f, chr_to_gene, transcript_dict,
     fa_dict = {}
     fa_out = open(fa_out_f, "w")
     for ch, seq in get_fa(fa_file):
+        #print(ch)
         if ch not in chr_to_gene:
             continue
-        else:
-            pass
-            # print("start to process chromosome", ch)
+        # print("start to process chromosome", ch)
+        if (not isinstance(chr_to_gene[ch], list)):
+            chr_to_gene[ch] = [chr_to_gene[ch]]
         for gene in chr_to_gene[ch]:
             for tr in gene_to_transcript[gene]:
                 iso_l = []

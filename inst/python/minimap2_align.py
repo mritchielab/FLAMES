@@ -1,6 +1,6 @@
 import subprocess
 import os
-#import pysam
+import pysam
 
 # DOCUMENT THIS?
 # edited version of gff3 to bed12

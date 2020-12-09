@@ -4,7 +4,14 @@
 \alias{find_isoform}
 \title{Title}
 \usage{
-find_isoform(anno)
+find_isoform(
+  anno,
+  genome_bam,
+  isoform_gff3,
+  tss_tes_stat,
+  genomefa,
+  do_isoform_identification
+)
 }
 \arguments{
 \item{name}{desc}

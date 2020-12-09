@@ -63,9 +63,11 @@ def make_bc_dict(bc_anno):
     return(bc_dict)
 
 
-def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_read_coverage, **kwargs):
+#old signature; def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_read_coverage, **kwargs):
+def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_read_coverage, kwargs):
     """
     """
+    print(kwargs)
     fa_idx = dict((it.strip().split()[0],int(it.strip().split()[1]) ) for it in open(fa_idx_f))
     bc_tr_count_dict = {}
     bc_tr_badcov_count_dict = {}
