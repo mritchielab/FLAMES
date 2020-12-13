@@ -2,7 +2,7 @@
 % Please edit documentation in R/bulk_long_pipeline.R
 \name{bulk_long_pipeline}
 \alias{bulk_long_pipeline}
-\title{Title}
+\title{Pipeline for Bulk Data}
 \usage{
 bulk_long_pipeline(
   annot,
@@ -37,28 +37,88 @@ bulk_long_pipeline(
 )
 }
 \arguments{
-\item{annot}{gene annotations in gff3 file format. str}
+\item{annot}{gene annotations file in gff3  format}
 
-\item{fastq_dir}{the folder containing fastq files, each containing data from one sample. str}
+\item{fastq_dir}{the directory containing fastq files, each containing data from one sample}
 
-\item{in_bam}{aligned bam file (sorted and indexed). Overwrite --infq? str}
+\item{in_bam}{aligned bam file (sorted and indexed). If supplied, this overwrites
+\code{fastq_dir} and skips the first alignment step}
 
-\item{outdir}{directory to deposite all results in rootdir. Use absolute path? str}
+\item{outdir}{directory to store all output files.}
 
-\item{genome_fa}{genome fasta file. str}
+\item{genome_fa}{genome fasta file.}
 
-\item{minimap2_dir}{directory containing minimap2, k8 and paftools.js program. k8 and paftools.js are used to convert gff3 to bed12. str}
+\item{minimap2_dir}{directory containing minimap2, k8 and paftools.js program.
+k8 and paftools.js are used to convert gff3 to bed12.}
 
 \item{downsample_ratio}{downsampling ratio if performing downsampling analysis.}
 
-\item{config_file}{json configuration files. str}
+\item{config_file}{JSON configuration file. If specified, \code{config_file} overrides
+all configuration parameters}
+
+\item{do_genome_align}{Boolean. Specifies whether to run the genome alignment step. \code{TRUE} is recommended}
+
+\item{do_isoform_id}{Boolean. Specifies whether to run the isoform identification step. \code{TRUE} is recommended}
+
+\item{do_read_realign}{Boolean. Specifies whether to run the read realignment step. \code{TRUE} is recommended}
+
+\item{do_transcript_quanti}{Boolean. Specifies whether to run the transcript quantification step. \code{TRUE} is recommended}
+
+\item{has_UMI}{Boolean. Speficies if each gene as a UMI.}
+
+\item{MAX_DIST}{Numeric}
+
+\item{MAX_TS_DIST}{Numeric.}
+
+\item{MAX_SPLICE_MATCH_DIST}{Numeric.}
+
+\item{min_fl_exon_len}{Numeric.}
+
+\item{Max_site_per_splice}{Numeric.}
+
+\item{Min_sup_cnt}{Numeric.}
+
+\item{Min_cnt_pct}{Numeric.}
+
+\item{Min_sup_pct}{Numeric.}
+
+\item{remove_incomp_reads}{Numeric.}
+
+\item{use_junctions}{Boolean.}
+
+\item{no_flank}{Boolean.}
+
+\item{use_annotation}{Boolean.}
+
+\item{min_tr_coverage}{Numeric.}
+
+\item{min_read_coverage}{Numeric.}
+
+\item{gen_raw-isoform}{Boolean.}
+
+\item{strand_specific.}{1, -1 or 0. 1 indicates if reads are in the same
+strand as mRNA, -1 indicates reads are reverse complemented, 0 indicates
+reads are not strand specific.}
 }
 \description{
 Semi-supervised isofrom detection and annotation from long read data.
-This variant is meant for bulk samples. THIS FUNCTION IS GOING TO BE THE ENTIRE
-FLAMES PROCESS. IT SHOULD BE BUILT FROM THE SMALLER FUNCTIONS THAT PREVIOUSLY WERE
-CARRIED OUT UNDER THE HOOD. MOST FUNCTIONS THAT THIS ONE USES SHOULD BE AVAILABLE TO THE USER.
+This variant is meant for bulk samples. Specific parameters relating to
+analysis can be changed either through function arguments, or through a
+configuration JSON file.
 }
 \details{
-THIS NEED PROPER TYPES
+The default parameters can be changed either through the function
+arguments are through the configuration JSON file \code{config_file}. the \code{pipeline_parameters}
+section specifies which steps are to be executed in the pipeline - by default, all
+steps are executed. The \code{isoform_parameters} section affects isoform detection - key
+parameters include:
+\itemize{
+\item \code{Min_sup_cnt}, which causes transcripts with less reads aligned than
+it's value to be discarded;
+\item \code{MAX_TS_DIST} which merges transcripts with the same intron
+chain and TSS/TES distace less than \code{MAX_TS_DIST};
+\item \code{strand_specific} which specifies if
+reads are in the same strand as the mRNA (1), or the reverse complemented (-1) or not
+strand specific (0), which results in strand information being based on reference annotation.
+}
 }

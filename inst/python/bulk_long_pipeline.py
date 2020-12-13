@@ -30,10 +30,10 @@ __MAN = \
 #   transcript_count.csv.gz   // transcript count matrix
 #   isoform_annotated.filtered.gff3 // isoforms in gff3 format
 #   transcript_assembly.fa // transcript sequence from the isoforms
-#   align2genome.bam       // sorted bam file with reads aligned to genome
+#/   align2genome.bam       // sorted bam file with reads aligned to genome
 #   realign2transcript.bam // sorted realigned bam file using the
 #                            transcript_assembly.fa as reference
-#   tss_tes.bedgraph       // TSS TES enrichment for all reads (for QC)
+#/   tss_tes.bedgraph       // TSS TES enrichment for all reads (for QC)
 ################################################################"""\
 .format(__PROG, __VERSION, __AUTHOR)
 
@@ -109,7 +109,7 @@ def bulk_long_pipeline(args):
         print "### skip aligning reads to genome", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
     # find isoform
-    #print "### read gene annotation", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print "### read gene annotation", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = parse_gff_tree(args.gff3)
     # so chr_to_gene is literally just a dictionary of labels with the values being the same label? 
     transcript_to_junctions = {tr: blocks_to_junctions(transcript_to_exon[tr]) for tr in transcript_to_exon}
