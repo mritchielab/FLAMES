@@ -153,7 +153,7 @@ def is_exon_similar(ex1, ex2, thr):
     return True
 
 
-def remove_similar_tr(transcript_dict, gene_to_transcript, transcript_to_exon, thr=10):
+def remove_similar_tr(gene_to_transcript, transcript_to_exon, thr=10):
     dup_stat = Counter()
     for g in gene_to_transcript:
         if len(gene_to_transcript[g]) < 2:
@@ -731,7 +731,7 @@ class Isoforms(object):
                         self.strand_cnt[tuple(new_exons)] = self.strand_cnt[raw_iso]
                     else:
                         self.new_isoforms[tuple(new_exons)] = Iso(self.new_isoforms[tuple(new_exons)].support_cnt+self.raw_isoforms[raw_iso],"","")
-                else:
+                else: 
                     print "exon chain not in ascending order:", raw_iso,new_exons
         
         # remove incomplete transcript (due to 3' bias)

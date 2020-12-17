@@ -1,10 +1,15 @@
 #' Title
 #'
-#' DESC
-#' 
-#' @param name desc
+#' @description Combine FLAMES ouput with reference and filter out transcript by
+#' ealignment result.
 #'
-#' @param name desc
+#' @param isoform_gff NEEDED
+#' @param ref_gff NEEDED
+#' @param isoform_out
+#' @param anno_out
+#' @parma tr_cnt NEEDED
+#' @param min_sup_reads NEEDED
+#'
 #' @importFrom reticulate import_from_path
 #' @export
 annotate_filter_gff <- function(isoform_gff, ref_gff, isoform_out, anno_out, tr_cnt, min_sup_reads) {

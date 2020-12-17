@@ -10,7 +10,12 @@ parse_gff_tree(gff_file)
 \item{gff_file}{File path in gff, gtf.gz or gtf format to parse.}
 }
 \value{
-List object with four elements: chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon.
+List object with four elements: \itemize{
+\item chr_to_gene, NEEDED
+\item transcript_dict,  NEEDED
+\item gene_to_transcript,  NEEDED
+\item transcript_to_exon.  NEEDED
+}
 }
 \description{
 Parses GFF3 file formats into a usable list of four elements. Accepts \code{.gtf}, \code{.gff} formats as

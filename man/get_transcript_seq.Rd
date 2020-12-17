@@ -2,7 +2,7 @@
 % Please edit documentation in R/gff3_to_fa.R
 \name{get_transcript_seq}
 \alias{get_transcript_seq}
-\title{Title}
+\title{Get Transcript Sequences}
 \usage{
 get_transcript_seq(
   fa_file,
@@ -15,8 +15,18 @@ get_transcript_seq(
 )
 }
 \arguments{
-\item{name}{desc}
+\item{fa_out_f}{NEEDED}
+
+\item{chr_to_gene}{NEEDED}
+
+\item{transcript_dict}{NEEDED}
+
+\item{gene_to_transcript}{NEEDED}
+
+\item{transcript_to_exon}{NEEDED}
+
+\item{ref_dict}{NEEDED}
 }
 \description{
-DESC
+NEEDED
 }

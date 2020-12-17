@@ -1,5 +1,6 @@
 #' Pipeline for Bulk Data
 #'
+#' @description
 #' Semi-supervised isofrom detection and annotation from long read data.
 #' This variant is meant for bulk samples. Specific parameters relating to
 #' analysis can be changed either through function arguments, or through a
@@ -21,22 +22,15 @@
 #' @param annot gene annotations file in gff3  format
 #'
 #' @param fastq_dir the directory containing fastq files, each containing data from one sample
-#'
 #' @param in_bam aligned bam file (sorted and indexed). If supplied, this overwrites
 #' `fastq_dir` and skips the first alignment step
-#'
 #' @param outdir directory to store all output files.
-#'
 #' @param genome_fa genome fasta file.
-#'
 #' @param minimap2_dir directory containing minimap2, k8 and paftools.js program.
 #' k8 and paftools.js are used to convert gff3 to bed12.
-#'
 #' @param downsample_ratio downsampling ratio if performing downsampling analysis.
-#'
 #' @param config_file JSON configuration file. If specified, `config_file` overrides
 #' all configuration parameters
-#'
 #' @param do_genome_align Boolean. Specifies whether to run the genome alignment step. `TRUE` is recommended
 #' @param do_isoform_id Boolean. Specifies whether to run the isoform identification step. `TRUE` is recommended
 #' @param do_read_realign Boolean. Specifies whether to run the read realignment step. `TRUE` is recommended
@@ -62,8 +56,10 @@
 #' @param min_read_coverage Numeric.
 #'
 #' @export
+# Charity, xueyi.
 bulk_long_pipeline <- function(annot, fastq_dir, in_bam=NULL, outdir, genome_fa,
                                 minimap2_dir=NULL, downsample_ratio=1, config_file=NULL,
+                                # build config file from given arugments.
                                 do_genome_align=TRUE, do_isoform_id=TRUE,
                                 do_read_realign=TRUE, do_transcript_quanti=TRUE,
                                 gen_raw_isoform=TRUE, has_UMI=FALSE,

@@ -118,7 +118,7 @@ generic_long_pipeline <- function(annot, infq, in_bam, outdir, genome_fa,
     transcript_dict = gff3_parse_result$transcript_dict
     gene_to_transcript = gff3_parse_result$gene_to_transcript
     transcript_to_exon = gff3_parse_result$transcript_to_exon
-    remove_similar_tr(transcript_dict, gene_to_transcript, transcript_to_exon)
+    remove_similar_tr(gene_to_transcript, transcript_to_exon)
 
     if (config$pipeline_parameters$do_isoform_identification) {
         cat("#### Find isoforms\n")
@@ -136,6 +136,7 @@ generic_long_pipeline <- function(annot, infq, in_bam, outdir, genome_fa,
         ## skip finding isoform.
         cat("#### Skip finding isoforms\n")
     }
+
     # get fasta
     isoform_gff3_parse <- parse_gff_tree(isoform_gff3)
     chr_to_gene_i <- isoform_gff3_parse$chr_to_gene
@@ -172,7 +173,7 @@ generic_long_pipeline <- function(annot, infq, in_bam, outdir, genome_fa,
                 config$isoform_parameters$Min_sup_cnt,
                 config$transcript_counting$min_tr_coverage,
                 config$transcript_counting$min_read_coverage,
-                bc_file=bc_file)
+                bc_file=bc_file) # git rid of the need for this!
         }
         tr_cnt = wrt_tr_to_csv(parse_realign$bc_tr_count_dict, transcript_dict_i, tr_cnt_csv, transcript_dict, config$global_parameters$has_UMI)
         wrt_tr_to_csv(parse_realign$bc_tr_badcov_count_dict, transcript_dict_i, tr_badcov_cnt_csv, transcript_dict, config$global_parameters$has_UMI)

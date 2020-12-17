@@ -16,5 +16,8 @@ minimap2_tr_align(mm2_prog_path, fa_file, fq_in, bam_out)
 \item{bam_out}{Output BAM file, containing aligned sequences}
 }
 \description{
-DESC
+
+}
+\details{
+
 }

@@ -7,7 +7,12 @@
 #'
 #' @importFrom reticulate import_from_path
 #'
-#' @return List object with four elements: chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon. 
+#' @return List object with four elements: \itemize{
+#'  \item chr_to_gene, NEEDED
+#'  \item transcript_dict,  NEEDED
+#'  \item gene_to_transcript,  NEEDED
+#'  \item transcript_to_exon.  NEEDED
+#'  }
 #'      
 #' @export
 parse_gff_tree <- function(gff_file) {

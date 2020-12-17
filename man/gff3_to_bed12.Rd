@@ -7,8 +7,7 @@
 gff3_to_bed12(minimap2_prog_path = NULL, gff3_file, bed12_file)
 }
 \arguments{
-\item{minimap2_prog_path}{Absolute path to the directory containing k8, paftools,js and minimap2
-executables from the minimap2 package. Leave as default if these are in the current working directory}
+\item{minimap2_prog_path}{Absolute path to the directory containing k8, paftools,js and minimap2 executables from the minimap2 package. Leave as default if these are in the current working directory}
 
 \item{gff3_file}{The gff3_file to convert}
 

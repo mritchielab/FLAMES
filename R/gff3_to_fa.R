@@ -1,10 +1,14 @@
-#' Title
+#' Get Transcript Sequences
 #'
-#' DESC
-#' 
-#' @param name desc
+#' @description NEEDED
 #'
-#' @param name desc
+#' @param fa_file NEEDER
+#' @param fa_out_f NEEDED
+#' @param chr_to_gene NEEDED
+#' @param transcript_dict NEEDED
+#' @param gene_to_transcript NEEDED
+#' @param transcript_to_exon NEEDED
+#' @param ref_dict NEEDED
 #' @importFrom reticulate import_from_path
 #' @export
 get_transcript_seq <- function(fa_file, fa_out_f, chr_to_gene, transcript_dict,

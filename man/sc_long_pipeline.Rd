@@ -2,7 +2,7 @@
 % Please edit documentation in R/sc_long_pipeline.R
 \name{sc_long_pipeline}
 \alias{sc_long_pipeline}
-\title{Title}
+\title{Pipeline for Single Cell Data}
 \usage{
 sc_long_pipeline(
   annot,

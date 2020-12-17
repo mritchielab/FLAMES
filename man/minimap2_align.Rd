@@ -26,6 +26,12 @@ minimap2_align(
 
 \item{bed12_junc}{Gene annotations in BED12 format. If specified, minmap2 prefers splicing in annotations.}
 }
+\value{
+file path to the given output BAM file, \code{bam_out}
+}
 \description{
 Uses minimap2 to align sequences agains a reference databse.
+}
+\details{
+NEEDED. What does minimap2 do, and why is it used in FLAMES?
 }

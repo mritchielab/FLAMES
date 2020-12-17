@@ -14,8 +14,22 @@ parse_realigned_bam(
 )
 }
 \arguments{
-\item{name}{desc}
+\item{bam_in}{NEEDED}
+
+\item{fa_idx_f}{NEEDED}
+
+\item{min_sup_reads}{NEEDED}
+
+\item{min_tr_coverage}{NEEDED}
+
+\item{min_read_coverage}{NEEDED}
+
+\item{...}{Additional parameters, which can include the file \code{bc_file}
+to serve as a dictionary of barcode as reference}
+}
+\value{
+named list containing the elements \code{bc_tr_count_dict}, \code{bc_tr_badcov_count_dict} and \code{tr_kept}
 }
 \description{
-DESC
+NEEDED
 }

@@ -2,10 +2,7 @@
 #'
 #' Converts a gff3 file to a bed12, using paftools.js from the minimap2 package
 #' 
-#' @param minimap2_prog_path Directory containing paftools.js and k8
-#'
-#' @param minimap2_prog_path Absolute path to the directory containing k8, paftools,js and minimap2 
-#'      executables from the minimap2 package. Leave as default if these are in the current working directory
+#' @param minimap2_prog_path Absolute path to the directory containing k8, paftools,js and minimap2 executables from the minimap2 package. Leave as default if these are in the current working directory
 #' @param gff3_file The gff3_file to convert
 #' @param bed12_file The filename of the bed12 output file.
 #' 
@@ -14,20 +11,24 @@
 #' @export
 gff3_to_bed12 <- function(minimap2_prog_path=NULL, gff3_file, bed12_file) {
     python_path <- system.file("python", package="FlamesR")
-    subprocess_out <- callBasilisk(flames_env, function(mm2_path, gff3, bed12) {
+    callBasilisk(flames_env, function(mm2_path, gff3, bed12) {
         align <-reticulate::import_from_path("minimap2_align", python_path)
-     #   reticulate::source_python(paste(python_path, "minimap2_align.py", sep=.Platform$file.sep))
 
         if (is.null(mm2_path)) mm2_path = ""
         align$gff3_to_bed12(mm2_path, gff3, bed12)
     }, mm2_path=minimap2_prog_path, gff3=gff3_file, bed12=bed12_file)
+
     bed12_file # output file
 }
 
 #' Minimap2 Align to Genome
 #'
+#' @description
 #' Uses minimap2 to align sequences agains a reference databse. 
 #' 
+#' @details
+#' NEEDED. What does minimap2 do, and why is it used in FLAMES?
+#'
 #' @param minimap2_prog_path Absolute path to the directory containing minimap2
 #' @param fa_file Fasta file used as a reference database for alignment
 #' @param fq_in Fastq file used as a query sequence file
@@ -35,6 +36,7 @@ gff3_to_bed12 <- function(minimap2_prog_path=NULL, gff3_file, bed12_file) {
 #' @param no_flank Boolean; used if studying SIRV, to let minimap2 ignore additional bases
 #' @param bed12_junc Gene annotations in BED12 format. If specified, minmap2 prefers splicing in annotations.
 #'
+#' @return file path to the given output BAM file, \code{bam_out}
 #' @importFrom reticulate import_from_path
 #'
 #' @export
@@ -71,7 +73,10 @@ samtools_sort_index <- function(bam_in, bam_out) {
 
 #' Minimap2 Align to Transcript
 #'
-#' DESC
+#' @description
+#'
+#' @details
+#'
 #' 
 #' @param mm2_prog_path Absolute path to the directory containing minimap2
 #' @param fa_file Input fasta file used as a reference database
