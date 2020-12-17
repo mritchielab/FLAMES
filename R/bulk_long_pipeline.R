@@ -56,7 +56,6 @@
 #' @param min_read_coverage Numeric.
 #'
 #' @export
-# Charity, xueyi.
 bulk_long_pipeline <- function(annot, fastq_dir, in_bam=NULL, outdir, genome_fa,
                                 minimap2_dir=NULL, downsample_ratio=1, config_file=NULL,
                                 # build config file from given arugments.
