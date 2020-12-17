@@ -1,10 +1,7 @@
 
----
-title: "FlamesR"
-output: html_document
----
+# FlamesR
 
-# Documentation
+## Documentation
 Currently, only documentation for ```bulk_long_pipeline()``` and related functions
 are needed. ```sc_long_pipeline()``` is not yet finished.
 R function wrappers needing documentation are contained in each top level
