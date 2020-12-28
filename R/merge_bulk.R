@@ -1,13 +1,12 @@
-#' Title
+#' Merge FASTQ
 #'
-#' Merges all fastq files in the given folder into a single file
+#' Merges all fastq files in the given folder into a single file. Used to create a pseudobulk fastq file,
+#' with added fake barcodes to differentiate between source files.
 #'
-#'  THIS NEED PROPER TYPES | Need any printing?
 #' @param fastq_dir The folder containing fastq files to merge
-#' @param anno_csv a
+#' @param anno_csv a path for the output csv, containing the fake barcodes created
 #' @param out_fastq A file which will be created to store all fastq entries
 #' @importFrom reticulate import_from_path
-#' @export
 merge_bulk_fastq <- function(fastq_dir, anno_csv, out_fastq) {
     callBasilisk(flames_env, function(fq_dir, a_csv, out_fq) {
         python_path <- system.file("python", package="FlamesR")

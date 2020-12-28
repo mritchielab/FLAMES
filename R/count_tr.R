@@ -33,13 +33,13 @@ parse_realigned_bam <- function(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage
 #'
 #' @description
 #'
-#' @param bc_tr_count_dict NEEDER
-#' @param transcript_dict NEEDER
-#' @param csv_f NEEDER
-#' @param transcript_dict_ref NEEDER
+#' @param bc_tr_count_dict NEEDED
+#' @param transcript_dict NEEDED
+#' @param csv_f NEEDED
+#' @param transcript_dict_ref NEEDED
 #' @param has_UMI
 #'
-#' @return NEEDER
+#' @return NEEDED
 #' @importFrom reticulate import_from_path
 #' @export
 wrt_tr_to_csv <- function(bc_tr_count_dict, transcript_dict, csv_f, transcript_dict_ref=NULL, has_UMI=TRUE) {

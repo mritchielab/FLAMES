@@ -2,7 +2,7 @@
 % Please edit documentation in R/count_tr.R
 \name{parse_realigned_bam}
 \alias{parse_realigned_bam}
-\title{Title}
+\title{Parse Realigned Bam}
 \usage{
 parse_realigned_bam(
   bam_in,

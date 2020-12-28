@@ -14,8 +14,13 @@ annotate_filter_gff(
 )
 }
 \arguments{
-\item{name}{desc}
+\item{isoform_gff}{NEEDED}
+
+\item{ref_gff}{NEEDED}
+
+\item{min_sup_reads}{NEEDED}
 }
 \description{
-DESC
+Combine FLAMES ouput with reference and filter out transcript by
+ealignment result.
 }

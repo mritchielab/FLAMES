@@ -2,7 +2,7 @@
 % Please edit documentation in R/count_tr.R
 \name{wrt_tr_to_csv}
 \alias{wrt_tr_to_csv}
-\title{Title}
+\title{Write Transcript to CSV file}
 \usage{
 wrt_tr_to_csv(
   bc_tr_count_dict,
@@ -13,8 +13,19 @@ wrt_tr_to_csv(
 )
 }
 \arguments{
-\item{name}{desc}
+\item{bc_tr_count_dict}{NEEDER}
+
+\item{transcript_dict}{NEEDER}
+
+\item{csv_f}{NEEDER}
+
+\item{transcript_dict_ref}{NEEDER}
+
+\item{has_UMI}{}
+}
+\value{
+NEEDER
 }
 \description{
-DESC
+
 }

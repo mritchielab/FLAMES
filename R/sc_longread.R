@@ -47,7 +47,7 @@ remove_similar_tr <- function(gene_to_transcript, transcript_to_exon, thr=10) {
 
 #' Get Gene Flat
 #'
-#' DESC
+#' @description
 #'
 #' @param gene_to_transcript NEEDED
 #' @param transcript_to_exon NEEDED

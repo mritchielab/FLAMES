@@ -42,4 +42,7 @@ def print_config(decoded_dict):
                 print "\t\t"+str(cat2),":",decoded_dict[cat1][cat2]
         else:
             print "\t"+str(cat1),":",decoded_dict[cat1]
-            
+
+def write_config(config_dict, config_file):
+    with open(config_file, 'w') as outfile:
+        json.dump(config_dict, outfile, indent=4)

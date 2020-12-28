@@ -1,12 +1,12 @@
-#' Title
+#' Annotate filter (GFF3)
 #'
 #' @description Combine FLAMES ouput with reference and filter out transcript by
 #' ealignment result.
 #'
 #' @param isoform_gff NEEDED
 #' @param ref_gff NEEDED
-#' @param isoform_out
-#' @param anno_out
+#' @param isoform_out output isoform file path
+#' @param anno_out output annotation file path
 #' @parma tr_cnt NEEDED
 #' @param min_sup_reads NEEDED
 #'

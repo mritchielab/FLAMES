@@ -18,8 +18,12 @@ generic_long_pipeline <- function(annot, infq, in_bam, outdir, genome_fa,
                 use_junctions, no_flank,
                 use_annotation, min_tr_coverage, min_read_coverage,
                 bc_file=NULL) {
-                # should we just make them all optional parameters with default values, and give
-            # and optional config JSON file which will override the defaults?
+    
+    if (!dir.exists(outdir)) {
+        cat("Output directory does not exists: one is being created\n")
+        dir.create(outdir)
+        print(outdir)
+    }
     # setup config file if none is given, or read in json config
     if (is.null(config_file)) {
         config =
@@ -45,6 +49,11 @@ generic_long_pipeline <- function(annot, infq, in_bam, outdir, genome_fa,
             Min_sup_cnt <= 0 || Min_sup_pct <= 0 || (strand_specific != -1 && strand_specific != 0 && strand_specific != 1) || remove_incomp_reads < 0) {
                 stop("MAX_DIST,  MAX_TS_DIST, MAX_SPLICE_MATCH_DIST,  Max_site_per_splce, Min_sup_cnt and Min_sup_pct must be greater than 0. strand_specific must be -1, 0 or 1 and remove_incomp_reads must be >= 0.")
         }
+
+        # write created config file.
+        config_file_path <- paste(outdir, paste0("config_file_", sys.getpid(), ".json"), sep="/")
+        cat("Writing configuration parameters to: ", config_file_path, "\n")
+        write_config(config, config_file_path)
     } else {
         config = parse_json_config(config_file)
     }
@@ -114,7 +123,7 @@ generic_long_pipeline <- function(annot, infq, in_bam, outdir, genome_fa,
     # find isofrom
     cat("#### Read genne annotations\n")
     gff3_parse_result <- parse_gff_tree(annot)
-    chr_to_gene = gff3_parse_result$chr_to_gene # chr_to_gene appears to be the exact same as python returns, so not sure what the issue is
+    chr_to_gene = gff3_parse_result$chr_to_gene
     transcript_dict = gff3_parse_result$transcript_dict
     gene_to_transcript = gff3_parse_result$gene_to_transcript
     transcript_to_exon = gff3_parse_result$transcript_to_exon

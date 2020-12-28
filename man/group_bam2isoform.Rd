@@ -40,7 +40,9 @@ group_bam2isoform(
 
 \item{config}{Config file used to specify additional parameters}
 
-\item{raw_gff3}{}
+\item{downsample_ratio}{NEEDER}
+
+\item{raw_gff3}{NEEDER}
 }
 \value{
 File paths of the output files \code{out_gff3} and \code{out_stat}

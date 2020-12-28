@@ -41,3 +41,21 @@ print_config <- function(config) {
     invisible()
 }
 
+#' Write Configuration Dictionary to File
+#'
+#' @details Print the configuration file, represented as a named list used for the Flames pipeline.
+#' 
+#' @param config List; the configuration list to print.
+#' @param config_file the file to output \code{config} to. Should be .json extension
+#' @importFrom reticulate import_from_path
+write_config <- function(config, config_file) {
+    # write the config file to given file path
+    callBasilisk(flames_env, function(config, config_file) {
+        python_path <- system.file("python", package="FlamesR")
+
+        conf <- reticulate::import_from_path("parse_config", python_path)
+        conf$write_config(config, config_file)
+    }, config=config, config_file=config_file)
+    invisible()
+}
+

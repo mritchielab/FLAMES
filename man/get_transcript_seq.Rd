@@ -15,6 +15,8 @@ get_transcript_seq(
 )
 }
 \arguments{
+\item{fa_file}{NEEDER}
+
 \item{fa_out_f}{NEEDED}
 
 \item{chr_to_gene}{NEEDED}
