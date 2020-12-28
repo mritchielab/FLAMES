@@ -63,3 +63,8 @@ run by ```bulk_long_pipeline()``` and ```sc_long_pipeline()```.
         1.Arguments
         1. Title
         1. @description
+1. src/match_cell_barcode.cpp
+    1. match_cell_barcode
+        1. @description
+        1. @details
+        1. Arguments
