@@ -7,7 +7,7 @@
 #' @param ref_gff NEEDED
 #' @param isoform_out output isoform file path
 #' @param anno_out output annotation file path
-#' @parma tr_cnt NEEDED
+#' @param tr_cnt NEEDED
 #' @param min_sup_reads NEEDED
 #'
 #' @importFrom reticulate import_from_path

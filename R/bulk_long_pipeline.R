@@ -21,7 +21,7 @@
 #'
 #' @param annot gene annotations file in gff3  format
 #'
-#' @param fastq_dir the directory containing fastq files, each containing data from one sample
+#' @param fastq the directory containing fastq files, each containing data from one sample
 #' @param in_bam aligned bam file (sorted and indexed). If supplied, this overwrites
 #' `fastq_dir` and skips the first alignment step
 #' @param outdir directory to store all output files.
@@ -35,7 +35,7 @@
 #' @param do_isoform_id Boolean. Specifies whether to run the isoform identification step. `TRUE` is recommended
 #' @param do_read_realign Boolean. Specifies whether to run the read realignment step. `TRUE` is recommended
 #' @param do_transcript_quanti Boolean. Specifies whether to run the transcript quantification step. `TRUE` is recommended
-#' @param gen_raw-isoform Boolean.
+#' @param gen_raw_isoform Boolean.
 #' @param has_UMI Boolean. Speficies if each gene as a UMI.
 #' @param MAX_DIST Numeric
 #' @param MAX_TS_DIST Numeric.
@@ -45,7 +45,7 @@
 #' @param Min_sup_cnt Numeric.
 #' @param Min_cnt_pct Numeric.
 #' @param Min_sup_pct Numeric.
-#' @param strand_specific. 1, -1 or 0. 1 indicates if reads are in the same
+#' @param strand_specific 1, -1 or 0. 1 indicates if reads are in the same
 #' strand as mRNA, -1 indicates reads are reverse complemented, 0 indicates
 #' reads are not strand specific.
 #' @param remove_incomp_reads Numeric.
@@ -56,7 +56,7 @@
 #' @param min_read_coverage Numeric.
 #'
 #' @export
-bulk_long_pipeline <- function(annot, fastq_dir, in_bam=NULL, outdir, genome_fa,
+bulk_long_pipeline <- function(annot, fastq, in_bam=NULL, outdir, genome_fa,
                                 minimap2_dir=NULL, downsample_ratio=1, config_file=NULL,
                                 # build config file from given arugments.
                                 do_genome_align=TRUE, do_isoform_id=TRUE,
@@ -83,7 +83,7 @@ bulk_long_pipeline <- function(annot, fastq_dir, in_bam=NULL, outdir, genome_fa,
         print(outdir)
     }
     # run the merge_bulk_fastq function as preprocessing
-    merge_bulk_fastq(fastq_dir, bc_file, infq)
+    merge_bulk_fastq(fastq, bc_file, infq)
     #} else {
     #    bc_file = NULL;
     #}

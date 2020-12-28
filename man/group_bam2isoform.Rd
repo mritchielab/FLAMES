@@ -55,15 +55,15 @@ Further required details
 
 \code{config} contains
 \itemize{
-\item MAX_DIST
-\item MAX_TS_DIST
-\item MAX_SPLICE_MATCH_DIST
-\item Max_site_per_splice
-\item Min_sup_cnt
-\item min_fl_exon_len
-\item Min_sup_pct
-\item strand_specific
-\item remove_incomp_reads
-\item random_seed OPTIONAL;
+    \item MAX_DIST
+    \item MAX_TS_DIST
+    \item MAX_SPLICE_MATCH_DIST
+    \item Max_site_per_splice
+    \item Min_sup_cnt
+    \item min_fl_exon_len
+    \item Min_sup_pct
+    \item strand_specific
+    \item remove_incomp_reads
+    \item random_seed OPTIONAL;
 }
 }

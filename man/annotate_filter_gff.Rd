@@ -2,7 +2,7 @@
 % Please edit documentation in R/filter_gff.R
 \name{annotate_filter_gff}
 \alias{annotate_filter_gff}
-\title{Title}
+\title{Annotate filter (GFF3)}
 \usage{
 annotate_filter_gff(
   isoform_gff,
@@ -17,6 +17,12 @@ annotate_filter_gff(
 \item{isoform_gff}{NEEDED}
 
 \item{ref_gff}{NEEDED}
+
+\item{isoform_out}{output isoform file path}
+
+\item{anno_out}{output annotation file path}
+
+\item{tr_cnt}{NEEDED}
 
 \item{min_sup_reads}{NEEDED}
 }

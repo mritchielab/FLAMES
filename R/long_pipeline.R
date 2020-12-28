@@ -7,7 +7,7 @@
 #'
 #' @param bc_file file containing the pseudo barcode annotations generated
 #' from bulk_long_pipeline. If given, it is used for quantification.
-generic_long_pipeline <- function(annot, infq, in_bam, outdir, genome_fa,
+generic_long_pipeline <- function(annot, fastq, in_bam, outdir, genome_fa,
                 minimap2_dir, downsample_ratio, config_file,
                 do_genome_align, do_isoform_id,
                 do_read_realign, do_transcript_quanti,
@@ -30,13 +30,13 @@ generic_long_pipeline <- function(annot, infq, in_bam, outdir, genome_fa,
             list(
                 pipeline_parameters=
                     list(do_genome_alignment=do_genome_align, do_isoform_identification=do_isoform_id,
-                        do_read_realignment=do_read_realign, do_transcript_quantification=do_transcript_quantification),
+                        do_read_realignment=do_read_realign, do_transcript_quantification=do_transcript_quanti),
                 global_parameters=
                     list(generate_raw_isoform=gen_raw_isoform, has_UMI=has_UMI),
                 isoform_parameters=
                     list(MAX_DIST=MAX_DIST, MAX_TS_DIST=MAX_TS_DIST, MAX_SPLICE_MATCH_DIST=MAX_SPLICE_MATCH_DIST,
                                 min_fl_exon_len=min_fl_exon_len, Max_site_per_splice=Max_site_per_splice, Min_sup_cnt=Min_sup_cnt,
-                                Min_cnt_pct=Min_cnt_pct, Min_sup_pct=Min_sup_pct.2, strand_specific=strand_specific,
+                                Min_cnt_pct=Min_cnt_pct, Min_sup_pct=Min_sup_pct, strand_specific=strand_specific,
                                 remove_incomp_reads=remove_incomp_reads),
                 alignment_parameters=
                     list(use_junctions=use_junctions, no_flank=no_flank),
@@ -45,13 +45,13 @@ generic_long_pipeline <- function(annot, infq, in_bam, outdir, genome_fa,
                 transcript_counting=
                     list(min_tr_coverage=min_tr_coverage, min_read_coverage=min_read_coverage)
                 )
-        if (MAX_DIST <= 0 || MAX_TS_DIST <= 0 || MAX_SPLICE_MATCH_DIST <= 0 || Max_site_per_splce <= 0 ||
+        if (MAX_DIST <= 0 || MAX_TS_DIST <= 0 || MAX_SPLICE_MATCH_DIST <= 0 || Max_site_per_splice <= 0 ||
             Min_sup_cnt <= 0 || Min_sup_pct <= 0 || (strand_specific != -1 && strand_specific != 0 && strand_specific != 1) || remove_incomp_reads < 0) {
                 stop("MAX_DIST,  MAX_TS_DIST, MAX_SPLICE_MATCH_DIST,  Max_site_per_splce, Min_sup_cnt and Min_sup_pct must be greater than 0. strand_specific must be -1, 0 or 1 and remove_incomp_reads must be >= 0.")
         }
 
         # write created config file.
-        config_file_path <- paste(outdir, paste0("config_file_", sys.getpid(), ".json"), sep="/")
+        config_file_path <- paste(outdir, paste0("config_file_", Sys.getpid(), ".json"), sep="/")
         cat("Writing configuration parameters to: ", config_file_path, "\n")
         write_config(config, config_file_path)
     } else {
@@ -138,7 +138,7 @@ generic_long_pipeline <- function(annot, infq, in_bam, outdir, genome_fa,
         gene_dict <- get_gene_flat(gene_to_transcript, transcript_to_exon)
         chr_to_blocks <- get_gene_blocks(gene_dict, chr_to_gene, gene_to_transcript)
         group_bam2isoform(genome_bam, isoform_gff3, tss_tes_stat, "", chr_to_blocks,
-                gene_dict, transcript_to_junctions, transcript_dict, genomefa,
+                gene_dict, transcript_to_junctions, transcript_dict, genome_fa,
                 config=config$isoform_parameters, downsample_ratio=downsample_ratio,
                 raw_gff3=if (config$global_parameters$generate_raw_isoform) raw_splice_isoform else NULL)
     } else {

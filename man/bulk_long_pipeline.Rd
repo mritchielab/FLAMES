@@ -6,7 +6,7 @@
 \usage{
 bulk_long_pipeline(
   annot,
-  fastq_dir,
+  fastq,
   in_bam = NULL,
   outdir,
   genome_fa,
@@ -39,10 +39,10 @@ bulk_long_pipeline(
 \arguments{
 \item{annot}{gene annotations file in gff3  format}
 
-\item{fastq_dir}{the directory containing fastq files, each containing data from one sample}
+\item{fastq}{the directory containing fastq files, each containing data from one sample}
 
 \item{in_bam}{aligned bam file (sorted and indexed). If supplied, this overwrites
-\code{fastq_dir} and skips the first alignment step}
+`fastq_dir` and skips the first alignment step}
 
 \item{outdir}{directory to store all output files.}
 
@@ -53,16 +53,18 @@ k8 and paftools.js are used to convert gff3 to bed12.}
 
 \item{downsample_ratio}{downsampling ratio if performing downsampling analysis.}
 
-\item{config_file}{JSON configuration file. If specified, \code{config_file} overrides
+\item{config_file}{JSON configuration file. If specified, `config_file` overrides
 all configuration parameters}
 
-\item{do_genome_align}{Boolean. Specifies whether to run the genome alignment step. \code{TRUE} is recommended}
+\item{do_genome_align}{Boolean. Specifies whether to run the genome alignment step. `TRUE` is recommended}
 
-\item{do_isoform_id}{Boolean. Specifies whether to run the isoform identification step. \code{TRUE} is recommended}
+\item{do_isoform_id}{Boolean. Specifies whether to run the isoform identification step. `TRUE` is recommended}
 
-\item{do_read_realign}{Boolean. Specifies whether to run the read realignment step. \code{TRUE} is recommended}
+\item{do_read_realign}{Boolean. Specifies whether to run the read realignment step. `TRUE` is recommended}
 
-\item{do_transcript_quanti}{Boolean. Specifies whether to run the transcript quantification step. \code{TRUE} is recommended}
+\item{do_transcript_quanti}{Boolean. Specifies whether to run the transcript quantification step. `TRUE` is recommended}
+
+\item{gen_raw_isoform}{Boolean.}
 
 \item{has_UMI}{Boolean. Speficies if each gene as a UMI.}
 
@@ -82,6 +84,10 @@ all configuration parameters}
 
 \item{Min_sup_pct}{Numeric.}
 
+\item{strand_specific}{1, -1 or 0. 1 indicates if reads are in the same
+strand as mRNA, -1 indicates reads are reverse complemented, 0 indicates
+reads are not strand specific.}
+
 \item{remove_incomp_reads}{Numeric.}
 
 \item{use_junctions}{Boolean.}
@@ -93,12 +99,6 @@ all configuration parameters}
 \item{min_tr_coverage}{Numeric.}
 
 \item{min_read_coverage}{Numeric.}
-
-\item{gen_raw-isoform}{Boolean.}
-
-\item{strand_specific.}{1, -1 or 0. 1 indicates if reads are in the same
-strand as mRNA, -1 indicates reads are reverse complemented, 0 indicates
-reads are not strand specific.}
 }
 \description{
 Semi-supervised isofrom detection and annotation from long read data.
@@ -108,17 +108,15 @@ configuration JSON file.
 }
 \details{
 The default parameters can be changed either through the function
-arguments are through the configuration JSON file \code{config_file}. the \code{pipeline_parameters}
+arguments are through the configuration JSON file `config_file`. the `pipeline_parameters`
 section specifies which steps are to be executed in the pipeline - by default, all
-steps are executed. The \code{isoform_parameters} section affects isoform detection - key
+steps are executed. The `isoform_parameters` section affects isoform detection - key
 parameters include:
-\itemize{
-\item \code{Min_sup_cnt}, which causes transcripts with less reads aligned than
+* `Min_sup_cnt`, which causes transcripts with less reads aligned than
 it's value to be discarded;
-\item \code{MAX_TS_DIST} which merges transcripts with the same intron
-chain and TSS/TES distace less than \code{MAX_TS_DIST};
-\item \code{strand_specific} which specifies if
+* `MAX_TS_DIST` which merges transcripts with the same intron
+chain and TSS/TES distace less than `MAX_TS_DIST`;
+* `strand_specific` which specifies if
 reads are in the same strand as the mRNA (1), or the reverse complemented (-1) or not
 strand specific (0), which results in strand information being based on reference annotation.
-}
 }

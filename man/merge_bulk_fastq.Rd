@@ -2,20 +2,18 @@
 % Please edit documentation in R/merge_bulk.R
 \name{merge_bulk_fastq}
 \alias{merge_bulk_fastq}
-\title{Title}
+\title{Merge FASTQ}
 \usage{
 merge_bulk_fastq(fastq_dir, anno_csv, out_fastq)
 }
 \arguments{
 \item{fastq_dir}{The folder containing fastq files to merge}
 
-\item{anno_csv}{a}
+\item{anno_csv}{a path for the output csv, containing the fake barcodes created}
 
 \item{out_fastq}{A file which will be created to store all fastq entries}
 }
 \description{
-Merges all fastq files in the given folder into a single file
-}
-\details{
-THIS NEED PROPER TYPES | Need any printing?
+Merges all fastq files in the given folder into a single file. Used to create a pseudobulk fastq file,
+with added fake barcodes to differentiate between source files.
 }

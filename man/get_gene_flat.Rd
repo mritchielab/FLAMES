@@ -15,5 +15,5 @@ get_gene_flat(gene_to_transcript, transcript_to_exon)
 
 }
 \description{
-DESC
+
 }

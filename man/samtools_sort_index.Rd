@@ -15,6 +15,6 @@ samtools_sort_index(bam_in, bam_out)
 the path to the output file, given as \code{bam_out}
 }
 \description{
-Sorts and then indexes alignments for fast random access using samtools. Requires samtools to
+Sorts and then indexes alignments for fast random access using samtools. Requires samtools to 
 be in PATH
 }

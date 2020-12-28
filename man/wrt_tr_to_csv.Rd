@@ -13,18 +13,18 @@ wrt_tr_to_csv(
 )
 }
 \arguments{
-\item{bc_tr_count_dict}{NEEDER}
+\item{bc_tr_count_dict}{NEEDED}
 
-\item{transcript_dict}{NEEDER}
+\item{transcript_dict}{NEEDED}
 
-\item{csv_f}{NEEDER}
+\item{csv_f}{NEEDED}
 
-\item{transcript_dict_ref}{NEEDER}
+\item{transcript_dict_ref}{NEEDED}
 
 \item{has_UMI}{}
 }
 \value{
-NEEDER
+NEEDED
 }
 \description{
 
