@@ -58,7 +58,6 @@
 #' @export
 bulk_long_pipeline <- function(annot, fastq, in_bam=NULL, outdir, genome_fa,
                                 minimap2_dir=NULL, downsample_ratio=1, config_file=NULL,
-                                # build config file from given arugments.
                                 do_genome_align=TRUE, do_isoform_id=TRUE,
                                 do_read_realign=TRUE, do_transcript_quanti=TRUE,
                                 gen_raw_isoform=TRUE, has_UMI=FALSE,

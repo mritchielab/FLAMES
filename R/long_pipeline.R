@@ -24,36 +24,15 @@ generic_long_pipeline <- function(annot, fastq, in_bam, outdir, genome_fa,
         dir.create(outdir)
         print(outdir)
     }
-    # setup config file if none is given, or read in json config
     if (is.null(config_file)) {
-        config =
-            list(
-                pipeline_parameters=
-                    list(do_genome_alignment=do_genome_align, do_isoform_identification=do_isoform_id,
-                        do_read_realignment=do_read_realign, do_transcript_quantification=do_transcript_quanti),
-                global_parameters=
-                    list(generate_raw_isoform=gen_raw_isoform, has_UMI=has_UMI),
-                isoform_parameters=
-                    list(MAX_DIST=MAX_DIST, MAX_TS_DIST=MAX_TS_DIST, MAX_SPLICE_MATCH_DIST=MAX_SPLICE_MATCH_DIST,
-                                min_fl_exon_len=min_fl_exon_len, Max_site_per_splice=Max_site_per_splice, Min_sup_cnt=Min_sup_cnt,
-                                Min_cnt_pct=Min_cnt_pct, Min_sup_pct=Min_sup_pct, strand_specific=strand_specific,
-                                remove_incomp_reads=remove_incomp_reads),
-                alignment_parameters=
-                    list(use_junctions=use_junctions, no_flank=no_flank),
-                realign_parameters=
-                    list(use_annotation=use_annotation),
-                transcript_counting=
-                    list(min_tr_coverage=min_tr_coverage, min_read_coverage=min_read_coverage)
-                )
-        if (MAX_DIST <= 0 || MAX_TS_DIST <= 0 || MAX_SPLICE_MATCH_DIST <= 0 || Max_site_per_splice <= 0 ||
-            Min_sup_cnt <= 0 || Min_sup_pct <= 0 || (strand_specific != -1 && strand_specific != 0 && strand_specific != 1) || remove_incomp_reads < 0) {
-                stop("MAX_DIST,  MAX_TS_DIST, MAX_SPLICE_MATCH_DIST,  Max_site_per_splce, Min_sup_cnt and Min_sup_pct must be greater than 0. strand_specific must be -1, 0 or 1 and remove_incomp_reads must be >= 0.")
-        }
-
-        # write created config file.
-        config_file_path <- paste(outdir, paste0("config_file_", Sys.getpid(), ".json"), sep="/")
-        cat("Writing configuration parameters to: ", config_file_path, "\n")
-        write_config(config, config_file_path)
+        config = create_config(do_genome_align, do_isoform_id,
+                        do_read_realign, do_transcript_quanti,
+                        gen_raw_isoform, has_UMI,
+                        MAX_DIST, MAX_TS_DIST, MAX_SPLICE_MATCH_DIST,
+                        min_fl_exon_len, Max_site_per_splice, Min_sup_cnt,
+                        Min_cnt_pct, Min_sup_pct, strand_specific, remove_incomp_reads,
+                        use_junctions, no_flank,
+                        use_annotation, min_tr_coverage, min_read_coverage)
     } else {
         config = parse_json_config(config_file)
     }

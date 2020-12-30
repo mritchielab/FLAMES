@@ -36,15 +36,6 @@ samtools index $sorted_bam
     print subprocess.check_output([align_cmd], shell=True, stderr=subprocess.STDOUT)
 
 
-def samtools_sort_index(bam_in, bam_out):
-    cmd = "samtools sort -@ 12 -o {_sorted_bam} {_in}".format(
-        _sorted_bam=bam_out,
-        _in=bam_in)
-    print subprocess.check_output([cmd], shell=True, stderr=subprocess.STDOUT)
-    cmd = "samtools index {_sorted_bam}".format(_sorted_bam=bam_out)
-    print subprocess.check_output([cmd], shell=True, stderr=subprocess.STDOUT)
-
-
 def minimap2_tr_align(mm2_prog_path, fa_file, fq_in, bam_out):
     """
     minimap2 align to transcript

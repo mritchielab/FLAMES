@@ -25,10 +25,8 @@ gff3_to_bed12 <- function(minimap2_prog_path=NULL, gff3_file, bed12_file) {
 #'
 #' @description
 #' Uses minimap2 to align sequences agains a reference databse. 
+#' Uses options "-ax splice -t 12 -k14 --secondary=no \code{fa_file} \code{fq_in} | samtools view -bS -@ 4 -m 2G -o \code{bam_out}"
 #' 
-#' @details
-#' NEEDED. What does minimap2 do, and why is it used in FLAMES?
-#'
 #' @param minimap2_prog_path Absolute path to the directory containing minimap2
 #' @param fa_file Fasta file used as a reference database for alignment
 #' @param fq_in Fastq file used as a query sequence file
@@ -53,30 +51,26 @@ minimap2_align <- function(minimap2_prog_path=NULL, fa_file, fq_in, bam_out, no_
 
 #' Samtools Sort Index
 #'
-#' Sorts and then indexes alignments for fast random access using samtools. Requires samtools to 
-#' be in PATH
+#' Sorts and then indexes alignments for fast random access using samtools. Uses sortBam and indexBam from
+#' Rsamtools.
 #' 
 #' @param bam_in Input BAM File
 #' @param bam_out Output BAM file
-#' @importFrom reticulate import_from_path
+#' @importFrom Rsamtools sortBam indexBam
 #' @return the path to the output file, given as \code{bam_out}
 #' @export
 samtools_sort_index <- function(bam_in, bam_out) {
-    callBasilisk(flames_env, function(bin, bout) {
-        python_path <- system.file("python", package="FlamesR")
-        sam <- reticulate::import_from_path("minimap2_align", python_path)
+    sortBam(bam_in, bam_out)
+    indexBam(bam_out)
 
-        sam$samtools_sort_index(bin, bout)
-    }, bin=bam_in, bout=bam_out)
     bam_out
 }
 
 #' Minimap2 Align to Transcript
 #'
 #' @description
-#'
-#' @details
-#'
+#' Uses minimap2 to align to transcript. 
+#' Uses options "-ax map-ont -p 0.9 --end-bonus 10 -N 3 -t 12 \code{fa_file} \code{fq_in} | samtools view -bS -@ 4 -m 2G -o \code{bam_out}"
 #' 
 #' @param mm2_prog_path Absolute path to the directory containing minimap2
 #' @param fa_file Input fasta file used as a reference database
