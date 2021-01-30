@@ -3,7 +3,7 @@
 #' @description
 #' Converts \code{block} to a named list containing the keys "left", "right"
 #' and "junctions".
-#' @details
+#' @details NEEDED
 #'
 #' @param block NEEDED
 #'
@@ -47,12 +47,12 @@ remove_similar_tr <- function(gene_to_transcript, transcript_to_exon, thr=10) {
 
 #' Get Gene Flat
 #'
-#' @description
+#' @description NEEDED
 #'
 #' @param gene_to_transcript NEEDED
 #' @param transcript_to_exon NEEDED
 #'
-#' @return
+#' @return NEEDED
 #' @importFrom reticulate import_from_path
 #' @export
 get_gene_flat <- function(gene_to_transcript, transcript_to_exon) {
@@ -68,15 +68,15 @@ get_gene_flat <- function(gene_to_transcript, transcript_to_exon) {
 
 #' Get Gene Blocks
 #'
-#' @description
+#' @description NEEDED
 #'
-#' @details
+#' @details NEEDED
 #'
 #' @param gene_dict NEEDED
 #' @param chr_to_gene NEEDED
 #' @param gene_to_transcript NEEDED
 #'
-#' @return
+#' @return NEEDED
 #' @importFrom reticulate import_from_path
 #' @export
 get_gene_blocks <- function(gene_dict, chr_to_gene, gene_to_transcript) {

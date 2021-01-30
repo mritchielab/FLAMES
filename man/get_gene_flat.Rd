@@ -12,8 +12,8 @@ get_gene_flat(gene_to_transcript, transcript_to_exon)
 \item{transcript_to_exon}{NEEDED}
 }
 \value{
-
+NEEDED
 }
 \description{
-
+NEEDED
 }

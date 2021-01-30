@@ -42,6 +42,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <R.h>
 #include "ssw.h"
 
 #ifdef __GNUC__
@@ -604,8 +605,9 @@ static cigar* banded_sw (const int8_t* ref,
 			++s2;
 			kroundup32(s2);
 			if (s2 < 0) {
-				fprintf(stderr, "Alignment score and position are not consensus.\n");
-				exit(1);
+				//fprintf(stderr, "Alignment score and position are not consensus.\n");
+				Rprintf("Alignment score and position are not consensus.\n");
+				//Rcpp::stop("Alignment score and position are not consensus.\n");
 			}
 			direction = (int8_t*)realloc(direction, s2 * sizeof(int8_t));
 		}
@@ -694,7 +696,8 @@ static cigar* banded_sw (const int8_t* ref,
 				op = 'D';
 				break;
 			default:
-				fprintf(stderr, "Trace back error: %d.\n", direction_line[temp1 - 1]);
+				//fprintf(stderr, "Trace back error: %d.\n", direction_line[temp1 - 1]);
+				Rprintf("Trace back error: %d.\n", direction_line[temp1-1]);
 				free(direction);
 				free(h_c);
 				free(e_b);
@@ -819,7 +822,8 @@ s_align* ssw_align (const s_profile* prof,
 	r->cigar = 0;
 	r->cigarLen = 0;
 	if (maskLen < 15) {
-		fprintf(stderr, "When maskLen < 15, the function ssw_align doesn't return 2nd best alignment information.\n");
+		Rprintf("When maskLen < 15, the function ssw_align doesn't return 2nd best alignment information\n");
+		//fprintf(stderr, "When maskLen < 15, the function ssw_align doesn't return 2nd best alignment information.\n");
 	}
 
 	// Find the alignment scores and ending positions
@@ -830,7 +834,8 @@ s_align* ssw_align (const s_profile* prof,
 			bests = sw_sse2_word(ref, 0, refLen, readLen, weight_gapO, weight_gapE, prof->profile_word, -1, maskLen);
 			word = 1;
 		} else if (bests[0].score == 255) {
-			fprintf(stderr, "Please set 2 to the score_size parameter of the function ssw_init, otherwise the alignment results will be incorrect.\n");
+			Rprintf("Please set 2 to the score_size parameter of the function ssw_init, otherwise the alignment results will be incorrect.\n");
+			//fprintf(stderr, "Please set 2 to the score_size parameter of the function ssw_init, otherwise the alignment results will be incorrect.\n");
 			free(r);
 			return NULL;
 		}
@@ -838,7 +843,8 @@ s_align* ssw_align (const s_profile* prof,
 		bests = sw_sse2_word(ref, 0, refLen, readLen, weight_gapO, weight_gapE, prof->profile_word, -1, maskLen);
 		word = 1;
 	}else {
-		fprintf(stderr, "Please call the function ssw_init before ssw_align.\n");
+		Rprintf("Please call the function ssw_init before ssw_align.\n");
+		//fprintf(stderr, "Please call the function ssw_init before ssw_align.\n");
 		free(r);
 		return NULL;
 	}

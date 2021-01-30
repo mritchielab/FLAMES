@@ -1,37 +1,46 @@
 ---
 title: "Vignette for FLAMES on Windows"
-output: html_document
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{bulk_long_windows}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
 ```
 
-### Windows FLAMES Bulk Pipeline
+```{r setup, echo=FALSE}
+library(FlamesR)
+```
+
+## Windows FLAMES Bulk Pipeline
 Windows is capable of running the FLAMES pipeline, with only read alignment and realignment requiring access to a MacOS or Linux distribution to complete.
 
-In order to run the FLAMES bulk pipeline on Windows, ensure that the arguments do_genome_align and do_read_realign are set to FALSE.
+In order to run the FLAMES bulk pipeline on Windows, ensure that the arguments do_genome_align and do_read_realign are set to FALSE. This will run the FLAMES pipeline, without the initial read alignment using Minimap2 step, and the later read realignment using Minimap2 step.
 ```{r eval=FALSE}
 bulk_long_pipeline <- function(..., do_genome_align=FALSE, do_read_realign=FALSE) {
 ```
 
-Alternatively, the FLAMES pipeline can be manually executed using exported functions from the FLAMES package, and minimap2 alignment can be performed externally to complete the read alignment and realignment processes.
+Alternatively, the FLAMES pipeline can be manually executed using exported functions from the FLAMES package, and minimap2 alignment and realignmentcan be performed externally to complete the full pipeline.
 
-This process is outlined below.
+This process for manual execution with external alignment is outlined below.
 
 ***
 ## Manual execution of FLAMES pipeline
 
-```{r eval=FALSE, echo=FALSE} 
-#THESE NEED TO BE PART OF THE SCRIPT THAT RUNS?????????? Should this vignette be run to build?
-```
+
 ### Environment setup
 Begin by storing the variables `annot`, `fastq`, `outdir`, `genome_fa`, `minimap2_dir`, `downsample_ratio`, `config_file` in the current workspace, as you would for calling `bulk_long_pipeline` function. Ensure `outdir` exists, and is writable. More information on the values of these variables can be obtained by executing:
 ```{r eval=FALSE}
 ?FlamesR::bulk_long_pipeline
 ```
 
-After these are stored, all fastq files located in the directory `fastq` can be merged running:
+After these are stored, all fastq files located in the directory `fastq` can be merged by running the below code.
 ```{r eval=FALSE}
 library(FlamesR)
 infq <- paste(outdir, "merged.fastq.gz", sep="/")
@@ -60,9 +69,12 @@ tr_badcov_cnt_csv = paste(outdir, "transcript_count.bad_coverage.csv.gz", sep="/
 ```
 The JSON configuration file should also be loaded into R, using: 
 ```{r eval=FALSE}
-parse_json_config(config_file)
+config <- parse_json_config(config_file)
 ```
-If a FLAMES configuration file doesn't exist, one can be created using user specified values, and loaded into R using the function `FlamesR::create_config()`. 
+If a FLAMES configuration file doesn't exist, one can be created using user specified values, and loaded into R using the function `FlamesR::create_config()`. For more information on the contents of the FLAMES JSON configuration file, and for the input parameters to `create_config()`, run `?FlamesR::create_config()`.
+
+An example of the default FLAMES config file can be found at `Flames/examples/SIRV/data/SIRV_config.json`.
+
 
 ### FLAMES Execution
 
@@ -75,14 +87,16 @@ run this is provided below. After this is executed and resulting data transfered
 tmp_bed <- paste(outdir, "tmp.splice_anno.bed12", sep=.Platform$file.sep)
 tmp_bam <- paste(outdir, "tmp.align.bam", sep=.Platform$file.sep)
 
+# if config$use_junctions is TRUE
 gff3_to_bed12(minimap2_dir, annot, tmp_bed)
 
 minimap2_align(minimap2_dir, genome_fa, infq, tmp_bam,
     no_flank=config$alignment_parameters$no_flank, bed12_junc=if (config$alignment_parameters$use_junctions) tmp_bed else NULL)
 samtools_sort_index(tmp_bam, genome_bam)
 file.remove(tmp_bam)
-  # if options: use_junctions
-  file.remove(tmp_bed)
+
+# if config$use_junctions is TRUE
+file.remove(tmp_bed)
 ```
 
 

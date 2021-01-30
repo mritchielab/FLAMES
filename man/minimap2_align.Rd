@@ -30,8 +30,6 @@ minimap2_align(
 file path to the given output BAM file, \code{bam_out}
 }
 \description{
-Uses minimap2 to align sequences agains a reference databse.
-}
-\details{
-NEEDED. What does minimap2 do, and why is it used in FLAMES?
+Uses minimap2 to align sequences agains a reference databse. 
+Uses options "-ax splice -t 12 -k14 --secondary=no \code{fa_file} \code{fq_in} | samtools view -bS -@ 4 -m 2G -o \code{bam_out}"
 }

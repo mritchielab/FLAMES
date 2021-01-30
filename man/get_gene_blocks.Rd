@@ -14,11 +14,11 @@ get_gene_blocks(gene_dict, chr_to_gene, gene_to_transcript)
 \item{gene_to_transcript}{NEEDED}
 }
 \value{
-
+NEEDED
 }
 \description{
-
+NEEDED
 }
 \details{
-
+NEEDED
 }

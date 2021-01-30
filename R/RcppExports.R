@@ -4,17 +4,17 @@
 #'
 #' Match Cell Barcodes
 #'
-#' @description Match cell barcodes in the given fastq directory with the reference csv, \code{ref_csv}. Matches are returned 
+#' @description Match cell barcodes in the given fastq directory with the reference csv, \code{ref_csv}. Matches are returned
 #' in the output file \code{out_fastq}
 #'
-#' @param fast_dir directory containing fastq files to match
+#' @param fastq_dir directory containing fastq files to match
 #' @param stats_file ?
 #' @param out_fastq output filename for matched barcodes
-#' @param ref_csv
+#' @param ref_csv ?
 #' @param MAX_DIST int; maximum edit distance
 #' @param UMI_LEN int; length of UMI sequences
 #' @useDynLib FlamesR, .registration=TRUE
 match_cell_barcode <- function(fastq_dir, stats_file, out_fastq, ref_csv, MAX_DIST, UMI_LEN = 10L) {
-    .Call('_FlamesR_match_cell_barcode', PACKAGE = 'FlamesR', fastq_dir, stats_file, out_fastq, ref_csv, MAX_DIST, UMI_LEN)
+    invisible(.Call(`_FlamesR_match_cell_barcode`, fastq_dir, stats_file, out_fastq, ref_csv, MAX_DIST, UMI_LEN))
 }
 

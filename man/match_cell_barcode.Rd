@@ -14,17 +14,19 @@ match_cell_barcode(
 )
 }
 \arguments{
+\item{fastq_dir}{directory containing fastq files to match}
+
 \item{stats_file}{?}
 
 \item{out_fastq}{output filename for matched barcodes}
 
+\item{ref_csv}{?}
+
 \item{MAX_DIST}{int; maximum edit distance}
 
 \item{UMI_LEN}{int; length of UMI sequences}
-
-\item{fast_dir}{directory containing fastq files to match}
 }
 \description{
-Match cell barcodes in the given fastq directory with the reference csv, \code{ref_csv}. Matches are returned 
+Match cell barcodes in the given fastq directory with the reference csv, \code{ref_csv}. Matches are returned
 in the output file \code{out_fastq}
 }

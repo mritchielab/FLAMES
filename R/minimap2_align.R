@@ -60,7 +60,7 @@ minimap2_align <- function(minimap2_prog_path=NULL, fa_file, fq_in, bam_out, no_
 #' @return the path to the output file, given as \code{bam_out}
 #' @export
 samtools_sort_index <- function(bam_in, bam_out) {
-    sortBam(bam_in, bam_out)
+    sortBam(bam_in, gsub("\\.bam", "", bam_out))
     indexBam(bam_out)
 
     bam_out

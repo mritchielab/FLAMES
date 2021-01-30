@@ -7,7 +7,15 @@
 #'
 #' @param bc_file file containing the pseudo barcode annotations generated
 #' from bulk_long_pipeline. If given, it is used for quantification.
-generic_long_pipeline <- function(annot, fastq, in_bam, outdir, genome_fa,
+#' @details At this stage, the issue is that there should be two ways to use this pipeline,
+#' either with fastq (a merging of multible files) given, which makes alignment
+#' happen, or with in_bam specified, which doesn't require alignment. However,
+#' if in_bam is given, fastq is still required as otherwise parts of the pipeline
+#' fall apart. What should be done? ask matt. At this stage, leave it as is,
+#' and worry about it later once we can talk about how the pipeline would work
+#' without access to fastq.
+#generic_long_pipeline <- function(annot, fastq, in_bam, outdir, genome_fa
+generic_long_pipeline <- function(annot, fastq, outdir, genome_fa,
                 minimap2_dir, downsample_ratio, config_file,
                 do_genome_align, do_isoform_id,
                 do_read_realign, do_transcript_quanti,
@@ -18,7 +26,7 @@ generic_long_pipeline <- function(annot, fastq, in_bam, outdir, genome_fa,
                 use_junctions, no_flank,
                 use_annotation, min_tr_coverage, min_read_coverage,
                 bc_file=NULL) {
-    
+
     if (!dir.exists(outdir)) {
         cat("Output directory does not exists: one is being created\n")
         dir.create(outdir)
@@ -42,16 +50,16 @@ generic_long_pipeline <- function(annot, fastq, in_bam, outdir, genome_fa,
     if (downsample_ratio > 1 || downsample_ratio <= 0) {
         stop("downsample_ratio should be between 0 and 1")
     }
-    if (!file.exists(infq) || !file.exists(annot) || !file.exists(genome_fa)) {
-        stop(paste0("Make sure all files exists: ", infq, ", ", annot, ", ", genome_fa))
+    if (!file.exists(fastq) || !file.exists(annot) || !file.exists(genome_fa)) {
+        stop(paste0("Make sure all files exists: ", fastq, ", ", annot, ", ", genome_fa))
     }
-    if (is.null(in_bam)) {
-        in_bam = ""
-    } else {
-        if (!file.exists(in_bam)) {
-            stop("Make sure input in_bam file exists")
-        }
-    }
+    #if (is.null(in_bam)) {
+    #    in_bam = ""
+    #} else {
+    #    if (!file.exists(in_bam)) {
+    #        stop("Make sure input in_bam file exists")
+    #    }
+    #}
     if (is.null(minimap2_dir)) minimap2_dir = ""
 
     # setup of internal arguments which hold output files and intermediate files
@@ -73,15 +81,17 @@ generic_long_pipeline <- function(annot, fastq, in_bam, outdir, genome_fa,
     print_config(config)
     cat("\tgene annotation:", annot, "\n")
     cat("\tgenome fasta:", genome_fa, "\n")
-    if (in_bam != "") {
-        cat("\tinput bam:", in_bam, "\n")
-        genome_bam = in_bam
-    } else cat("\tinput fastq:", infq, "\n")
+    #if (in_bam != "") {
+    #    cat("\tinput bam:", in_bam, "\n")
+    #    genome_bam = in_bam
+    #} else cat("\tinput fastq:", fastq, "\n")
+    cat("\tinput fastq:", fastq, "\n")
     cat("\toutput directory:", outdir, "\n")
     cat("\tdirectory containing minimap2:", minimap2_dir, "\n")
 
     # align reads to genome
-    if (in_bam=="" && config$pipeline_parameters$do_genome_alignment) {
+    #if (in_bam=="" && config$pipeline_parameters$do_genome_alignment) {
+    if (config$pipeline_parameters$do_genome_alignment) {
         cat("#### Aligning reads to genome using minimap2\n")
 
         tmp_bed <- paste(outdir, "tmp.splice_anno.bed12", sep=.Platform$file.sep)
@@ -90,7 +100,7 @@ generic_long_pipeline <- function(annot, fastq, in_bam, outdir, genome_fa,
         if (config$alignment_parameters$use_junctions) {
             gff3_to_bed12(minimap2_dir, annot, tmp_bed)
         }
-        minimap2_align(minimap2_dir, genome_fa, infq, tmp_bam,
+        minimap2_align(minimap2_dir, genome_fa, fastq, tmp_bam,
             no_flank=config$alignment_parameters$no_flank, bed12_junc = if (config$alignment_parameters$use_junctions) tmp_bed else NULL)
         samtools_sort_index(tmp_bam, genome_bam)
         file.remove(tmp_bam)
@@ -137,10 +147,11 @@ generic_long_pipeline <- function(annot, fastq, in_bam, outdir, genome_fa,
             gene_to_transcript_i, transcript_to_exon_i, ref_dict=gff3_parse_result)
 
     # realign to transcript
+    #if (in_bam=="" && do_read_realign) {
     if (do_read_realign) {
         cat("#### Realign to transcript using minimap2\n")
         tmp_bam <- paste(outdir, "tmp.align.bam", sep=.Platform$file.sep)
-        minimap2_tr_align(minimap2_dir, transcript_fa, infq, tmp_bam)
+        minimap2_tr_align(minimap2_dir, transcript_fa, fastq, tmp_bam)
         samtools_sort_index(tmp_bam, realign_bam)
         file.remove(tmp_bam)
     } else {

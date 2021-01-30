@@ -17,5 +17,5 @@ Converts \code{block} to a named list containing the keys "left", "right"
 and "junctions".
 }
 \details{
-
+NEEDED
 }
