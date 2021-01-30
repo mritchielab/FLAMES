@@ -2,3 +2,5 @@
 .Rhistory
 .RData
 .ds_store
+.Rproj
+inst/doc

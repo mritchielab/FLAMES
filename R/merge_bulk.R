@@ -7,6 +7,7 @@
 #' @param anno_csv a path for the output csv, containing the fake barcodes created
 #' @param out_fastq A file which will be created to store all fastq entries
 #' @importFrom reticulate import_from_path
+#' @export
 merge_bulk_fastq <- function(fastq_dir, anno_csv, out_fastq) {
     callBasilisk(flames_env, function(fq_dir, a_csv, out_fq) {
         python_path <- system.file("python", package="FlamesR")

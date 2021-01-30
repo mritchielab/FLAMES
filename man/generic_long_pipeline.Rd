@@ -7,7 +7,6 @@
 generic_long_pipeline(
   annot,
   fastq,
-  in_bam,
   outdir,
   genome_fa,
   minimap2_dir,
@@ -42,9 +41,6 @@ generic_long_pipeline(
 
 \item{fastq}{the directory containing fastq files, each containing data from one sample}
 
-\item{in_bam}{aligned bam file (sorted and indexed). If supplied, this overwrites
-`fastq_dir` and skips the first alignment step}
-
 \item{outdir}{directory to store all output files.}
 
 \item{genome_fa}{genome fasta file.}
@@ -54,16 +50,16 @@ k8 and paftools.js are used to convert gff3 to bed12.}
 
 \item{downsample_ratio}{downsampling ratio if performing downsampling analysis.}
 
-\item{config_file}{JSON configuration file. If specified, `config_file` overrides
+\item{config_file}{JSON configuration file. If specified, \code{config_file} overrides
 all configuration parameters}
 
-\item{do_genome_align}{Boolean. Specifies whether to run the genome alignment step. `TRUE` is recommended}
+\item{do_genome_align}{Boolean. Specifies whether to run the genome alignment step. \code{TRUE} is recommended}
 
-\item{do_isoform_id}{Boolean. Specifies whether to run the isoform identification step. `TRUE` is recommended}
+\item{do_isoform_id}{Boolean. Specifies whether to run the isoform identification step. \code{TRUE} is recommended}
 
-\item{do_read_realign}{Boolean. Specifies whether to run the read realignment step. `TRUE` is recommended}
+\item{do_read_realign}{Boolean. Specifies whether to run the read realignment step. \code{TRUE} is recommended}
 
-\item{do_transcript_quanti}{Boolean. Specifies whether to run the transcript quantification step. `TRUE` is recommended}
+\item{do_transcript_quanti}{Boolean. Specifies whether to run the transcript quantification step. \code{TRUE} is recommended}
 
 \item{gen_raw_isoform}{Boolean.}
 
@@ -107,4 +103,13 @@ from bulk_long_pipeline. If given, it is used for quantification.}
 \description{
 Generic implementation of the flames pipeline. Used for both bulk reads and
 single cell reads.
+}
+\details{
+At this stage, the issue is that there should be two ways to use this pipeline,
+either with fastq (a merging of multible files) given, which makes alignment
+happen, or with in_bam specified, which doesn't require alignment. However,
+if in_bam is given, fastq is still required as otherwise parts of the pipeline
+fall apart. What should be done? ask matt. At this stage, leave it as is,
+and worry about it later once we can talk about how the pipeline would work
+without access to fastq.
 }

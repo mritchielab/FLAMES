@@ -31,13 +31,13 @@ parse_realigned_bam <- function(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage
 
 #' Write Transcript to CSV file
 #'
-#' @description
+#' @description NEEDED
 #'
 #' @param bc_tr_count_dict NEEDED
 #' @param transcript_dict NEEDED
 #' @param csv_f NEEDED
 #' @param transcript_dict_ref NEEDED
-#' @param has_UMI
+#' @param has_UMI NEEDED
 #'
 #' @return NEEDED
 #' @importFrom reticulate import_from_path

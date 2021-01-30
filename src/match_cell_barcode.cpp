@@ -12,6 +12,7 @@
 #include <zlib.h>
 #include <cassert>
 #include <Rcpp.h>
+#include <R.h>
 #include "edit_dist.h"
 #include "ssw_cpp.h"
 #include "kseq.h"
@@ -77,26 +78,26 @@ int find_polyT(std::string& seq, int start_pos)
 
 void fq_gz_write(gzFile out_file, std::string name, std::string qual, std::string seq) {
     std::stringstream stream;
-    stream << "@" << name << "\n" << 
-        seq << "\n" << 
-        "+" << "\n" << 
+    stream << "@" << name << "\n" <<
+        seq << "\n" <<
+        "+" << "\n" <<
         qual << "\n";
     gzputs(out_file, stream.str().c_str());
 }
 
 void fq_gz_write(gzFile out_file, kseq_t *seq) {
     std::stringstream stream;
-    stream << "@" << seq->name.s << "\n" << 
-        (seq->seq.s) << "\n" << 
-        "+" << "\n" << 
+    stream << "@" << seq->name.s << "\n" <<
+        (seq->seq.s) << "\n" <<
+        "+" << "\n" <<
         (seq->qual.s) << "\n";
     gzputs(out_file, stream.str().c_str());
 }
 
 char complement(char n)
-{   
+{
     switch(n)
-    {   
+    {
     case 'A':
         return 'T';
     case 'T':
@@ -107,7 +108,7 @@ char complement(char n)
         return 'G';
     case 'N':
         return 'N';
-    }   
+    }
     assert(false);
     return ' ';
 }
@@ -152,7 +153,8 @@ int getdir (const char dir[], std::vector<std::string> &files)
     struct dirent *dirp;
     std::string f_name;
     if((dp  = opendir(dir)) == NULL) {
-        std::cout << "Error(" << errno << ") opening " << dir << std::endl;
+        Rprintf("Error(%d) opening %s\n", errno, dir);
+        //std::cout << "Error(" << errno << ") opening " << dir << std::endl;
         return errno;
     }
 
@@ -215,24 +217,27 @@ void get_bc_anno(std::string fn, std::unordered_map<std::string, std::string>& b
     }
     if (barcode_list.size()<5)
     {
-      std::cout << "Number of cell barcode smaller than 5."<< std::endl;
+      Rprintf("Number of cell barcode smaller than 5.\n");
+      //std::cout << "Number of cell barcode smaller than 5."<< std::endl;
     }else{
-      std::cout << "First 5 cell barcode:"<< std::endl;
+      Rprintf("First 5 cell barcode:\n");
+      //std::cout << "First 5 cell barcode:"<< std::endl;
       for (int i = 0; i < 5; i++)
       {
-        std::cout << "\t" << barcode_list[i]<< std::endl;
+        Rprintf("\t%s\n", barcode_list[i].c_str());
+        //std::cout << "\t" << barcode_list[i]<< std::endl;
       }
     }
-    
+
 }
 
-// Driver function to sort the vector elements 
-// by second element of pairs 
-bool sortbysec_dec(const std::pair<int,int> &a, 
-              const std::pair<int,int> &b) 
-{ 
-    return (a.second > b.second); 
-} 
+// Driver function to sort the vector elements
+// by second element of pairs
+bool sortbysec_dec(const std::pair<int,int> &a,
+              const std::pair<int,int> &b)
+{
+    return (a.second > b.second);
+}
 
 // insensitive to running time.
 std::pair<int,int> get_bc_range(std::string fqn, int max_reads, const std::string lf_seq, int MAX_DIST)
@@ -249,7 +254,8 @@ std::pair<int,int> get_bc_range(std::string fqn, int max_reads, const std::strin
   double total_cnt = 0;
   double found_cnt = 0;
   double found_cnt_rev = 0;
-  std::cout << fqn << std::endl;
+  Rprintf("%s\n", fqn.c_str());
+  //std::cout << fqn << std::endl;
   gzFile fn = gzopen(fqn.c_str(), "r");
   kseq_t *seq1;
   seq1 =  kseq_init(fn);
@@ -305,16 +311,18 @@ std::pair<int,int> get_bc_range(std::string fqn, int max_reads, const std::strin
   {
     vect_rev.push_back(std::make_pair(it.first, it.second));
   }
-  sort(vect.begin(), vect.end(), sortbysec_dec); 
+  sort(vect.begin(), vect.end(), sortbysec_dec);
   sort(vect_rev.begin(), vect_rev.end(), sortbysec_dec);
 
   for (int ix=0; ix<20; ix++)
   {
-    std::cout << "forward flanking end: " << vect[ix].first << "\t"<<vect[ix].second << std::endl;
+    Rprintf("forward flanking end: %d\t%d\n", vect[ix].first, vect[ix].second);
+    //std::cout << "forward flanking end: " << vect[ix].first << "\t"<<vect[ix].second << std::endl;
   }
   for (int ix=0; ix<20; ix++)
   {
-    std::cout << "reverse comp flanking end: " << vect_rev[ix].first << "\t"<<vect_rev[ix].second << std::endl;
+    Rprintf("reverse comp flanking end: %d\t%d\n", vect_rev[ix].first, vect_rev[ix].second);
+    //std::cout << "reverse comp flanking end: " << vect_rev[ix].first << "\t"<<vect_rev[ix].second << std::endl;
   }
 
   int peak_bc_start = -1;
@@ -329,9 +337,12 @@ std::pair<int,int> get_bc_range(std::string fqn, int max_reads, const std::strin
     peak_bc_rev_start = int (vect_rev[0].first+vect_rev[1].first+vect_rev[2].first)/3;
   }
 
-  std::cout << "###total read: " << total_cnt <<std::endl;
-  std::cout << "###found flanking region: " << found_cnt <<std::endl;
-  std::cout << "###found flanking region(rev): " << found_cnt_rev <<std::endl;
+  Rprintf("###total read: %f\n", total_cnt);
+  Rprintf("###found flanking region: %f\n", found_cnt);
+  Rprintf("###found flanking region(rev): %f\n", found_cnt_rev);
+  //std::cout << "###total read: " << total_cnt <<std::endl;
+  //std::cout << "###found flanking region: " << found_cnt <<std::endl;
+  //std::cout << "###found flanking region(rev): " << found_cnt_rev <<std::endl;
 
   std::pair <int,int> res;
   res = std::make_pair(peak_bc_start,peak_bc_rev_start);
@@ -352,7 +363,7 @@ int get_clo_idx(const char* seq_ptr, int64_t *al, std::vector<int64_t *>& bc_lis
     }
   for (i=0; i<bc_list_ptr.size(); i++)
   {
-    dis = scutil::edit_distance1(al, 16, bc_list_ptr[i], 16); 
+    dis = scutil::edit_distance1(al, 16, bc_list_ptr[i], 16);
     if (dis<=max_dist)
     {
       if (dis < sml1_dis)
@@ -387,7 +398,7 @@ int get_hm_idx(std::string& q_seq, std::vector<std::string>& barcode_list, int m
   int sml2_dis = 999;
   for (i=0; i<barcode_list.size(); i++)
   {
-    dis = scutil::hamming_distance(q_seq, barcode_list[i]); 
+    dis = scutil::hamming_distance(q_seq, barcode_list[i]);
     if (dis<=max_dist)
     {
       if (dis < sml1_dis)
@@ -417,18 +428,18 @@ int get_hm_idx(std::string& q_seq, std::vector<std::string>& barcode_list, int m
 //'
 //' Match Cell Barcodes
 //'
-//' @description Match cell barcodes in the given fastq directory with the reference csv, \code{ref_csv}. Matches are returned 
+//' @description Match cell barcodes in the given fastq directory with the reference csv, \code{ref_csv}. Matches are returned
 //' in the output file \code{out_fastq}
 //'
-//' @param fast_dir directory containing fastq files to match
+//' @param fastq_dir directory containing fastq files to match
 //' @param stats_file ?
 //' @param out_fastq output filename for matched barcodes
-//' @param ref_csv
+//' @param ref_csv ?
 //' @param MAX_DIST int; maximum edit distance
 //' @param UMI_LEN int; length of UMI sequences
 //' @useDynLib FlamesR, .registration=TRUE
 // [[Rcpp::export()]]
-int match_cell_barcode(String fastq_dir, String stats_file, String out_fastq, String ref_csv, int MAX_DIST, int UMI_LEN=10)
+void match_cell_barcode(String fastq_dir, String stats_file, String out_fastq, String ref_csv, int MAX_DIST, int UMI_LEN=10)
 {
   // "usage: <1.fastq folder> <2.output cell barcode statistics file> <3.fastq output reads that matched cell barcode> <4.barcode reference from short read 10X data> <5.max edit distance> [6. UMI length (default: 10)]"
 
@@ -486,12 +497,14 @@ int match_cell_barcode(String fastq_dir, String stats_file, String out_fastq, St
       seed_file = it;
     }
   }
-  
+
   std::pair <int,int> bc_range = get_bc_range(join_path(std::string(fastq_dir.get_cstring()),seed_file).c_str(), 30000, ref_left, MAX_DIST);
-  std::cout << bc_range.first <<" @@@@@@ " <<  bc_range.second << std::endl;
+  //std::cout << bc_range.first <<" @@@@@@ " <<  bc_range.second << std::endl;
+  Rprintf("%d @@@@@@ %d\n", bc_range.first, bc_range.second);
   for (auto& it: files)
   {
-    std::cout << it << std::endl;
+    Rprintf("%s\n", it.c_str());
+    //std::cout << it << std::endl;
     //get_bc_range(join_path(std::string(fastq_dir.get_cstring(),it), 100000, ref_left);
     //break;
     gzFile fn = gzopen(join_path(std::string(fastq_dir.get_cstring()),it).c_str(), "r");
@@ -503,7 +516,8 @@ int match_cell_barcode(String fastq_dir, String stats_file, String out_fastq, St
       total_cnt ++;
       if (total_cnt % 500000 == 0)
       {
-        std::cout << total_cnt << " :: " << do_match_hm << " :: " << do_match << std::endl;
+        Rprintf("%d :: %d :: %d\n", total_cnt, do_match_hm, do_match);
+        //std::cout << total_cnt << " :: " << do_match_hm << " :: " << do_match << std::endl;
       }
       found_match = false;
       seq = std::string(seq1->seq.s);
@@ -587,12 +601,12 @@ int match_cell_barcode(String fastq_dir, String stats_file, String out_fastq, St
         else
         {
           rc(seq);
-          reverse(qual.begin(), qual.end());  
+          reverse(qual.begin(), qual.end());
 
 
       if (bc_range.second > -1) // look at reverse strand
       {
-        
+
         for (bc_idx=std::max(bc_range.second-5, 0); bc_idx< std::min(bc_range.second+5, (int) seq.size()-BC_LEN);bc_idx++)
         {
           bc_string = seq.substr(bc_idx, BC_LEN);
@@ -634,7 +648,7 @@ int match_cell_barcode(String fastq_dir, String stats_file, String out_fastq, St
 
           if (!found_match)
           {
-            aligner.Align(seq.c_str(), ref_left.c_str(), ref_left.size(), filter, &alignment, 15); 
+            aligner.Align(seq.c_str(), ref_left.c_str(), ref_left.size(), filter, &alignment, 15);
             if (alignment.mismatches < MAX_DIST+1 & alignment.query_end+BC_LEN+UMI_LEN+50<seq.size())
             {
             found_cnt ++;
@@ -660,7 +674,7 @@ int match_cell_barcode(String fastq_dir, String stats_file, String out_fastq, St
                   }
             }
           }
-   
+
         }
         if (found_match)
         {
@@ -697,17 +711,24 @@ int match_cell_barcode(String fastq_dir, String stats_file, String out_fastq, St
   }
   ofile.close();
   gzclose(o_stream_gz);
-  std::cout << "###polyT length stat: " <<std::endl;
+  Rprintf("###polyT length stat: \n");
+  //std::cout << "###polyT length stat: " <<std::endl;
   for (auto& it: polyT_pos_stat)
   {
-    std::cout << "\t" << it.first << "\t" << it.second <<std::endl;
+    Rprintf("\t%d\t%d\n", it.first, it.second);
+    //std::cout << "\t" << it.first << "\t" << it.second <<std::endl;
   }
-  
-  std::cout << "###total read: " << total_cnt <<std::endl;
-  std::cout << "###barcode hm match: " << do_match_hm <<std::endl;
-  std::cout << "###barcode fuzzy match: " << do_match <<std::endl;
-  std::cout << "###barcode not match: " << not_match <<std::endl;
-  std::cout << "###too short: " << too_short <<std::endl;
+
+  Rprintf("###total read: %d\n", total_cnt);
+  Rprintf("###barcode hm match: %d\n", do_match_hm);
+  Rprintf("###barcode fuzzy match: %d\n", do_match);
+  Rprintf("###barcode not match: %d\n", not_match);
+  Rprintf("###too short: %d\n", too_short);
+  //std::cout << "###total read: " << total_cnt <<std::endl;
+  //std::cout << "###barcode hm match: " << do_match_hm <<std::endl;
+  //std::cout << "###barcode fuzzy match: " << do_match <<std::endl;
+  //std::cout << "###barcode not match: " << not_match <<std::endl;
+  //std::cout << "###too short: " << too_short <<std::endl;
 }
 
 

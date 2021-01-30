@@ -15,6 +15,6 @@ A named R list of the parameters in \code{json_file}. Subsections are: \code{pip
      \code{transcript_counting}.
 }
 \description{
-Convert a json configuration file into a named R list, grouped into sub lists according to their 
+Convert a json configuration file into a named R list, grouped into sub lists according to their
      usage in the Flames pipeline.
 }

@@ -1,8 +1,8 @@
 #' Parse Json Configuration File
 #'
-#' @description Convert a json configuration file into a named R list, grouped into sub lists according to their 
+#' @description Convert a json configuration file into a named R list, grouped into sub lists according to their
 #'      usage in the Flames pipeline.
-#' 
+#'
 #' @param json_file The file name to convert into an R list.
 #'
 #' @return A named R list of the parameters in \code{json_file}. Subsections are: \code{pipeline_parameters},
@@ -26,7 +26,7 @@ parse_json_config <- function(json_file) {
 #' Print Configuration File
 #'
 #' @details Print the configuration file, represented as a named list used for the Flames pipeline.
-#' 
+#'
 #' @param config List; the configuration list to print.
 #'
 #' @importFrom reticulate import_from_path
@@ -44,7 +44,7 @@ print_config <- function(config) {
 #' Write Configuration Dictionary to File
 #'
 #' @details Print the configuration file, represented as a named list used for the Flames pipeline.
-#' 
+#'
 #' @param config List; the configuration list to print.
 #' @param config_file the file to output \code{config} to. Should be .json extension
 #' @importFrom reticulate import_from_path
@@ -61,31 +61,35 @@ write_config <- function(config, config_file) {
 
 #' Write Configuration Dictionary to File
 #'
-#' @details Print the configuration file, represented as a named list used for the Flames pipeline.
-#' 
-#' @param do_genome_align
-#' @param do_isoform_id
-#' @param do_read_realign
-#' @param do_transcript_quanti
-#' @param gen_raw_isoform
-#' @param has_UMI
-#' @param MAX_DIST
-#' @param MAX_TS_DIST
-#' @param MAX_SPLICE_MATCH_DIST
-#' @param min_fl_exon_len
-#' @param Max_site_per_splice
-#' @param Min_sup_cnt
-#' @param Min_cnt_pct
-#' @param Min_sup_pct
-#' @param strand_specific
-#' @param remove_incomp_reads
-#' @param use_junctions
-#' @param no_flank
-#' @param use_annotation
-#' @param min_tr_coverage
-#' @param min_read_coverage
+#' @details Create a list object containing the arguments supplied in a format usable for the FLAMES pipeline. 
+#' Also writes the object to a JSON file, which is located with the prefix 'config_' in the supplied \code{outdir}.
+#'
+#' @param outdir the destination directory for the configuratio nfile
+#' @param do_genome_align NEEDED
+#' @param do_isoform_id NEEDED
+#' @param do_read_realign NEEDED
+#' @param do_transcript_quanti NEEDED
+#' @param gen_raw_isoform NEEDED
+#' @param has_UMI NEEDED
+#' @param MAX_DIST NEEDED
+#' @param MAX_TS_DIST NEEDED
+#' @param MAX_SPLICE_MATCH_DIST NEEDED
+#' @param min_fl_exon_len NEEDED
+#' @param Max_site_per_splice NEEDED
+#' @param Min_sup_cnt NEEDED
+#' @param Min_cnt_pct NEEDED
+#' @param Min_sup_pct NEEDED
+#' @param strand_specific NEEDED
+#' @param remove_incomp_reads NEEDED
+#' @param use_junctions NEEDED
+#' @param no_flank NEEDED
+#' @param use_annotation NEEDED
+#' @param min_tr_coverage NEEDED
+#' @param min_read_coverage NEEDED
+#'
+#' @return the created R list object, which represents the configuration file created by this function.
 #' @importFrom reticulate import_from_path
-create_config <- function(do_genome_align, do_isoform_id,
+create_config <- function(outdir, do_genome_align, do_isoform_id,
                             do_read_realign, do_transcript_quanti,
                             gen_raw_isoform, has_UMI,
                             MAX_DIST, MAX_TS_DIST, MAX_SPLICE_MATCH_DIST,

@@ -21,11 +21,11 @@ wrt_tr_to_csv(
 
 \item{transcript_dict_ref}{NEEDED}
 
-\item{has_UMI}{}
+\item{has_UMI}{NEEDED}
 }
 \value{
 NEEDED
 }
 \description{
-
+NEEDED
 }

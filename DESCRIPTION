@@ -1,14 +1,25 @@
 Package: FlamesR
 Type: Package
-Title: What the Package Does in One 'Title Case' Line
-Version: 1.0
+Title: Full Length Transcriptome Splicing and Mutation Analysis
+Version: 0.99.0
 Date: 2020-12-28
-Author: Your Name
-Maintainer: Your Name <your@email.com>
-Description: One paragraph description of what the package does as one or more full sentences.
-License: GPL (>= 2)
+Authors@R: c(person("Luyi Tian", "Developer", role=c("aut", "cre"),
+                    email="tian.l@wehi.edu.au"),
+             person("Oliver Voogd", "Developer", role=c("com"),
+                    email="voogd.o@wehi.edu.au"),
+             person("Shian Su", "Developer", role=c("aut"),
+                    email="su.s@wehi.edu.au"))
+Description: Semi-supervised isoform detection and annotation from both long read 
+ and single cell data. Flames provides automated pipelines for analysing isoforms 
+ in long read and single cell data, as well as intermediate functions for manual execution.
+License: file LICENSE
 Encoding: UTF-8
 Imports: 
-    Rcpp, basilisk, reticulate
+    basilisk, reticulate, SingleCellExperiment, 
+    SummarizedExperiment, Rsamtools, utils
+Suggests: 
+    knitr,
+    rmarkdown
 LinkingTo: Rcpp
 RoxygenNote: 7.1.1
+VignetteBuilder: knitr

@@ -6,10 +6,9 @@
 using namespace Rcpp;
 
 // match_cell_barcode
-int match_cell_barcode(String fastq_dir, String stats_file, String out_fastq, String ref_csv, int MAX_DIST, int UMI_LEN);
+void match_cell_barcode(String fastq_dir, String stats_file, String out_fastq, String ref_csv, int MAX_DIST, int UMI_LEN);
 RcppExport SEXP _FlamesR_match_cell_barcode(SEXP fastq_dirSEXP, SEXP stats_fileSEXP, SEXP out_fastqSEXP, SEXP ref_csvSEXP, SEXP MAX_DISTSEXP, SEXP UMI_LENSEXP) {
 BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< String >::type fastq_dir(fastq_dirSEXP);
     Rcpp::traits::input_parameter< String >::type stats_file(stats_fileSEXP);
@@ -17,8 +16,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< String >::type ref_csv(ref_csvSEXP);
     Rcpp::traits::input_parameter< int >::type MAX_DIST(MAX_DISTSEXP);
     Rcpp::traits::input_parameter< int >::type UMI_LEN(UMI_LENSEXP);
-    rcpp_result_gen = Rcpp::wrap(match_cell_barcode(fastq_dir, stats_file, out_fastq, ref_csv, MAX_DIST, UMI_LEN));
-    return rcpp_result_gen;
+    match_cell_barcode(fastq_dir, stats_file, out_fastq, ref_csv, MAX_DIST, UMI_LEN);
+    return R_NilValue;
 END_RCPP
 }
 
