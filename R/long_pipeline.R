@@ -134,11 +134,11 @@ generic_long_pipeline <- function(annot, fastq, outdir, genome_fa,
         ## skip finding isoform.
         cat("#### Skip finding isoforms\n")
     }
-
+        ## ISSUE HERE. isoform_gff3 IS REQUIRED FOR THE NEXT STEP, BUT IT IS ONLY CREATED IF DO_ISOFORM_IDENTIFICATION IS TRUE
     # get fasta
     isoform_gff3_parse <- parse_gff_tree(isoform_gff3)
     chr_to_gene_i <- isoform_gff3_parse$chr_to_gene
-    transcript_dict_i <- isoform_gff3_parse$transcript_dict
+    transcript_dict_i <- isoform_gff3_parse$transcript_dict ## this is the only variable required after get_transcript_seq
     gene_to_transcript_i <- isoform_gff3_parse$gene_to_transcript
     transcript_to_exon_i <- isoform_gff3_parse$transcript_to_exon
 

@@ -1,4 +1,3 @@
-# change the name of this env to something more useful
 #' @importFrom basilisk BasiliskEnvironment
 flames_env <- BasiliskEnvironment(envname="full_env",
     pkgname="FlamesR",
@@ -37,24 +36,4 @@ flames_env <- BasiliskEnvironment(envname="full_env",
         "xz==5.2.5", 
         "zlib==1.2.11"),
         channels=c("bioconda", "conda-forge"))
-
-#' @importFrom basilisk BasiliskEnvironment
-#flames_env <- BasiliskEnvironment(envname="flames_env",
-#                                  pkgname="FlamesR",
-#                                  packages=c("python==2.7", "samtools==1.11", "pysam==0.16.0.1", "minimap2==2.17",
-#                                            "numpy==1.16.5", "editdistance==0.5.3", "utils==2.4.0"),
-#                                  channels=c("bioconda", "conda-forge"))
-
-
-
-#' @importFrom basilisk BasiliskEnvironment
-#pysam_env <- BasiliskEnvironment(envname="pysam_env", 
-#                                 pkgname="FlamesR",
-#                                 packages=c("python==2.7", "pysam==0.14", "utils==2.4.0"),
-#                                 channels=c("bioconda"))
-
-
-new_env2 <- BasiliskEnvironment(envname="new_env2",
-                               pkgname="FlamesR",
-                               packages=c("python==2.7", "pysam==0.15.4", "samtools==1.7"),
-                               channels=c("bioconda", "conda-forge"))
+        

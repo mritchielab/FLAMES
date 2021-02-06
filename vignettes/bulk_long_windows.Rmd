@@ -14,11 +14,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup, echo=FALSE}
-library(FlamesR)
-```
-
-## Windows FLAMES Bulk Pipeline
+# Windows FLAMES Bulk Data Pipeline
 Windows is capable of running the FLAMES pipeline, with only read alignment and realignment requiring access to a MacOS or Linux distribution to complete.
 
 In order to run the FLAMES bulk pipeline on Windows, ensure that the arguments do_genome_align and do_read_realign are set to FALSE. This will run the FLAMES pipeline, without the initial read alignment using Minimap2 step, and the later read realignment using Minimap2 step.
@@ -30,28 +26,40 @@ Alternatively, the FLAMES pipeline can be manually executed using exported funct
 
 This process for manual execution with external alignment is outlined below.
 
-***
 ## Manual execution of FLAMES pipeline
 
 
 ### Environment setup
+```{r eval=TRUE, echo=FALSE}
+# setup of environment variables
+annot <- system.file("data/SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf", package="FlamesR")
+outdir <- paste(getwd(), "FlamesWindowsOutDir", sep="/")
+fastq_dir <- system.file("data/fastq", package="FlamesR")
+genome_fa <- system.file("data/SIRV_isoforms_multi-fasta_170612a.fasta", package="FlamesR")
+config_file <- system.file("data/SIRV_config.json", package="FlamesR")
+downsample_ratio <- 1
+
+if (!dir.exists(outdir)) {
+    dir.create(outdir)
+}
+```
 Begin by storing the variables `annot`, `fastq`, `outdir`, `genome_fa`, `minimap2_dir`, `downsample_ratio`, `config_file` in the current workspace, as you would for calling `bulk_long_pipeline` function. Ensure `outdir` exists, and is writable. More information on the values of these variables can be obtained by executing:
 ```{r eval=FALSE}
 ?FlamesR::bulk_long_pipeline
 ```
 
 After these are stored, all fastq files located in the directory `fastq` can be merged by running the below code.
-```{r eval=FALSE}
+```{r eval=TRUE}
 library(FlamesR)
 infq <- paste(outdir, "merged.fastq.gz", sep="/")
 bc_file <- paste(outdir, "pseudo_barcode_annotation.csv", sep="/")
 
 # run the merge_bulk_fastq function as preprocessing
-merge_bulk_fastq(fastq, bc_file, infq)
+merge_bulk_fastq(fastq_dir, bc_file, infq)
 ```
 
 A few intermediate files and variables need to be created before the pipeline can proceed:
-```{r eval=FALSE}
+```{r eval=TRUE}
 # setup of internal arguments which hold output files and intermediate files
 isoform_gff3 = paste(outdir, "isoform_annotated.gff3", sep="/")
 isoform_gff3_f = paste(outdir, "isoform_annotated.filtered.gff3", sep="/")
@@ -68,49 +76,63 @@ tr_cnt_csv = paste(outdir, "transcript_count.csv.gz", sep="/")
 tr_badcov_cnt_csv = paste(outdir, "transcript_count.bad_coverage.csv.gz", sep="/")
 ```
 The JSON configuration file should also be loaded into R, using: 
-```{r eval=FALSE}
+```{r eval=TRUE}
 config <- parse_json_config(config_file)
 ```
 If a FLAMES configuration file doesn't exist, one can be created using user specified values, and loaded into R using the function `FlamesR::create_config()`. For more information on the contents of the FLAMES JSON configuration file, and for the input parameters to `create_config()`, run `?FlamesR::create_config()`.
 
-An example of the default FLAMES config file can be found at `Flames/examples/SIRV/data/SIRV_config.json`.
+An example of the default FLAMES config file can be found at `r system.file("data/SIRV_config.json", package="FlamesR")`.
 
 
 ### FLAMES Execution
 
 
-#### Genome Alignment
-If genome alignment is required, this should be performed on a system with access to minimap2. The code required to
-run this is provided below. After this is executed and resulting data transfered to this workspace, the Windows FLAMES bulk pipeline can proceed.
+#### Genome Alignment - minimap2
+If genome alignment is required, this should be performed on a system with access to minimap2. The code required to run this is provided below. After this is executed and resulting data transfered to this workspace, the Windows FLAMES bulk pipeline can proceed. All required variables for this section should be transfered to the system with minimap2, the code executed and finally the resulting file `genome_bam` and the index file `genome_bam.bai` (the name of each of these will differ based on the variable `genome_bam`) returned to the original system and R workspace.
 ```{r eval=FALSE}
 # below code must be run with access to minimap2
 tmp_bed <- paste(outdir, "tmp.splice_anno.bed12", sep=.Platform$file.sep)
 tmp_bam <- paste(outdir, "tmp.align.bam", sep=.Platform$file.sep)
-
+```
+The next line, which converts the annotation file to a bed12 file should only be run if the config$use_junctions flag is `TRUE`. The example data requires config$use_junctions to be `TRUE`.
+```{r eval=FALSE}
 # if config$use_junctions is TRUE
 gff3_to_bed12(minimap2_dir, annot, tmp_bed)
-
+```
+Then, the minimap2 process can be called, and cleanup performed.
+```{r eval=FALSE}
 minimap2_align(minimap2_dir, genome_fa, infq, tmp_bam,
     no_flank=config$alignment_parameters$no_flank, bed12_junc=if (config$alignment_parameters$use_junctions) tmp_bed else NULL)
+
 samtools_sort_index(tmp_bam, genome_bam)
 file.remove(tmp_bam)
-
+```
+Again, the next step is only required if config$use_junctions is `TRUE`.
+```{r eval=FALSE}
 # if config$use_junctions is TRUE
 file.remove(tmp_bed)
 ```
 
+```{r eval=TRUE, echo=FALSE, results='hide'}
+# copy the bam files into the outdir
+file.copy(system.file("data/align2genome.bam", package="FlamesR"), outdir)
+file.copy(system.file("data/align2genome.bam.bai", package="FlamesR"), outdir)
+# bring the file genome_bam, prebuilt into this vignette for downstream use.
+genome_bam <- paste0(outdir, "/align2genome.bam")
+```
+After executing this code on a system with access to minimap2, the file `genome_bam` should be returned to the original system, and it's file path loaded into the original R session. `genome_bam` is required for later pipeline steps.
 
 #### Isoform Identification
 Next, the annotation file in gff3 format needs to be parsed and loaded into R.
-```{r eval=FALSE}
+```{r eval=TRUE}
 gff3 <- parse_gff_tree(annot)
-remove_similar_tr(gff3&$gene_to_transcript, gff3$transcript_to_exon)
+remove_similar_tr(gff3$gene_to_transcript, gff3$transcript_to_exon)
 ```
-Then, if isoform identification is required, the below code block should be executed. --- WHAT DOES group_bam2isoform do??
-```{r eval=FALSE}
+Then, if isoform identification is required, the below code block should be executed.
+```{r eval=TRUE}
 transcript_to_junctions = list()
-for (tr in names(transcript_to_exon)) {
-  transcript_to_junctions[[tr]] = blocks_to_junctions(transcript_to_exon[[tr]])
+for (tr in names(gff3$transcript_to_exon)) {
+  transcript_to_junctions[[tr]] = blocks_to_junctions(gff3$transcript_to_exon[[tr]])
 }
 
 gene_dict <- get_gene_flat(gff3$gene_to_transcript, gff3$transcript_to_exon)
@@ -120,13 +142,13 @@ group_bam2isoform(genome_bam, isoform_gff3, tss_tes_stat, "", chr_to_blocks,
     config=config$isoform_parameters, downsample_ratio=downsample_ratio,
     raw_gff3=if (config$global_parameters$generate_raw_isoform) raw_splice_isoform else NULL)
 ```
-Following isoform identification, the isoform gff3 file created from the above call to `group_bam2isoform` needs to be parsed and loaded into R. get_transcript_seq?? WHY IS THIS EXECUTED EVERY TIME IF ISOFORM_GFF3 IS ONLY CREATED WHEN ABOVE IS RUN? WHICH IS ONLY RUN IF do_isoform_identification is TRUE?????
-```{r eval=FALSE}
+Following isoform identification, the isoform gff3 file created from the above call to `group_bam2isoform` needs to be parsed and loaded into R. Finally, we can write the transcript sequences from the isoform file to an output file.
+```{r eval=TRUE}
 gff3_isoform <- parse_gff_tree(isoform_gff3)
 
 if (!config$realign_parameters$use_annotation) gff3 = NULL
-get_transcript_seq(genome_fa, transcript_fa, gff3_isoform$chr_to_gene_i, gff3_isoform$transcript_dict_i,
-        gff3_isoform$gene_to_transcript_i, gff3_isoform$transcript_to_exon_i, ref_dict=gff3)
+get_transcript_seq(genome_fa, transcript_fa, gff3_isoform$chr_to_gene, gff3_isoform$transcript_dict,
+        gff3_isoform$gene_to_transcript, gff3_isoform$transcript_to_exon, ref_dict=gff3)
 ```
 
 
@@ -138,18 +160,50 @@ minimap2_tr_align(minimap2_dir, transcript_fa, infq, tmp_bam)
 samtools_sort_index(tmp_bam, realign_bam)
 file.remove(tmp_bam)
 ```
+The file realign_bam and the index file (realign_bam.bai) should be returned back to the original system, and it's file path loaded into the same R session, as it is required for the final FlamesR step.
 
-
+```{r eval=TRUE, echo=FALSE, results='hide'}
+# move the stored realign2transcript.bam and .bai files to the outdir
+# copy the bam files into the outdir
+file.copy(system.file("data/realign2transcript.bam", package="FlamesR"), outdir)
+file.copy(system.file("data/realign2transcript.bam.bai", package="FlamesR"), outdir)
+# bring the file genome_bam, prebuilt into this vignette for downstream use.
+genome_bam <- system.file(paste0(outdir, "/realign2transcript.bam"))
+```
 #### Transcript Quantification
 Finally, transcript quantification can be performed, as required:
-```{r eval=FALSE}
+```{r eval=TRUE, results='hide'}
 parse_realign <- parse_realigned_bam(realign_bam, transcript_fa_idx,
     config$isoform_parameters$Min_sup_cnt,
     config$transcript_counting$min_tr_coverage,
     config$transcript_counting$min_read_coverage,
     bc_file=bc_file)
-    tr_cnt = wrt_tr_to_csv(parse_realign$bc_tr_count_dict, gff3_isoform$transcript_dict_i, tr_cnt_csv, transcript_dict, config$global_parameters$has_UMI)
-    wrt_tr_to_csv(parse_realign$bc_tr_badcov_count_dict, gff3_isoform$transcript_dict_i, tr_badcov_cnt_csv, transcript_dict, config$global_parameters$has_UMI)
+    tr_cnt = wrt_tr_to_csv(parse_realign$bc_tr_count_dict, gff3_isoform$transcript_dict, tr_cnt_csv, gff3$transcript_dict, config$global_parameters$has_UMI)
+    wrt_tr_to_csv(parse_realign$bc_tr_badcov_count_dict, gff3_isoform$transcript_dict, tr_badcov_cnt_csv, gff3$transcript_dict, config$global_parameters$has_UMI)
     annotate_filter_gff(isoform_gff3, annot, isoform_gff3_f, FSM_anno_out, tr_cnt, config$isoform_parameters$Min_sup_cnt)
 ```
-
+The directory `outdir` now contains several output files returned from this pipeline. The output files generated by this pipeline are:
+\itemize{
+  \item{transcript_count.csv.gz}{ - a transcript count matrix (also contained in the SummarizedExperiment)}
+  \item{isoform_annotated.filtered.gff3}{ - isoforms in gff3 format (also contained in the SummarizedExperiment)}
+  \item{transcript_assembly.fa}{ - transcript sequence from the isoforms}
+  \item{align2genome.bam}{ - sorted BAM file with reads aligned to genome}
+  \item{realign2transcript.bam}{ - sorted realigned BAM file using the transcript_assembly.fa as reference}
+  \item{tss_tes.bedgraph}{ - TSS TES enrichment for all reads (for QC)}
+ }
+ 
+ 
+ The function `FlamesR::bulk_long_pipeline()`, which this vignette provides an implementation of for the Windows OS returns some of the data provided by this output files as a SummarizedExperiment object, for easy integration with other R packages. The below code provides a basic way to created this SummarizedExperiment object.
+```{r eval=TRUE}
+counts <- utils::read.csv(paste0(outdir, "/transcript_count.csv.gz"))
+annot <- utils::read.table(paste0(outdir, "/isoform_annotated.filtered.gff3"))
+colnames(annot) <- c("SequenceID", "Source", "Feature", "Start", "End", "Score", "Strand", "Phase", "Attributes")
+mdata <- list("Annotations"=annot, "OutputFiles"=
+                    list("transcript_assembly"=paste0(outdir, "/transcript_assembly.fa"),
+                        "align2genome"=paste0(outdir, "/align2genome.bam"),
+                        "realign2transcript"=paste0(outdir, "/realign2transcript.bam"),
+                        "tss_tes"=paste0(outdir, "/tss_tes.bedgraph")))
+se <- SummarizedExperiment::SummarizedExperiment(list("Flames Bulk"=counts),
+                            metadata=mdata)
+se
+```

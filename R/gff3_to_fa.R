@@ -2,7 +2,7 @@
 #'
 #' @description NEEDED
 #'
-#' @param fa_file NEEDER
+#' @param fa_file NEEDED
 #' @param fa_out_f NEEDED
 #' @param chr_to_gene NEEDED
 #' @param transcript_dict NEEDED
