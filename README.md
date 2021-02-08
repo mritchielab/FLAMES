@@ -15,8 +15,8 @@ long_pipeline.R contains the function ```generic_long_pipeline()``` which is
 run by ```bulk_long_pipeline()``` and ```sc_long_pipeline()```.
 
 ### Documentation Needed
-1. bulk_long_pipeline.R
-    1. bulk_long_pipeline
+1. sc_long_pipeline.R
+    1. sc_long_pipeline (these arguments are inherited for bulk_long_pipeline)
         1. Arguments
         1. @details
         1. @description
