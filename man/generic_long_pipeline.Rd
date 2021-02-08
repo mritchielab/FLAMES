@@ -100,6 +100,12 @@ reads are not strand specific.}
 \item{bc_file}{file containing the pseudo barcode annotations generated
 from bulk_long_pipeline. If given, it is used for quantification.}
 }
+\value{
+This generic function returns NULL, instead providing output files
+in the given `outdir` directory. These files are loaded into R in either
+a SummarizedExperiment or SingleCellExperiment object by the callers to this
+function, `sc_long_pipeline()` and `bulk_long_pipeline()` respectively.
+}
 \description{
 Generic implementation of the flames pipeline. Used for both bulk reads and
 single cell reads.

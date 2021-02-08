@@ -15,7 +15,7 @@ get_transcript_seq(
 )
 }
 \arguments{
-\item{fa_file}{NEEDER}
+\item{fa_file}{NEEDED}
 
 \item{fa_out_f}{NEEDED}
 

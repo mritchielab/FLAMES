@@ -10,6 +10,7 @@
 #' @param tr_cnt NEEDED
 #' @param min_sup_reads NEEDED
 #'
+#' @return NULL
 #' @importFrom reticulate import_from_path
 #' @export
 annotate_filter_gff <- function(isoform_gff, ref_gff, isoform_out, anno_out, tr_cnt, min_sup_reads) {

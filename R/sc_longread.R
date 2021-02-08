@@ -32,6 +32,7 @@ blocks_to_junctions <- function(block) {
 #' @param transcript_to_exon NEEDED
 #' @param thr The threshold for exon similarity
 #'
+#' @return NULL
 #' @importFrom reticulate import_from_path
 #' @export
 remove_similar_tr <- function(gene_to_transcript, transcript_to_exon, thr=10) {

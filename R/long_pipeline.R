@@ -14,6 +14,11 @@
 #' fall apart. What should be done? ask matt. At this stage, leave it as is,
 #' and worry about it later once we can talk about how the pipeline would work
 #' without access to fastq.
+#' 
+#' @return This generic function returns NULL, instead providing output files
+#' in the given `outdir` directory. These files are loaded into R in either
+#' a SummarizedExperiment or SingleCellExperiment object by the callers to this
+#' function, `sc_long_pipeline()` and `bulk_long_pipeline()` respectively.
 #generic_long_pipeline <- function(annot, fastq, in_bam, outdir, genome_fa
 generic_long_pipeline <- function(annot, fastq, outdir, genome_fa,
                 minimap2_dir, downsample_ratio, config_file,

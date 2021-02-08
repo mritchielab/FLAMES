@@ -6,6 +6,7 @@
 #' @param gff3_file The gff3_file to convert
 #' @param bed12_file The filename of the bed12 output file.
 #' 
+#' @return file path to the created bed12_file
 #' @importFrom reticulate import_from_path
 #' 
 #' @export
@@ -76,6 +77,8 @@ samtools_sort_index <- function(bam_in, bam_out) {
 #' @param fa_file Input fasta file used as a reference database
 #' @param fq_in Input fastq used as a query sequence file
 #' @param bam_out Output BAM file, containing aligned sequences
+#' 
+#' @return file path to the create bam file `bam_out`
 #' @importFrom reticulate import_from_path
 #' @export
 minimap2_tr_align <- function(mm2_prog_path, fa_file, fq_in, bam_out) {

@@ -73,6 +73,10 @@
 #' [sc_long_pipeline()] for single cell data,
 #' [SummarizedExperiment()] for how data is outputted
 #'
+#' @examples
+#' \dontrun{
+#' bulk_long_pipeline(annot, fastq, outdir, genome_fa, config_file=default_config_file)
+#' }
 #' @importFrom SummarizedExperiment SummarizedExperiment
 #' @importFrom utils read.csv read.table
 #' @export

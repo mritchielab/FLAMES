@@ -3,15 +3,12 @@
 \alias{FlamesR}
 \docType{package}
 \title{
-  A short title line describing what the package does
-}
-\description{
-  A more detailed description of what the package does. A length
-  of about one to five lines is recommended.
+  Full-length transcriptome splicing and mutation analysis.
 }
 \details{
-  This section should provide a more detailed overview of how to use the
-  package, including the most important functions.
+  This package provides a pipeline for analysis of single cell data, and a pipeline for the analysis of
+  bulk long data. It also provides a number of useful functions, used as intermediate functions in these two pipelines,
+  which can be used individually for customised analysis.
 }
 \author{
 Your Name, email optional.
@@ -24,11 +21,6 @@ Maintainer: Your Name <your@email.com>
 }
 \keyword{ package }
 \seealso{
-  Optional links to other man pages
-}
-\examples{
-  \dontrun{
-     ## Optional simple examples of the most important functions
-     ## These can be in \dontrun{} and \donttest{} blocks.   
-  }
+  [sc_long_pipeline()] for single cell data,
+  [bulk_long_pipeline()] for bulk data.
 }

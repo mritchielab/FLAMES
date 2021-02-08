@@ -13,6 +13,9 @@ merge_bulk_fastq(fastq_dir, anno_csv, out_fastq)
 
 \item{out_fastq}{A file which will be created to store all fastq entries}
 }
+\value{
+file path to the created merged fastq file `out_fastq`
+}
 \description{
 Merges all fastq files in the given folder into a single file. Used to create a pseudobulk fastq file,
 with added fake barcodes to differentiate between source files.

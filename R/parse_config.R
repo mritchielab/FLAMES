@@ -8,6 +8,9 @@
 #' @return A named R list of the parameters in \code{json_file}. Subsections are: \code{pipeline_parameters},
 #'      \code{global_parameters}, \code{isoform_parameters}, \code{alignment_parameters}, \code{realign_parameters} and
 #'      \code{transcript_counting}.
+#'      
+#' @examples 
+#' parse_json_config(default_config_file)
 #' @importFrom basilisk basiliskStart basiliskStop basiliskRun
 #' @importFrom reticulate import_from_path
 #' @export
@@ -29,6 +32,11 @@ parse_json_config <- function(json_file) {
 #'
 #' @param config List; the configuration list to print.
 #'
+#' @return NULL
+#' 
+#' @examples 
+#' config <- parse_json_config(default_config_file)
+#' print_config(config)
 #' @importFrom reticulate import_from_path
 #' @export
 print_config <- function(config) {
@@ -43,10 +51,13 @@ print_config <- function(config) {
 
 #' Write Configuration Dictionary to File
 #'
-#' @details Print the configuration file, represented as a named list used for the Flames pipeline.
+#' @details Write the configuration file, represented as a named list used for the Flames pipeline.
 #'
-#' @param config List; the configuration list to print.
+#' @param config List; the configuration list to write to file.
 #' @param config_file the file to output \code{config} to. Should be .json extension
+#' 
+#' @return NULL
+#' 
 #' @importFrom reticulate import_from_path
 write_config <- function(config, config_file) {
     # write the config file to given file path
@@ -59,7 +70,7 @@ write_config <- function(config, config_file) {
     invisible()
 }
 
-#' Write Configuration Dictionary to File
+#' Create Configuration File From Arguments
 #'
 #' @details Create a list object containing the arguments supplied in a format usable for the FLAMES pipeline. 
 #' Also writes the object to a JSON file, which is located with the prefix 'config_' in the supplied \code{outdir}.
@@ -88,7 +99,19 @@ write_config <- function(config, config_file) {
 #' @param min_read_coverage NEEDED
 #'
 #' @return the created R list object, which represents the configuration file created by this function.
+#' 
+#' @examples 
+#' # create the default configuartion file
+#' config <- create_config(getwd(), TRUE, TRUE, 
+#'                         TRUE, TRUE,
+#'                         TRUE, FALSE,
+#'                         10, 100, 10,
+#'                         40, 3, 10,
+#'                         0.01, 0.2, 1, 5
+#'                         TRUE, TRUE,
+#'                         TRUE, 0.75, 0.75)
 #' @importFrom reticulate import_from_path
+#' @export
 create_config <- function(outdir, do_genome_align, do_isoform_id,
                             do_read_realign, do_transcript_quanti,
                             gen_raw_isoform, has_UMI,

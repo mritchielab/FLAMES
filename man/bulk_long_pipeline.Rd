@@ -132,6 +132,11 @@ or the reverse complemented (-1) or not strand specific (0), which results in
 strand information being based on reference annotation.}
 }
 }
+\examples{
+\dontrun{
+bulk_long_pipeline(annot, fastq, outdir, genome_fa, config_file=default_config_file)
+}
+}
 \seealso{
 \code{\link[=sc_long_pipeline]{sc_long_pipeline()}} for single cell data,
 \code{\link[=SummarizedExperiment]{SummarizedExperiment()}} for how data is outputted

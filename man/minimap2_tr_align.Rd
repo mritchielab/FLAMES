@@ -15,6 +15,9 @@ minimap2_tr_align(mm2_prog_path, fa_file, fq_in, bam_out)
 
 \item{bam_out}{Output BAM file, containing aligned sequences}
 }
+\value{
+file path to the create bam file `bam_out`
+}
 \description{
 Uses minimap2 to align to transcript. 
 Uses options "-ax map-ont -p 0.9 --end-bonus 10 -N 3 -t 12 \code{fa_file} \code{fq_in} | samtools view -bS -@ 4 -m 2G -o \code{bam_out}"

@@ -13,6 +13,9 @@ gff3_to_bed12(minimap2_prog_path = NULL, gff3_file, bed12_file)
 
 \item{bed12_file}{The filename of the bed12 output file.}
 }
+\value{
+file path to the created bed12_file
+}
 \description{
 Converts a gff3 file to a bed12, using paftools.js from the minimap2 package
 }

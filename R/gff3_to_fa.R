@@ -9,6 +9,8 @@
 #' @param gene_to_transcript NEEDED
 #' @param transcript_to_exon NEEDED
 #' @param ref_dict NEEDED
+#' 
+#' @return NULL
 #' @importFrom reticulate import_from_path
 #' @export
 get_transcript_seq <- function(fa_file, fa_out_f, chr_to_gene, transcript_dict,
