@@ -4,25 +4,17 @@
 #' single cell reads.
 #'
 #' @inheritParams bulk_long_pipeline
-#'
 #' @param bc_file file containing the pseudo barcode annotations generated
 #' from bulk_long_pipeline. If given, it is used for quantification.
-#' @details At this stage, the issue is that there should be two ways to use this pipeline,
-#' either with fastq (a merging of multible files) given, which makes alignment
-#' happen, or with in_bam specified, which doesn't require alignment. However,
-#' if in_bam is given, fastq is still required as otherwise parts of the pipeline
-#' fall apart. What should be done? ask matt. At this stage, leave it as is,
-#' and worry about it later once we can talk about how the pipeline would work
-#' without access to fastq.
 #' 
 #' @return This generic function returns NULL, instead providing output files
 #' in the given `outdir` directory. These files are loaded into R in either
 #' a SummarizedExperiment or SingleCellExperiment object by the callers to this
 #' function, `sc_long_pipeline()` and `bulk_long_pipeline()` respectively.
-#generic_long_pipeline <- function(annot, fastq, in_bam, outdir, genome_fa
-generic_long_pipeline <- function(annot, fastq, outdir, genome_fa,
+#generic_long_pipeline <- function(annot, fastq, outdir, genome_fa,
+generic_long_pipeline <- function(annot, fastq, in_bam, outdir, genome_fa
                 minimap2_dir, downsample_ratio, config_file,
-                do_genome_align, do_isoform_id,
+                do_genome_align, do_isoform_id=TRUE,
                 do_read_realign, do_transcript_quanti,
                 gen_raw_isoform, has_UMI,
                 MAX_DIST, MAX_TS_DIST, MAX_SPLICE_MATCH_DIST,
@@ -50,6 +42,12 @@ generic_long_pipeline <- function(annot, fastq, outdir, genome_fa,
         config = parse_json_config(config_file)
     }
 
+    if (!config$pipeline_parameters$do_isoform_identification) {
+        stop("Isoform Identification is required for FLAMES execution. Change this value in the configuration file or \
+        set the argument as TRUE. If isoform identification is not required, you can manually execute the pipeline by following \
+        the vignette")
+    }
+
     cat("Running FLAMES pipeline...\n")
     # argument verificiation
     if (downsample_ratio > 1 || downsample_ratio <= 0) {
@@ -58,13 +56,12 @@ generic_long_pipeline <- function(annot, fastq, outdir, genome_fa,
     if (!file.exists(fastq) || !file.exists(annot) || !file.exists(genome_fa)) {
         stop(paste0("Make sure all files exists: ", fastq, ", ", annot, ", ", genome_fa))
     }
-    #if (is.null(in_bam)) {
-    #    in_bam = ""
-    #} else {
-    #    if (!file.exists(in_bam)) {
-    #        stop("Make sure input in_bam file exists")
-    #    }
-    #}
+
+    using_bam = FALSE
+    if (!is.null(in_bam)) {
+        using_bam = TRUE
+        if (!file.exists(in_bam)) stop ("Make sure in_bam exists")
+    } 
     if (is.null(minimap2_dir)) minimap2_dir = ""
 
     # setup of internal arguments which hold output files and intermediate files
@@ -86,17 +83,17 @@ generic_long_pipeline <- function(annot, fastq, outdir, genome_fa,
     print_config(config)
     cat("\tgene annotation:", annot, "\n")
     cat("\tgenome fasta:", genome_fa, "\n")
-    #if (in_bam != "") {
-    #    cat("\tinput bam:", in_bam, "\n")
-    #    genome_bam = in_bam
-    #} else cat("\tinput fastq:", fastq, "\n")
+    if (using_bam) {
+        cat("\tinput bam:", in_bam, "\n")
+        genome_bam = in_bam
+    } else cat("\tinput fastq:", fastq, "\n")
     cat("\tinput fastq:", fastq, "\n")
     cat("\toutput directory:", outdir, "\n")
     cat("\tdirectory containing minimap2:", minimap2_dir, "\n")
 
     # align reads to genome
-    #if (in_bam=="" && config$pipeline_parameters$do_genome_alignment) {
-    if (config$pipeline_parameters$do_genome_alignment) {
+    if (!using_bam && config$pipeline_parameters$do_genome_alignment) {
+    #if (config$pipeline_parameters$do_genome_alignment) {
         cat("#### Aligning reads to genome using minimap2\n")
 
         tmp_bed <- paste(outdir, "tmp.splice_anno.bed12", sep=.Platform$file.sep)
@@ -123,23 +120,24 @@ generic_long_pipeline <- function(annot, fastq, outdir, genome_fa,
     transcript_to_exon = gff3_parse_result$transcript_to_exon
     remove_similar_tr(gene_to_transcript, transcript_to_exon)
 
-    if (config$pipeline_parameters$do_isoform_identification) {
-        cat("#### Find isoforms\n")
-        transcript_to_junctions = list()
-        for (tr in names(transcript_to_exon)) {
-            transcript_to_junctions[[tr]] = blocks_to_junctions(transcript_to_exon[[tr]])
-        }
-        gene_dict <- get_gene_flat(gene_to_transcript, transcript_to_exon)
-        chr_to_blocks <- get_gene_blocks(gene_dict, chr_to_gene, gene_to_transcript)
-        group_bam2isoform(genome_bam, isoform_gff3, tss_tes_stat, "", chr_to_blocks,
-                gene_dict, transcript_to_junctions, transcript_dict, genome_fa,
-                config=config$isoform_parameters, downsample_ratio=downsample_ratio,
-                raw_gff3=if (config$global_parameters$generate_raw_isoform) raw_splice_isoform else NULL)
-    } else {
-        ## skip finding isoform.
-        cat("#### Skip finding isoforms\n")
+    # do_isoform_identification is now always required to be true. 
+    #if (config$pipeline_parameters$do_isoform_identification) {
+    cat("#### Find isoforms\n")
+    transcript_to_junctions = list()
+    for (tr in names(transcript_to_exon)) {
+        transcript_to_junctions[[tr]] = blocks_to_junctions(transcript_to_exon[[tr]])
     }
-        ## ISSUE HERE. isoform_gff3 IS REQUIRED FOR THE NEXT STEP, BUT IT IS ONLY CREATED IF DO_ISOFORM_IDENTIFICATION IS TRUE
+    gene_dict <- get_gene_flat(gene_to_transcript, transcript_to_exon)
+    chr_to_blocks <- get_gene_blocks(gene_dict, chr_to_gene, gene_to_transcript)
+    group_bam2isoform(genome_bam, isoform_gff3, tss_tes_stat, "", chr_to_blocks,
+            gene_dict, transcript_to_junctions, transcript_dict, genome_fa,
+            config=config$isoform_parameters, downsample_ratio=downsample_ratio,
+            raw_gff3=if (config$global_parameters$generate_raw_isoform) raw_splice_isoform else NULL)
+    #} else {
+    #    ## skip finding isoform.
+    #    cat("#### Skip finding isoforms\n")
+    #}
+
     # get fasta
     isoform_gff3_parse <- parse_gff_tree(isoform_gff3)
     chr_to_gene_i <- isoform_gff3_parse$chr_to_gene
@@ -149,11 +147,11 @@ generic_long_pipeline <- function(annot, fastq, outdir, genome_fa,
 
     if (!config$realign_parameters$use_annotation) gff3_parse_result = NULL
     get_transcript_seq(genome_fa, transcript_fa, chr_to_gene_i, transcript_dict_i,
-            gene_to_transcript_i, transcript_to_exon_i, ref_dict=gff3_parse_result)
+            gene_to_transcript_i, transcript_to_exon_i, ref_dict=if (config$realign_parameters$use_annotation) gff3_parse_result else NULL)
 
     # realign to transcript
-    #if (in_bam=="" && do_read_realign) {
-    if (do_read_realign) {
+    if (!using_bam && do_read_realign) {
+    #if (do_read_realign) {
         cat("#### Realign to transcript using minimap2\n")
         tmp_bam <- paste(outdir, "tmp.align.bam", sep=.Platform$file.sep)
         minimap2_tr_align(minimap2_dir, transcript_fa, fastq, tmp_bam)
@@ -166,7 +164,7 @@ generic_long_pipeline <- function(annot, fastq, outdir, genome_fa,
     #quantification
     if (config$pipeline_parameters$do_transcript_quantification) {
         cat("#### Generating transcript count matrix\n")
-        if (is.null(bc_file)) {
+        if (is.null(bc_file) || using_bam) {
             # sc_long_pipeline version of realigned bam
             parse_realign <- parse_realigned_bam(realign_bam, transcript_fa_idx,
                 config$isoform_parameters$Min_sup_cnt,

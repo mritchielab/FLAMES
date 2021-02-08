@@ -3,7 +3,38 @@
 #' @md
 #' @description NEEDED
 #'
-#' @inheritParams bulk_long_pipeline
+#' @param annot gene annotations file in gff3  format
+#' @param fastq the directory containing fastq files, each containing data from one sample
+#' @param outdir directory to store all output files.
+#' @param genome_fa genome fasta file.
+#' @param minimap2_dir directory containing minimap2, k8 and paftools.js program.
+#' k8 and paftools.js are used to convert gff3 to bed12.
+#' @param downsample_ratio downsampling ratio if performing downsampling analysis.
+#' @param config_file JSON configuration file. If specified, \code{config_file} overrides
+#' all configuration parameters
+#' @param do_genome_align Boolean. Specifies whether to run the genome alignment step. \code{TRUE} is recommended
+#' @param do_isoform_id Boolean. Specifies whether to run the isoform identification step. \code{TRUE} is recommended
+#' @param do_read_realign Boolean. Specifies whether to run the read realignment step. \code{TRUE} is recommended
+#' @param do_transcript_quanti Boolean. Specifies whether to run the transcript quantification step. \code{TRUE} is recommended
+#' @param gen_raw_isoform Boolean.
+#' @param has_UMI Boolean. Speficies if each gene as a UMI.
+#' @param MAX_DIST Numeric
+#' @param MAX_TS_DIST Numeric.
+#' @param MAX_SPLICE_MATCH_DIST Numeric.
+#' @param min_fl_exon_len Numeric.
+#' @param Max_site_per_splice Numeric.
+#' @param Min_sup_cnt Numeric.
+#' @param Min_cnt_pct Numeric.
+#' @param Min_sup_pct Numeric.
+#' @param strand_specific 1, -1 or 0. 1 indicates if reads are in the same
+#' strand as mRNA, -1 indicates reads are reverse complemented, 0 indicates
+#' reads are not strand specific.
+#' @param remove_incomp_reads Numeric.
+#' @param use_junctions Boolean.
+#' @param no_flank Boolean.
+#' @param use_annotation Boolean.
+#' @param min_tr_coverage Numeric.
+#' @param min_read_coverage Numeric.
 #' @inherit bulk_long_pipeline details description
 #' @param UMI_LEN NEEDED
 #'
@@ -46,7 +77,9 @@ sc_long_pipeline <- function(annot, fastq, outdir, genome_fa,
     match_cell_barcode(fastq, bc_stat, infq, ref_csv, MAX_DIST, UMI_LEN)
 
     #generic_long_pipeline(annot, infq, in_bam, outdir, genome_fa,
-    generic_long_pipeline(annot, infq, outdir, genome_fa,
+    #generic_long_pipeline(annot, infq, outdir, genome_fa,
+    # can sc_long_pipeline be used with in_bam?
+    generic_long_pipeline(annot, infq, NULL, outdir, genome_fa,
             minimap2_dir, downsample_ratio, config_file,
             do_genome_align, do_isoform_id,
             do_read_realign, do_transcript_quanti,
