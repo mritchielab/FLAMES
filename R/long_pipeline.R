@@ -12,7 +12,7 @@
 #' a SummarizedExperiment or SingleCellExperiment object by the callers to this
 #' function, `sc_long_pipeline()` and `bulk_long_pipeline()` respectively.
 #generic_long_pipeline <- function(annot, fastq, outdir, genome_fa,
-generic_long_pipeline <- function(annot, fastq, in_bam, outdir, genome_fa
+generic_long_pipeline <- function(annot, fastq, in_bam, outdir, genome_fa,
                 minimap2_dir, downsample_ratio, config_file,
                 do_genome_align, do_isoform_id=TRUE,
                 do_read_realign, do_transcript_quanti,

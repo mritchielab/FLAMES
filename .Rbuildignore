@@ -1,2 +1,5 @@
 ^FlamesR\.Rproj$
 ^\.Rproj\.user$
+^\.vscode$
+^\.gitignore$
+^inst/data$
