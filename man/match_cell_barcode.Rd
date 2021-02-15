@@ -26,6 +26,9 @@ match_cell_barcode(
 
 \item{UMI_LEN}{int; length of UMI sequences}
 }
+\value{
+returns NULL
+}
 \description{
 Match cell barcodes in the given fastq directory with the reference csv, \code{ref_csv}. Matches are returned
 in the output file \code{out_fastq}

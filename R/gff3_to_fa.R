@@ -10,8 +10,14 @@
 #' @param transcript_to_exon NEEDED
 #' @param ref_dict NEEDED
 #' 
-#' @return NULL
+#' @return returns NULL
+#' 
+#' @examples 
+#' genomefa <- system.file("extdata/SIRV_genomefa.fasta", package="FlamesR")
+#' gff3_parse <- parse_gff_tree(system.file("extdata/isoform_annotated.gff3", package="FlamesR"))
+#' get_transcript_seq(genomefa, tempfile(fileext=".fa"), gff3_parse$chr_to_gene, gff3_parse$transcript_dict, gff3_parse$gene_to_transcript, gff3_parse$transcript_to_exon)
 #' @importFrom reticulate import_from_path
+#' @importFrom Rsamtools indexFa
 #' @export
 get_transcript_seq <- function(fa_file, fa_out_f, chr_to_gene, transcript_dict,
                                 gene_to_transcript, transcript_to_exon, ref_dict=NULL) {
@@ -24,7 +30,7 @@ get_transcript_seq <- function(fa_file, fa_out_f, chr_to_gene, transcript_dict,
                        gene_to_transcript, transcript_to_exon, ref_dict)
     }, fa_file=fa_file, fa_out_f=fa_out_f, chr_to_gene=chr_to_gene, transcript_dict=transcript_dict,
                        gene_to_transcript=gene_to_transcript, transcript_to_exon=transcript_to_exon, ref_dict=ref_dict)
-
+    Rsamtools::indexFa(file=fa_out_f) # index the output fa file
     invisible()
 }
 

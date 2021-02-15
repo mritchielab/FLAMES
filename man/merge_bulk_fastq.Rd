@@ -20,3 +20,6 @@ file path to the created merged fastq file `out_fastq`
 Merges all fastq files in the given folder into a single file. Used to create a pseudobulk fastq file,
 with added fake barcodes to differentiate between source files.
 }
+\examples{
+out_fastq <- merge_bulk_fastq(system.file("extdata/fastq", package="FlamesR"), anno_csv=tempfile(), out_fastq=tempfile())
+}

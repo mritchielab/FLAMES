@@ -21,3 +21,6 @@ List object with four elements: \itemize{
 Parses GFF3 file formats into a usable list of four elements. Accepts \code{.gtf}, \code{.gff} formats as 
 well as \code{.gz} compressed versions.
 }
+\examples{
+gff3_parse <- parse_gff_tree(system.file("extdata/SIRV_anno.gtf", package="FlamesR"))
+}

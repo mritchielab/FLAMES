@@ -8,6 +8,11 @@
 #' @param block NEEDED
 #'
 #' @return The converted junctions named list
+#' 
+#' @examples 
+#' # parse the gff file before creating junctions from the gene blocks
+#' gff3_parse <- parse_gff_tree(system.file("extdata/SIRV_anno.gtf", package="FlamesR"))
+#' transcript_junction = blocks_to_junctions(gff3_parse$transcript_to_exon[[1]])
 #' @importFrom reticulate import_from_path
 #' @export
 blocks_to_junctions <- function(block) {
@@ -32,7 +37,11 @@ blocks_to_junctions <- function(block) {
 #' @param transcript_to_exon NEEDED
 #' @param thr The threshold for exon similarity
 #'
-#' @return NULL
+#' @return return NULL
+#' 
+#' @examples 
+#' gff3_parse <- parse_gff_tree(system.file("extdata/SIRV_anno.gtf", package="FlamesR"))
+#' remove_similar_tr(gff3_parse$gene_to_transcript, gff3_parse$transcript_to_exon, thr=5)
 #' @importFrom reticulate import_from_path
 #' @export
 remove_similar_tr <- function(gene_to_transcript, transcript_to_exon, thr=10) {
@@ -54,6 +63,10 @@ remove_similar_tr <- function(gene_to_transcript, transcript_to_exon, thr=10) {
 #' @param transcript_to_exon NEEDED
 #'
 #' @return NEEDED
+#' 
+#' @examples 
+#' gff3_parse <- parse_gff_tree(system.file("extdata/SIRV_anno.gtf", package="FlamesR"))
+#' gene_dict <- get_gene_flat(gff3_parse$gene_to_transcript, gff3_parse$transcript_to_exon)
 #' @importFrom reticulate import_from_path
 #' @export
 get_gene_flat <- function(gene_to_transcript, transcript_to_exon) {
@@ -78,6 +91,11 @@ get_gene_flat <- function(gene_to_transcript, transcript_to_exon) {
 #' @param gene_to_transcript NEEDED
 #'
 #' @return NEEDED
+#' 
+#' @examples 
+#' gff3_parse <- parse_gff_tree(system.file("extdata/SIRV_anno.gtf", package="FlamesR"))
+#' gene_dict <- get_gene_flat(gff3_parse$gene_to_transcript, gff3_parse$transcript_to_exon)
+#' chr_to_blocks <- get_gene_blocks(gene_dict, gff3_parse$chr_to_gene, gff3_parse$gene_to_transcript)
 #' @importFrom reticulate import_from_path
 #' @export
 get_gene_blocks <- function(gene_dict, chr_to_gene, gene_to_transcript) {
@@ -121,10 +139,25 @@ get_gene_blocks <- function(gene_dict, chr_to_gene, gene_to_transcript) {
 #'     \item remove_incomp_reads
 #'     \item random_seed OPTIONAL;
 #' }
-#' @param downsample_ratio NEEDER
+#' @param downsample_ratio NEEDED
 #' @param raw_gff3 NEEDER
 #'
 #' @return File paths of the output files \code{out_gff3} and \code{out_stat}
+#' 
+#' @examples 
+#' anno <- system.file("extdata/SIRV_anno.gtf", package="FlamesR")
+#' genome_bam <- system.file("extdata/align2genome.bam", package="FlamesR")
+#' genomfa <- system.file("extdata/SIRV_genomefa.fasta", package="FlamesR")
+#' config <- parse_json_config(system.file("extdata/SIRV_config_default.json", package="FlamesR"))
+#' gff3_parse <- parse_gff_tree(anno)
+#' gene_dict <- get_gene_flat(gff3_parse$gene_to_transcript, gff3_parse$transcript_to_exon)
+#' chr_to_blocks <- get_gene_blocks(gene_dict, gff3_parse$chr_to_gene, gff3_parse$gene_to_transcript)
+#' 
+#' juncs = list()
+#' for (tr in names(gff3_parse$transcript_to_exon)) juncs[[tr]] = blocks_to_junctions(gff3_parse$transcript_to_exon[[tr]])
+#' group_bam2isoform(genome_bam, out_gff3=tempfile(fileext=".gff3"), out_stat=tempfile(fileext=".bedgraph"),
+#'                  "", chr_to_blocks, gene_dict, juncs, gff3_parse$transcript_dict, 
+#'                  genomefa, config$isoform_parameters, 1, NULL)
 #' @importFrom reticulate import_from_path
 #' @export
 group_bam2isoform <- function(bam_in, out_gff3, out_stat, summary_csv, chr_to_blocks, gene_dict,

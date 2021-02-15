@@ -33,3 +33,11 @@ named list containing the elements \code{bc_tr_count_dict}, \code{bc_tr_badcov_c
 \description{
 NEEDED
 }
+\examples{
+
+realign_bam <- system.file("extdata/align2genome.bam", package="FlamesR")
+transcript_fa <- system.file("extdata/transcript_assembly.fa.fai", package="FlamesR")
+\dontrun{
+parse_realign <- parse_realigned_bam(realign_bam, transcript_fa, 10, 0.75, 0.75)
+}
+}

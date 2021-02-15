@@ -18,3 +18,6 @@ the path to the output file, given as \code{bam_out}
 Sorts and then indexes alignments for fast random access using samtools. Uses sortBam and indexBam from
 Rsamtools.
 }
+\examples{
+bam_out <- samtools_sort_index(system.file("extdata/align2genome.bam",package="FlamesR"), tempfile(fileext=".bam"))
+}

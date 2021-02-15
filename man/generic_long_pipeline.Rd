@@ -7,13 +7,14 @@
 generic_long_pipeline(
   annot,
   fastq,
+  in_bam,
   outdir,
   genome_fa,
   minimap2_dir,
   downsample_ratio,
   config_file,
   do_genome_align,
-  do_isoform_id,
+  do_isoform_id = TRUE,
   do_read_realign,
   do_transcript_quanti,
   gen_raw_isoform,
@@ -40,6 +41,9 @@ generic_long_pipeline(
 \item{annot}{gene annotations file in gff3  format}
 
 \item{fastq}{the directory containing fastq files, each containing data from one sample}
+
+\item{in_bam}{optional BAM file which replaces fastq directory argument. This skips the genome alignment and
+realignment steps}
 
 \item{outdir}{directory to store all output files.}
 
@@ -109,13 +113,4 @@ function, `sc_long_pipeline()` and `bulk_long_pipeline()` respectively.
 \description{
 Generic implementation of the flames pipeline. Used for both bulk reads and
 single cell reads.
-}
-\details{
-At this stage, the issue is that there should be two ways to use this pipeline,
-either with fastq (a merging of multible files) given, which makes alignment
-happen, or with in_bam specified, which doesn't require alignment. However,
-if in_bam is given, fastq is still required as otherwise parts of the pipeline
-fall apart. What should be done? ask matt. At this stage, leave it as is,
-and worry about it later once we can talk about how the pipeline would work
-without access to fastq.
 }

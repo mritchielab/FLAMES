@@ -1,5 +1,12 @@
 #'Default Configuration File
 #'
 #' @description file path to the default FLAMES configuration file
+#' @examples
+#' config <- parse_json_config(get_default_config_file())
+#' print_config(config)
+
+#' @return file path to the FLAMES default configuration file
 #' @export
-default_config_file <- system.file("data/SIRV_config.json", package="FlamesR")
+get_default_config_file <- function() {
+  system.file("extdata/SIRV_config_default.json", package="FlamesR")
+}

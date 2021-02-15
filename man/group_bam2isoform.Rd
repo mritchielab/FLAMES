@@ -40,7 +40,7 @@ group_bam2isoform(
 
 \item{config}{Config file used to specify additional parameters}
 
-\item{downsample_ratio}{NEEDER}
+\item{downsample_ratio}{NEEDED}
 
 \item{raw_gff3}{NEEDER}
 }
@@ -66,4 +66,19 @@ Further required details
     \item remove_incomp_reads
     \item random_seed OPTIONAL;
 }
+}
+\examples{
+anno <- system.file("extdata/SIRV_anno.gtf", package="FlamesR")
+genome_bam <- system.file("extdata/align2genome.bam", package="FlamesR")
+genomfa <- system.file("extdata/SIRV_genomefa.fasta", package="FlamesR")
+config <- parse_json_config(system.file("extdata/SIRV_config_default.json", package="FlamesR"))
+gff3_parse <- parse_gff_tree(anno)
+gene_dict <- get_gene_flat(gff3_parse$gene_to_transcript, gff3_parse$transcript_to_exon)
+chr_to_blocks <- get_gene_blocks(gene_dict, gff3_parse$chr_to_gene, gff3_parse$gene_to_transcript)
+
+juncs = list()
+for (tr in names(gff3_parse$transcript_to_exon)) juncs[[tr]] = blocks_to_junctions(gff3_parse$transcript_to_exon[[tr]])
+group_bam2isoform(genome_bam, out_gff3=tempfile(fileext=".gff3"), out_stat=tempfile(fileext=".bedgraph"),
+                 "", chr_to_blocks, gene_dict, juncs, gff3_parse$transcript_dict, 
+                 genomefa, config$isoform_parameters, 1, NULL)
 }

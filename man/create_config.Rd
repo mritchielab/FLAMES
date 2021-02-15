@@ -2,7 +2,7 @@
 % Please edit documentation in R/parse_config.R
 \name{create_config}
 \alias{create_config}
-\title{Write Configuration Dictionary to File}
+\title{Create Configuration File From Arguments}
 \usage{
 create_config(
   outdir,
@@ -78,9 +78,20 @@ create_config(
 the created R list object, which represents the configuration file created by this function.
 }
 \description{
-Write Configuration Dictionary to File
+Create Configuration File From Arguments
 }
 \details{
 Create a list object containing the arguments supplied in a format usable for the FLAMES pipeline. 
 Also writes the object to a JSON file, which is located with the prefix 'config_' in the supplied \code{outdir}.
+}
+\examples{
+# create the default configuartion file
+config <- create_config(getwd(), TRUE, TRUE, 
+                        TRUE, TRUE,
+                        TRUE, FALSE,
+                        10, 100, 10,
+                        40, 3, 10,
+                        0.01, 0.2, 1, 5,
+                        TRUE, TRUE,
+                        TRUE, 0.75, 0.75)
 }

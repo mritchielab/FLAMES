@@ -10,7 +10,7 @@
 #'      \code{transcript_counting}.
 #'      
 #' @examples 
-#' parse_json_config(default_config_file)
+#' parse_json_config(get_default_config_file())
 #' @importFrom basilisk basiliskStart basiliskStop basiliskRun
 #' @importFrom reticulate import_from_path
 #' @export
@@ -32,10 +32,10 @@ parse_json_config <- function(json_file) {
 #'
 #' @param config List; the configuration list to print.
 #'
-#' @return NULL
+#' @return return NULL
 #' 
-#' @examples 
-#' config <- parse_json_config(default_config_file)
+#' @examples
+#' config <- parse_json_config(get_default_config_file())
 #' print_config(config)
 #' @importFrom reticulate import_from_path
 #' @export
@@ -56,9 +56,12 @@ print_config <- function(config) {
 #' @param config List; the configuration list to write to file.
 #' @param config_file the file to output \code{config} to. Should be .json extension
 #' 
-#' @return NULL
+#' @return returns NULL
 #' 
+#' @examples
+#' write_config(parse_json_config(get_default_config_file()), tempfile())
 #' @importFrom reticulate import_from_path
+#' @export
 write_config <- function(config, config_file) {
     # write the config file to given file path
     callBasilisk(flames_env, function(config, config_file) {
@@ -107,7 +110,7 @@ write_config <- function(config, config_file) {
 #'                         TRUE, FALSE,
 #'                         10, 100, 10,
 #'                         40, 3, 10,
-#'                         0.01, 0.2, 1, 5
+#'                         0.01, 0.2, 1, 5,
 #'                         TRUE, TRUE,
 #'                         TRUE, 0.75, 0.75)
 #' @importFrom reticulate import_from_path

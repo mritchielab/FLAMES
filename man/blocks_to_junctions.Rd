@@ -19,3 +19,8 @@ and "junctions".
 \details{
 NEEDED
 }
+\examples{
+# parse the gff file before creating junctions from the gene blocks
+gff3_parse <- parse_gff_tree(system.file("extdata/SIRV_anno.gtf", package="FlamesR"))
+transcript_junction = blocks_to_junctions(gff3_parse$transcript_to_exon[[1]])
+}

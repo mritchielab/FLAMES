@@ -18,3 +18,6 @@ A named R list of the parameters in \code{json_file}. Subsections are: \code{pip
 Convert a json configuration file into a named R list, grouped into sub lists according to their
      usage in the Flames pipeline.
 }
+\examples{
+parse_json_config(get_default_config_file())
+}

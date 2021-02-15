@@ -8,6 +8,9 @@
 #' @param out_fastq A file which will be created to store all fastq entries
 #' 
 #' @return file path to the created merged fastq file `out_fastq`
+#' 
+#' @examples
+#' out_fastq <- merge_bulk_fastq(system.file("extdata/fastq", package="FlamesR"), anno_csv=tempfile(), out_fastq=tempfile())
 #' @importFrom reticulate import_from_path
 #' @export
 merge_bulk_fastq <- function(fastq_dir, anno_csv, out_fastq) {

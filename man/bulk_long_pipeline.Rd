@@ -7,6 +7,7 @@
 bulk_long_pipeline(
   annot,
   fastq,
+  in_bam = NULL,
   outdir,
   genome_fa,
   minimap2_dir = NULL,
@@ -39,6 +40,9 @@ bulk_long_pipeline(
 \item{annot}{gene annotations file in gff3  format}
 
 \item{fastq}{the directory containing fastq files, each containing data from one sample}
+
+\item{in_bam}{optional BAM file which replaces fastq directory argument. This skips the genome alignment and
+realignment steps}
 
 \item{outdir}{directory to store all output files.}
 
@@ -133,9 +137,28 @@ strand information being based on reference annotation.}
 }
 }
 \examples{
-\dontrun{
-bulk_long_pipeline(annot, fastq, outdir, genome_fa, config_file=default_config_file)
-}
+# this example works fine, but because the package only includes a small subset of the fastq files,
+# it doesn't work because it at some point produces a file that is blank. Fix? use biocFileCache
+# To run this example, we require the full example fastq dataset, available on Zenodo
+# download the two fastq files, move them to a folder to be merged together
+temp_path <- tempfile()
+bfc <- BiocFileCache::BiocFileCache(temp_path, ask=FALSE)
+file_url <- 
+    "https://raw.githubusercontent.com/OliverVoogd/FlamesR/master/inst/data"
+# download the required fastq files, and move them to new folder
+fastq1 <- bfc[[names(BiocFileCache::bfcadd(bfc, "Fastq1", paste(file_url, "fastq/sample1.fastq.gz", sep="/")))]]
+fastq2 <- bfc[[names(BiocFileCache::bfcadd(bfc, "Fastq2", paste(file_url, "fastq/sample2.fastq.gz", sep="/")))]]
+fastq_dir <- paste(temp_path, "fastq_dir", sep="/") # the downloaded fastq files need to be in a directory to be merged together
+dir.create(fastq_dir)
+file.copy(c(fastq1, fastq2), fastq_dir)
+unlink(c(fastq1, fastq2)) # the original files can be deleted
+
+# run the FLAMES bulk pipeline, using the downloaded files
+se <- bulk_long_pipeline(annot=system.file("extdata/SIRV_anno.gtf", package="FlamesR"), 
+                   fastq=fastq_dir,
+                   outdir=tempdir(), genome_fa=system.file("extdata/SIRV_genomefa.fasta", package="FlamesR"),
+                   config_file=system.file("extdata/SIRV_config_default.json", package="FlamesR"))
+
 }
 \seealso{
 \code{\link[=sc_long_pipeline]{sc_long_pipeline()}} for single cell data,

@@ -11,6 +11,14 @@
 #' to serve as a dictionary of barcode as reference
 #'
 #' @return named list containing the elements \code{bc_tr_count_dict}, \code{bc_tr_badcov_count_dict} and \code{tr_kept}
+#' 
+#' @examples 
+#' 
+#' realign_bam <- system.file("extdata/align2genome.bam", package="FlamesR")
+#' transcript_fa <- system.file("extdata/transcript_assembly.fa.fai", package="FlamesR")
+#' \dontrun{
+#' parse_realign <- parse_realigned_bam(realign_bam, transcript_fa, 10, 0.75, 0.75)
+#'}
 #' @importFrom reticulate import_from_path dict
 #' @export
 parse_realigned_bam <- function(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_read_coverage, ...) {
@@ -40,6 +48,16 @@ parse_realigned_bam <- function(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage
 #' @param has_UMI NEEDED
 #'
 #' @return NEEDED
+#' 
+#' @examples 
+#' isoform_gff3 <- parse_gff_tree(system.file("extdata/isoform_annotated.gff3", package="FlamesR"))
+#' gff3_parse <- parse_gff_tree(system.file("extdata/SIRV_anno.gtf", package="FlamesR"))
+#' realign_bam <- system.file("extdata/align2genome.bam", package="FlamesR")
+#' \dontrun{
+#' parse_realign <- parse_realigned_bam(realign_bam, system.file("extdata/transcript_assembly.fa.fai", package="FlamesR"), 10, 0.75, 0.75)
+#' tr_cnt <- wrt_tr_to_csv(parse_realign$bc_tr_count_dict, isoform_gff3$transcript_dict, tempfile(fileext=".csv.gz"), 
+#'                         gff3_parse$transcript_dict, FALSE)
+#'                         }
 #' @importFrom reticulate import_from_path
 #' @export
 wrt_tr_to_csv <- function(bc_tr_count_dict, transcript_dict, csv_f, transcript_dict_ref=NULL, has_UMI=TRUE) {

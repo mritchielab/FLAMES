@@ -59,10 +59,13 @@ minimap2_align <- function(minimap2_prog_path=NULL, fa_file, fq_in, bam_out, no_
 #' @param bam_out Output BAM file
 #' @importFrom Rsamtools sortBam indexBam
 #' @return the path to the output file, given as \code{bam_out}
+#' 
+#' @examples
+#' bam_out <- samtools_sort_index(system.file("extdata/align2genome.bam",package="FlamesR"), tempfile(fileext=".bam"))
 #' @export
 samtools_sort_index <- function(bam_in, bam_out) {
-    sortBam(bam_in, gsub("\\.bam", "", bam_out))
-    indexBam(bam_out)
+    Rsamtools::sortBam(bam_in, gsub("\\.bam", "", bam_out))
+    Rsamtools::indexBam(bam_out)
 
     bam_out
 }

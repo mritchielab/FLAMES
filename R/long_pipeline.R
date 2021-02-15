@@ -53,9 +53,9 @@ generic_long_pipeline <- function(annot, fastq, in_bam, outdir, genome_fa,
     if (downsample_ratio > 1 || downsample_ratio <= 0) {
         stop("downsample_ratio should be between 0 and 1")
     }
-    if (!file.exists(fastq) || !file.exists(annot) || !file.exists(genome_fa)) {
-        stop(paste0("Make sure all files exists: ", fastq, ", ", annot, ", ", genome_fa))
-    }
+    if (!file.exists(fastq)) stop(paste0("Make sure ", fastq, " exists."))
+    if (!file.exists(annot)) stop(paste0("Make sure ", annot, " exists."))
+    if (!file.exists(genome_fa)) stop(paste0("Make sure ", genome_fa, " exists."))
 
     using_bam = FALSE
     if (!is.null(in_bam)) {

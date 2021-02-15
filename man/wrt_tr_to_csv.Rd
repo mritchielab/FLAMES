@@ -29,3 +29,13 @@ NEEDED
 \description{
 NEEDED
 }
+\examples{
+isoform_gff3 <- parse_gff_tree(system.file("extdata/isoform_annotated.gff3", package="FlamesR"))
+gff3_parse <- parse_gff_tree(system.file("extdata/SIRV_anno.gtf", package="FlamesR"))
+realign_bam <- system.file("extdata/align2genome.bam", package="FlamesR")
+\dontrun{
+parse_realign <- parse_realigned_bam(realign_bam, system.file("extdata/transcript_assembly.fa.fai", package="FlamesR"), 10, 0.75, 0.75)
+tr_cnt <- wrt_tr_to_csv(parse_realign$bc_tr_count_dict, isoform_gff3$transcript_dict, tempfile(fileext=".csv.gz"), 
+                        gff3_parse$transcript_dict, FALSE)
+                        }
+}

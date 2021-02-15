@@ -9,9 +9,16 @@ print_config(config)
 \arguments{
 \item{config}{List; the configuration list to print.}
 }
+\value{
+return NULL
+}
 \description{
 Print Configuration File
 }
 \details{
 Print the configuration file, represented as a named list used for the Flames pipeline.
+}
+\examples{
+config <- parse_json_config(get_default_config_file())
+print_config(config)
 }

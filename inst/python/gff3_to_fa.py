@@ -106,7 +106,8 @@ def get_transcript_seq(fa_file, fa_out_f, chr_to_gene, transcript_dict,
     for tr_seq in global_seq_dict:
         write_fa(fa_out, global_seq_dict[tr_seq], tr_seq)
     fa_out.close()
-    print subprocess.check_output(["samtools faidx {}".format(fa_out_f)], shell=True, stderr=subprocess.STDOUT)
+    #indexing is now handled with Rsamtools
+    #print subprocess.check_output(["samtools faidx {}".format(fa_out_f)], shell=True, stderr=subprocess.STDOUT)
 
 
 

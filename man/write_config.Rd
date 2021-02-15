@@ -7,13 +7,19 @@
 write_config(config, config_file)
 }
 \arguments{
-\item{config}{List; the configuration list to print.}
+\item{config}{List; the configuration list to write to file.}
 
 \item{config_file}{the file to output \code{config} to. Should be .json extension}
+}
+\value{
+returns NULL
 }
 \description{
 Write Configuration Dictionary to File
 }
 \details{
-Print the configuration file, represented as a named list used for the Flames pipeline.
+Write the configuration file, represented as a named list used for the Flames pipeline.
+}
+\examples{
+write_config(parse_json_config(get_default_config_file()), tempfile())
 }
