@@ -39,7 +39,8 @@ bulk_long_pipeline(
 \arguments{
 \item{annot}{gene annotations file in gff3  format}
 
-\item{fastq}{the directory containing fastq files, each containing data from one sample}
+\item{fastq}{the directory containing the fastq input files to merge into one, \code{merged.fastq.gz}. If \code{merge.fastq.gz} already
+exists, the fastq files are not merged and the existing merged file is used.}
 
 \item{in_bam}{optional BAM file which replaces fastq directory argument. This skips the genome alignment and
 realignment steps}
@@ -154,11 +155,12 @@ file.copy(c(fastq1, fastq2), fastq_dir)
 unlink(c(fastq1, fastq2)) # the original files can be deleted
 
 # run the FLAMES bulk pipeline, using the downloaded files
+\dontrun{
 se <- bulk_long_pipeline(annot=system.file("extdata/SIRV_anno.gtf", package="FlamesR"), 
                    fastq=fastq_dir,
                    outdir=tempdir(), genome_fa=system.file("extdata/SIRV_genomefa.fasta", package="FlamesR"),
                    config_file=system.file("extdata/SIRV_config_default.json", package="FlamesR"))
-
+}
 }
 \seealso{
 \code{\link[=sc_long_pipeline]{sc_long_pipeline()}} for single cell data,

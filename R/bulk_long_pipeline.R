@@ -35,6 +35,8 @@
 #'  \item{tss_tes.bedgraph}{ - TSS TES enrichment for all reads (for QC)}
 #' }
 #'
+#' @param fastq the directory containing the fastq input files to merge into one, `merged.fastq.gz`. If `merge.fastq.gz` already
+#' exists, the fastq files are not merged and the existing merged file is used.
 #' @param in_bam optional BAM file which replaces fastq directory argument. This skips the genome alignment and
 #' realignment steps
 #' @inheritParams sc_long_pipeline
@@ -86,16 +88,21 @@ bulk_long_pipeline <- function(annot, fastq, in_bam=NULL, outdir, genome_fa,
     infq <- paste(outdir, "merged.fastq.gz", sep="/")
     bc_file <- paste(outdir, "pseudo_barcode_annotation.csv", sep="/")
 
-    if (is.null(in_bam) && !file.exists(infq)) {
+    # create output directory if one doesn't exist
+    if (!dir.exists(outdir)) {
+        cat("Output directory does not exists: one is being created\n")
+        dir.create(outdir)
+        print(outdir)
+    }
+
+    if (is.null(in_bam)) {
+        # use existing merge fastq if already exists
+        if (file.exists(infq)) {
+            cat(infq, " already exists, no need to merge fastq files\n")
+        }
         # this preprocessing needs only be done if we are using a fastq_dir, instead
         # of a bam file for reads,
         cat("Preprocessing bulk fastqs...\n")
-        # create output directory if one doesn't exist
-        if (!dir.exists(outdir)) {
-            cat("Output directory does not exists: one is being created\n")
-            dir.create(outdir)
-            print(outdir)
-        }
         # run the merge_bulk_fastq function as preprocessing
         merge_bulk_fastq(fastq, bc_file, infq)
     } else {
@@ -128,7 +135,7 @@ bulk_long_pipeline <- function(annot, fastq, in_bam=NULL, outdir, genome_fa,
                             "tss_tes"=paste0(outdir, "/tss_tes.bedgraph")
                             )
             )
-    se <- SummarizedExperiment(list("Flames Bulk"=counts),
+    se <- SummarizedExperiment::SummarizedExperiment(list("Flames Bulk"=counts),
                                 metadata=mdata)
     # return the created summarizedexperiment
     se

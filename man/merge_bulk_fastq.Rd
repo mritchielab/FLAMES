@@ -11,7 +11,7 @@ merge_bulk_fastq(fastq_dir, anno_csv, out_fastq)
 
 \item{anno_csv}{a path for the output csv, containing the fake barcodes created}
 
-\item{out_fastq}{A file which will be created to store all fastq entries}
+\item{out_fastq}{A file which will be created to store all fastq entries. Overwrites existing files}
 }
 \value{
 file path to the created merged fastq file `out_fastq`

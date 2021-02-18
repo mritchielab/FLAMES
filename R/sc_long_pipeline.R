@@ -83,10 +83,9 @@ sc_long_pipeline <- function(annot, fastq, outdir, genome_fa,
     ref_csv <- "?????"
     match_cell_barcode(fastq, bc_stat, infq, ref_csv, MAX_DIST, UMI_LEN)
 
-    #generic_long_pipeline(annot, infq, in_bam, outdir, genome_fa,
     #generic_long_pipeline(annot, infq, outdir, genome_fa,
     # can sc_long_pipeline be used with in_bam?
-    generic_long_pipeline(annot, infq, NULL, outdir, genome_fa,
+    generic_long_pipeline(annot, infq, in_bam=NULL, outdir, genome_fa,
             minimap2_dir, downsample_ratio, config_file,
             do_genome_align, do_isoform_id,
             do_read_realign, do_transcript_quanti,
@@ -119,7 +118,7 @@ sc_long_pipeline <- function(annot, fastq, outdir, genome_fa,
                         "tss_tes"=paste0(outdir, "/tss_tes.bedgraph")
                         )
                 )
-    sce <- SingleCellExperiment(list("Flames Single Cell"=counts),
+    sce <- SingleCellExperiment::SingleCellExperiment(list("Flames Single Cell"=counts),
                                 metadata=mdata)
     #return the created singlecellexperiment
     sce

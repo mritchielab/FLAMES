@@ -424,23 +424,22 @@ int get_hm_idx(std::string& q_seq, std::vector<std::string>& barcode_list, int m
 
 }
 
-//int main(int argc, char const *argv[])
-//'
 //' Match Cell Barcodes
 //'
 //' @description Match cell barcodes in the given fastq directory with the reference csv, \code{ref_csv}. Matches are returned
 //' in the output file \code{out_fastq}
 //'
 //' @param fastq_dir directory containing fastq files to match
-//' @param stats_file ?
+//' @param stats_file NEEDED
 //' @param out_fastq output filename for matched barcodes
-//' @param ref_csv ?
+//' @param ref_csv NEEDED
 //' @param MAX_DIST int; maximum edit distance
 //' @param UMI_LEN int; length of UMI sequences
 //'
 //' @return returns NULL
 //' @useDynLib FlamesR, .registration=TRUE
-// [[Rcpp::export()]]
+//' @export
+// [[Rcpp::export]]
 void match_cell_barcode(String fastq_dir, String stats_file, String out_fastq, String ref_csv, int MAX_DIST, int UMI_LEN=10)
 {
   // "usage: <1.fastq folder> <2.output cell barcode statistics file> <3.fastq output reads that matched cell barcode> <4.barcode reference from short read 10X data> <5.max edit distance> [6. UMI length (default: 10)]"

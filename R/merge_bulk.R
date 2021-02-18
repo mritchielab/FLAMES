@@ -5,7 +5,7 @@
 #'
 #' @param fastq_dir The folder containing fastq files to merge
 #' @param anno_csv a path for the output csv, containing the fake barcodes created
-#' @param out_fastq A file which will be created to store all fastq entries
+#' @param out_fastq A file which will be created to store all fastq entries. Overwrites existing files
 #' 
 #' @return file path to the created merged fastq file `out_fastq`
 #' 

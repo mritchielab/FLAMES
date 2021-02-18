@@ -16,11 +16,11 @@ match_cell_barcode(
 \arguments{
 \item{fastq_dir}{directory containing fastq files to match}
 
-\item{stats_file}{?}
+\item{stats_file}{NEEDED}
 
 \item{out_fastq}{output filename for matched barcodes}
 
-\item{ref_csv}{?}
+\item{ref_csv}{NEEDED}
 
 \item{MAX_DIST}{int; maximum edit distance}
 
