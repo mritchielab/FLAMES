@@ -85,7 +85,7 @@ bulk_long_pipeline <- function(annot, fastq, in_bam=NULL, outdir, genome_fa,
     infq <- paste(outdir, "merged.fastq.gz", sep="/")
     bc_file <- paste(outdir, "pseudo_barcode_annotation.csv", sep="/")
 
-    if (is.null(in_bam)) {
+    if (is.null(in_bam) && !file.exists(infq)) {
         # this preprocessing needs only be done if we are using a fastq_dir, instead
         # of a bam file for reads,
         cat("Preprocessing bulk fastqs...\n")

@@ -13,7 +13,7 @@ Description: Semi-supervised isoform detection and annotation from both long rea
  and single cell data. Flames provides automated pipelines for analysing isoforms 
  in long read and single cell data, as well as intermediate functions for manual execution.
 biocViews: RNASeq, SingleCell, Transcriptomics, DataImport, 
-            DifferentialSplicing, AlternativeSplicing GeneExpression
+            DifferentialSplicing, AlternativeSplicing, GeneExpression
 License: file LICENSE
 Encoding: UTF-8
 Imports: 
