@@ -60,11 +60,12 @@
 #' unlink(c(fastq1, fastq2)) # the original files can be deleted
 #' 
 #' # run the FLAMES bulk pipeline, using the downloaded files
+#' \dontrun{
 #' se <- bulk_long_pipeline(annot=system.file("extdata/SIRV_anno.gtf", package="FlamesR"), 
 #'                    fastq=fastq_dir,
 #'                    outdir=tempdir(), genome_fa=system.file("extdata/SIRV_genomefa.fasta", package="FlamesR"),
 #'                    config_file=system.file("extdata/SIRV_config_default.json", package="FlamesR"))
-#' 
+#' }
 #' @importFrom SummarizedExperiment SummarizedExperiment
 #' @importFrom utils read.csv read.table
 #' @importFrom BiocFileCache BiocFileCache

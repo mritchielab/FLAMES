@@ -51,6 +51,13 @@
 #'  \item{tss_tes.bedgraph}{ - TSS TES enrichment for all reads (for QC)}
 #' }
 #'
+#' @examples 
+#' \dontrun{
+#' sce <- sc_long_pipeline(annot=system.file("extdata/SIRV_anno.gtf", package="FlamesR"), 
+#'                    fastq=system.file("extdata/fastq", package="FlamesR"),
+#'                    outdir=tempdir(), genome_fa=system.file("extdata/SIRV_genomefa.fasta", package="FlamesR"),
+#'                    config_file=system.file("extdata/SIRV_config_default.json", package="FlamesR"))
+#' }
 #' @seealso
 #' [bulk_long_pipeline()] for bulk long data,
 #' [SingleCellExperiment()] for how data is outputted
