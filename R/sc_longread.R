@@ -11,13 +11,13 @@
 #' 
 #' @examples 
 #' # parse the gff file before creating junctions from the gene blocks
-#' gff3_parse <- parse_gff_tree(system.file("extdata/SIRV_anno.gtf", package="FlamesR"))
+#' gff3_parse <- parse_gff_tree(system.file("extdata/SIRV_anno.gtf", package="FLAMES"))
 #' transcript_junction = blocks_to_junctions(gff3_parse$transcript_to_exon[[1]])
 #' @importFrom reticulate import_from_path
 #' @export
 blocks_to_junctions <- function(block) {
     junctions <- callBasilisk(flames_env, function(block) {
-        python_path <- system.file("python", package="FlamesR")
+        python_path <- system.file("python", package="FLAMES")
 
         sc <- reticulate::import_from_path("sc_longread", python_path)
         junc <- sc$blocks_to_junctions(block)
@@ -40,13 +40,13 @@ blocks_to_junctions <- function(block) {
 #' @return return NULL
 #' 
 #' @examples 
-#' gff3_parse <- parse_gff_tree(system.file("extdata/SIRV_anno.gtf", package="FlamesR"))
+#' gff3_parse <- parse_gff_tree(system.file("extdata/SIRV_anno.gtf", package="FLAMES"))
 #' remove_similar_tr(gff3_parse$gene_to_transcript, gff3_parse$transcript_to_exon, thr=5)
 #' @importFrom reticulate import_from_path
 #' @export
 remove_similar_tr <- function(gene_to_transcript, transcript_to_exon, thr=10) {
     callBasilisk(flames_env, function(gene_tran, tr_exon, thr) {
-        python_path <- system.file("python", package="FlamesR")
+        python_path <- system.file("python", package="FLAMES")
 
         sc <- reticulate::import_from_path("sc_longread", python_path)
         sc$remove_similar_tr(gene_tran, tr_exon, thr)
@@ -65,13 +65,13 @@ remove_similar_tr <- function(gene_to_transcript, transcript_to_exon, thr=10) {
 #' @return NEEDED
 #' 
 #' @examples 
-#' gff3_parse <- parse_gff_tree(system.file("extdata/SIRV_anno.gtf", package="FlamesR"))
+#' gff3_parse <- parse_gff_tree(system.file("extdata/SIRV_anno.gtf", package="FLAMES"))
 #' gene_dict <- get_gene_flat(gff3_parse$gene_to_transcript, gff3_parse$transcript_to_exon)
 #' @importFrom reticulate import_from_path
 #' @export
 get_gene_flat <- function(gene_to_transcript, transcript_to_exon) {
     gene_flat <- callBasilisk(flames_env, function(gene_tran, tran_exon) {
-        python_path <- system.file("python", package="FlamesR")
+        python_path <- system.file("python", package="FLAMES")
 
         sc <- reticulate::import_from_path("sc_longread", python_path)
         sc$get_gene_flat(gene_tran, tran_exon)
@@ -93,14 +93,14 @@ get_gene_flat <- function(gene_to_transcript, transcript_to_exon) {
 #' @return NEEDED
 #' 
 #' @examples 
-#' gff3_parse <- parse_gff_tree(system.file("extdata/SIRV_anno.gtf", package="FlamesR"))
+#' gff3_parse <- parse_gff_tree(system.file("extdata/SIRV_anno.gtf", package="FLAMES"))
 #' gene_dict <- get_gene_flat(gff3_parse$gene_to_transcript, gff3_parse$transcript_to_exon)
 #' chr_to_blocks <- get_gene_blocks(gene_dict, gff3_parse$chr_to_gene, gff3_parse$gene_to_transcript)
 #' @importFrom reticulate import_from_path
 #' @export
 get_gene_blocks <- function(gene_dict, chr_to_gene, gene_to_transcript) {
     gene_blocks <- callBasilisk(flames_env, function(g_dict, chr_gene, gene_tran) {
-        python_path <- system.file("python", package="FlamesR")
+        python_path <- system.file("python", package="FLAMES")
 
         sc <- reticulate::import_from_path("sc_longread", python_path)
 
@@ -145,10 +145,10 @@ get_gene_blocks <- function(gene_dict, chr_to_gene, gene_to_transcript) {
 #' @return File paths of the output files \code{out_gff3} and \code{out_stat}
 #' 
 #' @examples 
-#' anno <- system.file("extdata/SIRV_anno.gtf", package="FlamesR")
-#' genome_bam <- system.file("extdata/align2genome.bam", package="FlamesR")
-#' genomfa <- system.file("extdata/SIRV_genomefa.fasta", package="FlamesR")
-#' config <- parse_json_config(system.file("extdata/SIRV_config_default.json", package="FlamesR"))
+#' anno <- system.file("extdata/SIRV_anno.gtf", package="FLAMES")
+#' genome_bam <- system.file("extdata/align2genome.bam", package="FLAMES")
+#' genomefa <- system.file("extdata/SIRV_genomefa.fasta", package="FLAMES")
+#' config <- parse_json_config(system.file("extdata/SIRV_config_default.json", package="FLAMES"))
 #' gff3_parse <- parse_gff_tree(anno)
 #' gene_dict <- get_gene_flat(gff3_parse$gene_to_transcript, gff3_parse$transcript_to_exon)
 #' chr_to_blocks <- get_gene_blocks(gene_dict, gff3_parse$chr_to_gene, gff3_parse$gene_to_transcript)
@@ -164,7 +164,7 @@ group_bam2isoform <- function(bam_in, out_gff3, out_stat, summary_csv, chr_to_bl
                              transcript_to_junctions, transcript_dict, fa_f, config, downsample_ratio,
                              raw_gff3=NULL) {
     callBasilisk(flames_env, function(bin, o_gff3, o_stat, summary, chr, gene, trans_junc, trans_dict, fa, conf, dr, raw) {
-        python_path <- system.file("python", package="FlamesR")
+        python_path <- system.file("python", package="FLAMES")
 
         sc <- reticulate::import_from_path("sc_longread", python_path)
         sc$group_bam2isoform(bin, o_gff3, o_stat, summary, chr, gene, trans_junc, trans_dict, fa, conf, dr, raw)

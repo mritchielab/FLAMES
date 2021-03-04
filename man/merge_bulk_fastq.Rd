@@ -21,5 +21,5 @@ Merges all fastq files in the given folder into a single file. Used to create a 
 with added fake barcodes to differentiate between source files.
 }
 \examples{
-out_fastq <- merge_bulk_fastq(system.file("extdata/fastq", package="FlamesR"), anno_csv=tempfile(), out_fastq=tempfile())
+out_fastq <- merge_bulk_fastq(system.file("extdata/fastq", package="FLAMES"), anno_csv=tempfile(), out_fastq=tempfile())
 }

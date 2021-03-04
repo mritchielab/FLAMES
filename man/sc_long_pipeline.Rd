@@ -11,6 +11,8 @@ sc_long_pipeline(
   genome_fa,
   minimap2_dir = NULL,
   downsample_ratio = 1,
+  reference_csv,
+  match_barcode = TRUE,
   config_file = NULL,
   do_genome_align = TRUE,
   do_isoform_id = TRUE,
@@ -39,7 +41,7 @@ sc_long_pipeline(
 \arguments{
 \item{annot}{gene annotations file in gff3  format}
 
-\item{fastq}{the directory containing fastq files, each containing data from one sample}
+\item{fastq}{file path to input fastq file}
 
 \item{outdir}{directory to store all output files.}
 
@@ -49,6 +51,10 @@ sc_long_pipeline(
 k8 and paftools.js are used to convert gff3 to bed12.}
 
 \item{downsample_ratio}{downsampling ratio if performing downsampling analysis.}
+
+\item{reference_csv}{file path to the reference csv used for demultiplexing}
+
+\item{match_barcode}{bool; specifies if demultiplexing should be performed using \code{FLAMES::match_cell_barcode}}
 
 \item{config_file}{JSON configuration file. If specified, \code{config_file} overrides
 all configuration parameters}
@@ -134,10 +140,10 @@ strand information being based on reference annotation.}
 }
 \examples{
 \dontrun{
-sce <- sc_long_pipeline(annot=system.file("extdata/SIRV_anno.gtf", package="FlamesR"), 
-                   fastq=system.file("extdata/fastq", package="FlamesR"),
-                   outdir=tempdir(), genome_fa=system.file("extdata/SIRV_genomefa.fasta", package="FlamesR"),
-                   config_file=system.file("extdata/SIRV_config_default.json", package="FlamesR"))
+sce <- sc_long_pipeline(annot=system.file("extdata/SIRV_anno.gtf", package="FLAMES"), 
+                   fastq=system.file("extdata/fastq", package="FLAMES"),
+                   outdir=tempdir(), genome_fa=system.file("extdata/SIRV_genomefa.fasta", package="FLAMES"),
+                   config_file=system.file("extdata/SIRV_config_default.json", package="FLAMES"))
 }
 }
 \seealso{

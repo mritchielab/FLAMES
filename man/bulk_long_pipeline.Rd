@@ -39,7 +39,7 @@ bulk_long_pipeline(
 \arguments{
 \item{annot}{gene annotations file in gff3  format}
 
-\item{fastq}{the directory containing the fastq input files to merge into one, \code{merged.fastq.gz}. If \code{merge.fastq.gz} already
+\item{fastq}{the directory containing the fastq input files to merge into one, \code{merged.fastq.gz}. If \code{merged.fastq.gz} already
 exists, the fastq files are not merged and the existing merged file is used.}
 
 \item{in_bam}{optional BAM file which replaces fastq directory argument. This skips the genome alignment and
@@ -156,10 +156,10 @@ unlink(c(fastq1, fastq2)) # the original files can be deleted
 
 # run the FLAMES bulk pipeline, using the downloaded files
 \dontrun{
-se <- bulk_long_pipeline(annot=system.file("extdata/SIRV_anno.gtf", package="FlamesR"), 
+se <- bulk_long_pipeline(annot=system.file("extdata/SIRV_anno.gtf", package="FLAMES"), 
                    fastq=fastq_dir,
-                   outdir=tempdir(), genome_fa=system.file("extdata/SIRV_genomefa.fasta", package="FlamesR"),
-                   config_file=system.file("extdata/SIRV_config_default.json", package="FlamesR"))
+                   outdir=tempdir(), genome_fa=system.file("extdata/SIRV_genomefa.fasta", package="FLAMES"),
+                   config_file=system.file("extdata/SIRV_config_default.json", package="FLAMES"))
 }
 }
 \seealso{

@@ -1,7 +1,7 @@
 ---
 title: "Vignette for FLAMES Bulk on Windows"
 author: "Oliver Voogd"
-package: FlamesR                
+package: FLAMES                
 output: BiocStyle::html_document
 vignette: >
   %\VignetteIndexEntry{Vignette for FLAMES Bulk on Windows}
@@ -32,7 +32,7 @@ This process for manual execution with external alignment is outlined below.
 
 
 ### Environment setup
-Begin by storing the required variables `annot`, `fastq`, `outdir`, `genome_fa`, in the current workspace. Ensure `outdir` exists, and is writable. More information on the values of these variables can be obtained by executing `?FlamesR::bulk_long_pipeline`. The optional `config_file` variable can also be stored, or the default configuration file, located in the `extdata/` folder in the base level of this packaged can be used.
+Begin by storing the required variables `annot`, `fastq`, `outdir`, `genome_fa`, in the current workspace. Ensure `outdir` exists, and is writable. More information on the values of these variables can be obtained by executing `?FLAMES::bulk_long_pipeline`. The optional `config_file` variable can also be stored, or the default configuration file, located in the `extdata/` folder in the base level of this packaged can be used.
 
 This vignette uses `BiocFileCache` to download the required variables from an example data set.
 Below is the process for creating the BiocFileCache and downloading the required files. The code below is included for demonstration and is not required in order to run the Flames pipeline on Windows.
@@ -55,7 +55,7 @@ file.copy(c(fastq1, fastq2), fastq_dir)
 unlink(c(fastq1, fastq2)) # the original files can be deleted
 
 # setup other environment variables
-config_file <- system.file("extdata/SIRV_config_default.json", package="FlamesR") # the configuration file is included with the FlamesR package
+config_file <- system.file("extdata/SIRV_config_default.json", package="FLAMES") # the configuration file is included with the FLAMES package
 outdir <- tempfile() # create a temporary output directory
 if (!dir.exists(outdir)) {
     dir.create(outdir)
@@ -81,7 +81,7 @@ file.rename(bfc[[names(BiocFileCache::bfcadd(bfc, "Realign BAM Index", paste(fil
 
 After these are stored, all fastq files located in the directory `fastq` can be merged by running the below code.
 ```{r eval=TRUE}
-library(FlamesR)
+library(FLAMES)
 infq <- paste(outdir, "merged.fastq.gz", sep="/")
 bc_file <- paste(outdir, "pseudo_barcode_annotation.csv", sep="/")
 
@@ -111,7 +111,7 @@ The JSON configuration file should also be loaded into R, using:
 ```{r eval=TRUE}
 config <- parse_json_config(config_file)
 ```
-If a FLAMES configuration file doesn't exist, one can be created using user specified values, and loaded into R using the function `FlamesR::create_config()`. For more information on the contents of the FLAMES JSON configuration file, and for the input parameters to `create_config()`, run `?FlamesR::create_config()`.
+If a FLAMES configuration file doesn't exist, one can be created using user specified values, and loaded into R using the function `FLAMES::create_config()`. For more information on the contents of the FLAMES JSON configuration file, and for the input parameters to `create_config()`, run `?FLAMES::create_config()`.
 
 An example of the default FLAMES config file can be found in `extdata/SIRV_config_default.json`. Using `?write_config` will also give a description of the parameters stored in the JSON configuration file.
 
@@ -121,7 +121,7 @@ An example of the default FLAMES config file can be found in `extdata/SIRV_confi
 
 #### Genome Alignment Using Minimap2
 If genome alignment is required, this should be performed on a system with access to minimap2. The code required to run this is provided below. This code should **not** be run on a Windows system. After this is executed and resulting data transfered to this workspace, the Windows FLAMES bulk pipeline can proceed. 
-All required variables for this section should be transferred to the system with minimap2, the code executed below inside an R session using FlamesR, and finally the resulting file BAM file and BAM index file should be returned to the original system and R workspace, and the path to the BAM file should be stored as `genome_bam`, with the related index file being in the same directory as `genome_bam`.
+All required variables for this section should be transferred to the system with minimap2, the code executed below inside an R session using FLAMES, and finally the resulting file BAM file and BAM index file should be returned to the original system and R workspace, and the path to the BAM file should be stored as `genome_bam`, with the related index file being in the same directory as `genome_bam`.
 ```{r eval=FALSE}
 # below code must be run with access to minimap2
 tmp_bed <- paste(outdir, "tmp.splice_anno.bed12", sep=.Platform$file.sep)
@@ -179,14 +179,14 @@ get_transcript_seq(genome_fa, transcript_fa, gff3_isoform$chr_to_gene, gff3_isof
 
 
 #### Read Realignment
-If read realignment is required, this should again be done on a system with access to minimap2. The code below details how this is accomplished, using functions from the FlamesR package. This step requires the files `transcript_fa`, and `infq`, created from prior steps in the pipeline. As with initial read alignment, these should be transferred to a system with access to minimap2, and the resulting file `realign_bam` and related index file transferred back to the current workspace, so the final pipeline step can be completed.
+If read realignment is required, this should again be done on a system with access to minimap2. The code below details how this is accomplished, using functions from the FLAMES package. This step requires the files `transcript_fa`, and `infq`, created from prior steps in the pipeline. As with initial read alignment, these should be transferred to a system with access to minimap2, and the resulting file `realign_bam` and related index file transferred back to the current workspace, so the final pipeline step can be completed.
 ```{r eval=FALSE}
 tmp_bam <- paste(outdir, "tmp.align.bam", sep=.Platform$file.sep)
 minimap2_tr_align(minimap2_dir, transcript_fa, infq, tmp_bam)
 samtools_sort_index(tmp_bam, realign_bam)
 file.remove(tmp_bam)
 ```
-The file realign_bam and the index file (`realign_bam.bai`) should be returned back to the original system, and it's file path loaded into the same R session, as it is required for the final FlamesR step. The variable `realign_bam` needs to contain the path to the transferred bam file, which needs to be in the same directory as it's related index file. 
+The file realign_bam and the index file (`realign_bam.bai`) should be returned back to the original system, and it's file path loaded into the same R session, as it is required for the final FLAMES step. The variable `realign_bam` needs to contain the path to the transferred bam file, which needs to be in the same directory as it's related index file. 
 
 
 #### Transcript Quantification
@@ -213,7 +213,7 @@ The directory `outdir` now contains several output files returned from this pipe
  }
  
  
- The function `FlamesR::bulk_long_pipeline()`, which this vignette provides an implementation of for the Windows OS returns some of the data provided by this output files as a SummarizedExperiment object, for easy integration with other R packages. The below code provides a basic way to created this SummarizedExperiment object.
+ The function `FLAMES::bulk_long_pipeline()`, which this vignette provides an implementation of for the Windows OS returns some of the data provided by this output files as a SummarizedExperiment object, for easy integration with other R packages. The below code provides a basic way to created this SummarizedExperiment object.
 ```{r eval=TRUE}
 counts <- utils::read.csv(paste0(outdir, "/transcript_count.csv.gz"))
 annot <- utils::read.table(paste0(outdir, "/isoform_annotated.filtered.gff3"))

@@ -68,10 +68,10 @@ Further required details
 }
 }
 \examples{
-anno <- system.file("extdata/SIRV_anno.gtf", package="FlamesR")
-genome_bam <- system.file("extdata/align2genome.bam", package="FlamesR")
-genomfa <- system.file("extdata/SIRV_genomefa.fasta", package="FlamesR")
-config <- parse_json_config(system.file("extdata/SIRV_config_default.json", package="FlamesR"))
+anno <- system.file("extdata/SIRV_anno.gtf", package="FLAMES")
+genome_bam <- system.file("extdata/align2genome.bam", package="FLAMES")
+genomefa <- system.file("extdata/SIRV_genomefa.fasta", package="FLAMES")
+config <- parse_json_config(system.file("extdata/SIRV_config_default.json", package="FLAMES"))
 gff3_parse <- parse_gff_tree(anno)
 gene_dict <- get_gene_flat(gff3_parse$gene_to_transcript, gff3_parse$transcript_to_exon)
 chr_to_blocks <- get_gene_blocks(gene_dict, gff3_parse$chr_to_gene, gff3_parse$gene_to_transcript)

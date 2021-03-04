@@ -35,7 +35,7 @@
 #'  \item{tss_tes.bedgraph}{ - TSS TES enrichment for all reads (for QC)}
 #' }
 #'
-#' @param fastq the directory containing the fastq input files to merge into one, `merged.fastq.gz`. If `merge.fastq.gz` already
+#' @param fastq the directory containing the fastq input files to merge into one, `merged.fastq.gz`. If `merged.fastq.gz` already
 #' exists, the fastq files are not merged and the existing merged file is used.
 #' @param in_bam optional BAM file which replaces fastq directory argument. This skips the genome alignment and
 #' realignment steps
@@ -63,17 +63,16 @@
 #' 
 #' # run the FLAMES bulk pipeline, using the downloaded files
 #' \dontrun{
-#' se <- bulk_long_pipeline(annot=system.file("extdata/SIRV_anno.gtf", package="FlamesR"), 
+#' se <- bulk_long_pipeline(annot=system.file("extdata/SIRV_anno.gtf", package="FLAMES"), 
 #'                    fastq=fastq_dir,
-#'                    outdir=tempdir(), genome_fa=system.file("extdata/SIRV_genomefa.fasta", package="FlamesR"),
-#'                    config_file=system.file("extdata/SIRV_config_default.json", package="FlamesR"))
+#'                    outdir=tempdir(), genome_fa=system.file("extdata/SIRV_genomefa.fasta", package="FLAMES"),
+#'                    config_file=system.file("extdata/SIRV_config_default.json", package="FLAMES"))
 #' }
 #' @importFrom SummarizedExperiment SummarizedExperiment
 #' @importFrom utils read.csv read.table
 #' @importFrom BiocFileCache BiocFileCache
 #' @export
 bulk_long_pipeline <- function(annot, fastq, in_bam=NULL, outdir, genome_fa,
-#bulk_long_pipeline <- function(annot, fastq, outdir, genome_fa,
                                 minimap2_dir=NULL, downsample_ratio=1, config_file=NULL,
                                 do_genome_align=TRUE, do_isoform_id=TRUE,
                                 do_read_realign=TRUE, do_transcript_quanti=TRUE,
@@ -99,12 +98,13 @@ bulk_long_pipeline <- function(annot, fastq, in_bam=NULL, outdir, genome_fa,
         # use existing merge fastq if already exists
         if (file.exists(infq)) {
             cat(infq, " already exists, no need to merge fastq files\n")
+        } else {
+            # this preprocessing needs only be done if we are using a fastq_dir, instead
+            # of a bam file for reads,
+            cat("Preprocessing bulk fastqs...\n")
+            # run the merge_bulk_fastq function as preprocessing
+            merge_bulk_fastq(fastq, bc_file, infq)
         }
-        # this preprocessing needs only be done if we are using a fastq_dir, instead
-        # of a bam file for reads,
-        cat("Preprocessing bulk fastqs...\n")
-        # run the merge_bulk_fastq function as preprocessing
-        merge_bulk_fastq(fastq, bc_file, infq)
     } else {
         bc_file = NULL;
         fastq=NULL;

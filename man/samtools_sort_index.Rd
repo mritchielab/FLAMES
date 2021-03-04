@@ -19,5 +19,5 @@ Sorts and then indexes alignments for fast random access using samtools. Uses so
 Rsamtools.
 }
 \examples{
-bam_out <- samtools_sort_index(system.file("extdata/align2genome.bam",package="FlamesR"), tempfile(fileext=".bam"))
+bam_out <- samtools_sort_index(system.file("extdata/align2genome.bam",package="FLAMES"), tempfile(fileext=".bam"))
 }

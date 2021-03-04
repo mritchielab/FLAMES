@@ -1,5 +1,5 @@
 ## usethis namespace: start
-#' @useDynLib FlamesR
+#' @useDynLib FLAMES
 ## usethis namespace: end
 ## usethis namespace: start
 #' @importFrom Rcpp sourceCpp

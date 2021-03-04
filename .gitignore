@@ -4,3 +4,5 @@
 .ds_store
 .Rproj
 inst/doc
+vignettes/*.html
+vignettes/*.R

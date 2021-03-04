@@ -40,8 +40,7 @@ generic_long_pipeline(
 \arguments{
 \item{annot}{gene annotations file in gff3  format}
 
-\item{fastq}{the directory containing the fastq input files to merge into one, \code{merged.fastq.gz}. If \code{merge.fastq.gz} already
-exists, the fastq files are not merged and the existing merged file is used.}
+\item{fastq}{file path to input fastq file}
 
 \item{in_bam}{optional BAM file which replaces fastq directory argument. This skips the genome alignment and
 realignment steps}

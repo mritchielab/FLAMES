@@ -22,5 +22,5 @@ Parses GFF3 file formats into a usable list of four elements. Accepts \code{.gtf
 well as \code{.gz} compressed versions.
 }
 \examples{
-gff3_parse <- parse_gff_tree(system.file("extdata/SIRV_anno.gtf", package="FlamesR"))
+gff3_parse <- parse_gff_tree(system.file("extdata/SIRV_anno.gtf", package="FLAMES"))
 }

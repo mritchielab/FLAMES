@@ -1,20 +1,22 @@
-Package: FlamesR
+Package: FLAMES
 Type: Package
-Title: Full Length Transcriptome Splicing and Mutation Analysis
+Title: FLAMES; Full Length Transcriptome Splicing and Mutation Analysis for Long-Read Data
 Version: 0.99.0
 Date: 2020-12-28
-Authors@R: c(person("Luyi Tian", "Developer", role=c("aut", "cre"),
+Authors@R: c(person("Tian", "Luyi", role=c("aut"),
                     email="tian.l@wehi.edu.au"),
-             person("Oliver Voogd", "Developer", role=c("com"),
+             person("Voogd", "Oliver", role=c("aut", "cre"),
                     email="voogd.o@wehi.edu.au"),
-             person("Shian Su", "Developer", role=c("aut"),
-                    email="su.s@wehi.edu.au"))
+             person("Su", "Shian",  role=c("aut"),
+                    email="su.s@wehi.edu.au"),
+             person("Ritchie","Matthew", role=c("ctb"),
+                    email="mritchie@wehi.edu.au"))
 Description: Semi-supervised isoform detection and annotation from both long read 
  and single cell data. Flames provides automated pipelines for analysing isoforms 
  in long read and single cell data, as well as intermediate functions for manual execution.
 biocViews: RNASeq, SingleCell, Transcriptomics, DataImport, 
             DifferentialSplicing, AlternativeSplicing, GeneExpression
-License: file LICENSE
+License: GPL (>= 2)
 Encoding: UTF-8
 Imports: 
     basilisk, reticulate, SingleCellExperiment, 

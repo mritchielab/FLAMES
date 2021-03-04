@@ -3,7 +3,9 @@
 #' Generic implementation of the flames pipeline. Used for both bulk reads and
 #' single cell reads.
 #'
-#' @inheritParams bulk_long_pipeline
+#' @inheritParams sc_long_pipeline
+#' @param in_bam optional BAM file which replaces fastq directory argument. This skips the genome alignment and
+#' realignment steps
 #' @param bc_file file containing the pseudo barcode annotations generated
 #' from bulk_long_pipeline. If given, it is used for quantification.
 #' 
@@ -11,7 +13,6 @@
 #' in the given `outdir` directory. These files are loaded into R in either
 #' a SummarizedExperiment or SingleCellExperiment object by the callers to this
 #' function, `sc_long_pipeline()` and `bulk_long_pipeline()` respectively.
-#generic_long_pipeline <- function(annot, fastq, outdir, genome_fa,
 generic_long_pipeline <- function(annot, fastq, in_bam, outdir, genome_fa,
                 minimap2_dir, downsample_ratio, config_file,
                 do_genome_align, do_isoform_id=TRUE,
@@ -60,6 +61,8 @@ generic_long_pipeline <- function(annot, fastq, in_bam, outdir, genome_fa,
     using_bam = FALSE
     if (!is.null(in_bam)) {
         using_bam = TRUE
+        bc_file = NULL
+        fastq = NULL
         if (!file.exists(in_bam)) stop ("Make sure in_bam exists")
     } 
     if (is.null(minimap2_dir)) minimap2_dir = ""
@@ -72,8 +75,9 @@ generic_long_pipeline <- function(annot, fastq, in_bam, outdir, genome_fa,
     tss_tes_stat = paste(outdir, "tss_tes.bedgraph", sep="/")
     transcript_fa = paste(outdir, "transcript_assembly.fa", sep="/")
     transcript_fa_idx = paste(outdir, "transcript_assembly.fa.fai", sep="/")
-    tmp_bam = paste(outdir, "tmp.align.bam", sep="/")
-    tmp_bed = paste(outdir, "tmp.splice_anno.bed12", sep="/")
+    tmp_bam = paste(outdir, "tmp_align.bam", sep="/")
+    tmp_bed = paste(outdir, "tmp_splice_anno.bed12", sep="/")
+    tmp_sam = paste(outdir, "tmp_align.sam", sep="/")
     genome_bam = paste(outdir, "align2genome.bam", sep="/")
     realign_bam = paste(outdir, "realign2transcript.bam", sep="/")
     tr_cnt_csv = paste(outdir, "transcript_count.csv.gz", sep="/")
@@ -96,15 +100,14 @@ generic_long_pipeline <- function(annot, fastq, in_bam, outdir, genome_fa,
     #if (config$pipeline_parameters$do_genome_alignment) {
         cat("#### Aligning reads to genome using minimap2\n")
 
-        tmp_bed <- paste(outdir, "tmp.splice_anno.bed12", sep=.Platform$file.sep)
-        tmp_bam <- paste(outdir, "tmp.align.bam", sep=.Platform$file.sep)
-
         if (config$alignment_parameters$use_junctions) {
             gff3_to_bed12(minimap2_dir, annot, tmp_bed)
         }
-        minimap2_align(minimap2_dir, genome_fa, fastq, tmp_bam,
+        minimap2_align(minimap2_dir, genome_fa, fastq, tmp_sam,
             no_flank=config$alignment_parameters$no_flank, bed12_junc = if (config$alignment_parameters$use_junctions) tmp_bed else NULL)
+        samtools_as_bam(tmp_sam, tmp_bam)
         samtools_sort_index(tmp_bam, genome_bam)
+        file.remove(tmp_sam)
         file.remove(tmp_bam)
         if (config$alignment_parameters$use_junctions) file.remove(tmp_bed)
     } else {
@@ -153,9 +156,10 @@ generic_long_pipeline <- function(annot, fastq, in_bam, outdir, genome_fa,
     if (!using_bam && do_read_realign) {
     #if (do_read_realign) {
         cat("#### Realign to transcript using minimap2\n")
-        tmp_bam <- paste(outdir, "tmp.align.bam", sep=.Platform$file.sep)
-        minimap2_tr_align(minimap2_dir, transcript_fa, fastq, tmp_bam)
+        minimap2_tr_align(minimap2_dir, transcript_fa, fastq, tmp_sam)
+        samtools_as_bam(tmp_sam, tmp_bam)
         samtools_sort_index(tmp_bam, realign_bam)
+        file.remove(tmp_sam)
         file.remove(tmp_bam)
     } else {
         cat("#### Skip read realignment\n")
@@ -175,7 +179,7 @@ generic_long_pipeline <- function(annot, fastq, in_bam, outdir, genome_fa,
                 config$isoform_parameters$Min_sup_cnt,
                 config$transcript_counting$min_tr_coverage,
                 config$transcript_counting$min_read_coverage,
-                bc_file=bc_file) # git rid of the need for this!
+                bc_file=bc_file)
         }
         tr_cnt = wrt_tr_to_csv(parse_realign$bc_tr_count_dict, transcript_dict_i, tr_cnt_csv, transcript_dict, config$global_parameters$has_UMI)
         wrt_tr_to_csv(parse_realign$bc_tr_badcov_count_dict, transcript_dict_i, tr_badcov_cnt_csv, transcript_dict, config$global_parameters$has_UMI)

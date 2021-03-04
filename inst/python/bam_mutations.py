@@ -81,7 +81,7 @@ def update_corr_cnt(int_l, cb_corr_cnt):
 
 
 
-
+# needed?
 def realigned_bam_allele_coverage(bam_in, chr_to_blocks, fa_f, cov_bin_f, cb_seq_dict, vcf_f=None, min_cnt=150,min_cov=100,report_pct=(0.1,0.9) ):
     c2i = {"A":0, "C":1, "G":2, "T":3}  # four array.arrays of the same length in order A C G T
     fa_dict={}
@@ -177,7 +177,7 @@ def realigned_bam_allele_coverage(bam_in, chr_to_blocks, fa_f, cov_bin_f, cb_seq
     #print pct_bin
     #print pt
 
-
+# needed?
 def bam_allele_coverage(bam_in, chr_to_blocks, fa_f, cov_bin_f, vcf_f, cb_seq_dict, min_cnt=100,min_cov=50 ):
     c2i = {"A":0, "C":1, "G":2, "T":3}  # four array.arrays of the same length in order A C G T
     fa_dict={}
@@ -233,7 +233,7 @@ def bam_allele_coverage(bam_in, chr_to_blocks, fa_f, cov_bin_f, vcf_f, cb_seq_di
         cov_bin_out.write("{},{},{}\n".format(cbs[0],cbs[1],cb_corr_cnt[cbs]))
 
 
-
+# needed?
 def get_all_SNV_table(bam_in, chr_to_blocks, transcript_to_exon, fa_f, out_dir, cb_seq_dict, bam_short, known_position_dict, min_cov=100, report_pct=(0.15,0.85)):
     c2i = {"A":0, "C":1, "G":2, "T":3}  # four array.arrays of the same length in order A C G T
     fa_dict={}
@@ -343,7 +343,7 @@ def get_all_SNV_table(bam_in, chr_to_blocks, transcript_to_exon, fa_f, out_dir, 
         for ix in range(500):
             cov_bin_out.write("{},{}\n".format(pt[ix],pct_bin[ix]))
 
-
+# needed?
 def get_mito_SNV_table(bam_in, fa_f, out_dir, cb_seq_dict, bam_short, ch="chrM", min_cov=1000, report_pct=(0.15,0.85)):
     c2i = {"A":0, "C":1, "G":2, "T":3}  # four array.arrays of the same length in order A C G T
     fa_dict={}
@@ -457,102 +457,3 @@ if __name__ == "__main__":
     gene_dict = get_gene_flat(gene_to_transcript,transcript_to_exon)
     chr_to_blocks = get_gene_blocks(gene_dict, chr_to_gene, gene_to_transcript)
     get_all_SNV_table(bam_in, chr_to_blocks, transcript_to_exon, fa_f, iso_dir, cb_seq_dict, bam_short,known_position_dict)
-    """
-    ### CLL141
-    cb_seq_dict = dict( (it.strip().split(",")[1], it.strip().split(",")[0]) for it in open("/stornext/General/data/user_managed/grpu_mritchie_1/RachelThijssen/sclr_data/Rachel_scRNA_Aug19/cluster_barcode_anno_lib20.csv"))
-    bam_short="/stornext/General/data/user_managed/grpu_mritchie_1/hongkePeng/Rachel/all_fastq/CLL141-CLL-cells_S8_Rsubread.sorted.bam"
-    iso_dir = "/stornext/General/data/user_managed/grpu_mritchie_1/RachelThijssen/sclr_data/Rachel_scRNA_Aug19/isoform_out"
-    bam_in=os.path.join(iso_dir, "align2genome.bam")
-    #gff_f=os.path.join(iso_dir, "isoform_annotated.gff3")
-    #chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = parse_gff_tree(gff_f)
-    #gene_dict = get_gene_flat(gene_to_transcript,transcript_to_exon)
-    #chr_to_blocks = get_gene_blocks(gene_dict, chr_to_gene, gene_to_transcript)
-    get_all_SNV_table(bam_in, chr_to_blocks, transcript_to_exon, fa_f, iso_dir, cb_seq_dict, bam_short,known_position_dict)
-    
-    ### CLL267
-    cb_seq_dict = dict( (it.strip().split("-")[0], it.strip().split("-")[0]) for it in open("/stornext/General/data/user_managed/grpu_mritchie_1/RachelThijssen/sclr_data/Illumina_data/patient2/Thijssen2_count20/outs/filtered_feature_bc_matrix/barcodes.tsv"))
-    bam_short="/stornext/General/data/user_managed/grpu_mritchie_1/hongkePeng/Rachel/all_fastq/CLL267_S4_Rsubread.sorted.bam"
-    iso_dir = "/stornext/General/data/user_managed/grpu_mritchie_1/RachelThijssen/sclr_data/CLL267/isoform_out"
-    bam_in=os.path.join(iso_dir, "align2genome.bam")
-    #gff_f=os.path.join(iso_dir, "isoform_annotated.gff3")
-    #chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = parse_gff_tree(gff_f)
-    #gene_dict = get_gene_flat(gene_to_transcript,transcript_to_exon)
-    #chr_to_blocks = get_gene_blocks(gene_dict, chr_to_gene, gene_to_transcript)
-    get_all_SNV_table(bam_in, chr_to_blocks, transcript_to_exon, fa_f, iso_dir, cb_seq_dict, bam_short,known_position_dict)
-    
-    ### CLL318
-    cb_seq_dict = dict( (it.strip().split("-")[0], it.strip().split("-")[0]) for it in open("/stornext/General/data/user_managed/grpu_mritchie_1/RachelThijssen/sclr_data/Illumina_data/CLL318/CLL318_count20/outs/filtered_feature_bc_matrix/barcodes.tsv"))
-    bam_short=None
-    iso_dir = "/stornext/General/data/user_managed/grpu_mritchie_1/RachelThijssen/sclr_data/CLL318"
-    bam_in=os.path.join(iso_dir, "align2genome.bam")
-    #gff_f=os.path.join(iso_dir, "isoform_annotated.gff3")
-    #chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = parse_gff_tree(gff_f)
-    #gene_dict = get_gene_flat(gene_to_transcript,transcript_to_exon)
-    #chr_to_blocks = get_gene_blocks(gene_dict, chr_to_gene, gene_to_transcript)
-    get_all_SNV_table(bam_in, chr_to_blocks, transcript_to_exon, fa_f, iso_dir, cb_seq_dict, bam_short,known_position_dict)
-    ### CLL152
-    
-    cb_seq_dict = dict( (it.strip().split(",")[1], it.strip().split(",")[0]) for it in open("/stornext/General/data/user_managed/grpu_mritchie_1/RachelThijssen/sclr_data/Illumina_data/CLL152/CLL152_count20/outs/filtered_feature_bc_matrix/barcodes.tsv"))
-    bam_short=None
-    iso_dir = "/stornext/General/data/user_managed/grpu_mritchie_1/RachelThijssen/sclr_data/CLL152/isoform_out"
-    bam_in=os.path.join(iso_dir, "align2genome.bam")
-    #gff_f=os.path.join(iso_dir, "isoform_annotated.gff3")
-    #chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = parse_gff_tree(gff_f)
-    #gene_dict = get_gene_flat(gene_to_transcript,transcript_to_exon)
-    #chr_to_blocks = get_gene_blocks(gene_dict, chr_to_gene, gene_to_transcript)
-    get_all_SNV_table(bam_in, chr_to_blocks, transcript_to_exon, fa_f, iso_dir, cb_seq_dict, bam_short,known_position_dict)
-    
-    ### CLL153
-    cb_seq_dict = dict( (it.strip().split(",")[0], it.strip().split(",")[0]) for it in open("/stornext/General/data/user_managed/grpu_mritchie_1/RachelThijssen/sclr_data/Illumina_data/CLL153/cellranger_code/CLL153_count20/outs/filtered_feature_bc_matrix/barcodes.tsv"))
-    bam_short=None
-    iso_dir = "/stornext/General/data/user_managed/grpu_mritchie_1/RachelThijssen/sclr_data/CLL153/isoform_out"
-    bam_in=os.path.join(iso_dir, "align2genome.bam")
-    #gff_f=os.path.join(iso_dir, "isoform_annotated.gff3")
-    #chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = parse_gff_tree(gff_f)
-    #gene_dict = get_gene_flat(gene_to_transcript,transcript_to_exon)
-    #chr_to_blocks = get_gene_blocks(gene_dict, chr_to_gene, gene_to_transcript)
-    get_all_SNV_table(bam_in, chr_to_blocks, transcript_to_exon, fa_f, iso_dir, cb_seq_dict, bam_short,known_position_dict)
-
-
-    ### scmix1
-    cb_seq_dict = dict( (it.strip().split("-")[0], it.strip().split("-")[0]) for it in open("/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/scbench_5cellline_10x/10percent_cellranger/filtered_gene_bc_matrices/hg38/barcodes.tsv"))
-    bam_short=None
-    iso_dir = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_out_8"
-    bam_in=os.path.join(iso_dir, "align2genome.bam")
-    #gff_f=os.path.join(iso_dir, "isoform_annotated.gff3")
-    #chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = parse_gff_tree(gff_f)
-    #gene_dict = get_gene_flat(gene_to_transcript,transcript_to_exon)
-    #chr_to_blocks = get_gene_blocks(gene_dict, chr_to_gene, gene_to_transcript)
-    get_all_SNV_table(bam_in, chr_to_blocks, transcript_to_exon, fa_f, iso_dir, cb_seq_dict, bam_short,known_position_dict)
-
-    ### scmix2
-    cb_seq_dict = dict( (it.strip().split("-")[0], it.strip().split("-")[0]) for it in open("/stornext/General/data/user_managed/grpu_mritchie_1/SCmixologyV3/luyiT_10X_260319/cellmix_Lib10/outs/filtered_feature_bc_matrix/barcodes.tsv"))
-    bam_short=None
-    iso_dir = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION_April19/v3_long_read/isoform_all"
-    bam_in=os.path.join(iso_dir, "align2genome.bam")
-    #gff_f=os.path.join(iso_dir, "isoform_annotated.gff3")
-    #chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = parse_gff_tree(gff_f)
-    #gene_dict = get_gene_flat(gene_to_transcript,transcript_to_exon)
-    #chr_to_blocks = get_gene_blocks(gene_dict, chr_to_gene, gene_to_transcript)
-    get_all_SNV_table(bam_in, chr_to_blocks, transcript_to_exon, fa_f, iso_dir, cb_seq_dict, bam_short,known_position_dict)
-    """
-
-    """
-    #mouse
-    known_position_dict = {}
-    fa_f="/stornext/General/data/user_managed/grpu_mritchie_1/LuyiTian/Index/GRCm38.primary_assembly.genome.fa"
-    gff_f="/stornext/General/data/user_managed/grpu_mritchie_1/LuyiTian/Index/gencode.vM24.annotation.gff3"
-    chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = parse_gff_tree(gff_f)
-    gene_dict = get_gene_flat(gene_to_transcript,transcript_to_exon)
-    chr_to_blocks = get_gene_blocks(gene_dict, chr_to_gene, gene_to_transcript)
-
-    cb_seq_dict = dict( (it.strip().split("-")[0], it.strip().split("-")[0]) for it in open("/stornext/General/data/user_managed/grpu_mritchie_1/JamesRyall/10X/AGRF_CAGRF18671_CD27KANXX_cellranger/MuSC_10P_cellranger/filtered_gene_bc_matrices/mm10/barcodes.tsv"))
-    bam_short=None
-    iso_dir = "/stornext/General/data/user_managed/grpu_mritchie_1/JamesRyall/PromethION/isoform_out"
-    bam_in=os.path.join(iso_dir, "align2genome.bam")
-    #gff_f=os.path.join(iso_dir, "isoform_annotated.gff3")
-    #chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = parse_gff_tree(gff_f)
-    #gene_dict = get_gene_flat(gene_to_transcript,transcript_to_exon)
-    #chr_to_blocks = get_gene_blocks(gene_dict, chr_to_gene, gene_to_transcript)
-    get_all_SNV_table(bam_in, chr_to_blocks, transcript_to_exon, fa_f, iso_dir, cb_seq_dict, bam_short,known_position_dict)
-    """

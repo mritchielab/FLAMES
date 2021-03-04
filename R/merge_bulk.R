@@ -10,12 +10,12 @@
 #' @return file path to the created merged fastq file `out_fastq`
 #' 
 #' @examples
-#' out_fastq <- merge_bulk_fastq(system.file("extdata/fastq", package="FlamesR"), anno_csv=tempfile(), out_fastq=tempfile())
+#' out_fastq <- merge_bulk_fastq(system.file("extdata/fastq", package="FLAMES"), anno_csv=tempfile(), out_fastq=tempfile())
 #' @importFrom reticulate import_from_path
 #' @export
 merge_bulk_fastq <- function(fastq_dir, anno_csv, out_fastq) {
     callBasilisk(flames_env, function(fq_dir, a_csv, out_fq) {
-        python_path <- system.file("python", package="FlamesR")
+        python_path <- system.file("python", package="FLAMES")
         
         merge_bulk <-
             reticulate::import_from_path("merge_bulk_fq", python_path)

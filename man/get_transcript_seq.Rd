@@ -36,7 +36,7 @@ returns NULL
 NEEDED
 }
 \examples{
-genomefa <- system.file("extdata/SIRV_genomefa.fasta", package="FlamesR")
-gff3_parse <- parse_gff_tree(system.file("extdata/isoform_annotated.gff3", package="FlamesR"))
+genomefa <- system.file("extdata/SIRV_genomefa.fasta", package="FLAMES")
+gff3_parse <- parse_gff_tree(system.file("extdata/isoform_annotated.gff3", package="FLAMES"))
 get_transcript_seq(genomefa, tempfile(fileext=".fa"), gff3_parse$chr_to_gene, gff3_parse$transcript_dict, gff3_parse$gene_to_transcript, gff3_parse$transcript_to_exon)
 }

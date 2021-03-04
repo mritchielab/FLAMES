@@ -16,7 +16,7 @@
 #' @export
 parse_json_config <- function(json_file) {
     config <- callBasilisk(flames_env, function(json) {
-        python_path <- system.file("python", package="FlamesR")
+        python_path <- system.file("python", package="FLAMES")
 
         conf <- reticulate::import_from_path("parse_config", python_path)
 
@@ -41,7 +41,7 @@ parse_json_config <- function(json_file) {
 #' @export
 print_config <- function(config) {
     callBasilisk(flames_env, function(config) {
-        python_path <- system.file("python", package="FlamesR")
+        python_path <- system.file("python", package="FLAMES")
 
         conf <- reticulate::import_from_path("parse_config", python_path)
         conf$print_config(config)
@@ -65,7 +65,7 @@ print_config <- function(config) {
 write_config <- function(config, config_file) {
     # write the config file to given file path
     callBasilisk(flames_env, function(config, config_file) {
-        python_path <- system.file("python", package="FlamesR")
+        python_path <- system.file("python", package="FLAMES")
 
         conf <- reticulate::import_from_path("parse_config", python_path)
         conf$write_config(config, config_file)

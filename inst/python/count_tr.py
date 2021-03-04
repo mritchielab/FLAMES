@@ -62,7 +62,7 @@ def make_bc_dict(bc_anno):
         
     return(bc_dict)
 
-
+# needed? 
 #old signature; def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_read_coverage, **kwargs):
 def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_read_coverage, kwargs):
     """

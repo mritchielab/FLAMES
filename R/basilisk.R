@@ -1,7 +1,7 @@
 #' @importFrom basilisk BasiliskEnvironment
 flames_env <- BasiliskEnvironment(envname="full_env",
-    pkgname="FlamesR",
-    packages=c("python==2.7.15", "samtools==1.11", "pysam==0.16.0.1", "minimap2==2.17", "numpy==1.16.5", "editdistance==0.5.3",
+    pkgname="FLAMES",
+    packages=c("python==2.7.15", "pysam==0.16.0.1", "minimap2==2.17", "numpy==1.16.5", "editdistance==0.5.3",
         "bzip2==1.0.8", 
         "c-ares==1.11.0", 
         "ca-certificates==2020.11.8", 

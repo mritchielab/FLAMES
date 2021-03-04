@@ -15,7 +15,7 @@
 #'  }
 #' 
 #' @examples 
-#' gff3_parse <- parse_gff_tree(system.file("extdata/SIRV_anno.gtf", package="FlamesR"))
+#' gff3_parse <- parse_gff_tree(system.file("extdata/SIRV_anno.gtf", package="FLAMES"))
 #' @export
 parse_gff_tree <- function(gff_file) {
     ret <- callBasilisk(flames_env, function(args) {
