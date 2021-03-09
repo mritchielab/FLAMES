@@ -21,11 +21,11 @@ Encoding: UTF-8
 Imports: 
     basilisk, reticulate, SingleCellExperiment, 
     SummarizedExperiment, Rsamtools, utils,
-    BiocFileCache
 Suggests: 
     BiocStyle,
     knitr,
-    rmarkdown
+    rmarkdown,
+    BiocFileCache
 LinkingTo: Rcpp
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr

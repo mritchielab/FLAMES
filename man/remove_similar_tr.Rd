@@ -14,12 +14,15 @@ remove_similar_tr(gene_to_transcript, transcript_to_exon, thr = 10)
 \item{thr}{The threshold for exon similarity}
 }
 \value{
-return NULL
+returns NULL
 }
 \description{
 Remove any duplicate exons, or similar exons with a similarity greater than
 \code{thr}, from each element in \code{gene_to_transcript}. Modifies
 \code{gene_to_transcript} in order to remove duplicates.
+}
+\details{
+NEEDED
 }
 \examples{
 gff3_parse <- parse_gff_tree(system.file("extdata/SIRV_anno.gtf", package="FLAMES"))

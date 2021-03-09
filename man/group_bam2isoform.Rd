@@ -42,17 +42,15 @@ group_bam2isoform(
 
 \item{downsample_ratio}{NEEDED}
 
-\item{raw_gff3}{NEEDER}
+\item{raw_gff3}{NEEDED}
 }
 \value{
 File paths of the output files \code{out_gff3} and \code{out_stat}
 }
 \description{
-Short description of function
+NEEDED
 }
 \details{
-Further required details
-
 \code{config} contains
 \itemize{
     \item MAX_DIST

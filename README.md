@@ -18,24 +18,19 @@ run by ```bulk_long_pipeline()``` and ```sc_long_pipeline()```.
 1. sc_long_pipeline.R
     1. sc_long_pipeline (these arguments are inherited for bulk_long_pipeline)
         1. Arguments
-        1. @details
         1. @description
-1. minimap2_align.R
-    1. minimap2_align
-        1. @details
 1. sc_longread_functions.R
     1. group_bam2isoform
         1. Arguments
         1. @description
-        1. @details
         1. config @details
     1. get_gene_blocks
         1. @description
-        1. @details
+        1. Arguments
         1. @return
     1. get_gene_flat
         1. @description
-        1. @details
+        1. Arguments
         1. @return 
     1. remove_similar_tr
         1. Arguments
@@ -54,10 +49,10 @@ run by ```bulk_long_pipeline()``` and ```sc_long_pipeline()```.
     1. parse-realigned_bam
         1. Arguments
         1. @description
-        1. @return
     1. wrt_tr_to_csv
         1, Arguments
         1. @description
+        1. @return
 1. filter_gff
     1. annotate_filter_gff
         1.Arguments
@@ -66,5 +61,5 @@ run by ```bulk_long_pipeline()``` and ```sc_long_pipeline()```.
 1. src/match_cell_barcode.cpp
     1. match_cell_barcode
         1. @description
-        1. @details
+        1. @return
         1. Arguments

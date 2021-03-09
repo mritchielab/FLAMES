@@ -8,7 +8,7 @@ minimap2_align(
   minimap2_prog_path = NULL,
   fa_file,
   fq_in,
-  bam_out,
+  sam_out,
   no_flank = FALSE,
   bed12_junc = NULL
 )
@@ -20,7 +20,7 @@ minimap2_align(
 
 \item{fq_in}{Fastq file used as a query sequence file}
 
-\item{bam_out}{Output BAM file}
+\item{sam_out}{Output SAM file}
 
 \item{no_flank}{Boolean; used if studying SIRV, to let minimap2 ignore additional bases}
 
@@ -31,5 +31,5 @@ file path to the given output BAM file, \code{bam_out}
 }
 \description{
 Uses minimap2 to align sequences agains a reference databse. 
-Uses options "-ax splice -t 12 -k14 --secondary=no \code{fa_file} \code{fq_in} | samtools view -bS -@ 4 -m 2G -o \code{bam_out}"
+Uses options "-ax splice -t 12 -k14 --secondary=no \code{fa_file} \code{fq_in}"
 }

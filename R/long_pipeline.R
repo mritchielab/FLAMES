@@ -91,7 +91,6 @@ generic_long_pipeline <- function(annot, fastq, in_bam, outdir, genome_fa,
         cat("\tinput bam:", in_bam, "\n")
         genome_bam = in_bam
     } else cat("\tinput fastq:", fastq, "\n")
-    cat("\tinput fastq:", fastq, "\n")
     cat("\toutput directory:", outdir, "\n")
     cat("\tdirectory containing minimap2:", minimap2_dir, "\n")
 

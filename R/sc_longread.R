@@ -33,11 +33,13 @@ blocks_to_junctions <- function(block) {
 #' \code{thr}, from each element in \code{gene_to_transcript}. Modifies
 #' \code{gene_to_transcript} in order to remove duplicates.
 #'
+#' @details NEEDED
+#' 
 #' @param gene_to_transcript NEEDED
 #' @param transcript_to_exon NEEDED
 #' @param thr The threshold for exon similarity
 #'
-#' @return return NULL
+#' @return returns NULL
 #' 
 #' @examples 
 #' gff3_parse <- parse_gff_tree(system.file("extdata/SIRV_anno.gtf", package="FLAMES"))
@@ -84,8 +86,6 @@ get_gene_flat <- function(gene_to_transcript, transcript_to_exon) {
 #'
 #' @description NEEDED
 #'
-#' @details NEEDED
-#'
 #' @param gene_dict NEEDED
 #' @param chr_to_gene NEEDED
 #' @param gene_to_transcript NEEDED
@@ -112,9 +112,7 @@ get_gene_blocks <- function(gene_dict, chr_to_gene, gene_to_transcript) {
 
 #' Group BAM to Isoform
 #'
-#' @description Short description of function
-#'
-#' @details Further required details
+#' @description NEEDED
 #'
 #' @param bam_in Input BAM file
 #' @param out_gff3 Output GFF3 file
@@ -140,7 +138,7 @@ get_gene_blocks <- function(gene_dict, chr_to_gene, gene_to_transcript) {
 #'     \item random_seed OPTIONAL;
 #' }
 #' @param downsample_ratio NEEDED
-#' @param raw_gff3 NEEDER
+#' @param raw_gff3 NEEDED
 #'
 #' @return File paths of the output files \code{out_gff3} and \code{out_stat}
 #' 
