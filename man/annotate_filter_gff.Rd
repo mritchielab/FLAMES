@@ -13,25 +13,9 @@ annotate_filter_gff(
   min_sup_reads
 )
 }
-\arguments{
-\item{isoform_gff}{NEEDED}
-
-\item{ref_gff}{NEEDED}
-
-\item{isoform_out}{output isoform file path}
-
-\item{anno_out}{output annotation file path}
-
-\item{tr_cnt}{NEEDED}
-
-\item{min_sup_reads}{NEEDED}
-}
-\value{
-returns NULL
-}
 \description{
 Combine FLAMES ouput with reference and filter out transcript by
-ealignment result.
+realignment result.
 }
 \examples{
 isoform_gff3 <- parse_gff_tree(system.file("extdata/isoform_annotated.gff3", package="FLAMES"))

@@ -6,18 +6,12 @@
 \usage{
 blocks_to_junctions(block)
 }
-\arguments{
-\item{block}{NEEDED}
-}
 \value{
 The converted junctions named list
 }
 \description{
 Converts \code{block} to a named list containing the keys "left", "right"
 and "junctions".
-}
-\details{
-NEEDED
 }
 \examples{
 # parse the gff file before creating junctions from the gene blocks

@@ -3,10 +3,6 @@
 #' @description
 #' Converts \code{block} to a named list containing the keys "left", "right"
 #' and "junctions".
-#' @details NEEDED
-#'
-#' @param block NEEDED
-#'
 #' @return The converted junctions named list
 #' 
 #' @examples 
@@ -14,7 +10,6 @@
 #' gff3_parse <- parse_gff_tree(system.file("extdata/SIRV_anno.gtf", package="FLAMES"))
 #' transcript_junction = blocks_to_junctions(gff3_parse$transcript_to_exon[[1]])
 #' @importFrom reticulate import_from_path
-#' @export
 blocks_to_junctions <- function(block) {
     junctions <- callBasilisk(flames_env, function(block) {
         python_path <- system.file("python", package="FLAMES")
@@ -32,20 +27,12 @@ blocks_to_junctions <- function(block) {
 #' Remove any duplicate exons, or similar exons with a similarity greater than
 #' \code{thr}, from each element in \code{gene_to_transcript}. Modifies
 #' \code{gene_to_transcript} in order to remove duplicates.
-#'
-#' @details NEEDED
-#' 
-#' @param gene_to_transcript NEEDED
-#' @param transcript_to_exon NEEDED
-#' @param thr The threshold for exon similarity
-#'
 #' @return returns NULL
 #' 
 #' @examples 
 #' gff3_parse <- parse_gff_tree(system.file("extdata/SIRV_anno.gtf", package="FLAMES"))
 #' remove_similar_tr(gff3_parse$gene_to_transcript, gff3_parse$transcript_to_exon, thr=5)
 #' @importFrom reticulate import_from_path
-#' @export
 remove_similar_tr <- function(gene_to_transcript, transcript_to_exon, thr=10) {
     callBasilisk(flames_env, function(gene_tran, tr_exon, thr) {
         python_path <- system.file("python", package="FLAMES")
@@ -58,19 +45,10 @@ remove_similar_tr <- function(gene_to_transcript, transcript_to_exon, thr=10) {
 }
 
 #' Get Gene Flat
-#'
-#' @description NEEDED
-#'
-#' @param gene_to_transcript NEEDED
-#' @param transcript_to_exon NEEDED
-#'
-#' @return NEEDED
-#' 
 #' @examples 
 #' gff3_parse <- parse_gff_tree(system.file("extdata/SIRV_anno.gtf", package="FLAMES"))
 #' gene_dict <- get_gene_flat(gff3_parse$gene_to_transcript, gff3_parse$transcript_to_exon)
 #' @importFrom reticulate import_from_path
-#' @export
 get_gene_flat <- function(gene_to_transcript, transcript_to_exon) {
     gene_flat <- callBasilisk(flames_env, function(gene_tran, tran_exon) {
         python_path <- system.file("python", package="FLAMES")
@@ -83,21 +61,11 @@ get_gene_flat <- function(gene_to_transcript, transcript_to_exon) {
 }
 
 #' Get Gene Blocks
-#'
-#' @description NEEDED
-#'
-#' @param gene_dict NEEDED
-#' @param chr_to_gene NEEDED
-#' @param gene_to_transcript NEEDED
-#'
-#' @return NEEDED
-#' 
 #' @examples 
 #' gff3_parse <- parse_gff_tree(system.file("extdata/SIRV_anno.gtf", package="FLAMES"))
 #' gene_dict <- get_gene_flat(gff3_parse$gene_to_transcript, gff3_parse$transcript_to_exon)
 #' chr_to_blocks <- get_gene_blocks(gene_dict, gff3_parse$chr_to_gene, gff3_parse$gene_to_transcript)
 #' @importFrom reticulate import_from_path
-#' @export
 get_gene_blocks <- function(gene_dict, chr_to_gene, gene_to_transcript) {
     gene_blocks <- callBasilisk(flames_env, function(g_dict, chr_gene, gene_tran) {
         python_path <- system.file("python", package="FLAMES")
@@ -111,19 +79,6 @@ get_gene_blocks <- function(gene_dict, chr_to_gene, gene_to_transcript) {
 }
 
 #' Group BAM to Isoform
-#'
-#' @description NEEDED
-#'
-#' @param bam_in Input BAM file
-#' @param out_gff3 Output GFF3 file
-#' @param out_stat NEEDED
-#' @param summary_csv NEEDED
-#' @param chr_to_blocks NEEDED
-#' @param gene_dict NEEDED
-#' @param transcript_to_junctions NEEDED
-#' @param transcript_dict NEEDED
-#' @param fa_f NEEDED
-#' @param config Config file used to specify additional parameters
 #' @details \code{config} contains
 #' \itemize{
 #'     \item MAX_DIST
@@ -137,9 +92,6 @@ get_gene_blocks <- function(gene_dict, chr_to_gene, gene_to_transcript) {
 #'     \item remove_incomp_reads
 #'     \item random_seed OPTIONAL;
 #' }
-#' @param downsample_ratio NEEDED
-#' @param raw_gff3 NEEDED
-#'
 #' @return File paths of the output files \code{out_gff3} and \code{out_stat}
 #' 
 #' @examples 
@@ -157,7 +109,6 @@ get_gene_blocks <- function(gene_dict, chr_to_gene, gene_to_transcript) {
 #'                  "", chr_to_blocks, gene_dict, juncs, gff3_parse$transcript_dict, 
 #'                  genomefa, config$isoform_parameters, 1, NULL)
 #' @importFrom reticulate import_from_path
-#' @export
 group_bam2isoform <- function(bam_in, out_gff3, out_stat, summary_csv, chr_to_blocks, gene_dict,
                              transcript_to_junctions, transcript_dict, fa_f, config, downsample_ratio,
                              raw_gff3=NULL) {

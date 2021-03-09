@@ -1,17 +1,7 @@
 #' Annotate filter (GFF3)
 #'
 #' @description Combine FLAMES ouput with reference and filter out transcript by
-#' ealignment result.
-#'
-#' @param isoform_gff NEEDED
-#' @param ref_gff NEEDED
-#' @param isoform_out output isoform file path
-#' @param anno_out output annotation file path
-#' @param tr_cnt NEEDED
-#' @param min_sup_reads NEEDED
-#'
-#' @return returns NULL
-#' 
+#' realignment result.
 #' @examples
 #' isoform_gff3 <- parse_gff_tree(system.file("extdata/isoform_annotated.gff3", package="FLAMES"))
 #' gff3_parse <- parse_gff_tree(system.file("extdata/SIRV_anno.gtf", package="FLAMES"))
@@ -30,7 +20,6 @@
 #'                      tr_cnt, 10)
 #' }
 #' @importFrom reticulate import_from_path
-#' @export
 annotate_filter_gff <- function(isoform_gff, ref_gff, isoform_out, anno_out, tr_cnt, min_sup_reads) {
     callBasilisk(flames_env, function(isoform_gff, ref_gff, isoform_out, anno_out, tr_cnt, min_sup_reads) {
         python_path <- system.file("python", package="FLAMES")

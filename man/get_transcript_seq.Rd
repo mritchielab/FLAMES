@@ -14,26 +14,8 @@ get_transcript_seq(
   ref_dict = NULL
 )
 }
-\arguments{
-\item{fa_file}{NEEDED}
-
-\item{fa_out_f}{NEEDED}
-
-\item{chr_to_gene}{NEEDED}
-
-\item{transcript_dict}{NEEDED}
-
-\item{gene_to_transcript}{NEEDED}
-
-\item{transcript_to_exon}{NEEDED}
-
-\item{ref_dict}{NEEDED}
-}
-\value{
-returns NULL
-}
 \description{
-NEEDED
+Get Transcript Sequences
 }
 \examples{
 genomefa <- system.file("extdata/SIRV_genomefa.fasta", package="FLAMES")

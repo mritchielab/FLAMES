@@ -8,8 +8,6 @@
 #' 
 #' @return file path to the created bed12_file
 #' @importFrom reticulate import_from_path
-#' 
-#' @export
 gff3_to_bed12 <- function(minimap2_prog_path=NULL, gff3_file, bed12_file) {
     python_path <- system.file("python", package="FLAMES")
     callBasilisk(flames_env, function(mm2_path, gff3, bed12) {
@@ -37,7 +35,6 @@ gff3_to_bed12 <- function(minimap2_prog_path=NULL, gff3_file, bed12_file) {
 #'
 #' @return file path to the given output BAM file, \code{bam_out}
 #' @importFrom reticulate import_from_path
-#'
 #' @export
 minimap2_align <- function(minimap2_prog_path=NULL, fa_file, fq_in, sam_out, no_flank=FALSE, bed12_junc=NULL) {
     callBasilisk(flames_env, function (mm2_path, fa, fq, sam, flank, bed12_junc) {
@@ -77,7 +74,6 @@ samtools_sort_index <- function(bam_in, bam_out) {
 #' @param bam_out output bam file
 #' @importFrom Rsamtools asBam
 #' @return the path to the output file, given as \code{bam_out}
-#' 
 #' @export
 samtools_as_bam <- function(sam_in, bam_out) {
     Rsamtools::asBam(sam_in, gsub("\\.bam", "", bam_out))

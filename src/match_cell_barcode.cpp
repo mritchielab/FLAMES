@@ -438,7 +438,6 @@ int get_hm_idx(std::string& q_seq, std::vector<std::string>& barcode_list, int m
 //'
 //' @return returns NULL
 //' @useDynLib FLAMES, .registration=TRUE
-//' @export
 // [[Rcpp::export]]
 void match_cell_barcode(String fastq_dir, String stats_file, String out_fastq, String ref_csv, int MAX_DIST, int UMI_LEN=10)
 {

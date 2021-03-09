@@ -6,16 +6,8 @@
 \usage{
 get_gene_flat(gene_to_transcript, transcript_to_exon)
 }
-\arguments{
-\item{gene_to_transcript}{NEEDED}
-
-\item{transcript_to_exon}{NEEDED}
-}
-\value{
-NEEDED
-}
 \description{
-NEEDED
+Get Gene Flat
 }
 \examples{
 gff3_parse <- parse_gff_tree(system.file("extdata/SIRV_anno.gtf", package="FLAMES"))

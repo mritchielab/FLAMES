@@ -58,8 +58,8 @@
 #' bfc <- BiocFileCache::BiocFileCache(temp_path, ask=FALSE)
 #' file_url <- 
 #'     "https://raw.githubusercontent.com/OliverVoogd/FlamesR/master/inst/data"
-#' annot <- bfc[[names(BiocFileCache::bfcadd(bfc, "Annotation", paste(file_url, "gencode.v33.annotation.gff3", sep="/")))]] # [[ notation is used to get the local file path of the downloaded file
-#' genome_fa <- bfc[[names(BiocFileCache::bfcadd(bfc, "Genomefa", paste(file_url, "GRCh38.primary_assembly.genome.fa", sep="/")))]]
+#' annot <- bfc[[names(BiocFileCache::bfcadd(bfc, "Annotation", paste(file_url, "genocodeshortened.v33.annotation.gff3", sep="/")))]] # [[ notation is used to get the local file path of the downloaded file
+#' genome_fa <- bfc[[names(BiocFileCache::bfcadd(bfc, "Genomefa", paste(file_url, "GRCh38short.primary_assembly.genome.fa", sep="/")))]]
 #' 
 #' # download the input fastq file
 #' fastq <- bfc[[names(BiocFileCache::bfcadd(bfc, "INFQ", 

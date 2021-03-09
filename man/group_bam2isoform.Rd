@@ -19,36 +19,11 @@ group_bam2isoform(
   raw_gff3 = NULL
 )
 }
-\arguments{
-\item{bam_in}{Input BAM file}
-
-\item{out_gff3}{Output GFF3 file}
-
-\item{out_stat}{NEEDED}
-
-\item{summary_csv}{NEEDED}
-
-\item{chr_to_blocks}{NEEDED}
-
-\item{gene_dict}{NEEDED}
-
-\item{transcript_to_junctions}{NEEDED}
-
-\item{transcript_dict}{NEEDED}
-
-\item{fa_f}{NEEDED}
-
-\item{config}{Config file used to specify additional parameters}
-
-\item{downsample_ratio}{NEEDED}
-
-\item{raw_gff3}{NEEDED}
-}
 \value{
 File paths of the output files \code{out_gff3} and \code{out_stat}
 }
 \description{
-NEEDED
+Group BAM to Isoform
 }
 \details{
 \code{config} contains

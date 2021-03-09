@@ -6,18 +6,8 @@
 \usage{
 get_gene_blocks(gene_dict, chr_to_gene, gene_to_transcript)
 }
-\arguments{
-\item{gene_dict}{NEEDED}
-
-\item{chr_to_gene}{NEEDED}
-
-\item{gene_to_transcript}{NEEDED}
-}
-\value{
-NEEDED
-}
 \description{
-NEEDED
+Get Gene Blocks
 }
 \examples{
 gff3_parse <- parse_gff_tree(system.file("extdata/SIRV_anno.gtf", package="FLAMES"))

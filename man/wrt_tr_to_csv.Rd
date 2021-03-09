@@ -12,22 +12,8 @@ wrt_tr_to_csv(
   has_UMI = TRUE
 )
 }
-\arguments{
-\item{bc_tr_count_dict}{NEEDED}
-
-\item{transcript_dict}{NEEDED}
-
-\item{csv_f}{NEEDED}
-
-\item{transcript_dict_ref}{NEEDED}
-
-\item{has_UMI}{NEEDED}
-}
-\value{
-NEEDED
-}
 \description{
-NEEDED
+Write Transcript to CSV file
 }
 \examples{
 isoform_gff3 <- parse_gff_tree(system.file("extdata/isoform_annotated.gff3", package="FLAMES"))
