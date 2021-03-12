@@ -2,6 +2,7 @@
 #'
 #' @description Combine FLAMES ouput with reference and filter out transcript by
 #' realignment result.
+#' @return returns NULL
 #' @examples
 #' isoform_gff3 <- parse_gff_tree(system.file("extdata/isoform_annotated.gff3", package="FLAMES"))
 #' gff3_parse <- parse_gff_tree(system.file("extdata/SIRV_anno.gtf", package="FLAMES"))

@@ -26,6 +26,8 @@
 #' steps. File paths required to perform minimap2 alignment are given in pipeline_variables$return_files.
 #' This list should be given as input for \code{windows_pipeline_isoforms} after minimap2 alignment has taken place; \code{windows_pipeline_isoforms} is the
 #' continuation of this pipeline.
+#' 
+#' @example inst/examples/windows_bulk_pipeline.R
 #' @export 
 bulk_windows_pipeline_setup <- function(annot, fastq, in_bam=NULL, outdir, genome_fa,
                 downsample_ratio=1, config_file) {
@@ -210,6 +212,8 @@ windows_pipeline_setup <- function(annot, fastq, in_bam=NULL, outdir, genome_fa,
 #' @param pipeline_variables the list returned from \code{windows_pipeline_isoforms}.
 #' 
 #' @return the updated \code{pipeline_variables} list, with information required for the final pipeline step.
+#' 
+#' @example inst/examples/windows_bulk_pipeline.R
 #' @export
 windows_pipeline_isoforms <- function(pipeline_variables) {
     # find isofrom
@@ -256,7 +260,7 @@ windows_pipeline_isoforms <- function(pipeline_variables) {
     if (!pipeline_variables$using_bam && pipeline_variables$config$pipeline_parameters$do_read_realignment) {
         # the function needs to stop here again
         pipeline_variables$return_files <- list(
-            transcript_fa=transcript_fa,
+            transcript_fa=pipeline_variables$transcript_fa,
             fastq=pipeline_variables$fastq,
             out_bam=pipeline_variables$realign_bam
         )
@@ -289,6 +293,7 @@ windows_pipeline_isoforms <- function(pipeline_variables) {
 #'  \item{tss_tes.bedgraph}{ - TSS TES enrichment for all reads (for QC)}
 #' }
 #' 
+#' @example inst/examples/bulk_windows_pipeline.R
 #' @export
 windows_pipeline_quantification <- function(pipeline_vars) {
     #quantification
@@ -328,7 +333,7 @@ windows_pipeline_quantification <- function(pipeline_vars) {
         cat("#### Skip transcript quantification\n")
     }
 
-    if (pipeline_vars$bulk) {
+    if (pipeline_vars$is_bulk) {
         return(generate_bulk_summarized(pipeline_vars$outdir))
     } else {
         return(generate_sc_singlecell(pipeline_vars$outdir))

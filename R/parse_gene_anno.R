@@ -7,6 +7,7 @@
 #'
 #' @importFrom reticulate import_from_path
 #' 
+#' @return named list containing chr_to_gene, transcript_dict, gene_to_transcript and transcript_to_exon
 #' @examples 
 #' gff3_parse <- parse_gff_tree(system.file("extdata/SIRV_anno.gtf", package="FLAMES"))
 parse_gff_tree <- function(gff_file) {

@@ -45,6 +45,7 @@ remove_similar_tr <- function(gene_to_transcript, transcript_to_exon, thr=10) {
 }
 
 #' Get Gene Flat
+#' @return gene_flat
 #' @examples 
 #' gff3_parse <- parse_gff_tree(system.file("extdata/SIRV_anno.gtf", package="FLAMES"))
 #' gene_dict <- get_gene_flat(gff3_parse$gene_to_transcript, gff3_parse$transcript_to_exon)

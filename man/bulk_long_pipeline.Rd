@@ -138,9 +138,6 @@ strand information being based on reference annotation.}
 }
 }
 \examples{
-# this example works fine, but because the package only includes a small subset of the fastq files,
-# it doesn't work because it at some point produces a file that is blank. Fix? use biocFileCache
-# To run this example, we require the full example fastq dataset, available on Zenodo
 # download the two fastq files, move them to a folder to be merged together
 temp_path <- tempfile()
 bfc <- BiocFileCache::BiocFileCache(temp_path, ask=FALSE)

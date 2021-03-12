@@ -1,4 +1,5 @@
 #' Parse Realigned Bam
+#' @returns realigned bam
 #' @examples 
 #' 
 #' realign_bam <- system.file("extdata/align2genome.bam", package="FLAMES")
@@ -24,6 +25,7 @@ parse_realigned_bam <- function(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage
 }
 
 #' Write Transcript to CSV file
+#' @return returns NULL
 #' @examples 
 #' isoform_gff3 <- parse_gff_tree(system.file("extdata/isoform_annotated.gff3", package="FLAMES"))
 #' gff3_parse <- parse_gff_tree(system.file("extdata/SIRV_anno.gtf", package="FLAMES"))

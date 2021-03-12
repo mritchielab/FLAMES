@@ -46,8 +46,15 @@ temp_path <- tempfile()
 bfc <- BiocFileCache::BiocFileCache(temp_path, ask=FALSE)
 file_url <- 
   "https://raw.githubusercontent.com/OliverVoogd/FlamesR/master/inst/data"
-annot <- bfc[[names(BiocFileCache::bfcadd(bfc, "Annotation", paste(file_url, "SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf", sep="/")))]] # [[ notation is used to get the local file path of the downloaded file
-genome_fa <- bfc[[names(BiocFileCache::bfcadd(bfc, "Genomefa", paste(file_url, "SIRV_isoforms_multi-fasta_170612a.fasta", sep="/")))]]
+annot <- bfc[[names(BiocFileCache::bfcadd(bfc, "Annotation", 
+                                          paste(file_url, 
+                                                "SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf", 
+                                                sep="/")))]] # [[ notation is used to get the local file path of the downloaded file
+genome_fa <- bfc[[names(BiocFileCache::bfcadd(bfc, 
+                                              "Genomefa", 
+                                              paste(file_url, 
+                                                    "SIRV_isoforms_multi-fasta_170612a.fasta", 
+                                                    sep="/")))]]
 
 # download the two fastq files, move them to a folder to be merged together
 fastq1 <- bfc[[names(BiocFileCache::bfcadd(bfc, "Fastq1", paste(file_url, "fastq/sample1.fastq.gz", sep="/")))]]
@@ -87,7 +94,7 @@ file.rename(bfc[[names(BiocFileCache::bfcadd(bfc, "Realign BAM Index", paste(fil
 
 
 #### Pipeline Setup
-The FLAMES windows pipeline is broken into three steps, and three functions: `bulk_windows_pipeline_setup` or `sc_windows_pipeline_setup, to setup
+The FLAMES windows pipeline is broken into three steps, and three functions: `bulk_windows_pipeline_setup` or `sc_windows_pipeline_setup`, to setup
 the environment variables for the pipeline, and those specific for the bulk or single cell pipeline, `windows_pipeline_isoforms`, which
 is run after read alignment, in order to identify isoforms, and finally `windows_pipeline_quantification`, run after read realignment
 to quantify the results and output a SummarizedExperiemnt or SingleCellExperiment object.
@@ -95,15 +102,17 @@ to quantify the results and output a SummarizedExperiemnt or SingleCellExperimen
 `bulk_windows_pipeline_setup` or `sc_windows_pipeline_setup` **must** be run before the other steps are begun.
 ```{r eval=TRUE}
 library(FLAMES)
-pipeline_variables <- bulk_windows_pipeline_setup(annot=annot, fastq=fastq_dir, outdir=outdir, 
-                                                  genome_fa=genome_fa, config_file=config_file)
-# Alternatively, if running the FLAMES single cell pipeline:
+# If running the FLAMES single cell pipeline:
 # pipeline_variables <- sc_windows_pipeline_setup(annot=annot, fastq=fastq_dir, outdir=outdir,
 #                                                 genome_fa=genome_fa, config_file=config_file)
+# or, if running the bulk pipeline:
+pipeline_variables <- bulk_windows_pipeline_setup(annot=annot, fastq=fastq_dir, outdir=outdir, 
+                                                  genome_fa=genome_fa, config_file=config_file)
+
 ```
 The return list `pipeline_variables` contains all the required variables to run the future pipeline steps.
 This initial function sets up the pipeline, and validates input. After it is run, minimap2 alignment is required using 
-the files given in `pipeline_variables$return_files. This should be undertaken on a system with access to minimap2.
+the files given in `pipeline_variables$return_files`. This should be undertaken on a system with access to minimap2.
 After this is performed, the BAM file (and index file) returned from minimap2 should be stored with the same path
 as given by `pipeline_variables$return_files$output_bam`, with the index file having the same name with additional extension `.bai`.
 Once this is completed, the pipeline can resume.
@@ -117,12 +126,15 @@ pipeline_variables$genome_bam = genome_bam
 ```{r eval=TRUE}
 pipeline_variables <- windows_pipeline_isoforms(pipeline_variables)
 ```
-Following this step, read realignment needs to be undertaken as before, on a system with access to minimap2. The resulting bam and bam.bai files
+Following this step, read realignment needs to be undertaken as before, on a system with access to minimap2. The resulting `.bam` and `.bam.bai` files
 need to be located at `pipeline_variables$return_files$out_bam`, so the the pipeline can proceed.
 
 
 #### Transcript Quantification
 Finally, transcript quantification can be performed, as required:
+```{r eval=TRUE, echo=FALSE, results='hide'}
+pipeline_variables$realign_bam = realign_bam
+```
 ```{r eval=TRUE}
 se <- windows_pipeline_quantification(pipeline_variables)
 ```
@@ -138,8 +150,11 @@ The directory `outdir` now contains several output files returned from this pipe
  }
 
 The pipeline also returns a SummarizedExperiment  or SingleCellExperiment object, depending on the pipeline run, containing the data from `transcript_count.csv.gz`and `isoform_annotated.filtered.gff3`.
+```{r eval=TRUE}
+se
+```
 
 #### Session Info
 ```{r echo=FALSE}
-sessionInfo()
+utils::sessionInfo()
 ```

@@ -59,7 +59,6 @@ minimap2_align <- function(minimap2_prog_path=NULL, fa_file, fq_in, sam_out, no_
 #' 
 #' @examples
 #' bam_out <- samtools_sort_index(system.file("extdata/align2genome.bam",package="FLAMES"), tempfile(fileext=".bam"))
-#' @export
 samtools_sort_index <- function(bam_in, bam_out) {
     Rsamtools::sortBam(bam_in, gsub("\\.bam", "", bam_out))
     Rsamtools::indexBam(bam_out)
@@ -74,7 +73,6 @@ samtools_sort_index <- function(bam_in, bam_out) {
 #' @param bam_out output bam file
 #' @importFrom Rsamtools asBam
 #' @return the path to the output file, given as \code{bam_out}
-#' @export
 samtools_as_bam <- function(sam_in, bam_out) {
     Rsamtools::asBam(sam_in, gsub("\\.bam", "", bam_out))
     bam_out
@@ -92,7 +90,6 @@ samtools_as_bam <- function(sam_in, bam_out) {
 #' 
 #' @return file path to the create bam file `bam_out`
 #' @importFrom reticulate import_from_path
-#' @export
 minimap2_tr_align <- function(mm2_prog_path, fa_file, fq_in, sam_out) {
     callBasilisk(flames_env, function(mm2, fa, fq, sam) {
         python_path <- system.file("python", package="FLAMES")

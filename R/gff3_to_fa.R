@@ -1,4 +1,5 @@
 #' Get Transcript Sequences
+#' @return returns NULL
 #' @examples 
 #' genomefa <- system.file("extdata/SIRV_genomefa.fasta", package="FLAMES")
 #' gff3_parse <- parse_gff_tree(system.file("extdata/isoform_annotated.gff3", package="FLAMES"))
