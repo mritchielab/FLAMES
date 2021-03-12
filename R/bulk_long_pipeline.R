@@ -123,6 +123,13 @@ bulk_long_pipeline <- function(annot, fastq, in_bam=NULL, outdir, genome_fa,
                 bc_file);
 
 
+    se <- generate_bulk_summarized(outdir)
+
+    # return the created summarizedexperiment
+    se
+}
+
+generate_bulk_summarized <- function(outdir) {
     counts <- read.csv(paste0(outdir, "/transcript_count.csv.gz"))
     annot <- read.table(paste0(outdir, "/isoform_annotated.filtered.gff3"))
     colnames(annot) <- c("SequenceID", "Source", "Feature", "Start", "End", "Score", "Strand", "Phase", "Attributes")
@@ -137,6 +144,6 @@ bulk_long_pipeline <- function(annot, fastq, in_bam=NULL, outdir, genome_fa,
             )
     se <- SummarizedExperiment::SummarizedExperiment(list("Flames Bulk"=counts),
                                 metadata=mdata)
-    # return the created summarizedexperiment
+    
     se
 }

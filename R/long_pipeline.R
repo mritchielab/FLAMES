@@ -120,7 +120,7 @@ generic_long_pipeline <- function(annot, fastq, in_bam, outdir, genome_fa,
     transcript_dict = gff3_parse_result$transcript_dict
     gene_to_transcript = gff3_parse_result$gene_to_transcript
     transcript_to_exon = gff3_parse_result$transcript_to_exon
-    remove_similar_tr(gene_to_transcript, transcript_to_exon)
+    remove_similar_tr(gene_to_transcript, transcript_to_exon) # issue
 
     # do_isoform_identification is now always required to be true. 
     #if (config$pipeline_parameters$do_isoform_identification) {
@@ -147,7 +147,6 @@ generic_long_pipeline <- function(annot, fastq, in_bam, outdir, genome_fa,
     gene_to_transcript_i <- isoform_gff3_parse$gene_to_transcript
     transcript_to_exon_i <- isoform_gff3_parse$transcript_to_exon
 
-    if (!config$realign_parameters$use_annotation) gff3_parse_result = NULL
     get_transcript_seq(genome_fa, transcript_fa, chr_to_gene_i, transcript_dict_i,
             gene_to_transcript_i, transcript_to_exon_i, ref_dict=if (config$realign_parameters$use_annotation) gff3_parse_result else NULL)
 

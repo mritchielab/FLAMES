@@ -7,6 +7,7 @@
 sc_long_pipeline(
   annot,
   fastq,
+  in_bam = NULL,
   outdir,
   genome_fa,
   minimap2_dir = NULL,

@@ -80,7 +80,7 @@
 #' @importFrom utils read.csv read.table
 #'
 #' @export
-sc_long_pipeline <- function(annot, fastq, outdir, genome_fa,
+sc_long_pipeline <- function(annot, fastq, in_bam=NULL, outdir, genome_fa,
                                 minimap2_dir=NULL, downsample_ratio=1, 
                                 reference_csv, match_barcode=TRUE, config_file=NULL,
                                 do_genome_align=TRUE, do_isoform_id=TRUE,
@@ -91,15 +91,16 @@ sc_long_pipeline <- function(annot, fastq, outdir, genome_fa,
                                 Min_cnt_pct=0.01, Min_sup_pct=0.2, strand_specific=1, remove_incomp_reads=5,
                                 use_junctions=TRUE, no_flank=TRUE,
                                 use_annotation=TRUE, min_tr_coverage=0.75, min_read_coverage=0.75) {
+    if (is.null(in_bam)) {
+        if (match_barcode) {
+                if (!file.exists(reference_csv)) stop("reference_csv must exists.")
+                infq <- paste(outdir, "matched_reads.fastq.gz", sep="/")
+                bc_stat <- paste(outdir, "matched_barcode_stat", sep="/")
+                match_cell_barcode(fastq, bc_stat, infq, reference_csv, MAX_DIST, UMI_LEN)
+        } else infq = fastq
+    }
 
-    if (match_barcode) {
-        if (!file.exists(reference_csv)) stop("reference_csv must exists.")
-        infq <- paste(outdir, "matched_reads.fastq.gz", sep="/")
-        bc_stat <- paste(outdir, "matched_barcode_stat", sep="/")
-        match_cell_barcode(fastq, bc_stat, infq, reference_csv, MAX_DIST, UMI_LEN)
-    } else infq = fastq
-
-    generic_long_pipeline(annot, infq, in_bam=NULL, outdir, genome_fa,
+    generic_long_pipeline(annot, infq, in_bam=in_bam, outdir, genome_fa,
             minimap2_dir, downsample_ratio, config_file,
             do_genome_align, do_isoform_id,
             do_read_realign, do_transcript_quanti,
@@ -110,6 +111,11 @@ sc_long_pipeline <- function(annot, fastq, outdir, genome_fa,
             use_junctions, no_flank,
             use_annotation, min_tr_coverage, min_read_coverage)
 
+    sce <- generate_sc_singlecell(outdir)
+
+}
+
+generate_sc_singlecell <- function(outdir) {
     # this method requires testing using single cell data
     counts <- read.csv(paste0(outdir, "/transcript_count.csv.gz"))
     annot <- read.table(paste0(outdir, "/isoform_annotated.filtered.gff3"))
@@ -128,4 +134,3 @@ sc_long_pipeline <- function(annot, fastq, outdir, genome_fa,
     #return the created singlecellexperiment
     sce
 }
-
