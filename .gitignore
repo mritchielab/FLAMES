@@ -2,8 +2,10 @@
 .Rhistory
 .RData
 .ds_store
+.DS_Store
 .Rproj
 inst/doc
+inst/python/#.pyc
 vignettes/*.html
 vignettes/*.R
 inst/data/gencode.v33.annotation.gff3

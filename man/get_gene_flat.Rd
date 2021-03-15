@@ -6,6 +6,9 @@
 \usage{
 get_gene_flat(gene_to_transcript, transcript_to_exon)
 }
+\value{
+gene_flat
+}
 \description{
 Get Gene Flat
 }

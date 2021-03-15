@@ -13,6 +13,9 @@ annotate_filter_gff(
   min_sup_reads
 )
 }
+\value{
+returns NULL
+}
 \description{
 Combine FLAMES ouput with reference and filter out transcript by
 realignment result.

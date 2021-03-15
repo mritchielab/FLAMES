@@ -4,12 +4,10 @@
 \alias{merge_bulk_fastq}
 \title{Merge FASTQ}
 \usage{
-merge_bulk_fastq(fastq_dir, anno_csv, out_fastq)
+merge_bulk_fastq(fastq_dir, out_fastq)
 }
 \arguments{
 \item{fastq_dir}{The folder containing fastq files to merge}
-
-\item{anno_csv}{a path for the output csv, containing the fake barcodes created}
 
 \item{out_fastq}{A file which will be created to store all fastq entries. Overwrites existing files}
 }

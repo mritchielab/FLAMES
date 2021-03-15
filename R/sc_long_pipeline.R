@@ -97,7 +97,8 @@ sc_long_pipeline <- function(annot, fastq, in_bam=NULL, outdir, genome_fa,
                 infq <- paste(outdir, "matched_reads.fastq.gz", sep="/")
                 bc_stat <- paste(outdir, "matched_barcode_stat", sep="/")
                 match_cell_barcode(fastq, bc_stat, infq, reference_csv, MAX_DIST, UMI_LEN)
-        } else infq = fastq
+        } else infq = fastq # requesting to not match barcodes implies `fastq` has already been run through the 
+                            # function in a previous FLAMES call
     }
 
     generic_long_pipeline(annot, infq, in_bam=in_bam, outdir, genome_fa,

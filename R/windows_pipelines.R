@@ -297,7 +297,7 @@ windows_pipeline_isoforms <- function(pipeline_variables) {
 #' @export
 windows_pipeline_quantification <- function(pipeline_vars) {
     #quantification
-    if (pipeline_vars$config$pipeline_parameters$do_transcript_quantification) {
+    if (pipeline_vars$config$pipeline_parameters$do_transcript_quantification && !pipeline_vars$using_bam) {
         cat("#### Generating transcript count matrix\n")
         if (is.null(pipeline_vars$bc_file) || pipeline_vars$using_bam) {
             # sc_long_pipeline version of realigned bam

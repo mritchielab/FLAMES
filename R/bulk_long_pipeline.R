@@ -81,7 +81,7 @@ bulk_long_pipeline <- function(annot, fastq, in_bam=NULL, outdir, genome_fa,
 
     # filenames for internal steps
     infq <- paste(outdir, "merged.fastq.gz", sep="/")
-    bc_file <- paste(outdir, "pseudo_barcode_annotation.csv", sep="/")
+    #bc_file <- paste(outdir, "pseudo_barcode_annotation.csv", sep="/")
 
     # create output directory if one doesn't exist
     if (!dir.exists(outdir)) {
@@ -99,11 +99,12 @@ bulk_long_pipeline <- function(annot, fastq, in_bam=NULL, outdir, genome_fa,
             # of a bam file for reads,
             cat("Preprocessing bulk fastqs...\n")
             # run the merge_bulk_fastq function as preprocessing
-            merge_bulk_fastq(fastq, bc_file, infq)
+            merge_bulk_fastq(fastq, infq)
+            bc_file=NULL
         }
     } else {
         bc_file = NULL;
-        fastq=NULL;
+        infq=NULL;
     }
     generic_long_pipeline(annot, infq, in_bam, outdir, genome_fa,
     #generic_long_pipeline(annot, infq, outdir, genome_fa,

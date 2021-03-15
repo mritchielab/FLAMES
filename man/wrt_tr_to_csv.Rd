@@ -12,6 +12,9 @@ wrt_tr_to_csv(
   has_UMI = TRUE
 )
 }
+\value{
+returns NULL
+}
 \description{
 Write Transcript to CSV file
 }

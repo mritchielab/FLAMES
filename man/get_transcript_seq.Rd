@@ -14,6 +14,9 @@ get_transcript_seq(
   ref_dict = NULL
 )
 }
+\value{
+returns NULL
+}
 \description{
 Get Transcript Sequences
 }

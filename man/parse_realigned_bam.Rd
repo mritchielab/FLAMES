@@ -13,6 +13,9 @@ parse_realigned_bam(
   ...
 )
 }
+\value{
+realigned bam
+}
 \description{
 Parse Realigned Bam
 }

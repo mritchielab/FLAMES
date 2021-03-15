@@ -9,6 +9,9 @@ parse_gff_tree(gff_file)
 \arguments{
 \item{gff_file}{File path in gff, gtf.gz or gtf format to parse.}
 }
+\value{
+named list containing chr_to_gene, transcript_dict, gene_to_transcript and transcript_to_exon
+}
 \description{
 Parses GFF3 file formats into a usable list of four elements. Accepts \code{.gtf}, \code{.gff} formats as 
 well as \code{.gz} compressed versions.

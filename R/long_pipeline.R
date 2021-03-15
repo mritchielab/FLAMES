@@ -54,7 +54,7 @@ generic_long_pipeline <- function(annot, fastq, in_bam, outdir, genome_fa,
     if (downsample_ratio > 1 || downsample_ratio <= 0) {
         stop("downsample_ratio should be between 0 and 1")
     }
-    if (!file.exists(fastq)) stop(paste0("Make sure ", fastq, " exists."))
+    if (!is.null(fastq) && !file.exists(fastq)) stop(paste0("Make sure ", fastq, " exists."))
     if (!file.exists(annot)) stop(paste0("Make sure ", annot, " exists."))
     if (!file.exists(genome_fa)) stop(paste0("Make sure ", genome_fa, " exists."))
 
@@ -95,8 +95,8 @@ generic_long_pipeline <- function(annot, fastq, in_bam, outdir, genome_fa,
     cat("\tdirectory containing minimap2:", minimap2_dir, "\n")
 
     # align reads to genome
-    if (!using_bam && config$pipeline_parameters$do_genome_alignment) {
-    #if (config$pipeline_parameters$do_genome_alignment) {
+    #if (!using_bam && config$pipeline_parameters$do_genome_alignment) {
+    if (config$pipeline_parameters$do_genome_alignment) {
         cat("#### Aligning reads to genome using minimap2\n")
 
         if (config$alignment_parameters$use_junctions) {
@@ -151,8 +151,8 @@ generic_long_pipeline <- function(annot, fastq, in_bam, outdir, genome_fa,
             gene_to_transcript_i, transcript_to_exon_i, ref_dict=if (config$realign_parameters$use_annotation) gff3_parse_result else NULL)
 
     # realign to transcript
-    if (!using_bam && do_read_realign) {
-    #if (do_read_realign) {
+    #if (!using_bam && do_read_realign) {
+    if (do_read_realign) {
         cat("#### Realign to transcript using minimap2\n")
         minimap2_tr_align(minimap2_dir, transcript_fa, fastq, tmp_sam)
         samtools_as_bam(tmp_sam, tmp_bam)
@@ -166,7 +166,12 @@ generic_long_pipeline <- function(annot, fastq, in_bam, outdir, genome_fa,
     #quantification
     if (config$pipeline_parameters$do_transcript_quantification) {
         cat("#### Generating transcript count matrix\n")
-        if (is.null(bc_file) || using_bam) {
+        #if (using_bam) {
+            # i have no idea what to do if input is a bam file. This does not work as realign_bam and transcript_fa_idx are required, 
+            # which are both produced from minimap2_tr_align.
+            #realign_bam <- in_bam
+        #}
+        if (is.null(bc_file)) {
             # sc_long_pipeline version of realigned bam
             parse_realign <- parse_realigned_bam(realign_bam, transcript_fa_idx,
                 config$isoform_parameters$Min_sup_cnt,
