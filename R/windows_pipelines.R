@@ -293,7 +293,7 @@ windows_pipeline_isoforms <- function(pipeline_variables) {
 #'  \item{tss_tes.bedgraph}{ - TSS TES enrichment for all reads (for QC)}
 #' }
 #' 
-#' @example inst/examples/bulk_windows_pipeline.R
+#' @example inst/examples/windows_bulk_pipeline.R
 #' @export
 windows_pipeline_quantification <- function(pipeline_vars) {
     #quantification

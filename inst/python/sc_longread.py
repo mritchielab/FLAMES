@@ -154,30 +154,23 @@ def is_exon_similar(ex1, ex2, thr):
 
 
 def remove_similar_tr(gene_to_transcript, transcript_to_exon, thr=10):
-    log_file = "/Users/voogd.o/Documents/FlamesNew/FLAMESsc_output/logfile.txt"
-    with open(log_file, "w") as f:
-        f.writelines("gene\tgene[tr_idx]\tgene[tr2_idx]\ttr_idx|tr_idx\n")
-        dup_stat = Counter()
-        for g in gene_to_transcript:
-            if type(gene_to_transcript[g]) != type([]):
-                gene_to_transcript[g] = [gene_to_transcript[g]]
-            if len(gene_to_transcript[g]) < 2:
-                continue
-            dup_list = []
-            for tr_idx in range(len(gene_to_transcript[g])-1):
-                for tr2_idx in range(tr_idx+1,len(gene_to_transcript[g])):
-                    f.writelines(str(gene_to_transcript[g]) + "\t" + 
-                        str(gene_to_transcript[g][tr_idx]) + "\t" + 
-                        str(gene_to_transcript[g][tr2_idx]) + "\t"+
-                        str(tr_idx) + "|" + str(tr2_idx) + "\n")
-                    if is_exon_similar(transcript_to_exon[gene_to_transcript[g][tr_idx]],transcript_to_exon[gene_to_transcript[g][tr2_idx]], thr):
-                        dup_list.append(tr2_idx)
-                        dup_stat["duplicated_transcripts"] += 1
-                        #print gene_to_transcript[g][tr2_idx]
-            if len(dup_list) > 0:
-                dup_list = list(set(dup_list))
-                gene_to_transcript[g] = [i for j, i in enumerate(gene_to_transcript[g]) if j not in dup_list]
-        print "\tRemoved similar transcripts in gene annotation:", str(dup_stat)
+    dup_stat = Counter()
+    for g in gene_to_transcript:
+        if type(gene_to_transcript[g]) != type([]):
+            gene_to_transcript[g] = [gene_to_transcript[g]]
+        if len(gene_to_transcript[g]) < 2:
+            continue
+        dup_list = []
+        for tr_idx in range(len(gene_to_transcript[g])-1):
+            for tr2_idx in range(tr_idx+1,len(gene_to_transcript[g])):
+                if is_exon_similar(transcript_to_exon[gene_to_transcript[g][tr_idx]],transcript_to_exon[gene_to_transcript[g][tr2_idx]], thr):
+                    dup_list.append(tr2_idx)
+                    dup_stat["duplicated_transcripts"] += 1
+                    #print gene_to_transcript[g][tr2_idx]
+        if len(dup_list) > 0:
+            dup_list = list(set(dup_list))
+            gene_to_transcript[g] = [i for j, i in enumerate(gene_to_transcript[g]) if j not in dup_list]
+    print "\tRemoved similar transcripts in gene annotation:", str(dup_stat)
 
 def test_tr(gene_to_transcript):
     i = 0

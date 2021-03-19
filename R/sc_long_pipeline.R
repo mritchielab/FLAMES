@@ -101,7 +101,7 @@ sc_long_pipeline <- function(annot, fastq, in_bam=NULL, outdir, genome_fa,
                             # function in a previous FLAMES call
     }
 
-    generic_long_pipeline(annot, infq, in_bam=in_bam, outdir, genome_fa,
+    out_files <- generic_long_pipeline(annot, infq, in_bam=in_bam, outdir, genome_fa,
             minimap2_dir, downsample_ratio, config_file,
             do_genome_align, do_isoform_id,
             do_read_realign, do_transcript_quanti,
@@ -112,11 +112,11 @@ sc_long_pipeline <- function(annot, fastq, in_bam=NULL, outdir, genome_fa,
             use_junctions, no_flank,
             use_annotation, min_tr_coverage, min_read_coverage)
 
-    sce <- generate_sc_singlecell(outdir)
+    #sce <- generate_sc_singlecell(out_files)
 
 }
 
-generate_sc_singlecell <- function(outdir) {
+generate_sc_singlecell <- function(out_files) {
     # this method requires testing using single cell data
     counts <- read.csv(paste0(outdir, "/transcript_count.csv.gz"))
     annot <- read.table(paste0(outdir, "/isoform_annotated.filtered.gff3"))

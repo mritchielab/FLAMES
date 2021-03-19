@@ -100,13 +100,11 @@ bulk_long_pipeline <- function(annot, fastq, in_bam=NULL, outdir, genome_fa,
             cat("Preprocessing bulk fastqs...\n")
             # run the merge_bulk_fastq function as preprocessing
             merge_bulk_fastq(fastq, infq)
-            bc_file=NULL
         }
     } else {
-        bc_file = NULL;
         infq=NULL;
     }
-    generic_long_pipeline(annot, infq, in_bam, outdir, genome_fa,
+    out_files <- generic_long_pipeline(annot, infq, in_bam, outdir, genome_fa,
     #generic_long_pipeline(annot, infq, outdir, genome_fa,
                 minimap2_dir, downsample_ratio, config_file,
                 do_genome_align, do_isoform_id,
@@ -116,27 +114,27 @@ bulk_long_pipeline <- function(annot, fastq, in_bam=NULL, outdir, genome_fa,
                 min_fl_exon_len, Max_site_per_splice, Min_sup_cnt,
                 Min_cnt_pct, Min_sup_pct, strand_specific, remove_incomp_reads,
                 use_junctions, no_flank,
-                use_annotation, min_tr_coverage, min_read_coverage,
-                bc_file);
+                use_annotation, min_tr_coverage, min_read_coverage);
 
 
-    se <- generate_bulk_summarized(outdir)
+    se <- generate_bulk_summarized(out_files)
 
     # return the created summarizedexperiment
     se
 }
 
-generate_bulk_summarized <- function(outdir) {
-    counts <- read.csv(paste0(outdir, "/transcript_count.csv.gz"))
-    annot <- read.table(paste0(outdir, "/isoform_annotated.filtered.gff3"))
+generate_bulk_summarized <- function(out_files) {
+    # change this to use out_files
+    counts <- read.csv(out_files$counts)
+    annot <- read.table(out_files$annot)
     colnames(annot) <- c("SequenceID", "Source", "Feature", "Start", "End", "Score", "Strand", "Phase", "Attributes")
     mdata <- list(
             "Annotations"=annot,
             "OutputFiles"=
-                        list("transcript_assembly"=paste0(outdir, "/transcript_assembly.fa"),
-                            "align2genome"=paste0(outdir, "/align2genome.bam"),
-                            "realign2transcript"=paste0(outdir, "/realign2transcript.bam"),
-                            "tss_tes"=paste0(outdir, "/tss_tes.bedgraph")
+                        list("transcript_assembly"=out_files$transcript_assembly,
+                            "align2genome"=out_files$align_bam,
+                            "realign2transcript"=out_files$realign_bam,
+                            "tss_tes"=out_files$tss_tes
                             )
             )
     se <- SummarizedExperiment::SummarizedExperiment(list("Flames Bulk"=counts),

@@ -17,7 +17,8 @@ get_transcript_seq <- function(fa_file, fa_out_f, chr_to_gene, transcript_dict,
                        gene_to_transcript, transcript_to_exon, ref_dict)
     }, fa_file=fa_file, fa_out_f=fa_out_f, chr_to_gene=chr_to_gene, transcript_dict=transcript_dict,
                        gene_to_transcript=gene_to_transcript, transcript_to_exon=transcript_to_exon, ref_dict=ref_dict)
-    Rsamtools::indexFa(file=fa_out_f) # index the output fa file
+    cat("TEMP: finished get_transcript_seq, now indexing")
+    #Rsamtools::indexFa(file=fa_out_f) # index the output fa file
     invisible()
 }
 

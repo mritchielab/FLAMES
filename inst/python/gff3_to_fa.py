@@ -44,10 +44,6 @@ def get_transcript_seq(fa_file, fa_out_f, chr_to_gene, transcript_dict,
     global_seq_dict = {}
     fa_dict = {}
     fa_out = open(fa_out_f, "w")
-    #print(len(chr_to_gene))
-    #print(len(transcript_dict))
-    #print(len(gene_to_transcript))
-    #print(len(transcript_to_exon))
     for ch, seq in get_fa(fa_file):
         #print(ch)
         if ch not in chr_to_gene:
@@ -107,7 +103,25 @@ def get_transcript_seq(fa_file, fa_out_f, chr_to_gene, transcript_dict,
                             else:
                                 global_seq_dict[tr_seq] = tr
                                 #write_fa(fa_out, tr, tr_seq)
-    #print(global_seq_dict)
+    # so basicially, after this entire funciton, global_seq_dict is empty!
+        #print(len(chr_to_gene))
+    #print(len(transcript_dict))
+    #print(len(gene_to_transcript))
+    #print(len(transcript_to_exon))
+    with open("/Users/voogd.o/Documents/FlamesNew/FLAMESsc_output/get_tran_seq_logfile.txt", "w") as f:
+        f.write("Hello this is the start of the file\n")
+        f.write("chr_to_gene: " 
+            + str(len(chr_to_gene))
+            + "\ntranscript_dict: " 
+            + str(len(transcript_dict))
+            + "\ngene_to_transcript: "
+            + str(len(gene_to_transcript)) 
+            + "\ntranscript_to_exon: "
+            + str(len(transcript_to_exon))
+            + "\n")
+        f.write(str(len(global_seq_dict)))
+        f.write("\n")
+        f.write(str(global_seq_dict))
     for tr_seq in global_seq_dict:
         write_fa(fa_out, global_seq_dict[tr_seq], tr_seq)
     fa_out.close()
