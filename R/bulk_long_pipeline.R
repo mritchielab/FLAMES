@@ -129,13 +129,8 @@ generate_bulk_summarized <- function(out_files) {
     annot <- read.table(out_files$annot)
     colnames(annot) <- c("SequenceID", "Source", "Feature", "Start", "End", "Score", "Strand", "Phase", "Attributes")
     mdata <- list(
-            "Annotations"=annot,
-            "OutputFiles"=
-                        list("transcript_assembly"=out_files$transcript_assembly,
-                            "align2genome"=out_files$align_bam,
-                            "realign2transcript"=out_files$realign_bam,
-                            "tss_tes"=out_files$tss_tes
-                            )
+            "Annotations"=out_files$annot,
+            "OutputFiles"=out_files
             )
     se <- SummarizedExperiment::SummarizedExperiment(list("Flames Bulk"=counts),
                                 metadata=mdata)

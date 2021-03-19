@@ -114,47 +114,46 @@ generic_long_pipeline <- function(annot, fastq, in_bam, outdir, genome_fa,
     # find isofrom
     isoform_objects <- find_isoform(annot, genome_bam, isoform_gff3, tss_tes_stat, genome_fa, transcript_fa, downsample_ratio, config, raw)
 
-
     # old stuff
     if (FALSE) {
-    cat("#### Read genne annotations\n")
-    gff3_parse_result <- parse_gff_tree(annot)
-    chr_to_gene = gff3_parse_result$chr_to_gene
-    transcript_dict = gff3_parse_result$transcript_dict
-    gene_to_transcript = gff3_parse_result$gene_to_transcript
-    transcript_to_exon = gff3_parse_result$transcript_to_exon
-    remove_similar_tr(gene_to_transcript, transcript_to_exon)
+        cat("#### Read genne annotations\n")
+        gff3_parse_result <- parse_gff_tree(annot)
+        chr_to_gene = gff3_parse_result$chr_to_gene
+        transcript_dict = gff3_parse_result$transcript_dict
+        gene_to_transcript = gff3_parse_result$gene_to_transcript
+        transcript_to_exon = gff3_parse_result$transcript_to_exon
+        remove_similar_tr(gene_to_transcript, transcript_to_exon)
 
-    # do_isoform_identification is now always required to be true. 
-    #if (config$pipeline_parameters$do_isoform_identification) {
-    cat("#### Find isoforms\n") # perhaps just keep this whole section inside python, to stop weird data conversion thing?????
-    transcript_to_junctions = list()
-    for (tr in names(transcript_to_exon)) {
-        transcript_to_junctions[[tr]] = blocks_to_junctions(transcript_to_exon[[tr]])
-    }
-    gene_dict <- get_gene_flat(gene_to_transcript, transcript_to_exon)
-    chr_to_blocks <- get_gene_blocks(gene_dict, chr_to_gene, gene_to_transcript)
-    
-    # issue seems to be this function not producing the isoform_gff3 which is used for transcript_fa creation
-    group_bam2isoform(genome_bam, isoform_gff3, tss_tes_stat, "", chr_to_blocks,
-            gene_dict, transcript_to_junctions, transcript_dict, genome_fa,
-            config=config$isoform_parameters, downsample_ratio=downsample_ratio,
-            raw_gff3=if (config$global_parameters$generate_raw_isoform) raw_splice_isoform else NULL)
-    #} else {
-    #    ## skip finding isoform.
-    #    cat("#### Skip finding isoforms\n")
-    #}
+        # do_isoform_identification is now always required to be true. 
+        #if (config$pipeline_parameters$do_isoform_identification) {
+        cat("#### Find isoforms\n") # perhaps just keep this whole section inside python, to stop weird data conversion thing?????
+        transcript_to_junctions = list()
+        for (tr in names(transcript_to_exon)) {
+            transcript_to_junctions[[tr]] = blocks_to_junctions(transcript_to_exon[[tr]])
+        }
+        gene_dict <- get_gene_flat(gene_to_transcript, transcript_to_exon)
+        chr_to_blocks <- get_gene_blocks(gene_dict, chr_to_gene, gene_to_transcript)
+        
+        # issue seems to be this function not producing the isoform_gff3 which is used for transcript_fa creation
+        group_bam2isoform(genome_bam, isoform_gff3, tss_tes_stat, "", chr_to_blocks,
+                gene_dict, transcript_to_junctions, transcript_dict, genome_fa,
+                config=config$isoform_parameters, downsample_ratio=downsample_ratio,
+                raw_gff3=if (config$global_parameters$generate_raw_isoform) raw_splice_isoform else NULL)
+        #} else {
+        #    ## skip finding isoform.
+        #    cat("#### Skip finding isoforms\n")
+        #}
 
-    # get fasta
-    cat("#### TEMP: Get fasta\n")
-    isoform_gff3_parse <- parse_gff_tree(isoform_gff3)
-    chr_to_gene_i <- isoform_gff3_parse$chr_to_gene
-    transcript_dict_i <- isoform_gff3_parse$transcript_dict ## this is the only variable required after get_transcript_seq
-    gene_to_transcript_i <- isoform_gff3_parse$gene_to_transcript
-    transcript_to_exon_i <- isoform_gff3_parse$transcript_to_exon
-    cat("### TEMP: get_transcript_seq\n")
-    get_transcript_seq(genome_fa, transcript_fa, chr_to_gene_i, transcript_dict_i,
-            gene_to_transcript_i, transcript_to_exon_i, ref_dict=if (config$realign_parameters$use_annotation) gff3_parse_result else NULL)
+        # get fasta
+        cat("#### TEMP: Get fasta\n")
+        isoform_gff3_parse <- parse_gff_tree(isoform_gff3)
+        chr_to_gene_i <- isoform_gff3_parse$chr_to_gene
+        transcript_dict_i <- isoform_gff3_parse$transcript_dict ## this is the only variable required after get_transcript_seq
+        gene_to_transcript_i <- isoform_gff3_parse$gene_to_transcript
+        transcript_to_exon_i <- isoform_gff3_parse$transcript_to_exon
+        cat("### TEMP: get_transcript_seq\n")
+        get_transcript_seq(genome_fa, transcript_fa, chr_to_gene_i, transcript_dict_i,
+                gene_to_transcript_i, transcript_to_exon_i, ref_dict=if (config$realign_parameters$use_annotation) gff3_parse_result else NULL)
     }
     
     # realign to transcript
@@ -190,6 +189,8 @@ generic_long_pipeline <- function(annot, fastq, in_bam, outdir, genome_fa,
         cat("#### Skip transcript quantification\n")
     }
     
-    return(list("annot"= annot, "counts"= tr_cnt_csv, "isoform_annotated"= isoform_gff3_f, "transcript_assembly"= transcript_fa,
-                "align_bam"= genome_bam, "realign2transcript"= realign_bam, "tss_tes"= tss_tes_stat))
+    return(list("annot"= annot, "counts"= tr_cnt_csv, "isoform_annotated"= isoform_gff3_f, 
+                "transcript_assembly"= transcript_fa, "config"=config_file,
+                "align_bam"= genome_bam, "realign2transcript"= realign_bam, "tss_tes"= tss_tes_stat,
+                "outdir"=outdir))
 }

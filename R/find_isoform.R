@@ -1,5 +1,6 @@
 #' Find isoform pipeline step
 #' @importFrom reticulate import_from_path
+#' @importFrom Rsamtools indexFa
 find_isoform <- function(gff3, genome_bam, isoform_gff3,
             tss_tes_stat, genomefa, transcript_fa, 
             downsample_ratio, config, raw) {
@@ -13,4 +14,9 @@ find_isoform <- function(gff3, genome_bam, isoform_gff3,
         }, gff3=gff3, genome=genome_bam, iso=isoform_gff3, tss=tss_tes_stat, 
             fa=genomefa, tran=transcript_fa, ds=downsample_ratio, conf=config, raw=raw
     )
+
+    # we then need to use Rsamtools to index transcript_fa
+    Rsamtools::indexFa(transcript_fa) # index the output fa file
+
+    ret
 }

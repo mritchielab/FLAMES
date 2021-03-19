@@ -112,23 +112,18 @@ sc_long_pipeline <- function(annot, fastq, in_bam=NULL, outdir, genome_fa,
             use_junctions, no_flank,
             use_annotation, min_tr_coverage, min_read_coverage)
 
-    #sce <- generate_sc_singlecell(out_files)
+    sce <- generate_sc_singlecell(out_files)
 
 }
 
 generate_sc_singlecell <- function(out_files) {
     # this method requires testing using single cell data
-    counts <- read.csv(paste0(outdir, "/transcript_count.csv.gz"))
-    annot <- read.table(paste0(outdir, "/isoform_annotated.filtered.gff3"))
+    counts <- read.csv(out_files$counts)
+    annot <- read.table(out_files$annot)
     colnames(annot) <- c("SequenceID", "Source", "Feature", "Start", "End", "Score", "Strand", "Phase", "Attributes")
     mdata <- list(
-            "Annotations"=annot,
-            "OutputFiles"=
-                        list("transcript_assembly"=paste0(outdir, "/transcript_assembly.fa"),
-                        "align2genome"=paste0(outdir, "/align2genome.bam"),
-                        "realign2transcript"=paste0(outdir, "/realign2transcript.bam"),
-                        "tss_tes"=paste0(outdir, "/tss_tes.bedgraph")
-                        )
+            "Annotations"=out_files$annot,
+            "OutputFiles"=out_files
                 )
     sce <- SingleCellExperiment::SingleCellExperiment(list("Flames Single Cell"=counts),
                                 metadata=mdata)

@@ -1,2 +1,5 @@
+align2genome.sample.fastq.gz filter=lfs diff=lfs merge=lfs -text
+genocodeshortened.v33.annotation.gff3 filter=lfs diff=lfs merge=lfs -text
+GRCh38short.primary_assembly.genome.fa filter=lfs diff=lfs merge=lfs -text
 *.fa filter=lfs diff=lfs merge=lfs -text
 *.gff3 filter=lfs diff=lfs merge=lfs -text
