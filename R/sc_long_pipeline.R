@@ -54,6 +54,7 @@
 #'
 #' @examples 
 #' # download the required files using BiocFileCache
+#' \dontrun{
 #' temp_path <- tempfile()
 #' bfc <- BiocFileCache::BiocFileCache(temp_path, ask=FALSE)
 #' file_url <- 
@@ -63,10 +64,10 @@
 #' 
 #' # download the input fastq file
 #' fastq <- bfc[[names(BiocFileCache::bfcadd(bfc, "INFQ", 
-#'                                           paste(file_url, "LT03_PromethION_10P.sample.sort.fastq.gz", sep="/")))]]
+#'                                           paste(file_url, "align2genome.sample.fastq.gz", sep="/")))]]
 #' 
 #' config_file <- system.file("extdata/SIRV_config_default.json", package="FLAMES") # the configuration file is included with the FLAMES package
-#' \dontrun{
+#' 
 #' sce <- sc_long_pipeline(annot=annot, 
 #'                    fastq=system.file("extdata/fastq", package="FLAMES"),
 #'                    outdir=tempdir(), genome_fa=genome_fa,
@@ -114,6 +115,7 @@ sc_long_pipeline <- function(annot, fastq, in_bam=NULL, outdir, genome_fa,
 
     sce <- generate_sc_singlecell(out_files)
 
+    sce
 }
 
 generate_sc_singlecell <- function(out_files) {

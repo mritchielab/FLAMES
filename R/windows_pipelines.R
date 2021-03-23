@@ -33,7 +33,6 @@ bulk_windows_pipeline_setup <- function(annot, fastq, in_bam=NULL, outdir, genom
                 downsample_ratio=1, config_file) {
     # filenames for internal steps
     infq <- paste(outdir, "merged.fastq.gz", sep="/")
-    bc_file <- paste(outdir, "pseudo_barcode_annotation.csv", sep="/")
 
     # create output directory if one doesn't exist
     if (!dir.exists(outdir)) {
@@ -51,14 +50,13 @@ bulk_windows_pipeline_setup <- function(annot, fastq, in_bam=NULL, outdir, genom
             # of a bam file for reads,
             cat("Preprocessing bulk fastqs...\n")
             # run the merge_bulk_fastq function as preprocessing
-            merge_bulk_fastq(fastq, bc_file, infq)
+            merge_bulk_fastq(fastq, infq)
         }
     } else {
-        bc_file = NULL;
         fastq=NULL;
     }
 
-    windows_pipeline_setup(annot, infq, in_bam, outdir, genome_fa, downsample_ratio, config_file, bc_file, bulk=TRUE)
+    windows_pipeline_setup(annot, infq, in_bam, outdir, genome_fa, downsample_ratio, config_file, bulk=TRUE)
 }
 
 #' Windows Single Cell FLAMES Pipeline
@@ -108,7 +106,7 @@ sc_windows_pipeline_setup <- function(annot, fastq, in_bam=NULL, outdir, genome_
 #' Hidden generic pipeline setup function
 windows_pipeline_setup <- function(annot, fastq, in_bam=NULL, outdir, genome_fa,
                 downsample_ratio=1, config_file,
-                bc_file=NULL, bulk=FALSE) {
+                bulk=FALSE) {
 
     if (!dir.exists(outdir)) {
         cat("Output directory does not exists: one is being created\n")
@@ -138,7 +136,6 @@ windows_pipeline_setup <- function(annot, fastq, in_bam=NULL, outdir, genome_fa,
     using_bam = FALSE
     if (!is.null(in_bam)) {
         using_bam = TRUE
-        bc_file = NULL
         fastq = NULL
         if (!file.exists(in_bam)) stop ("Make sure in_bam exists")
     } 
@@ -166,10 +163,11 @@ windows_pipeline_setup <- function(annot, fastq, in_bam=NULL, outdir, genome_fa,
         genome_fa=genome_fa,
         downsample_ratio=downsample_ratio,
         config=config,
-        bc_file=bc_file,
         using_bam=using_bam,
         return_files = NULL,
-        is_bulk = bulk
+        is_bulk = bulk,
+        transcript_dict = NULL,
+        transcript_dict_i = NULL
     )
 
     cat("#### Input parameters:\n")
@@ -216,46 +214,16 @@ windows_pipeline_setup <- function(annot, fastq, in_bam=NULL, outdir, genome_fa,
 #' @example inst/examples/windows_bulk_pipeline.R
 #' @export
 windows_pipeline_isoforms <- function(pipeline_variables) {
-    # find isofrom
-    cat("#### Read genne annotations\n")
-    gff3_parse_result <- parse_gff_tree(pipeline_variables$annot)
-    chr_to_gene = gff3_parse_result$chr_to_gene
-    transcript_dict = gff3_parse_result$transcript_dict
-    gene_to_transcript = gff3_parse_result$gene_to_transcript
-    transcript_to_exon = gff3_parse_result$transcript_to_exon
-    remove_similar_tr(gene_to_transcript, transcript_to_exon)
+    # find isoform
+    isoform_objects <- find_isoform(pipeline_variables$annot, pipeline_variables$genome_bam, 
+                                    pipeline_variables$isoform_gff3, pipeline_variables$tss_tes_stat, 
+                                    pipeline_variables$genome_fa, pipeline_variables$transcript_fa, 
+                                    pipeline_variables$downsample_ratio, pipeline_variables$config, 
+                                    pipeline_variables$raw_splice_isoform)
 
-    cat("#### Find isoforms\n")
-    transcript_to_junctions = list()
-    for (tr in names(transcript_to_exon)) {
-        transcript_to_junctions[[tr]] = blocks_to_junctions(transcript_to_exon[[tr]])
-    }
-    gene_dict <- get_gene_flat(gene_to_transcript, transcript_to_exon)
-    chr_to_blocks <- get_gene_blocks(gene_dict, chr_to_gene, gene_to_transcript)
-    group_bam2isoform(pipeline_variables$genome_bam, pipeline_variables$isoform_gff3, pipeline_variables$tss_tes_stat, 
-            "", chr_to_blocks,
-            gene_dict, transcript_to_junctions, 
-            transcript_dict, pipeline_variables$genome_fa,
-            config=pipeline_variables$config$isoform_parameters, 
-            downsample_ratio=pipeline_variables$downsample_ratio,
-            raw_gff3= 
-            if (pipeline_variables$config$global_parameters$generate_raw_isoform) pipeline_variables$raw_splice_isoform else NULL
-            )
+    pipeline_variables$transcript_dict = isoform_objects$transcript_dict
+    pipeline_variables$transcript_dict_i = isoform_objects$transcript_dict_i
 
-    # get fasta
-    isoform_gff3_parse <- parse_gff_tree(pipeline_variables$isoform_gff3)
-    chr_to_gene_i <- isoform_gff3_parse$chr_to_gene
-    transcript_dict_i <- isoform_gff3_parse$transcript_dict ## this is the only variable required after get_transcript_seq
-    gene_to_transcript_i <- isoform_gff3_parse$gene_to_transcript
-    transcript_to_exon_i <- isoform_gff3_parse$transcript_to_exon
-
-    get_transcript_seq(pipeline_variables$genome_fa, pipeline_variables$transcript_fa, chr_to_gene_i, transcript_dict_i,
-            gene_to_transcript_i, transcript_to_exon_i, ref_dict=if (pipeline_variables$config$realign_parameters$use_annotation) gff3_parse_result else NULL)
-
-    pipeline_variables <- c(pipeline_variables, list(
-        transcript_dict=transcript_dict,
-        transcript_dict_i=transcript_dict_i
-    ))
     # realign to transcript
     if (!pipeline_variables$using_bam && pipeline_variables$config$pipeline_parameters$do_read_realignment) {
         # the function needs to stop here again
@@ -299,21 +267,12 @@ windows_pipeline_quantification <- function(pipeline_vars) {
     #quantification
     if (pipeline_vars$config$pipeline_parameters$do_transcript_quantification && !pipeline_vars$using_bam) {
         cat("#### Generating transcript count matrix\n")
-        if (is.null(pipeline_vars$bc_file) || pipeline_vars$using_bam) {
-            # sc_long_pipeline version of realigned bam
-            parse_realign <- parse_realigned_bam(pipeline_vars$realign_bam, 
-                pipeline_vars$transcript_fa_idx,
-                pipeline_vars$config$isoform_parameters$Min_sup_cnt,
-                pipeline_vars$config$transcript_counting$min_tr_coverage,
-                pipeline_vars$config$transcript_counting$min_read_coverage)
-        } else {
-            parse_realign <- parse_realigned_bam(pipeline_vars$realign_bam, 
-                pipeline_vars$transcript_fa_idx,
-                pipeline_vars$config$isoform_parameters$Min_sup_cnt,
-                pipeline_vars$config$transcript_counting$min_tr_coverage,
-                pipeline_vars$config$transcript_counting$min_read_coverage,
-                bc_file=pipeline_vars$bc_file)
-        }
+        parse_realign <- parse_realigned_bam(pipeline_vars$realign_bam, 
+            pipeline_vars$transcript_fa_idx,
+            pipeline_vars$config$isoform_parameters$Min_sup_cnt,
+            pipeline_vars$config$transcript_counting$min_tr_coverage,
+            pipeline_vars$config$transcript_counting$min_read_coverage)
+        
         tr_cnt = wrt_tr_to_csv(parse_realign$bc_tr_count_dict, 
             pipeline_vars$transcript_dict_i, pipeline_vars$tr_cnt_csv, 
             pipeline_vars$transcript_dict, 
@@ -332,11 +291,20 @@ windows_pipeline_quantification <- function(pipeline_vars) {
     } else {
         cat("#### Skip transcript quantification\n")
     }
+    
+    out_files <- list("annot"= pipeline_vars$annot, "counts"= pipeline_vars$tr_cnt_csv, 
+                      "isoform_annotated"= pipeline_vars$isoform_gff3_f, 
+                      "transcript_assembly"= pipeline_vars$transcript_fa, 
+                      "config"=pipeline_vars$config_file,
+                      "align_bam"= pipeline_vars$genome_bam, 
+                      "realign2transcript"= pipeline_vars$realign_bam, 
+                      "tss_tes"= pipeline_vars$tss_tes_stat,
+                      "outdir"= pipeline_vars$outdir)
 
     if (pipeline_vars$is_bulk) {
-        return(generate_bulk_summarized(pipeline_vars$outdir))
+        return(generate_bulk_summarized(out_files))
     } else {
-        return(generate_sc_singlecell(pipeline_vars$outdir))
+        return(generate_sc_singlecell(out_files))
     }
 }
             
