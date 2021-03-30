@@ -30,7 +30,7 @@ generic_long_pipeline <- function(annot, fastq, in_bam, outdir, genome_fa,
         print(outdir)
     }
     if (is.null(config_file)) {
-        config = create_config(do_genome_align, do_isoform_id,
+        config = create_config(outdir, do_genome_align, do_isoform_id,
                         do_read_realign, do_transcript_quanti,
                         gen_raw_isoform, has_UMI,
                         MAX_DIST, MAX_TS_DIST, MAX_SPLICE_MATCH_DIST,

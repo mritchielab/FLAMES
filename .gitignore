@@ -8,5 +8,7 @@ inst/doc
 inst/python/*.pyc
 vignettes/*.html
 vignettes/*.R
-inst/data/gencode.v33.annotation.gff3
-inst/data/GRCh38.primary_assembly.genome.fa
+inst/data/genocodeshortened.v33.annotation.gff3
+inst/data/GRCh38short.primary_assembly.genome.fa
+inst/data/align2genome.sample.fastq.gz
+inst/data/trimgff.py
