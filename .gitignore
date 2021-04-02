@@ -4,6 +4,7 @@
 .ds_store
 .DS_Store
 .Rproj
+.vscode
 inst/doc
 inst/python/*.pyc
 vignettes/*.html
