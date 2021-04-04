@@ -49,7 +49,7 @@
 #' temp_path <- tempfile()
 #' bfc <- BiocFileCache::BiocFileCache(temp_path, ask=FALSE)
 #' file_url <- 
-#'     "https://raw.githubusercontent.com/OliverVoogd/FlamesR/master/inst/data"
+#'     "https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data"
 #' # download the required fastq files, and move them to new folder
 #' fastq1 <- bfc[[names(BiocFileCache::bfcadd(bfc, "Fastq1", paste(file_url, "fastq/sample1.fastq.gz", sep="/")))]]
 #' fastq2 <- bfc[[names(BiocFileCache::bfcadd(bfc, "Fastq2", paste(file_url, "fastq/sample2.fastq.gz", sep="/")))]]
@@ -59,12 +59,11 @@
 #' unlink(c(fastq1, fastq2)) # the original files can be deleted
 #' 
 #' # run the FLAMES bulk pipeline, using the downloaded files
-#' \dontrun{
 #' se <- bulk_long_pipeline(annot=system.file("extdata/SIRV_anno.gtf", package="FLAMES"), 
 #'                    fastq=fastq_dir,
 #'                    outdir=tempdir(), genome_fa=system.file("extdata/SIRV_genomefa.fasta", package="FLAMES"),
 #'                    config_file=system.file("extdata/SIRV_config_default.json", package="FLAMES"))
-#' }
+#'
 #' @importFrom SummarizedExperiment SummarizedExperiment
 #' @importFrom utils read.csv read.table
 #' @export

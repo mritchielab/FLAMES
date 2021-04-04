@@ -45,7 +45,7 @@ The downloaded files are stored in a temporary directory.
 temp_path <- tempfile()
 bfc <- BiocFileCache::BiocFileCache(temp_path, ask=FALSE)
 file_url <- 
-  "https://raw.githubusercontent.com/OliverVoogd/FlamesR/master/inst/data"
+  "https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data"
 annot <- bfc[[names(BiocFileCache::bfcadd(bfc, "Annotation", 
                                           paste(file_url, 
                                                 "SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf", 
