@@ -35,7 +35,6 @@ gff3_to_bed12 <- function(minimap2_prog_path=NULL, gff3_file, bed12_file) {
 #'
 #' @return file path to the given output BAM file, \code{bam_out}
 #' @importFrom reticulate import_from_path
-#' @export
 minimap2_align <- function(minimap2_prog_path=NULL, fa_file, fq_in, sam_out, no_flank=FALSE, bed12_junc=NULL) {
     callBasilisk(flames_env, function (mm2_path, fa, fq, sam, flank, bed12_junc) {
         python_path <- system.file("python", package="FLAMES")

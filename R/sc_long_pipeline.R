@@ -5,6 +5,7 @@
 #'
 #' @param annot gene annotations file in gff3  format
 #' @param fastq file path to input fastq file
+#' @param in_bam optional bam file to use instead of fastq file
 #' @param outdir directory to store all output files.
 #' @param genome_fa genome fasta file.
 #' @param minimap2_dir directory containing minimap2, k8 and paftools.js program.

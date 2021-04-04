@@ -15,9 +15,23 @@ merge_bulk_fastq(fastq_dir, out_fastq)
 file path to the created merged fastq file `out_fastq`
 }
 \description{
-Merges all fastq files in the given folder into a single file. Used to create a pseudobulk fastq file,
-with added fake barcodes to differentiate between source files.
+Merges all fastq files in the given folder into a single file.
 }
 \examples{
-out_fastq <- merge_bulk_fastq(system.file("extdata/fastq", package="FLAMES"), anno_csv=tempfile(), out_fastq=tempfile())
+#download the fastq files to merge
+temp_path <- tempfile()
+bfc <- BiocFileCache::BiocFileCache(temp_path, ask=FALSE)
+file_url <- 
+    "https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data"
+# download the required fastq files, and move them to new folder
+fastq1 <- bfc[[names(BiocFileCache::bfcadd(bfc, "Fastq1", paste(file_url, "fastq/sample1.fastq.gz", sep="/")))]]
+fastq2 <- bfc[[names(BiocFileCache::bfcadd(bfc, "Fastq2", paste(file_url, "fastq/sample2.fastq.gz", sep="/")))]]
+fastq_dir <- paste(temp_path, "fastq_dir", sep="/") # the downloaded fastq files need to be in a directory to be merged together
+dir.create(fastq_dir)
+file.copy(c(fastq1, fastq2), fastq_dir)
+unlink(c(fastq1, fastq2)) # the original files can be deleted
+
+#merge the fastq files
+out_fastq <- paste0(temp_path, "/outfastq.fastq.gz")
+merge_bulk_fastq(fastq_dir, out_fastq)
 }

@@ -26,7 +26,7 @@ giving the returned list from this function as input.
 temp_path <- tempfile()
 bfc <- BiocFileCache::BiocFileCache(temp_path, ask=FALSE)
 file_url <- 
-    "https://raw.githubusercontent.com/OliverVoogd/FlamesR/master/inst/data"
+    "https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data"
 # download the required fastq files, and move them to new folder
 fastq1 <- bfc[[names(BiocFileCache::bfcadd(bfc, "Fastq1", paste(file_url, "fastq/sample1.fastq.gz", sep="/")))]]
 fastq2 <- bfc[[names(BiocFileCache::bfcadd(bfc, "Fastq2", paste(file_url, "fastq/sample2.fastq.gz", sep="/")))]]

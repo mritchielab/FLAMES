@@ -84,14 +84,20 @@ bulk_windows_pipeline_setup <- function(annot, fastq, in_bam=NULL, outdir, genom
 #' @param downsample_ratio downsampling ratio if performing downsampling analysis.
 #' @param config_file JSON configuration file. If specified,  \code{config_file} overrides
 #' all configuration parameters
+#' @param match_barcode boolean, specify if barcode matching should take place before the pipeline begins
+#' @param reference_csv reference csv for barcode matching
+#' @param MAX_DIST max dist
+#' @param UMI_LEN length of the UMI to find
 #' 
 #' @return a list \code{pipeline_variables} with the required variables for execution of later Windows pipeline
 #' steps. File paths required to perform minimap2 alignment are given in pipeline_variables$return_files.
 #' This list should be given as input for \code{windows_pipeline_isoforms} after minimap2 alignment has taken place; \code{windows_pipeline_isoforms} is the
 #' continuation of this pipeline.
+#' 
+#' @example inst/examples/windows_bulk_pipeline.R
 #' @export 
 sc_windows_pipeline_setup <- function(annot, fastq, in_bam=NULL, outdir, genome_fa,
-                downsample_ratio=1, config_file, match_barcode=TRUE, reference_csv=NULL, UMI_LEN=0)    {
+                downsample_ratio=1, config_file, match_barcode=TRUE, reference_csv=NULL, MAX_DIST=0, UMI_LEN=0)    {
     if (is.null(in_bam)) {
         if (match_barcode) {
                 if (!file.exists(reference_csv)) stop("reference_csv must exists.")
@@ -105,7 +111,6 @@ sc_windows_pipeline_setup <- function(annot, fastq, in_bam=NULL, outdir, genome_
 }
     
 
-#' Hidden generic pipeline setup function
 windows_pipeline_setup <- function(annot, fastq, in_bam=NULL, outdir, genome_fa,
                 downsample_ratio=1, config_file,
                 bulk=FALSE) {

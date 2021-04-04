@@ -151,12 +151,13 @@ dir.create(fastq_dir)
 file.copy(c(fastq1, fastq2), fastq_dir)
 unlink(c(fastq1, fastq2)) # the original files can be deleted
 
+\dontrun{
 # run the FLAMES bulk pipeline, using the downloaded files
 se <- bulk_long_pipeline(annot=system.file("extdata/SIRV_anno.gtf", package="FLAMES"), 
                    fastq=fastq_dir,
                    outdir=tempdir(), genome_fa=system.file("extdata/SIRV_genomefa.fasta", package="FLAMES"),
                    config_file=system.file("extdata/SIRV_config_default.json", package="FLAMES"))
-
+}
 }
 \seealso{
 \code{\link[=sc_long_pipeline]{sc_long_pipeline()}} for single cell data,

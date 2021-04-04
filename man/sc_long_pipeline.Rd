@@ -44,6 +44,8 @@ sc_long_pipeline(
 
 \item{fastq}{file path to input fastq file}
 
+\item{in_bam}{optional bam file to use instead of fastq file}
+
 \item{outdir}{directory to store all output files.}
 
 \item{genome_fa}{genome fasta file.}
