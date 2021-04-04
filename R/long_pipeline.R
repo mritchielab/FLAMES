@@ -6,8 +6,6 @@
 #' @inheritParams sc_long_pipeline
 #' @param in_bam optional BAM file which replaces fastq directory argument. This skips the genome alignment and
 #' realignment steps
-#' @param bc_file file containing the pseudo barcode annotations generated
-#' from bulk_long_pipeline. If given, it is used for quantification.
 #' 
 #' @return This generic function returns NULL, instead providing output files
 #' in the given `outdir` directory. These files are loaded into R in either

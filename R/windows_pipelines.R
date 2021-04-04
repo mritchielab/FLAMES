@@ -16,6 +16,7 @@
 #'
 #' @param annot gene annotations file in gff3  format
 #' @param fastq file path to input fastq file
+#' @param in_bam optional bam file to use instead of fastq files (skips read alignment step)
 #' @param outdir directory to store all output files.
 #' @param genome_fa genome fasta file.
 #' @param downsample_ratio downsampling ratio if performing downsampling analysis.
@@ -77,6 +78,7 @@ bulk_windows_pipeline_setup <- function(annot, fastq, in_bam=NULL, outdir, genom
 #'
 #' @param annot gene annotations file in gff3  format
 #' @param fastq file path to input fastq file
+#' @param in_bam optional bam file to replace fastq input files
 #' @param outdir directory to store all output files.
 #' @param genome_fa genome fasta file.
 #' @param downsample_ratio downsampling ratio if performing downsampling analysis.
@@ -89,7 +91,7 @@ bulk_windows_pipeline_setup <- function(annot, fastq, in_bam=NULL, outdir, genom
 #' continuation of this pipeline.
 #' @export 
 sc_windows_pipeline_setup <- function(annot, fastq, in_bam=NULL, outdir, genome_fa,
-                downsample_ratio=1, config_file) {
+                downsample_ratio=1, config_file, match_barcode=TRUE, reference_csv=NULL, UMI_LEN=0)    {
     if (is.null(in_bam)) {
         if (match_barcode) {
                 if (!file.exists(reference_csv)) stop("reference_csv must exists.")
@@ -195,7 +197,7 @@ windows_pipeline_setup <- function(annot, fastq, in_bam=NULL, outdir, genome_fa,
         return(pipeline_variables)
     } else {
         cat("#### Skip aligning reads to genome\n")
-        windows_pipline_isoforms(pipline_variables)
+        windows_pipeline_isoforms(pipeline_variables)
     }
 }
 
@@ -244,7 +246,7 @@ windows_pipeline_isoforms <- function(pipeline_variables) {
 #' This is the final step in the 3 step Windows FLAMES pipeline. This should be run
 #' after read realignment is performed, following \code{windows_pipeline_isoforms}.
 #' 
-#' @param pipeline_variables the list returned from \code{windows_pipeline_isoforms}, containing the information
+#' @param pipeline_vars the list returned from \code{windows_pipeline_isoforms}, containing the information
 #' required to perform the final step, quantification.
 #' 
 #' @return \code{windows_pipeline_quantification} returns a SummarizedExperiment object, or a SingleCellExperiment in the case

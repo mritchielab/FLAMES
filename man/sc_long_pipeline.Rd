@@ -139,27 +139,6 @@ or the reverse complemented (-1) or not strand specific (0), which results in
 strand information being based on reference annotation.}
 }
 }
-\examples{
-# download the required files using BiocFileCache
-temp_path <- tempfile()
-bfc <- BiocFileCache::BiocFileCache(temp_path, ask=FALSE)
-file_url <- 
-    "https://raw.githubusercontent.com/OliverVoogd/FlamesR/master/inst/data"
-annot <- bfc[[names(BiocFileCache::bfcadd(bfc, "Annotation", paste(file_url, "genocodeshortened.v33.annotation.gff3", sep="/")))]] # [[ notation is used to get the local file path of the downloaded file
-genome_fa <- bfc[[names(BiocFileCache::bfcadd(bfc, "Genomefa", paste(file_url, "GRCh38short.primary_assembly.genome.fa", sep="/")))]]
-
-# download the input fastq file
-fastq <- bfc[[names(BiocFileCache::bfcadd(bfc, "INFQ", 
-                                          paste(file_url, "LT03_PromethION_10P.sample.sort.fastq.gz", sep="/")))]]
-
-config_file <- system.file("extdata/SIRV_config_default.json", package="FLAMES") # the configuration file is included with the FLAMES package
-\dontrun{
-sce <- sc_long_pipeline(annot=annot, 
-                   fastq=system.file("extdata/fastq", package="FLAMES"),
-                   outdir=tempdir(), genome_fa=genome_fa,
-                   config_file=system.file("extdata/SIRV_config_default.json", package="FLAMES"))
-}
-}
 \seealso{
 \code{\link[=bulk_long_pipeline]{bulk_long_pipeline()}} for bulk long data,
 \code{\link[=SingleCellExperiment]{SingleCellExperiment()}} for how data is outputted

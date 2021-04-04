@@ -19,6 +19,8 @@ bulk_windows_pipeline_setup(
 
 \item{fastq}{file path to input fastq file}
 
+\item{in_bam}{optional bam file to use instead of fastq files (skips read alignment step)}
+
 \item{outdir}{directory to store all output files.}
 
 \item{genome_fa}{genome fasta file.}

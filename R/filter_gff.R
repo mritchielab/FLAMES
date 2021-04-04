@@ -1,25 +1,3 @@
-#' Annotate filter (GFF3)
-#'
-#' @description Combine FLAMES ouput with reference and filter out transcript by
-#' realignment result.
-#' @return returns NULL
-#' @examples
-#' isoform_gff3 <- parse_gff_tree(system.file("extdata/isoform_annotated.gff3", package="FLAMES"))
-#' gff3_parse <- parse_gff_tree(system.file("extdata/SIRV_anno.gtf", package="FLAMES"))
-#' realign_bam <- system.file("extdata/align2genome.bam", package="FLAMES")
-#' genomefa <- system.file("extdata/SIRV_genomefa.fasta", package="FLAMES")
-#' gff3_parse <- parse_gff_tree(system.file("extdata/isoform_annotated.gff3", package="FLAMES"))
-#' transcript_fa <- system.file("extdata/transcript_assembly.fa", package="FLAMES")
-#' \dontrun{
-#' get_transcript_seq(genomefa, transcript_fa, gff3_parse$chr_to_gene, gff3_parse$transcript_dict, gff3_parse$gene_to_transcript, gff3_parse$transcript_to_exon)
-#' parse_realign <- parse_realigned_bam(realign_bam, paste0(transcript_fa, ".fai"), 10, 0.75, 0.75)
-#' tr_cnt <- wrt_tr_to_csv(parse_realign$bc_tr_count_dict, isoform_gff3$transcript_dict, tempfile(fileext=".csv.gz"), 
-#'                         gff3_parse$transcript_dict, FALSE)
-#' annotate_filter_gff(isoform_gff=system.file("extdata/isoform_annotated.gff3", package="FLAMES"), 
-#'                      ref_gff=system.file("extdata/SIRV_anno.gtf", package="FLAMES"), 
-#'                      isoform_out=tempfile(fileext=".gff3"), anno_out=tempfile(fileext=".csv"), 
-#'                      tr_cnt, 10)
-#' }
 #' @importFrom reticulate import_from_path
 annotate_filter_gff <- function(isoform_gff, ref_gff, isoform_out, anno_out, tr_cnt, min_sup_reads) {
     callBasilisk(flames_env, function(isoform_gff, ref_gff, isoform_out, anno_out, tr_cnt, min_sup_reads) {

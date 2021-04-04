@@ -7,7 +7,7 @@
 windows_pipeline_quantification(pipeline_vars)
 }
 \arguments{
-\item{pipeline_variables}{the list returned from \code{windows_pipeline_isoforms}, containing the information
+\item{pipeline_vars}{the list returned from \code{windows_pipeline_isoforms}, containing the information
 required to perform the final step, quantification.}
 }
 \value{

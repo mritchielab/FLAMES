@@ -1,4 +1,3 @@
-#' Find isoform pipeline step
 #' @importFrom reticulate import_from_path
 #' @importFrom Rsamtools indexFa
 find_isoform <- function(gff3, genome_bam, isoform_gff3,

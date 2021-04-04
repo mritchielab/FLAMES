@@ -11,13 +11,18 @@ sc_windows_pipeline_setup(
   outdir,
   genome_fa,
   downsample_ratio = 1,
-  config_file
+  config_file,
+  match_barcode = TRUE,
+  reference_csv = NULL,
+  UMI_LEN = 0
 )
 }
 \arguments{
 \item{annot}{gene annotations file in gff3  format}
 
 \item{fastq}{file path to input fastq file}
+
+\item{in_bam}{optional bam file to replace fastq input files}
 
 \item{outdir}{directory to store all output files.}
 

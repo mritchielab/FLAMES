@@ -12,7 +12,6 @@ windows_pipeline_setup(
   genome_fa,
   downsample_ratio = 1,
   config_file,
-  bc_file = NULL,
   bulk = FALSE
 )
 }

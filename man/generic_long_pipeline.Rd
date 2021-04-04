@@ -33,8 +33,7 @@ generic_long_pipeline(
   no_flank,
   use_annotation,
   min_tr_coverage,
-  min_read_coverage,
-  bc_file = NULL
+  min_read_coverage
 )
 }
 \arguments{
@@ -100,9 +99,6 @@ reads are not strand specific.}
 \item{min_tr_coverage}{Numeric.}
 
 \item{min_read_coverage}{Numeric.}
-
-\item{bc_file}{file containing the pseudo barcode annotations generated
-from bulk_long_pipeline. If given, it is used for quantification.}
 }
 \value{
 This generic function returns NULL, instead providing output files
