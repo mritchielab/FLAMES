@@ -61,14 +61,10 @@ This vignette uses the default configuration file.
 
 ### FLAMES execution
 Once the environment has been setup, the pipeline can be executed by running:
-```{r eval=FALSE}
+```{r eval=TRUE}
 summarizedExperiment <- bulk_long_pipeline(annot=annot, fastq=fastq_dir, outdir=temp_path, 
                                            genome_fa=genome_fa, minimap2_dir=mm2_dir,
                                            config_file = config_file)
-```
-
-```{r echo=FALSE, results='asis'}
-# do windows pipeline vignette thing 
 ```
 
 ### FLAMES termination

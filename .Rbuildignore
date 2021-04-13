@@ -3,3 +3,5 @@
 ^\.vscode$
 ^\.gitignore$
 ^inst/data$
+^doc$
+^Meta$

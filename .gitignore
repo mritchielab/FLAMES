@@ -1,4 +1,4 @@
-.Rproj.user
+.Rproj.user/
 .Rhistory
 .RData
 .ds_store
@@ -13,3 +13,5 @@ inst/data/genocodeshortened.v33.annotation.gff3
 inst/data/GRCh38short.primary_assembly.genome.fa
 inst/data/align2genome.sample.fastq.gz
 inst/data/trimgff.py
+doc
+Meta
