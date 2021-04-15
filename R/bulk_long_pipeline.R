@@ -1,26 +1,11 @@
 #' Pipeline for Bulk Data
 #'
 #' @md
-#' @description
-#' Semi-supervised isofrom detection and annotation for long read data.
+#' @description Semi-supervised isofrom detection and annotation for long read data.
 #' This variant is meant for bulk samples. Specific parameters relating to
 #' analysis can be changed either through function arguments, or through a
 #' configuration JSON file.
-#'
-#' @details The default parameters can be changed either through the function
-#' arguments are through the configuration JSON file \code{config_file}. the \code{pipeline_parameters}
-#' section specifies which steps are to be executed in the pipeline - by default, all
-#' steps are executed. The \code{isoform_parameters} section affects isoform detection - key
-#' parameters include:
-#' \itemize{
-#'  \item{\code{Min_sup_cnt}}{ which causes transcripts with less reads aligned than
-#' it's value to be discarded}
-#'  \item{\code{MAX_TS_DIST}}{ which merges transcripts with the same intron
-#' chain and TSS/TES distace less than \code{MAX_TS_DIST}}
-#'  \item{\code{strand_specific}}{ which specifies if reads are in the same strand as the mRNA (1),
-#' or the reverse complemented (-1) or not strand specific (0), which results in
-#' strand information being based on reference annotation.}
-#' }
+#' @inherit sc_long_pipeline details description
 #'
 #' @return \code{bulk_long_pipeline} returns a SummarizedExperiment object, containing a count
 #' matrix as an assay, gene annotations under metadata, as well as a list of the other
@@ -40,6 +25,7 @@
 #' @param in_bam optional BAM file which replaces fastq directory argument. This skips the genome alignment and
 #' realignment steps
 #' @inheritParams sc_long_pipeline
+#' 
 #' @seealso
 #' [sc_long_pipeline()] for single cell data,
 #' [SummarizedExperiment()] for how data is outputted

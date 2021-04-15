@@ -38,7 +38,6 @@ parse_json_config <- function(json_file) {
 #' config <- parse_json_config(get_default_config_file())
 #' print_config(config)
 #' @importFrom reticulate import_from_path
-#' @export
 print_config <- function(config) {
     callBasilisk(flames_env, function(config) {
         python_path <- system.file("python", package="FLAMES")
@@ -61,7 +60,6 @@ print_config <- function(config) {
 #' @examples
 #' write_config(parse_json_config(get_default_config_file()), tempfile())
 #' @importFrom reticulate import_from_path
-#' @export
 write_config <- function(config, config_file) {
     # write the config file to given file path
     callBasilisk(flames_env, function(config, config_file) {
@@ -79,27 +77,29 @@ write_config <- function(config, config_file) {
 #' Also writes the object to a JSON file, which is located with the prefix 'config_' in the supplied \code{outdir}.
 #'
 #' @param outdir the destination directory for the configuratio nfile
-#' @param do_genome_align NEEDED
-#' @param do_isoform_id NEEDED
-#' @param do_read_realign NEEDED
-#' @param do_transcript_quanti NEEDED
-#' @param gen_raw_isoform NEEDED
-#' @param has_UMI NEEDED
-#' @param MAX_DIST NEEDED
-#' @param MAX_TS_DIST NEEDED
-#' @param MAX_SPLICE_MATCH_DIST NEEDED
-#' @param min_fl_exon_len NEEDED
-#' @param Max_site_per_splice NEEDED
-#' @param Min_sup_cnt NEEDED
-#' @param Min_cnt_pct NEEDED
-#' @param Min_sup_pct NEEDED
-#' @param strand_specific NEEDED
-#' @param remove_incomp_reads NEEDED
-#' @param use_junctions NEEDED
-#' @param no_flank NEEDED
-#' @param use_annotation NEEDED
-#' @param min_tr_coverage NEEDED
-#' @param min_read_coverage NEEDED
+#' @param do_genome_align Boolean. Specifies whether to run the genome alignment step. \code{TRUE} is recommended
+#' @param do_isoform_id Boolean. Specifies whether to run the isoform identification step. \code{TRUE} is recommended
+#' @param do_read_realign Boolean. Specifies whether to run the read realignment step. \code{TRUE} is recommended
+#' @param do_transcript_quanti Boolean. Specifies whether to run the transcript quantification step. \code{TRUE} is recommended
+#' @param gen_raw_isoform Boolean.
+#' @param has_UMI Boolean. Specifies if the data contains UMI.
+#' @param MAX_DIST Maximum distance allowed when merging splicing sites in isoform consensus clustering.
+#' @param MAX_TS_DIST Maximum distance allowed when merging transcript start/end position in isoform consensus clustering.
+#' @param MAX_SPLICE_MATCH_DIST Maximum distance allowed when merging splice site called from the data and the reference annotation.
+#' @param min_fl_exon_len Minimum length for the first exon outside the gene body in reference annotation. This is to correct the alignment artifact
+#' @param Max_site_per_splice Maximum transcript start/end site combinations allowed per splice chain
+#' @param Min_sup_cnt Minimum number of read support an isoform decrease this number will significantly increase the number of isoform detected.
+#' @param Min_cnt_pct Minimum percentage of count for an isoform relative to total count for the same gene.
+#' @param Min_sup_pct Minimum percentage of count for an splice chain that support a given transcript start/end site combination.
+#' @param strand_specific 1, -1 or 0. 1 indicates if reads are in the same
+#' strand as mRNA, -1 indicates reads are reverse complemented, 0 indicates
+#' reads are not strand specific.
+#' @param remove_incomp_reads The strenge of truncated isoform filtering. larger number means more stringent filtering.
+#' @param use_junctions whether to use known splice junctions to help correct the alignment results
+#' @param no_flank Boolean. for synthetic spike-in data. refer to Minimap2 document for detail
+#' @param use_annotation Boolean. whether to use reference to help annotate known isoforms
+#' @param min_tr_coverage Minimum percentage of isoform coverage for a read to be aligned to that isoform
+#' @param min_read_coverage Minimum percentage of read coverage for a read to be uniquely aligned to that isoform
 #'
 #' @return the created R list object, which represents the configuration file created by this function.
 #' 

@@ -66,39 +66,39 @@ all configuration parameters}
 
 \item{gen_raw_isoform}{Boolean.}
 
-\item{has_UMI}{Boolean. Speficies if each gene as a UMI.}
+\item{has_UMI}{Boolean. Specifies if the data contains UMI.}
 
-\item{MAX_DIST}{Numeric}
+\item{MAX_DIST}{Maximum distance allowed when merging splicing sites in isoform consensus clustering.}
 
-\item{MAX_TS_DIST}{Numeric.}
+\item{MAX_TS_DIST}{Maximum distance allowed when merging transcript start/end position in isoform consensus clustering.}
 
-\item{MAX_SPLICE_MATCH_DIST}{Numeric.}
+\item{MAX_SPLICE_MATCH_DIST}{Maximum distance allowed when merging splice site called from the data and the reference annotation.}
 
-\item{min_fl_exon_len}{Numeric.}
+\item{min_fl_exon_len}{Minimum length for the first exon outside the gene body in reference annotation. This is to correct the alignment artifact}
 
-\item{Max_site_per_splice}{Numeric.}
+\item{Max_site_per_splice}{Maximum transcript start/end site combinations allowed per splice chain}
 
-\item{Min_sup_cnt}{Numeric.}
+\item{Min_sup_cnt}{Minimum number of read support an isoform decrease this number will significantly increase the number of isoform detected.}
 
-\item{Min_cnt_pct}{Numeric.}
+\item{Min_cnt_pct}{Minimum percentage of count for an isoform relative to total count for the same gene.}
 
-\item{Min_sup_pct}{Numeric.}
+\item{Min_sup_pct}{Minimum percentage of count for an splice chain that support a given transcript start/end site combination.}
 
 \item{strand_specific}{1, -1 or 0. 1 indicates if reads are in the same
 strand as mRNA, -1 indicates reads are reverse complemented, 0 indicates
 reads are not strand specific.}
 
-\item{remove_incomp_reads}{Numeric.}
+\item{remove_incomp_reads}{The strenge of truncated isoform filtering. larger number means more stringent filtering.}
 
-\item{use_junctions}{Boolean.}
+\item{use_junctions}{whether to use known splice junctions to help correct the alignment results}
 
-\item{no_flank}{Boolean.}
+\item{no_flank}{Boolean. for synthetic spike-in data. refer to Minimap2 document for detail}
 
-\item{use_annotation}{Boolean.}
+\item{use_annotation}{Boolean. whether to use reference to help annotate known isoforms}
 
-\item{min_tr_coverage}{Numeric.}
+\item{min_tr_coverage}{Minimum percentage of isoform coverage for a read to be aligned to that isoform}
 
-\item{min_read_coverage}{Numeric.}
+\item{min_read_coverage}{Minimum percentage of read coverage for a read to be uniquely aligned to that isoform}
 }
 \value{
 This generic function returns NULL, instead providing output files

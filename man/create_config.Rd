@@ -32,47 +32,49 @@ create_config(
 \arguments{
 \item{outdir}{the destination directory for the configuratio nfile}
 
-\item{do_genome_align}{NEEDED}
+\item{do_genome_align}{Boolean. Specifies whether to run the genome alignment step. \code{TRUE} is recommended}
 
-\item{do_isoform_id}{NEEDED}
+\item{do_isoform_id}{Boolean. Specifies whether to run the isoform identification step. \code{TRUE} is recommended}
 
-\item{do_read_realign}{NEEDED}
+\item{do_read_realign}{Boolean. Specifies whether to run the read realignment step. \code{TRUE} is recommended}
 
-\item{do_transcript_quanti}{NEEDED}
+\item{do_transcript_quanti}{Boolean. Specifies whether to run the transcript quantification step. \code{TRUE} is recommended}
 
-\item{gen_raw_isoform}{NEEDED}
+\item{gen_raw_isoform}{Boolean.}
 
-\item{has_UMI}{NEEDED}
+\item{has_UMI}{Boolean. Specifies if the data contains UMI.}
 
-\item{MAX_DIST}{NEEDED}
+\item{MAX_DIST}{Maximum distance allowed when merging splicing sites in isoform consensus clustering.}
 
-\item{MAX_TS_DIST}{NEEDED}
+\item{MAX_TS_DIST}{Maximum distance allowed when merging transcript start/end position in isoform consensus clustering.}
 
-\item{MAX_SPLICE_MATCH_DIST}{NEEDED}
+\item{MAX_SPLICE_MATCH_DIST}{Maximum distance allowed when merging splice site called from the data and the reference annotation.}
 
-\item{min_fl_exon_len}{NEEDED}
+\item{min_fl_exon_len}{Minimum length for the first exon outside the gene body in reference annotation. This is to correct the alignment artifact}
 
-\item{Max_site_per_splice}{NEEDED}
+\item{Max_site_per_splice}{Maximum transcript start/end site combinations allowed per splice chain}
 
-\item{Min_sup_cnt}{NEEDED}
+\item{Min_sup_cnt}{Minimum number of read support an isoform decrease this number will significantly increase the number of isoform detected.}
 
-\item{Min_cnt_pct}{NEEDED}
+\item{Min_cnt_pct}{Minimum percentage of count for an isoform relative to total count for the same gene.}
 
-\item{Min_sup_pct}{NEEDED}
+\item{Min_sup_pct}{Minimum percentage of count for an splice chain that support a given transcript start/end site combination.}
 
-\item{strand_specific}{NEEDED}
+\item{strand_specific}{1, -1 or 0. 1 indicates if reads are in the same
+strand as mRNA, -1 indicates reads are reverse complemented, 0 indicates
+reads are not strand specific.}
 
-\item{remove_incomp_reads}{NEEDED}
+\item{remove_incomp_reads}{The strenge of truncated isoform filtering. larger number means more stringent filtering.}
 
-\item{use_junctions}{NEEDED}
+\item{use_junctions}{whether to use known splice junctions to help correct the alignment results}
 
-\item{no_flank}{NEEDED}
+\item{no_flank}{Boolean. for synthetic spike-in data. refer to Minimap2 document for detail}
 
-\item{use_annotation}{NEEDED}
+\item{use_annotation}{Boolean. whether to use reference to help annotate known isoforms}
 
-\item{min_tr_coverage}{NEEDED}
+\item{min_tr_coverage}{Minimum percentage of isoform coverage for a read to be aligned to that isoform}
 
-\item{min_read_coverage}{NEEDED}
+\item{min_read_coverage}{Minimum percentage of read coverage for a read to be uniquely aligned to that isoform}
 }
 \value{
 the created R list object, which represents the configuration file created by this function.
