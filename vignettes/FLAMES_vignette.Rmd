@@ -19,6 +19,15 @@ knitr::opts_chunk$set(
 ## FLAMES Vignette
 This vignette will detail the process of running the FLAMES pipeline. It uses the bulk data pipeline (`bulk_long_pipeline`) as an example, however this vignette will be useful for those running the other FLAMES entry point, the single cell pipeline (`sc_long_pipeline`).
 
+### Installation
+To install FLAMES, run the following:
+```{r eval=FALSE}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("FLAMES")
+```
+
 ### Environment setup
 To get started, the pipeline needs access to a gene annotation file in gff3 or gtf format, a directory containing one or more fastq files (which will be merged as pre-processing), a genome fasta file, as well as the file path to minimap2, and the file path to the directory to hold output files.
 
@@ -61,7 +70,8 @@ This vignette uses the default configuration file.
 
 ### FLAMES execution
 Once the environment has been setup, the pipeline can be executed by running:
-```{r eval=TRUE}
+```{r eval=FALSE}
+library(FLAMES)
 summarizedExperiment <- bulk_long_pipeline(annot=annot, fastq=fastq_dir, outdir=temp_path, 
                                            genome_fa=genome_fa, minimap2_dir=mm2_dir,
                                            config_file = config_file)
