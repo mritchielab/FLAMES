@@ -3,8 +3,6 @@
 #' @description file path to the default FLAMES configuration file
 #' @examples
 #' config <- parse_json_config(get_default_config_file())
-#' print_config(config)
-
 #' @return file path to the FLAMES default configuration file
 #' @export
 get_default_config_file <- function() {
