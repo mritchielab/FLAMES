@@ -12,8 +12,8 @@ Authors@R: c(person("Tian", "Luyi", role=c("aut"),
              person("Ritchie","Matthew", role=c("ctb"),
                     email="mritchie@wehi.edu.au"))
 Description: Semi-supervised isoform detection and annotation from both bulk and single-cell 
-long read RNA-seq data. Flames provides automated pipelines for analysing isoforms,
- as well as intermediate functions for manual execution.
+  long read RNA-seq data. Flames provides automated pipelines for analysing isoforms,
+  as well as intermediate functions for manual execution.
 biocViews: RNASeq, SingleCell, Transcriptomics, DataImport, 
             DifferentialSplicing, AlternativeSplicing, GeneExpression
 License: GPL (>= 2)
