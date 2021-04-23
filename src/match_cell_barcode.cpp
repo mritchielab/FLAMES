@@ -574,7 +574,7 @@ void match_cell_barcode(String fastq_dir, String stats_file, String out_fastq, S
       if (!found_match)
       {
         aligner.Align(seq1->seq.s, ref_left.c_str(), ref_left.size(), filter, &alignment, 15);
-        if ((alignment.mismatches < MAX_DIST+1) & (alignment.query_end+BC_LEN+UMI_LEN+50<seq.size()))
+        if ((alignment.mismatches < MAX_DIST+1) & (alignment.query_end+BC_LEN+UMI_LEN+50<(int)seq.size()))
         {
         found_cnt ++;
               bc_string = std::string((seq1->seq.s)+alignment.query_end, 16);
