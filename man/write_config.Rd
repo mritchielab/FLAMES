@@ -20,6 +20,3 @@ Write Configuration Dictionary to File
 \details{
 Write the configuration file, represented as a named list used for the Flames pipeline.
 }
-\examples{
-write_config(parse_json_config(get_default_config_file()), tempfile())
-}

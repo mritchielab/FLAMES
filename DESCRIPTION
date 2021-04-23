@@ -1,7 +1,7 @@
 Package: FLAMES
 Type: Package
 Title: FLAMES; Full Length Transcriptome Splicing and Mutation Analysis for Long-Read Data
-Version: 0.99.0
+Version: 0.99.1
 Date: 2020-12-28
 Authors@R: c(person("Tian", "Luyi", role=c("aut"),
                     email="tian.l@wehi.edu.au"),
@@ -25,6 +25,7 @@ Suggests:
     BiocStyle,
     knitr,
     rmarkdown,
+    markdown,
     BiocFileCache
 LinkingTo: Rcpp
 RoxygenNote: 7.1.1

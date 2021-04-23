@@ -34,9 +34,6 @@ parse_json_config <- function(json_file) {
 #'
 #' @return return NULL
 #' 
-#' @examples
-#' config <- parse_json_config(get_default_config_file())
-#' print_config(config)
 #' @importFrom reticulate import_from_path
 print_config <- function(config) {
     callBasilisk(flames_env, function(config) {
@@ -57,8 +54,6 @@ print_config <- function(config) {
 #' 
 #' @return returns NULL
 #' 
-#' @examples
-#' write_config(parse_json_config(get_default_config_file()), tempfile())
 #' @importFrom reticulate import_from_path
 write_config <- function(config, config_file) {
     # write the config file to given file path
