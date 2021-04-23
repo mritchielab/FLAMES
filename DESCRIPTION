@@ -21,6 +21,7 @@ Encoding: UTF-8
 Imports: 
     basilisk, reticulate, SingleCellExperiment, 
     SummarizedExperiment, Rsamtools, utils,
+    zlibbioc
 Suggests: 
     BiocStyle,
     knitr,

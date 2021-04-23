@@ -9,10 +9,10 @@
 #include <unordered_map>
 #include <algorithm>
 #include <string>
-#include <zlib.h>
 #include <cassert>
 #include <Rcpp.h>
 #include <R.h>
+#include "zlib.h"
 #include "edit_dist.h"
 #include "ssw_cpp.h"
 #include "kseq.h"
@@ -437,6 +437,7 @@ int get_hm_idx(std::string& q_seq, std::vector<std::string>& barcode_list, int m
 //' @param UMI_LEN int; length of UMI sequences
 //'
 //' @return returns NULL
+//' @import zlibbioc
 //' @useDynLib FLAMES, .registration=TRUE
 // [[Rcpp::export]]
 void match_cell_barcode(String fastq_dir, String stats_file, String out_fastq, String ref_csv, int MAX_DIST, int UMI_LEN=10)

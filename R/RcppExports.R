@@ -14,6 +14,7 @@
 #' @param UMI_LEN int; length of UMI sequences
 #'
 #' @return returns NULL
+#' @import zlibbioc
 #' @useDynLib FLAMES, .registration=TRUE
 match_cell_barcode <- function(fastq_dir, stats_file, out_fastq, ref_csv, MAX_DIST, UMI_LEN = 10L) {
     invisible(.Call(`_FLAMES_match_cell_barcode`, fastq_dir, stats_file, out_fastq, ref_csv, MAX_DIST, UMI_LEN))
