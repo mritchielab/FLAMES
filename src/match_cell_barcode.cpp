@@ -38,7 +38,7 @@ std::string join_path(const std::string p1, const std::string p2)
 int find_polyT(std::string& seq, int start_pos)
 {
   int i=start_pos;
-  while (i<seq.size()-10)
+  while (i<(int)seq.size()-10)
   {
     if (seq[i] == 'T')
     {
@@ -54,13 +54,13 @@ int find_polyT(std::string& seq, int start_pos)
     }
     else
     {
-      if(i<seq.size())
+      if(i<(int)seq.size())
       {
         if (i<(start_pos+40))
         {
           return i;
         }else{
-          if (start_pos+40 < seq.size() ){
+          if (start_pos+40 < (int)seq.size() ){
             return start_pos+40;
           }else{
             return start_pos;
@@ -361,7 +361,7 @@ int get_clo_idx(const char* seq_ptr, int64_t *al, std::vector<int64_t *>& bc_lis
     {
         al[i] = std::hash<char>{}(seq_ptr[i]);
     }
-  for (i=0; i<bc_list_ptr.size(); i++)
+  for (i=0; i<(int)bc_list_ptr.size(); i++)
   {
     dis = scutil::edit_distance1(al, 16, bc_list_ptr[i], 16);
     if (dis<=max_dist)
@@ -396,7 +396,7 @@ int get_hm_idx(std::string& q_seq, std::vector<std::string>& barcode_list, int m
   int idx = -1;
   int sml1_dis = 999;
   int sml2_dis = 999;
-  for (i=0; i<barcode_list.size(); i++)
+  for (i=0; i<(int)barcode_list.size(); i++)
   {
     dis = scutil::hamming_distance(q_seq, barcode_list[i]);
     if (dis<=max_dist)
@@ -524,7 +524,7 @@ void match_cell_barcode(String fastq_dir, String stats_file, String out_fastq, S
       qual = std::string(seq1->qual.s);
       name = std::string(seq1->name.s);
 
-      if (seq.size()<std::max(bc_range.first,bc_range.second)+BC_LEN+UMI_LEN+20)
+      if ((int)seq.size()<std::max(bc_range.first,bc_range.second)+BC_LEN+UMI_LEN+20)
       {
         too_short++;
         continue;
@@ -574,7 +574,7 @@ void match_cell_barcode(String fastq_dir, String stats_file, String out_fastq, S
       if (!found_match)
       {
         aligner.Align(seq1->seq.s, ref_left.c_str(), ref_left.size(), filter, &alignment, 15);
-        if (alignment.mismatches < MAX_DIST+1 & alignment.query_end+BC_LEN+UMI_LEN+50<seq.size())
+        if ((alignment.mismatches < MAX_DIST+1) & (alignment.query_end+BC_LEN+UMI_LEN+50<seq.size()))
         {
         found_cnt ++;
               bc_string = std::string((seq1->seq.s)+alignment.query_end, 16);
@@ -649,7 +649,7 @@ void match_cell_barcode(String fastq_dir, String stats_file, String out_fastq, S
           if (!found_match)
           {
             aligner.Align(seq.c_str(), ref_left.c_str(), ref_left.size(), filter, &alignment, 15);
-            if (alignment.mismatches < MAX_DIST+1 & alignment.query_end+BC_LEN+UMI_LEN+50<seq.size())
+            if ((alignment.mismatches < MAX_DIST+1) & (alignment.query_end+BC_LEN+UMI_LEN+50<(int)seq.size()))
             {
             found_cnt ++;
                   bc_string = seq.substr(alignment.query_end, 16);

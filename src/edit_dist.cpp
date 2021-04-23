@@ -3,7 +3,7 @@
 int scutil::hamming_distance(const std::string &A, const std::string &B)
 {
     int dist = 0;
-    for (int i = 0; i < B.length(); ++i)
+    for (int i = 0; i < (int)B.length(); ++i)
     {
         dist += (A[i] != B[i]);
     }
@@ -58,7 +58,7 @@ unsigned int edit_distance_bpv(T &cmap, int64_t const *vec, size_t const &vecsiz
     for(size_t i = 0; i < tlen; ++i) VP[tmax] |= (1LL << i);
     for(size_t i = 0; i < vecsize; ++i) {
         TVALUE &PM = cmap[vec[i]];
-        for(int r = 0; r <= tmax; ++r) {
+        for(int r = 0; r <= (int)tmax; ++r) {
             uint64_t X = PM[r];
             if(r > 0 && (HN[r - 1] & lmb)) X |= 1LL;
             D0[r] = (((X & VP[r]) + VP[r]) ^ VP[r]) | X | VN[r];
@@ -81,7 +81,7 @@ template <size_t N>
 struct varr {
     uint64_t arr_[N];
     uint64_t & operator[](size_t const &i) {
-        return arr_[i];
+        return *(&arr_[0] + i);
     }
 };
 
@@ -112,4 +112,6 @@ unsigned int scutil::edit_distance1(const int64_t *a, const unsigned int asize, 
 
     if(vsize == 1) return edit_distance_map_<1>(ap, *asizep, bp, *bsizep);
     else if(vsize == 2) return edit_distance_map_<2>(ap, *asizep, bp, *bsizep);
+
+    return -1;
 }
