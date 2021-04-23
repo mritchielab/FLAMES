@@ -1,1 +1,0 @@
-GRCh38short.primary_assembly.genome.fa filter=lfs diff=lfs merge=lfs -text

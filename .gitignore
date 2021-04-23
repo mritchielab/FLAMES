@@ -1,8 +1,9 @@
 .Rproj.user/
+FlamesR.Rproj
 .Rhistory
 .RData
 .ds_store
-.DS_Store
+*.DS_Store
 .Rproj
 .vscode
 inst/doc
