@@ -16,3 +16,5 @@ inst/data/align2genome.sample.fastq.gz
 inst/data/trimgff.py
 doc
 Meta
+/doc/
+/Meta/
