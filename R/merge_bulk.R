@@ -27,7 +27,7 @@
 #' @importFrom reticulate import_from_path
 #' @export
 merge_bulk_fastq <- function(fastq_dir,  out_fastq) {
-    callBasilisk(flames_env, function(fq_dir, out_fq) {
+    callBasilisk(flames_nopysam_env, function(fq_dir, out_fq) {
         python_path <- system.file("python", package="FLAMES")
         
         merge_bulk <-

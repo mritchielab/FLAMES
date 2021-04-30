@@ -3,7 +3,7 @@
 find_isoform <- function(gff3, genome_bam, isoform_gff3,
             tss_tes_stat, genomefa, transcript_fa, 
             downsample_ratio, config, raw) {
-    ret = callBasilisk(flames_env, function(gff3, genome, iso, tss, fa, tran, ds, conf, raw) {
+    ret = callBasilisk(flames_nopysam_env, function(gff3, genome, iso, tss, fa, tran, ds, conf, raw) {
         python_path <- system.file("python", package="FLAMES")
 
         find <- reticulate::import_from_path("find_isoform", python_path)

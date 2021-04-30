@@ -1,5 +1,6 @@
 # find isoforms in longread data
-import pysam
+#import pysam # get rid
+import bamnostic as bs
 #from BCBio import GFF # never stop running. is there a bug?
 
 ####### from: https://techoverflow.net/2013/11/30/a-simple-gff3-parser-in-python/
@@ -292,6 +293,52 @@ def blocks_to_junctions(blocks):
         junctions["junctions"] = tuple()
     return junctions
 
+def get_blocks(rec):
+    blocks = []
+    block_start = rec.reference_start
+    block_length = 0
+
+    cigar_consumption = np.array([
+        (1, 1),
+        (1, 0),
+        (0, 1),
+        (0, 1),
+        (1, 0),
+        (0, 0),
+        (0, 0),
+        (1, 1),
+        (1, 1),
+    ])
+    for _, length, consumes_read, consumes_ref in iterate_cigartuples(rec.cigartuples, cigar_consumption):
+        if consumes_read and consumes_ref:
+            block_length += length
+        elif consumes_read and not consumes_ref:
+            blocks.append((block_start, block_start + block_length))
+            block_length = 0
+        elif not consumes_read and consumes_ref:
+            if block_length:
+                blocks.append((block_start, block_start + block_length))
+            block_start = block_start + block_length + length
+            block_length = 0
+        else:
+            pass
+    if block_length:
+        blocks.append((block_start, block_start + block_length))
+
+    return blocks
+
+def iterate_cigartuples(tuples, consumption):
+    tuples = np.array(tuples)
+    for i in range(tuples.shape[0]):
+        operation, length = tuples[i, :]
+
+        yield np.array([
+            operation,
+            length,
+            consumption[operation, 0],
+            consumption[operation, 1]
+        ])
+
 def get_gene_blocks(gene_dict, chr_to_gene, gene_to_transcript):
     chr_to_blocks = {}
     for ch in chr_to_gene:
@@ -323,8 +370,8 @@ def get_gene_blocks(gene_dict, chr_to_gene, gene_to_transcript):
 
 
 def parse_bam_intron(bam_in, bam_out, summary_csv, chr_to_blocks, gene_dict):
-    bamfile = pysam.AlignmentFile(bam_in, "rb")
-    bamfile_o = pysam.AlignmentFile(bam_out, "wb", template=bamfile)
+    bamfile = bs.AlignmentFile(bam_in, "rb")
+    bamfile_o = bs.AlignmentFile(bam_out, "wb", template=bamfile)
     csv_out = open(summary_csv,"w")
     map_tag="YE"
     gene_tag="GE"
@@ -980,7 +1027,7 @@ def group_bam2isoform(bam_in, out_gff3, out_stat, summary_csv, chr_to_blocks, ge
         random.seed(config["random_seed"])
     else:
         random.seed(666666)
-    bamfile = pysam.AlignmentFile(bam_in, "rb")
+    bamfile = bs.AlignmentFile(bam_in, "rb")
     #csv_out = open(summary_csv,"w")
     iso_annotated = open(out_gff3,"w")
     iso_annotated.write("##gff-version 3\n")
@@ -1005,7 +1052,7 @@ def group_bam2isoform(bam_in, out_gff3, out_stat, summary_csv, chr_to_blocks, ge
                 if rec.is_secondary:
                     continue
                 rec.cigar = smooth_cigar(rec.cigar, thr=20)
-                blocks = rec.get_blocks()
+                blocks = get_blocks(rec)
                 junctions = blocks_to_junctions(blocks)
                 tmp_isoform.add_isoform(junctions,rec.is_reverse)
             if len(tmp_isoform)>0:

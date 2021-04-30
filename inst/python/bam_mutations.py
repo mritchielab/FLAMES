@@ -1,6 +1,7 @@
 # detect mutations in bam files.
 import os
-import pysam
+#import pysam # get rid
+import bamnostic as bs
 import gzip
 import numpy as np
 from scipy.stats import hypergeom
@@ -90,8 +91,8 @@ def realigned_bam_allele_coverage(bam_in, chr_to_blocks, fa_f, cov_bin_f, cb_seq
     cb_seq_set = set(cb_seq_dict.keys())
     for c in get_fa(fa_f):
         fa_dict[c[0]] = c[1]
-    bamfile = pysam.AlignmentFile(bam_in, "rb")
-    #vcf_in = pysam.VariantFile(vcf_f)
+    bamfile = bs.AlignmentFile(bam_in, "rb")
+    #vcf_in = bs.VariantFile(vcf_f)
     cb_corr_cnt = Counter()
     vcf_c = 0
     vcf_not_c = 0
@@ -177,7 +178,7 @@ def realigned_bam_allele_coverage(bam_in, chr_to_blocks, fa_f, cov_bin_f, cb_seq
     #print pct_bin
     #print pt
 
-# needed?
+# needed? - not working
 def bam_allele_coverage(bam_in, chr_to_blocks, fa_f, cov_bin_f, vcf_f, cb_seq_dict, min_cnt=100,min_cov=50 ):
     c2i = {"A":0, "C":1, "G":2, "T":3}  # four array.arrays of the same length in order A C G T
     fa_dict={}
@@ -186,8 +187,8 @@ def bam_allele_coverage(bam_in, chr_to_blocks, fa_f, cov_bin_f, vcf_f, cb_seq_di
     cb_seq_set = set(cb_seq_dict.keys())
     for c in get_fa(fa_f):
         fa_dict[c[0]] = c[1]
-    bamfile = pysam.AlignmentFile(bam_in, "rb")
-    #vcf_in = pysam.VariantFile(vcf_f)
+    bamfile = bs.AlignmentFile(bam_in, "rb")
+    #vcf_in = bs.VariantFile(vcf_f)
     cb_corr_cnt = Counter()
     for ch in chr_to_blocks:
         print ch
@@ -233,7 +234,7 @@ def bam_allele_coverage(bam_in, chr_to_blocks, fa_f, cov_bin_f, vcf_f, cb_seq_di
         cov_bin_out.write("{},{},{}\n".format(cbs[0],cbs[1],cb_corr_cnt[cbs]))
 
 
-# needed?
+# needed? - notworking
 def get_all_SNV_table(bam_in, chr_to_blocks, transcript_to_exon, fa_f, out_dir, cb_seq_dict, bam_short, known_position_dict, min_cov=100, report_pct=(0.15,0.85)):
     c2i = {"A":0, "C":1, "G":2, "T":3}  # four array.arrays of the same length in order A C G T
     fa_dict={}
@@ -244,9 +245,9 @@ def get_all_SNV_table(bam_in, chr_to_blocks, transcript_to_exon, fa_f, out_dir, 
     reporting_summary = []
     for c in get_fa(fa_f):
         fa_dict[c[0]] = c[1]
-    bamfile = pysam.AlignmentFile(bam_in, "rb")
+    bamfile = bs.AlignmentFile(bam_in, "rb")
     if bam_short is not None:
-        bam_s = pysam.AlignmentFile(bam_short, "rb")
+        bam_s = bs.AlignmentFile(bam_short, "rb")
     cb_corr_cnt = Counter()
     for ch in chr_to_blocks:
         print ch
@@ -356,8 +357,8 @@ def get_mito_SNV_table(bam_in, fa_f, out_dir, cb_seq_dict, bam_short, ch="chrM",
         fa_dict[c[0]] = c[1]
     bl = namedtuple("bl", ["s","e"])
     tmp_bl = bl(1, len(fa_dict[ch])-1)
-    bamfile = pysam.AlignmentFile(bam_in, "rb")
-    bam_s = pysam.AlignmentFile(bam_short, "rb")
+    bamfile = bs.AlignmentFile(bam_in, "rb")
+    bam_s = bs.AlignmentFile(bam_short, "rb")
     cb_corr_cnt = Counter()
     homo_dict = find_homo_regions(fa_dict[ch], [tmp_bl])
     cnt = bamfile.count(ch, 0, len(fa_dict[ch]))

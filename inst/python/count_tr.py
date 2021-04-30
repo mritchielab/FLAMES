@@ -1,11 +1,13 @@
 # quantify transcript
-import pysam
+#import pysam
+import bamnostic as bs
 import os
 from collections import Counter
 import gzip
 import numpy as np
 import editdistance
 from parse_gene_anno import parse_gff_tree
+from itertools import groupby
 
 
 def umi_dedup(l, has_UMI):
@@ -62,6 +64,33 @@ def make_bc_dict(bc_anno):
         
     return(bc_dict)
 
+
+def query_len(cigar_string, hard_clipping=False):
+    """
+    https://stackoverflow.com/questions/39710796/infer-the-length-of-a-sequence-using-the-cigar
+    Given a CIGAR string, return the number of bases consumed from the
+    query sequence.
+    CIGAR is a sequence of the form <operations><operator> such that operations is an integer giving 
+    the number of times the operator is used
+    M = match
+    I = Insertion
+    S = Soft clipping
+    = = sequence match
+    X = sequence mismatch
+    """
+    if (not hard_clipping):
+        read_consuming_ops = ("M", "I", "S", "=", "X")
+    else:
+        read_consuming_ops = {"M", "I", "S", "H", "=", "X"}
+    result = 0
+    cig_iter = groupby(cigar_string, lambda chr: chr.isdigit())
+    for _, length_digits in cig_iter:
+        length = int(''.join(length_digits))
+        op = next(next(cig_iter)[1])
+        if op in read_consuming_ops:
+            result += length
+    return result
+
 # needed? 
 #old signature; def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_read_coverage, **kwargs):
 def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_read_coverage, kwargs):
@@ -73,10 +102,25 @@ def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_re
     tr_cov_dict = {}
     read_dict = {}
     cnt_stat = Counter()
-    bamfile = pysam.AlignmentFile(bam_in, "rb")
+    bamfile = bs.AlignmentFile(bam_in, "rb")
     if "bc_file" in kwargs.keys():
         bc_dict = make_bc_dict(kwargs["bc_file"])
     for rec in bamfile.fetch(until_eof=True):
+
+        # here's a list of operations we need to do on the bam file: (x indicates supported on bamnostic)
+        # read all lines x
+        # is_unmapped x
+        # reference_start x 
+        # reference_end x
+        # reference_name = query_name
+        # query_name x
+        # get_tag x
+        # query_alignment_length x 
+        # infer_read_length ?? - using above query_len function
+        # mapping_quality x
+        # 
+
+
         if rec.is_unmapped:
             cnt_stat["unmapped"] += 1
             continue
@@ -85,16 +129,18 @@ def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_re
         tr = rec.reference_name
         tr_cov = float(map_en-map_st)/fa_idx[tr]
         tr_cov_dict.setdefault(tr,[]).append(tr_cov)
+
+        inferred_read_length = query_len(rec.cigarstring)
         if rec.query_name not in read_dict:
-            read_dict.setdefault(rec.query_name,[]).append((tr, rec.get_tag("AS"), tr_cov, float(rec.query_alignment_length)/rec.infer_read_length(), rec.mapping_quality))
+            read_dict.setdefault(rec.query_name,[]).append((tr, rec.get_tag("AS"), tr_cov, float(rec.query_alignment_length)/inferred_read_length, rec.mapping_quality))
         else:
             if rec.get_tag("AS")>read_dict[rec.query_name][0][1]:
-                read_dict[rec.query_name].insert(0,(tr, rec.get_tag("AS"), tr_cov, float(rec.query_alignment_length)/rec.infer_read_length(), rec.mapping_quality))
-            elif rec.get_tag("AS")==read_dict[rec.query_name][0][1] and float(rec.query_alignment_length)/rec.infer_read_length()==read_dict[rec.query_name][0][3]:  # same aligned sequence
+                read_dict[rec.query_name].insert(0,(tr, rec.get_tag("AS"), tr_cov, float(rec.query_alignment_length)/inferred_read_length, rec.mapping_quality))
+            elif rec.get_tag("AS")==read_dict[rec.query_name][0][1] and float(rec.query_alignment_length)/inferred_read_length==read_dict[rec.query_name][0][3]:  # same aligned sequence
                 if tr_cov>read_dict[rec.query_name][0][2]:  # choose the one with higher transcript coverage, might be internal TSS
-                    read_dict[rec.query_name].insert(0,(tr, rec.get_tag("AS"), tr_cov, float(rec.query_alignment_length)/rec.infer_read_length(), rec.mapping_quality))
+                    read_dict[rec.query_name].insert(0,(tr, rec.get_tag("AS"), tr_cov, float(rec.query_alignment_length)/inferred_read_length, rec.mapping_quality))
             else:
-                read_dict[rec.query_name].append((tr, rec.get_tag("AS"), tr_cov, float(rec.query_alignment_length)/rec.infer_read_length(), rec.mapping_quality))
+                read_dict[rec.query_name].append((tr, rec.get_tag("AS"), tr_cov, float(rec.query_alignment_length)/inferred_read_length, rec.mapping_quality))
         if tr not in fa_idx:
             cnt_stat["not_in_annotation"] += 1
             print "\t" +str(tr), "not in annotation ???"
@@ -148,8 +194,9 @@ def parse_realigned_bam1(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_r
     tr_cov_dict = {}
     read_dict = {}
     cnt_stat = Counter()
-    bamfile = pysam.AlignmentFile(bam_in, "rb")
+    bamfile = bs.AlignmentFile(bam_in, "rb")
     for rec in bamfile.fetch(until_eof=True):
+        inferred_read_length = query_len(rec.cigarstring)
         if rec.is_unmapped or rec.is_secondary: #or rec.mapping_quality==0:
             cnt_stat["not_counted"] += 1
             continue
@@ -184,7 +231,7 @@ def parse_realigned_bam_raw(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, mi
     tr_cov_dict = {}
     read_dict = {}
     cnt_stat = Counter()
-    bamfile = pysam.AlignmentFile(bam_in, "rb")
+    bamfile = bs.AlignmentFile(bam_in, "rb")
     for rec in bamfile.fetch(until_eof=True):
         if rec.is_unmapped or rec.is_secondary: #or rec.mapping_quality==0:
             cnt_stat["not_counted"] += 1
@@ -226,7 +273,7 @@ def realigned_bam_coverage(bam_in, fa_idx_f, coverage_dir):
     bc_pct = {0:{},1:{},2:{},3:{},4:{}}
     bc_cov_pct = {0:[],1:[],2:[],3:[],4:[]}
     gene_pct = {0:[],1:[],2:[],3:[],4:[]}
-    bamfile = pysam.AlignmentFile(bam_in, "rb")
+    bamfile = bs.AlignmentFile(bam_in, "rb")
     for rec in bamfile.fetch(until_eof=True):
         if rec.is_unmapped or rec.is_supplementary or rec.is_secondary:
             continue

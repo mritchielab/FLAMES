@@ -2,7 +2,7 @@
 #' @importFrom Rsamtools indexFa
 get_transcript_seq <- function(fa_file, fa_out_f, chr_to_gene, transcript_dict,
                                 gene_to_transcript, transcript_to_exon, ref_dict=NULL) {
-    callBasilisk(flames_env, function(fa_file, fa_out_f, chr_to_gene, transcript_dict,
+    callBasilisk(flames_nopysam_env, function(fa_file, fa_out_f, chr_to_gene, transcript_dict,
                        gene_to_transcript, transcript_to_exon, ref_dict) {
         python_path <- system.file("python", package="FLAMES")
 

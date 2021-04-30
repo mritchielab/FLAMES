@@ -2,7 +2,7 @@
 parse_realigned_bam <- function(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_read_coverage, ...) {
 
     kwargs = reticulate::dict(...)
-    ret <- callBasilisk(flames_env, function(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_read_coverage, kwargs) {
+    ret <- callBasilisk(flames_nopysam_env, function(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_read_coverage, kwargs) {
         python_path <- system.file("python", package="FLAMES")
 
         count <- reticulate::import_from_path("count_tr", python_path)
@@ -17,7 +17,7 @@ parse_realigned_bam <- function(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage
 
 #' @importFrom reticulate import_from_path
 wrt_tr_to_csv <- function(bc_tr_count_dict, transcript_dict, csv_f, transcript_dict_ref=NULL, has_UMI=TRUE) {
-    callBasilisk(flames_env, function(bc_tr_count_dict, transcript_dict, csv_f, transcript_dict_ref, has_UMI) {
+    callBasilisk(flames_nopysam_env, function(bc_tr_count_dict, transcript_dict, csv_f, transcript_dict_ref, has_UMI) {
         python_path <- system.file("python", package="FLAMES")
 
         count <- reticulate::import_from_path("count_tr", python_path)
