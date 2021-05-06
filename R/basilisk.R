@@ -4,7 +4,7 @@ flames_nopysam_env <- BasiliskEnvironment(envname="flames_nopysam_env", pkgname=
         #"minimap2==2.17", 
         "numpy==1.16.5", 
         "editdistance==0.5.3",
-        "bamnostic==1.1.6"),
+        "bamnostic==1.1.7"),
     channels=c("bioconda", "conda-forge"),
 )
 

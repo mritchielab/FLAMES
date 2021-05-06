@@ -8,6 +8,7 @@ FlamesR.Rproj
 .vscode
 inst/doc
 inst/python/*.pyc
+inst/python/__pycache__/*
 vignettes/*.html
 vignettes/*.R
 inst/data/genocodeshortened.v33.annotation.gff3

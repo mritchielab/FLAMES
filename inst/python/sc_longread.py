@@ -64,7 +64,12 @@ def get_fa(fn):
 # =   BAM_CEQUAL  7
 # X   BAM_CDIFF   8
 # B   BAM_CBACK   9
-
+CODE2CIGAR = "MIDNSHP=XB"
+def generate_cigar(cigar):
+    result = ""
+    for pair in cigar:
+        result += str(pair[1]) + CODE2CIGAR[pair[0]]
+    return result
 
 def smooth_cigar(cigar_tup,thr=10):
     new_cigar = [list(cigar_tup[0])]
@@ -85,7 +90,7 @@ def smooth_cigar(cigar_tup,thr=10):
                 continue
         else:
             new_cigar.append(list(cigar_tup[ix]))
-    return new_cigar
+    return [tuple(new_cigar[i]) for i in range(len(new_cigar))]
 
 
 def get_all_site(transcript_to_junctions, tr_list):
@@ -295,35 +300,22 @@ def blocks_to_junctions(blocks):
 
 def get_blocks(rec):
     blocks = []
-    block_start = rec.reference_start
-    block_length = 0
+    pos = rec.reference_start
 
-    cigar_consumption = np.array([
-        (1, 1),
-        (1, 0),
-        (0, 1),
-        (0, 1),
-        (1, 0),
-        (0, 0),
-        (0, 0),
-        (1, 1),
-        (1, 1),
-    ])
-    for _, length, consumes_read, consumes_ref in iterate_cigartuples(rec.cigartuples, cigar_consumption):
-        if consumes_read and consumes_ref:
-            block_length += length
-        elif consumes_read and not consumes_ref:
-            blocks.append((block_start, block_start + block_length))
-            block_length = 0
-        elif not consumes_read and consumes_ref:
-            if block_length:
-                blocks.append((block_start, block_start + block_length))
-            block_start = block_start + block_length + length
-            block_length = 0
+    BAM_CMATCH = 0
+    BAM_CDEL = 2
+    BAM_CREF_SKIP = 3
+    BAM_CEQUAL = 7
+    BAM_CDIFF = 8 
+
+    for op, l in rec.cigar:
+        if op == BAM_CMATCH or op == BAM_CEQUAL or op == BAM_CDIFF:
+            blocks.append((pos, pos + l))
+            pos += l
+        elif op == BAM_CDEL or op == BAM_CREF_SKIP:
+            pos += l
         else:
             pass
-    if block_length:
-        blocks.append((block_start, block_start + block_length))
 
     return blocks
 
@@ -707,8 +699,6 @@ class Isoforms(object):
         Iso = namedtuple('Iso', ["support_cnt", "transcript_id","gene_id"])
         splice_site = get_splice_site(transcript_to_junctions, one_block.transcript_list)
         junc_list = [transcript_to_junctions[it]["junctions"] for it in one_block.transcript_list]
-        # issue with below line. first part of tuple should not be a list, yet for some reason in both
-        # R (and python)? the value is a list. Need to check original python code to find issue in transcript_to_junctions
         junc_dict = dict((tuple(transcript_to_junctions[tr]["junctions"]), tr) for tr in one_block.transcript_list)
         exons_list = [list(it) for it in junc_list]
         [exons_list[ith].append(transcript_to_junctions[tr]["right"]) for ith, tr in enumerate(one_block.transcript_list)]
@@ -717,7 +707,7 @@ class Isoforms(object):
         TSS_TES_site = get_TSS_TES_site(transcript_to_junctions, one_block.transcript_list)
         if len(splice_site) == 0:
             return 0
-        for one_exon in self.single_block_dict:
+        for one_exon in self.single_block_dict: # this dict is empty
             for tr in one_block.transcript_list:
                 if self.strand_specific==0:
                     tmp_std = self.strand_cnt[one_exon]
@@ -1021,7 +1011,6 @@ class Isoforms(object):
 
 
 
-
 def group_bam2isoform(bam_in, out_gff3, out_stat, summary_csv, chr_to_blocks, gene_dict, transcript_to_junctions, transcript_dict, fa_f, config, downsample_ratio, raw_gff3=None):
     if "random_seed" in config.keys():
         random.seed(config["random_seed"])
@@ -1047,11 +1036,13 @@ def group_bam2isoform(bam_in, out_gff3, out_stat, summary_csv, chr_to_blocks, ge
             TSS_TES_site = get_TSS_TES_site(transcript_to_junctions, bl.transcript_list)
             tmp_isoform = Isoforms(ch, config)
             for rec in it_region:
-                if 0<downsample_ratio<1 and random.uniform(0, 1)>downsample_ratio:
-                    continue   # downsample analysis
-                if rec.is_secondary:
-                    continue
+                # if 0<downsample_ratio<1 and random.uniform(0, 1)>downsample_ratio:
+                #     continue   # downsample analysis
+                # if rec.is_secondary:
+                #     continue
                 rec.cigar = smooth_cigar(rec.cigar, thr=20)
+                rec.cigartuples = rec.cigar
+                rec.cigarstring = generate_cigar(rec.cigar)
                 blocks = get_blocks(rec)
                 junctions = blocks_to_junctions(blocks)
                 tmp_isoform.add_isoform(junctions,rec.is_reverse)
