@@ -84,11 +84,13 @@ def query_len(cigar_string, hard_clipping=False):
         read_consuming_ops = {"M", "I", "S", "H", "=", "X"}
     result = 0
     cig_iter = groupby(cigar_string, lambda chr: chr.isdigit())
-    for _, length_digits in cig_iter:
-        length = int(''.join(length_digits))
-        op = next(next(cig_iter)[1])
-        if op in read_consuming_ops:
-            result += length
+    this_len = 0
+    for is_digit, val in cig_iter:
+        if is_digit:
+            this_len = int(''.join(val))
+        else:
+            if ''.join(val) in read_consuming_ops:
+                result += this_len
     return result
 
 # needed? 
@@ -105,7 +107,7 @@ def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_re
     bamfile = bs.AlignmentFile(bam_in, "rb")
     if "bc_file" in kwargs.keys():
         bc_dict = make_bc_dict(kwargs["bc_file"])
-    for rec in bamfile.fetch(until_eof=True):
+    for _,  rec in enumerate(bamfile):
 
         # here's a list of operations we need to do on the bam file: (x indicates supported on bamnostic)
         # read all lines x
@@ -121,7 +123,7 @@ def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_re
         # 
 
 
-        if rec.is_unmapped:
+        if rec.is_unmapped or rec.seq=='*':
             cnt_stat["unmapped"] += 1
             continue
         map_st = rec.reference_start
@@ -313,30 +315,37 @@ def realigned_bam_coverage(bam_in, fa_idx_f, coverage_dir):
 
 
 if __name__ == '__main__':
-    #gff_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoforms/isoform_annotated.sample.nofilter.gff3"
-    #csv_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoforms/transcript_count.sample.csv"
-    #bam_in="/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/LT03_PromethION_10P.sample.realign.bam"
-    """
-    gff_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_test/isoform_annotated.gff3"
-    csv_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_test/transcript_count.csv"
-    bam_in = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_test/realign2transcript.bam"
-    fa_idx_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_test/transcript_assembly.fa.fai"
-    coverage_csv = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_test/per_cell_coverage.csv"
-    tr_csv = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_test/per_tr_coverage.csv"
-    
-    gff_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_all/isoform_annotated.gff3"
-    csv_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_all/transcript_count.csv"
-    bam_in = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_all/realign2transcript.bam"
-    fa_idx_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_all/transcript_assembly.fa.fai"
-    coverage_csv = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_all/per_cell_coverage.csv"
-    tr_csv = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_all/per_tr_coverage.csv"
-    """
-    data_dir = "/stornext/General/data/user_managed/grpu_mritchie_1/RachelThijssen/sclr_data/Rachel_scRNA_Aug19/isoform_out"
-    bam_in = os.path.join(data_dir, "tmp_checkread.bam")
-    fa_idx_f = os.path.join(data_dir,"transcript_assembly.fa.fai")
-    bc_tr_count_dict, bc_tr_badcov_count_dict, tr_kept = parse_realigned_bam(bam_in, fa_idx_f, 3, 0.4, 0.4)
-    print [len(bc_tr_count_dict[i]["ENSG00000277734.8_22493926_22552156_1"]) for i in bc_tr_count_dict if "ENSG00000277734.8_22493926_22552156_1" in bc_tr_count_dict[i]]
-    print sum([len(bc_tr_count_dict[i]["ENSG00000277734.8_22493926_22552156_1"]) for i in bc_tr_count_dict if "ENSG00000277734.8_22493926_22552156_1" in bc_tr_count_dict[i]])
+    realign_bam = "/Users/voogd.o/Documents/FlamesNew/FLAMES_output/realign2transcript.bam"
+    transcript_fa_idx = "/Users/voogd.o/Documents/FlamesNew/FLAMES_output/transcript_assembly.fa.fai"
+    output = "/Users/voogd.o/Documents/FlamesNew/FLAMES_output/realigntester"
+    print("\t\tSTART OF NEW RUN")
+    parse_realigned_bam(realign_bam, transcript_fa_idx, 10, 0.75, 0.75, dict())
+
+    if False:
+        #gff_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoforms/isoform_annotated.sample.nofilter.gff3"
+        #csv_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoforms/transcript_count.sample.csv"
+        #bam_in="/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/LT03_PromethION_10P.sample.realign.bam"
+        """
+        gff_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_test/isoform_annotated.gff3"
+        csv_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_test/transcript_count.csv"
+        bam_in = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_test/realign2transcript.bam"
+        fa_idx_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_test/transcript_assembly.fa.fai"
+        coverage_csv = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_test/per_cell_coverage.csv"
+        tr_csv = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_test/per_tr_coverage.csv"
+        
+        gff_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_all/isoform_annotated.gff3"
+        csv_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_all/transcript_count.csv"
+        bam_in = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_all/realign2transcript.bam"
+        fa_idx_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_all/transcript_assembly.fa.fai"
+        coverage_csv = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_all/per_cell_coverage.csv"
+        tr_csv = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_all/per_tr_coverage.csv"
+        """
+        data_dir = "/stornext/General/data/user_managed/grpu_mritchie_1/RachelThijssen/sclr_data/Rachel_scRNA_Aug19/isoform_out"
+        bam_in = os.path.join(data_dir, "tmp_checkread.bam")
+        fa_idx_f = os.path.join(data_dir,"transcript_assembly.fa.fai")
+        bc_tr_count_dict, bc_tr_badcov_count_dict, tr_kept = parse_realigned_bam(bam_in, fa_idx_f, 3, 0.4, 0.4)
+        print [len(bc_tr_count_dict[i]["ENSG00000277734.8_22493926_22552156_1"]) for i in bc_tr_count_dict if "ENSG00000277734.8_22493926_22552156_1" in bc_tr_count_dict[i]]
+        print sum([len(bc_tr_count_dict[i]["ENSG00000277734.8_22493926_22552156_1"]) for i in bc_tr_count_dict if "ENSG00000277734.8_22493926_22552156_1" in bc_tr_count_dict[i]])
 
 
 
