@@ -1,4 +1,15 @@
+#' Parse Gff3 file
+#' 
+#' @description 
+#' Parse a Gff3 file into 3 components: chromasome to ene, transcript dictionary, gene to transcript dictionary
+#' and a transcript to exon dictionary.
+#' These components are returned in a named list.
+#' 
+#' @param gff_file the gff3 file to parse
+#' @return a named list of elements:
+#' "chr_to_gene", "transcript_dict", "gene_to_transcript", "transcript_to_exon"
 #' @importFrom reticulate import_from_path
+#' @export
 parse_gff_tree <- function(gff_file) {
     ret <- callBasilisk(flames_nopysam_env, function(args) {
         python_path <- system.file("python", package="FlamesR")

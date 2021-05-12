@@ -178,10 +178,10 @@ pipeline_variables$transcript_fa <- assembly
 pipeline_variables$transcript_fa_idx <- assembly_index
 pipeline_variables$tss_tes_stat <- tss_tes
 
-g <- FLAMES:::parse_gff_tree(annot)
+g <- parse_gff_tree(annot)
 pipeline_variables$transcript_dict <- g$transcript_dict
 
-i <- FLAMES:::parse_gff_tree(isoforms_annot)
+i <- parse_gff_tree(isoforms_annot)
 pipeline_variables$transcript_dict_i <- i$transcript_dict
 ```
 
