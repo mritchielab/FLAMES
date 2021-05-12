@@ -23,7 +23,7 @@ bfc <- BiocFileCache::BiocFileCache(temp_path, ask=FALSE)
 file_url <- 
    "https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data"
 tmp_sam <- paste0(temp_path, "/tmp_sam.sam")
-file.rename(bfc[[names(BiocFileCache::bfcadd(bfc, "Temp SAM", paste(file_url, "align2genome.bam", sep="/")))]], genome_bam)
+file.rename(bfc[[names(BiocFileCache::bfcadd(bfc, "Temp SAM", paste(file_url, "temp_sam.sam", sep="/")))]], tmp_sam)
 
 samtools_as_bam(tmp_sam, tempfile(fileext="bam"))
 }
