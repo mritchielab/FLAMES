@@ -34,12 +34,12 @@ def find_isoform(gff3, genome_bam, isoform_gff3, tss_tes_stat, genomefa,
 
 
 if __name__=="__main__":
-    annot = "/Users/voogd.o/Documents/FlamesR/inst/data/SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf"
-    genome_bam = "/Users/voogd.o/Documents/FlamesR/inst/data/align2genome.bam"
+    annot = "/Users/voogd.o/Documents/FLAMESData/data/SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf"
+    genome_bam = "/Users/voogd.o/Documents/FLAMESData/data/align2genome.bam"
     isoform_gff3 = "/Users/voogd.o/Documents/FlamesNew/FLAMES_output/isoform_annotated.gff3"
     tss_tes_stat = "/Users/voogd.o/Documents/FlamesNew/FLAMES_output/tss_tes.bedgraph"
-    genome_fa = "/Users/voogd.o/Documents/FlamesR/inst/data/SIRV_isoforms_multi-fasta_170612a.fasta"
-    transcript_fa = "/Users/voogd.o/Documents/FlamesR/inst/data/transcript_assembly.fa"
+    genome_fa = "/Users/voogd.o/Documents/FLAMESData/data/SIRV_isoforms_multi-fasta_170612a.fasta"
+    transcript_fa = "/Users/voogd.o/Documents/FLAMESData/data/transcript_assembly.fa"
     downsample_ratio = 1
     config_dict = parse_json_config("/Users/voogd.o/Documents/FlamesR/inst/extdata/SIRV_config_default.json")
     raw_splice = "/Users/voogd.o/Documents/FlamesNew/FLAMES_output/splice_raw.gff3"

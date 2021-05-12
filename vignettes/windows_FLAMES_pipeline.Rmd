@@ -42,7 +42,7 @@ requires little modification to this process beyond the initial pipeline setup.
 The downloaded files are stored in a temporary directory.
 ```{r eval=TRUE, echo=TRUE}
 # download required files using BiocFileCache
-temp_path <- tempfile()
+temp_path <- tempdir()
 bfc <- BiocFileCache::BiocFileCache(temp_path, ask=FALSE)
 file_url <- 
   "https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data"
@@ -66,7 +66,7 @@ unlink(c(fastq1, fastq2)) # the original files can be deleted
 
 # setup other environment variables
 config_file <- system.file("extdata/SIRV_config_default.json", package="FLAMES") # the configuration file is included with the FLAMES package
-outdir <- tempfile() # create a temporary output directory
+outdir <- tempdir() # create a temporary output directory
 if (!dir.exists(outdir)) {
     dir.create(outdir)
 }
@@ -113,9 +113,43 @@ pipeline_variables <- bulk_windows_pipeline_setup(annot=annot, fastq=fastq_dir, 
 The return list `pipeline_variables` contains all the required variables to run the future pipeline steps.
 This initial function sets up the pipeline, and validates input. After it is run, minimap2 alignment is required using 
 the files given in `pipeline_variables$return_files`. This should be undertaken on a system with access to minimap2.
-After this is performed, the BAM file (and index file) returned from minimap2 should be stored with the same path
-as given by `pipeline_variables$return_files$output_bam`, with the index file having the same name with additional extension `.bai`.
-Once this is completed, the pipeline can resume.
+
+
+##### Minimap2 alignment
+To run the minimap2 alignment part of the FLAMES pipeline, this section describes the minimap2 commands used in the FLAMES pipeline, which need to be undertaken on an external machine with minimap2 installed.
+
+First, if `pipeline_variables$config$alignment_parameters$use_junctions` is `TRUE`, the following needs to be run, to produce `pipeline_variables$tmp_bed`.
+
+```{r, eval=FALSE}
+# THIS IS WHERE THE NEW CODE FOR gff3_to_bed12 NEEDS TO GO
+```
+After this, the files `pipeline_variables$genome_fa` and `pipeline_variables$fastq`, need to be transfered to a system with minimap2 installed, where the main minimap2 alignement step will take place
+
+After transferred, the following should be run on this new system.
+
+```{r, eval=FALSE}
+{_prog} -ax splice -t 12 {_others} -k14 --secondary=no {_index} {_fq} -o {_out}
+```
+For this command:
+
++ `{_prog}` denotes the path to the minimap2 executable (eg, `/~/minimap2/minimap2`). If minimap2 is in PATH, `{_prog}` is only required to be `minimap2`.
++ `{_index}` denotes the path to the fasta index file, `pipeline_variables$genome_fa`
++ `{_fq}` denotes the input fastq file (for bulk, the merged fastq file), `pipeline_variables$fastq`.
++ `{_out}` denotes the temporary output sam file, and an approriate name should be given. 
++ `{_others}` denotes the the command to run minimap2 with some optional arguments. 
+  + If `pipeline_variables$config$alignment_parameters$use_junctions$` is `TRUE`, `{_others}` should include `"--junc-bed {_bed} --junc-bonus 1"` where `{_bed}` is `pipeline_variables$tmp_bed`.
+  + If `pipeline_variables$config$alignment_parameters$no_flank` is `TRUE`, `{_others}` should include `"--splice-flank=no"`. 
+  + If both extra command are present, they should be space separated.
+
+After this has been completed, the resulting output file given as the `{_out}` argument should be returned to the original system, and stored with the same address as `pipeline_variables$tmp_sam`. 
+
+After this, the following code can be run on the original system, to complete the minimap2 alignment process.
+```{r, eval=FALSE}
+samtools_as_bam(pipeline_variables$tmp_sam, pipeline_variables$tmp_bam)
+samtools_sort_index(pipeline_variables$tmp_bam, pipeline_variables$genome_bam)
+file.remove(pipeline_variables$tmp_sam)
+file.remove(pipeline_variables$tmp_bam)
+```
 
 #### Find Isoforms
 After read alignment, the pipeline can resume by calling `windows_pipeline_isoforms`, and passing in the `pipeline_variables` list
@@ -123,12 +157,63 @@ returned from the previous step.
 ```{r eval=TRUE, echo=FALSE, results='hide'}
 pipeline_variables$genome_bam = genome_bam
 ```
-```{r eval=TRUE}
+```{r eval=FALSE}
 pipeline_variables <- windows_pipeline_isoforms(pipeline_variables)
 ```
-Following this step, read realignment needs to be undertaken as before, on a system with access to minimap2. The resulting `.bam` and `.bam.bai` files
-need to be located at `pipeline_variables$return_files$out_bam`, so the the pipeline can proceed.
+```{r eval=TRUE, echo=FALSE, results='hide'}
+assembly <- paste0(temp_path, "/transcript_assembly.fa")
+file.rename(bfc[[names(BiocFileCache::bfcadd(bfc, "Transcript Assembly Fasta", paste(file_url, "transcript_assembly.fa", sep="/")))]], assembly)
 
+assembly_index <- paste0(temp_path, "/transcript_assembly.fa.fai")
+file.rename(bfc[[names(BiocFileCache::bfcadd(bfc, "Transcript Assembly Index", paste0(file_url, "/transcript_assembly.fa.fai")))]], assembly_index)
+
+isoforms_annot <- paste0(temp_path, "/isoform_annotated.gff3")
+file.rename(bfc[[names(BiocFileCache::bfcadd(bfc, "Annotated Isoform gff3", paste(file_url, "isoform_annotated.gff3", sep="/")))]], isoforms_annot)
+
+tss_tes <- paste0(temp_path, "/tss_tes.bedgraph")
+file.rename(bfc[[names(BiocFileCache::bfcadd(bfc, "TSS TES enrichment", paste0(file_url, "/tss_tes.bedgraph")))]], tss_tes)
+
+pipeline_variables$isoform_gff3 <- isoforms_annot
+pipeline_variables$transcript_fa <- assembly
+pipeline_variables$transcript_fa_idx <- assembly_index
+pipeline_variables$tss_tes_stat <- tss_tes
+
+g <- FLAMES:::parse_gff_tree(annot)
+pipeline_variables$transcript_dict <- g$transcript_dict
+
+i <- FLAMES:::parse_gff_tree(isoforms_annot)
+pipeline_variables$transcript_dict_i <- i$transcript_dict
+```
+
+
+Following this step, read realignment needs to be undertaken as before, on a system with access to minimap2. 
+
+##### Minimap2 read realignment
+Like the original minimap2 read alignment step, this process requires the transfer of files between the starting FLAMES system and one with access to minimap2.
+
+For this step, `pipeline_variables$transcript_fa` and `pipeline_variables$fastq` need to be transfered to the system with access to minimap2.
+
+Once this has been done, the minimap2 realignment step can be undertaken by running:
+
+```{r, eval=FALSE}
+{_prog} -ax map-ont -p 0.9 --end-bonus 10 -N 3 -t 12 {_index} {_fq} -o {_out}
+```
+Where, as before:
+
++ `{_prog}` denotes the path to the minimap2 executable (eg, `/~/minimap2/minimap2`). If minimap2 is in PATH, `{_prog}` is only required to be `minimap2`.
++ `{_index}` denotes the path to the fasta index file, `pipeline_variables$genome_fa`
++ `{_fq}` denotes the input fastq file (for bulk, the merged fastq file), `pipeline_variables$fastq`.
++ `{_out}` denotes the temporary output sam file, and an approriate name should be given. 
+
+The resulting sam file, `{_out}` should be transfered back to the original system, and stored as `pipeline_variables$tmp_sam`. 
+
+Once this is done, the following can be run to complete the minimap2 realignment process.
+```{r, eval=FALSE}
+samtools_as_bam(pipeline_variables$tmp_sam, pipeline_variables$tmp_bam)
+samtools_sort_index(pipeline_variables$tmp_bam, pipeline_variables$realign_bam)
+file.remove(pipeline_variables$tmp_sam)
+file.remove(pipeline_variables$tmp_bam)
+```
 
 #### Transcript Quantification
 Finally, transcript quantification can be performed, as required:

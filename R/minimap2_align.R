@@ -46,7 +46,26 @@ minimap2_align <- function(minimap2_prog_path=NULL, fa_file, fq_in, sam_out, no_
     sam_out # output file
 }
 
+#' Samtools Sort and Index
+#' 
+#' @description 
+#' Sort and index the given BAM file, using Rsamtools.
+#' 
+#' @param bam_in the bam file to sort and index
+#' @param bam_out the output indexed bam file.
+#' @return the same value as \code{bam_out}
 #' @importFrom Rsamtools sortBam indexBam
+#' 
+#' @examples 
+#' temp_path <- tempfile()
+#' bfc <- BiocFileCache::BiocFileCache(temp_path, ask=FALSE)
+#' file_url <- 
+#'    "https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data"
+#' genome_bam <- paste0(temp_path, "/align2genome.bam")
+#' file.rename(bfc[[names(BiocFileCache::bfcadd(bfc, "Genome BAM", paste(file_url, "align2genome.bam", sep="/")))]], genome_bam)
+#' 
+#' samtools_sort_index(genome_bam, tempfile(fileext=".bam"))
+#' @export
 samtools_sort_index <- function(bam_in, bam_out) {
     Rsamtools::sortBam(bam_in, gsub("\\.bam", "", bam_out))
     Rsamtools::indexBam(bam_out)
@@ -54,7 +73,27 @@ samtools_sort_index <- function(bam_in, bam_out) {
     bam_out
 }
 
+#' Samtools as BAM
+#' 
+#' @description 
+#' Produces a compressed binary BAM file from a text based SAM file, using Rsamtools.
+#' 
+#' @param sam_in the input SAM file
+#' @param bam_out the output BAM file
+#' 
+#' @return the same value as \code{bam_out}
+#' 
+#' @examples 
+#' temp_path <- tempfile()
+#' bfc <- BiocFileCache::BiocFileCache(temp_path, ask=FALSE)
+#' file_url <- 
+#'    "https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data"
+#' tmp_sam <- paste0(temp_path, "/tmp_sam.sam")
+#' file.rename(bfc[[names(BiocFileCache::bfcadd(bfc, "Temp SAM", paste(file_url, "align2genome.bam", sep="/")))]], genome_bam)
+#' 
+#' samtools_as_bam(tmp_sam, tempfile(fileext="bam"))
 #' @importFrom Rsamtools asBam
+#' @export
 samtools_as_bam <- function(sam_in, bam_out) {
     Rsamtools::asBam(sam_in, gsub("\\.bam", "", bam_out))
     bam_out
