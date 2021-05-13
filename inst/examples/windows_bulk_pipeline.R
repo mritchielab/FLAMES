@@ -14,10 +14,10 @@ file.copy(c(fastq1, fastq2), fastq_dir)
 unlink(c(fastq1, fastq2)) # the original files can be deleted
 
 # run the FLAMES bulk pipeline setup
-pipeline_variables <- bulk_windows_pipeline_setup(annot=system.file("extdata/SIRV_anno.gtf", package="FLAMES"), 
-                   fastq=fastq_dir,
-                   outdir=tempdir(), genome_fa=system.file("extdata/SIRV_genomefa.fasta", package="FLAMES"),
-                   config_file=system.file("extdata/SIRV_config_default.json", package="FLAMES"))
+#pipeline_variables <- bulk_windows_pipeline_setup(annot=system.file("extdata/SIRV_anno.gtf", package="FLAMES"), 
+#                   fastq=fastq_dir,
+#                   outdir=tempdir(), genome_fa=system.file("extdata/SIRV_genomefa.fasta", package="FLAMES"),
+#                   config_file=system.file("extdata/SIRV_config_default.json", package="FLAMES"))
 # read alignment is handled externally (below downloads aligned bam for example)
 # genome_bam <- paste0(temp_path, "/align2genome.bam")
 # file.rename(bfc[[names(BiocFileCache::bfcadd(bfc, "Genome BAM", paste(file_url, "align2genome.bam", sep="/")))]], genome_bam)
