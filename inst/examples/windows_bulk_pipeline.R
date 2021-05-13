@@ -19,23 +19,23 @@ pipeline_variables <- bulk_windows_pipeline_setup(annot=system.file("extdata/SIR
                    outdir=tempdir(), genome_fa=system.file("extdata/SIRV_genomefa.fasta", package="FLAMES"),
                    config_file=system.file("extdata/SIRV_config_default.json", package="FLAMES"))
 # read alignment is handled externally (below downloads aligned bam for example)
-genome_bam <- paste0(temp_path, "/align2genome.bam")
-file.rename(bfc[[names(BiocFileCache::bfcadd(bfc, "Genome BAM", paste(file_url, "align2genome.bam", sep="/")))]], genome_bam)
-
-genome_index <- paste0(temp_path, "/align2genome.bam.bai")
-file.rename(bfc[[names(BiocFileCache::bfcadd(bfc, "Genome BAM Index", paste(file_url, "align2genome.bam.bai", sep="/")))]], genome_index)
-pipeline_variables$genome_bam = genome_bam
-
-# run the FLAMES bulk pipeline find isoforms step
-pipeline_variables <- windows_pipeline_isoforms(pipeline_variables)
-
-# read realignment is handled externally
-realign_bam <- paste0(temp_path, "/realign2genome.bam")
-file.rename(bfc[[names(BiocFileCache::bfcadd(bfc, "Realign BAM", paste(file_url, "realign2transcript.bam", sep="/")))]], realign_bam)
-
-realign_index <- paste0(temp_path, "/realign2genome.bam.bai")
-file.rename(bfc[[names(BiocFileCache::bfcadd(bfc, "Realign BAM Index", paste(file_url, "realign2transcript.bam.bai", sep="/")))]], realign_index)
-pipeline_variables$realign_bam <- realign_bam
-
-# finally, quantification, which returns a Summarized Experiment object
-se <- windows_pipeline_quantification(pipeline_variables)
+# genome_bam <- paste0(temp_path, "/align2genome.bam")
+# file.rename(bfc[[names(BiocFileCache::bfcadd(bfc, "Genome BAM", paste(file_url, "align2genome.bam", sep="/")))]], genome_bam)
+# 
+# genome_index <- paste0(temp_path, "/align2genome.bam.bai")
+# file.rename(bfc[[names(BiocFileCache::bfcadd(bfc, "Genome BAM Index", paste(file_url, "align2genome.bam.bai", sep="/")))]], genome_index)
+# pipeline_variables$genome_bam = genome_bam
+# 
+# # run the FLAMES bulk pipeline find isoforms step
+# pipeline_variables <- windows_pipeline_isoforms(pipeline_variables)
+# 
+# # read realignment is handled externally
+# realign_bam <- paste0(temp_path, "/realign2genome.bam")
+# file.rename(bfc[[names(BiocFileCache::bfcadd(bfc, "Realign BAM", paste(file_url, "realign2transcript.bam", sep="/")))]], realign_bam)
+# 
+# realign_index <- paste0(temp_path, "/realign2genome.bam.bai")
+# file.rename(bfc[[names(BiocFileCache::bfcadd(bfc, "Realign BAM Index", paste(file_url, "realign2transcript.bam.bai", sep="/")))]], realign_index)
+# pipeline_variables$realign_bam <- realign_bam
+# 
+# # finally, quantification, which returns a Summarized Experiment object
+# se <- windows_pipeline_quantification(pipeline_variables)

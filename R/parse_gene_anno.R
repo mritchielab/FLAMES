@@ -9,6 +9,15 @@
 #' @return a named list of elements:
 #' "chr_to_gene", "transcript_dict", "gene_to_transcript", "transcript_to_exon"
 #' @importFrom reticulate import_from_path
+#' 
+#' @examples 
+#' temp_path <- tempfile()
+#' bfc <- BiocFileCache::BiocFileCache(temp_path, ask=FALSE)
+#' file_url <- 
+#'    "https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data"
+#' gff <- bfc[[names(BiocFileCache::bfcadd(bfc, "GFF", paste(file_url, "SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf", sep="/")))]]
+#' 
+#' parsed_gff <- parse_gff_tree(gff)
 #' @export
 parse_gff_tree <- function(gff_file) {
     ret <- callBasilisk(flames_nopysam_env, function(args) {

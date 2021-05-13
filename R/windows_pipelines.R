@@ -28,6 +28,7 @@
 #' This list should be given as input for \code{windows_pipeline_isoforms} after minimap2 alignment has taken place; \code{windows_pipeline_isoforms} is the
 #' continuation of this pipeline.
 #' 
+#' @example inst/examples/windows_bulk_pipeline.R
 #' 
 #' @export 
 bulk_windows_pipeline_setup <- function(annot, fastq, in_bam=NULL, outdir, genome_fa,
@@ -94,6 +95,7 @@ bulk_windows_pipeline_setup <- function(annot, fastq, in_bam=NULL, outdir, genom
 #' This list should be given as input for \code{windows_pipeline_isoforms} after minimap2 alignment has taken place; \code{windows_pipeline_isoforms} is the
 #' continuation of this pipeline.
 #' 
+#' @example inst/examples/windows_bulk_pipeline.R
 #' @export 
 sc_windows_pipeline_setup <- function(annot, fastq, in_bam=NULL, outdir, genome_fa,
                 downsample_ratio=1, config_file, match_barcode=TRUE, reference_csv=NULL, MAX_DIST=0, UMI_LEN=0)    {
@@ -217,6 +219,7 @@ windows_pipeline_setup <- function(annot, fastq, in_bam=NULL, outdir, genome_fa,
 #' 
 #' @return the updated \code{pipeline_variables} list, with information required for the final pipeline step.
 #' 
+#' @example inst/examples/windows_bulk_pipeline.R
 #' @export
 windows_pipeline_isoforms <- function(pipeline_variables) {
     # find isoform
@@ -265,6 +268,8 @@ windows_pipeline_isoforms <- function(pipeline_variables) {
 #'  \item{realign2transcript.bam}{ - sorted realigned BAM file using the transcript_assembly.fa as reference}
 #'  \item{tss_tes.bedgraph}{ - TSS TES enrichment for all reads (for QC)}
 #' }
+#' 
+#' @example inst/examples/windows_bulk_pipeline.R
 #' @export
 windows_pipeline_quantification <- function(pipeline_vars) {
     #quantification
