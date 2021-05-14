@@ -23,7 +23,9 @@
 #' 
 #' #merge the fastq files
 #' out_fastq <- paste0(temp_path, "/outfastq.fastq.gz")
+#' \dontrun{
 #' merge_bulk_fastq(fastq_dir, out_fastq)
+#' }
 #' @importFrom reticulate import_from_path
 #' @export
 merge_bulk_fastq <- function(fastq_dir,  out_fastq) {

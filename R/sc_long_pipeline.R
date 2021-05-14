@@ -98,6 +98,7 @@
 #' @importFrom SingleCellExperiment SingleCellExperiment
 #' @importFrom utils read.csv read.table
 #'
+#' @examples /inst/examples/pipeline_example.R
 #' @export
 sc_long_pipeline <- function(annot, fastq, in_bam=NULL, outdir, genome_fa,
                                 minimap2_dir=NULL, downsample_ratio=1, 

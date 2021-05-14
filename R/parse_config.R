@@ -100,6 +100,7 @@ write_config <- function(config, config_file) {
 #' 
 #' @examples 
 #' # create the default configuartion file
+#' \dontrun{
 #' config <- create_config(getwd(), TRUE, TRUE, 
 #'                         TRUE, TRUE,
 #'                         TRUE, FALSE,
@@ -108,6 +109,7 @@ write_config <- function(config, config_file) {
 #'                         0.01, 0.2, 1, 5,
 #'                         TRUE, TRUE,
 #'                         TRUE, 0.75, 0.75)
+#' }
 #' @importFrom reticulate import_from_path
 #' @export
 create_config <- function(outdir, do_genome_align, do_isoform_id,
