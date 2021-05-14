@@ -163,7 +163,7 @@ strand information being based on reference annotation.}
 }
 }
 \examples{
-/inst/examples/pipeline_example.R
+inst/examples/pipeline_example.R
 }
 \seealso{
 \code{\link[=bulk_long_pipeline]{bulk_long_pipeline()}} for bulk long data,

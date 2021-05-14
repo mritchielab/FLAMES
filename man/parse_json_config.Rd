@@ -19,5 +19,8 @@ Convert a json configuration file into a named R list, grouped into sub lists ac
      usage in the Flames pipeline.
 }
 \examples{
-parse_json_config(get_default_config_file())
+config <- get_default_config_file()
+\dontrun{
+parse_json_config(config)
+}
 }

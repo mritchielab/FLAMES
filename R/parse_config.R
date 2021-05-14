@@ -10,7 +10,10 @@
 #'      \code{transcript_counting}.
 #'      
 #' @examples 
-#' parse_json_config(get_default_config_file())
+#' config <- get_default_config_file()
+#' \dontrun{
+#' parse_json_config(config)
+#' }
 #' @importFrom basilisk basiliskStart basiliskStop basiliskRun
 #' @importFrom reticulate import_from_path
 #' @export
