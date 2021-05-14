@@ -162,6 +162,9 @@ or the reverse complemented (-1) or not strand specific (0), which results in
 strand information being based on reference annotation.}
 }
 }
+\examples{
+/inst/examples/pipeline_example.R
+}
 \seealso{
 \code{\link[=bulk_long_pipeline]{bulk_long_pipeline()}} for bulk long data,
 \code{\link[=SingleCellExperiment]{SingleCellExperiment()}} for how data is outputted

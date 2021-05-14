@@ -33,5 +33,7 @@ unlink(c(fastq1, fastq2)) # the original files can be deleted
 
 #merge the fastq files
 out_fastq <- paste0(temp_path, "/outfastq.fastq.gz")
+\dontrun{
 merge_bulk_fastq(fastq_dir, out_fastq)
+}
 }

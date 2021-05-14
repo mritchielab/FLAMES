@@ -175,6 +175,9 @@ se <- bulk_long_pipeline(annot=system.file("extdata/SIRV_anno.gtf", package="FLA
                    outdir=tempdir(), genome_fa=system.file("extdata/SIRV_genomefa.fasta", package="FLAMES"),
                    config_file=system.file("extdata/SIRV_config_default.json", package="FLAMES"))
 }
+# OR
+# run the FLAMES single cell pipeline
+#sce <- sc_long_pipeline(annot, fastq, NULL, outdir, genome_fa, match_barcode=FALSE, config+file=config)
 }
 \seealso{
 \code{\link[=sc_long_pipeline]{sc_long_pipeline()}} for single cell data,
