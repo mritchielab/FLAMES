@@ -2,7 +2,7 @@
 % Please edit documentation in R/call_basilisk.R
 \name{callBasilisk}
 \alias{callBasilisk}
-\title{Internal utility function for simplifying 
+\title{Internal utility function for simplifying
 calls to basiliskRun using a given basilisk environment}
 \usage{
 callBasilisk(env_name, FUN, ...)
@@ -18,6 +18,6 @@ callBasilisk(env_name, FUN, ...)
 the result of `FUN`
 }
 \description{
-Internal utility function for simplifying 
+Internal utility function for simplifying
 calls to basiliskRun using a given basilisk environment
 }

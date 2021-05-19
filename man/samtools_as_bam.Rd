@@ -19,11 +19,11 @@ Produces a compressed binary BAM file from a text based SAM file, using Rsamtool
 }
 \examples{
 temp_path <- tempfile()
-bfc <- BiocFileCache::BiocFileCache(temp_path, ask=FALSE)
-file_url <- 
-   "https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data"
+bfc <- BiocFileCache::BiocFileCache(temp_path, ask = FALSE)
+file_url <-
+    "https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data"
 tmp_sam <- paste0(temp_path, "/tmp_sam.sam")
-file.rename(bfc[[names(BiocFileCache::bfcadd(bfc, "Temp SAM", paste(file_url, "tmp_sam.sam", sep="/")))]], tmp_sam)
+file.rename(bfc[[names(BiocFileCache::bfcadd(bfc, "Temp SAM", paste(file_url, "tmp_sam.sam", sep = "/")))]], tmp_sam)
 
-samtools_as_bam(tmp_sam, tempfile(fileext="bam"))
+samtools_as_bam(tmp_sam, tempfile(fileext = "bam"))
 }

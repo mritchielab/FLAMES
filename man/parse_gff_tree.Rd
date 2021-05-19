@@ -20,11 +20,10 @@ These components are returned in a named list.
 }
 \examples{
 temp_path <- tempfile()
-bfc <- BiocFileCache::BiocFileCache(temp_path, ask=FALSE)
-file_url <- 
-   "https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data"
-gff <- bfc[[names(BiocFileCache::bfcadd(bfc, "GFF", paste(file_url, "SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf", sep="/")))]]
-
+bfc <- BiocFileCache::BiocFileCache(temp_path, ask = FALSE)
+file_url <-
+    "https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data"
+gff <- bfc[[names(BiocFileCache::bfcadd(bfc, "GFF", paste(file_url, "SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf", sep = "/")))]]
 \dontrun{
 parsed_gff <- parse_gff_tree(gff)
 }

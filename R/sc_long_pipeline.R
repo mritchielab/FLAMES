@@ -1,14 +1,14 @@
 #' Pipeline for Single Cell Data
 #'
 #' @md
-#' 
-#' @description 
+#'
+#' @description
 #' Semi-supervised isoform detection and annotation for long read data.
 #' This varient is for single cell data. By default, this pipeline demultiplexes input
 #' fastq data (\code{match_cell_barcode = TRUE}). Specific parameters relating to
 #' analysis can be changed either through function arguments, or through a
 #' configuration JSON file.
-#' 
+#'
 #' @details
 #' By default FLAMES use minimap2 for read alignment. After the genome alignment step (\code{do_genome_align}), FLAMES summarizes the alignment for each read by grouping reads
 #' with similar splice junctions to get a raw isoform annotation (\code{do_isoform_id}). The raw isoform
@@ -48,7 +48,7 @@
 #' @param MAX_SPLICE_MATCH_DIST Maximum distance allowed when merging splice site called from the data and the reference annotation.
 #' @param min_fl_exon_len Minimum length for the first exon outside the gene body in reference annotation. This is to correct the alignment artifact
 #' @param Max_site_per_splice Maximum transcript start/end site combinations allowed per splice chain
-#' @param Min_sup_cnt Minimum number of read support an isoform decrease this number will significantly increase the number of isoform detected.
+#' @param Min_sup_cnt Minimum number of read support an isoform. Decreasing this number will significantly increase the number of isoform detected.
 #' @param Min_cnt_pct Minimum percentage of count for an isoform relative to total count for the same gene.
 #' @param Min_sup_pct Minimum percentage of count for an splice chain that support a given transcript start/end site combination.
 #' @param strand_specific 1, -1 or 0. 1 indicates if reads are in the same
@@ -75,7 +75,7 @@
 #'  \item{realign2transcript.bam}{ - sorted realigned BAM file using the transcript_assembly.fa as reference}
 #'  \item{tss_tes.bedgraph}{ - TSS TES enrichment for all reads (for QC)}
 #' }
-#' 
+#'
 #' @details The default parameters can be changed either through the function
 #' arguments are through the configuration JSON file \code{config_file}. the \code{pipeline_parameters}
 #' section specifies which steps are to be executed in the pipeline - by default, all
@@ -100,54 +100,127 @@
 #'
 #' @example inst/examples/pipeline_example.R
 #' @export
-sc_long_pipeline <- function(annot, fastq, in_bam=NULL, outdir, genome_fa,
-                                minimap2_dir=NULL, downsample_ratio=1, 
-                                reference_csv, match_barcode=TRUE, config_file=NULL,
-                                do_genome_align=TRUE, do_isoform_id=TRUE,
-                                do_read_realign=TRUE, do_transcript_quanti=TRUE,
-                                gen_raw_isoform=TRUE, has_UMI=FALSE, UMI_LEN=10,
-                                MAX_DIST=10, MAX_TS_DIST=100, MAX_SPLICE_MATCH_DIST=10,
-                                min_fl_exon_len=40, Max_site_per_splice=3, Min_sup_cnt=10,
-                                Min_cnt_pct=0.01, Min_sup_pct=0.2, strand_specific=1, remove_incomp_reads=5,
-                                use_junctions=TRUE, no_flank=TRUE,
-                                use_annotation=TRUE, min_tr_coverage=0.75, min_read_coverage=0.75) {
-    if (is.null(in_bam)) {
-        if (match_barcode) {
-                if (!file.exists(reference_csv)) stop("reference_csv must exists.")
-                infq <- paste(outdir, "matched_reads.fastq.gz", sep="/")
-                bc_stat <- paste(outdir, "matched_barcode_stat", sep="/")
-                match_cell_barcode(fastq, bc_stat, infq, reference_csv, MAX_DIST, UMI_LEN)
-        } else infq = fastq # requesting to not match barcodes implies `fastq` has already been run through the 
-                            # function in a previous FLAMES call
+sc_long_pipeline <-
+    function(annot,
+             fastq,
+             in_bam = NULL,
+             outdir,
+             genome_fa,
+             minimap2_dir = NULL,
+             downsample_ratio = 1,
+             reference_csv,
+             match_barcode = TRUE,
+             config_file = NULL,
+             do_genome_align = TRUE,
+             do_isoform_id = TRUE,
+             do_read_realign = TRUE,
+             do_transcript_quanti = TRUE,
+             gen_raw_isoform = TRUE,
+             has_UMI = FALSE,
+             UMI_LEN = 10,
+             MAX_DIST = 10,
+             MAX_TS_DIST = 100,
+             MAX_SPLICE_MATCH_DIST = 10,
+             min_fl_exon_len = 40,
+             Max_site_per_splice = 3,
+             Min_sup_cnt = 10,
+             Min_cnt_pct = 0.01,
+             Min_sup_pct = 0.2,
+             strand_specific = 1,
+             remove_incomp_reads = 5,
+             use_junctions = TRUE,
+             no_flank = TRUE,
+             use_annotation = TRUE,
+             min_tr_coverage = 0.75,
+             min_read_coverage = 0.75) {
+        if (is.null(in_bam)) {
+            if (match_barcode) {
+                if (!file.exists(reference_csv)) {
+                      stop("reference_csv must exists.")
+                  }
+                infq <-
+                    paste(outdir, "matched_reads.fastq.gz", sep = "/")
+                bc_stat <-
+                    paste(outdir, "matched_barcode_stat", sep = "/")
+                match_cell_barcode(
+                    fastq,
+                    bc_stat,
+                    infq,
+                    reference_csv,
+                    MAX_DIST,
+                    UMI_LEN
+                )
+            } else {
+                  infq <- fastq
+              } # requesting to not match barcodes implies `fastq` has already been run through the
+            # function in a previous FLAMES call
+        }
+
+        out_files <-
+            generic_long_pipeline(
+                annot,
+                infq,
+                in_bam = in_bam,
+                outdir,
+                genome_fa,
+                minimap2_dir,
+                downsample_ratio,
+                config_file,
+                do_genome_align,
+                do_isoform_id,
+                do_read_realign,
+                do_transcript_quanti,
+                gen_raw_isoform,
+                has_UMI,
+                MAX_DIST,
+                MAX_TS_DIST,
+                MAX_SPLICE_MATCH_DIST,
+                min_fl_exon_len,
+                Max_site_per_splice,
+                Min_sup_cnt,
+                Min_cnt_pct,
+                Min_sup_pct,
+                strand_specific,
+                remove_incomp_reads,
+                use_junctions,
+                no_flank,
+                use_annotation,
+                min_tr_coverage,
+                min_read_coverage
+            )
+
+        sce <- generate_sc_singlecell(out_files)
+
+        sce
     }
-
-    out_files <- generic_long_pipeline(annot, infq, in_bam=in_bam, outdir, genome_fa,
-            minimap2_dir, downsample_ratio, config_file,
-            do_genome_align, do_isoform_id,
-            do_read_realign, do_transcript_quanti,
-            gen_raw_isoform, has_UMI,
-            MAX_DIST, MAX_TS_DIST, MAX_SPLICE_MATCH_DIST,
-            min_fl_exon_len, Max_site_per_splice, Min_sup_cnt,
-            Min_cnt_pct, Min_sup_pct, strand_specific, remove_incomp_reads,
-            use_junctions, no_flank,
-            use_annotation, min_tr_coverage, min_read_coverage)
-
-    sce <- generate_sc_singlecell(out_files)
-
-    sce
-}
 
 generate_sc_singlecell <- function(out_files) {
     # this method requires testing using single cell data
     counts <- read.csv(out_files$counts)
     annot <- read.table(out_files$annot)
-    colnames(annot) <- c("SequenceID", "Source", "Feature", "Start", "End", "Score", "Strand", "Phase", "Attributes")
+    colnames(annot) <-
+        c(
+            "SequenceID",
+            "Source",
+            "Feature",
+            "Start",
+            "End",
+            "Score",
+            "Strand",
+            "Phase",
+            "Attributes"
+        )
     mdata <- list(
-            "Annotations"=out_files$annot,
-            "OutputFiles"=out_files
-                )
-    sce <- SingleCellExperiment::SingleCellExperiment(list("Flames Single Cell"=counts),
-                                metadata=mdata)
-    #return the created singlecellexperiment
+        "Annotations" = out_files$annot,
+        "OutputFiles" = out_files
+    )
+    sce <-
+        SingleCellExperiment::SingleCellExperiment(list(
+            "Flames Single Cell" =
+                counts
+        ),
+        metadata = mdata
+        )
+    # return the created singlecellexperiment
     sce
 }

@@ -4,11 +4,9 @@
 \alias{gff3_to_bed12}
 \title{GFF3 to BED12}
 \usage{
-gff3_to_bed12(minimap2_prog_path = NULL, gff3_file, bed12_file)
+gff3_to_bed12(gff3_file, bed12_file)
 }
 \arguments{
-\item{minimap2_prog_path}{Absolute path to the directory containing k8, paftools,js and minimap2 executables from the minimap2 package. Leave as default if these are in the current working directory}
-
 \item{gff3_file}{The gff3_file to convert}
 
 \item{bed12_file}{The filename of the bed12 output file.}
@@ -17,5 +15,10 @@ gff3_to_bed12(minimap2_prog_path = NULL, gff3_file, bed12_file)
 file path to the created bed12_file
 }
 \description{
-Converts a gff3 file to a bed12, using paftools.js from the minimap2 package
+Converts a gff3 file to a bed12
+}
+\examples{
+annot <- system.file("extdata/SIRV_anno.gtf", package = "FLAMES")
+out_bed <- tempfile(fileext = ".bed12")
+gff3_to_bed12(annot, out_bed)
 }

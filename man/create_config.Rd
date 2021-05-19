@@ -83,19 +83,21 @@ the created R list object, which represents the configuration file created by th
 Create Configuration File From Arguments
 }
 \details{
-Create a list object containing the arguments supplied in a format usable for the FLAMES pipeline. 
+Create a list object containing the arguments supplied in a format usable for the FLAMES pipeline.
 Also writes the object to a JSON file, which is located with the prefix 'config_' in the supplied \code{outdir}.
 }
 \examples{
 # create the default configuartion file
 \dontrun{
-config <- create_config(getwd(), TRUE, TRUE, 
-                        TRUE, TRUE,
-                        TRUE, FALSE,
-                        10, 100, 10,
-                        40, 3, 10,
-                        0.01, 0.2, 1, 5,
-                        TRUE, TRUE,
-                        TRUE, 0.75, 0.75)
+config <- create_config(
+    getwd(), TRUE, TRUE,
+    TRUE, TRUE,
+    TRUE, FALSE,
+    10, 100, 10,
+    40, 3, 10,
+    0.01, 0.2, 1, 5,
+    TRUE, TRUE,
+    TRUE, 0.75, 0.75
+)
 }
 }

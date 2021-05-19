@@ -13,7 +13,7 @@ windows_pipeline_isoforms(pipeline_variables)
 the updated \code{pipeline_variables} list, with information required for the final pipeline step.
 }
 \description{
-This is the second step in the 3 step Windows FLAMES pipeline. 
+This is the second step in the 3 step Windows FLAMES pipeline.
 Following this step, read realignment should be undertaken, using the file paths
 given in the return pipeline_variables$return_files.
 After this has been completed, the final pipeline step, \code{windows_pipeline_quantification} should be run,

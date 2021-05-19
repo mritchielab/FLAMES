@@ -1,4 +1,4 @@
-#' Internal utility function for simplifying 
+#' Internal utility function for simplifying
 #' calls to basiliskRun using a given basilisk environment
 #' @param env_name the name of the basilisk env (made through BasiliskEnvironment) to execute code within
 #' @param FUN the function to execute from with the basilisk environment

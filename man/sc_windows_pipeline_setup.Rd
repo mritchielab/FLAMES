@@ -49,7 +49,7 @@ This list should be given as input for \code{windows_pipeline_isoforms} after mi
 continuation of this pipeline.
 }
 \description{
-An implementation of the FLAMES pipeline designed to run on Windows, or any OS 
+An implementation of the FLAMES pipeline designed to run on Windows, or any OS
 without access to minimap2, for read realignment.
 This pipeline requires external read alignment, in betwen pipeline calls.
 }

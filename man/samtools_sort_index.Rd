@@ -19,11 +19,11 @@ Sort and index the given BAM file, using Rsamtools.
 }
 \examples{
 temp_path <- tempfile()
-bfc <- BiocFileCache::BiocFileCache(temp_path, ask=FALSE)
-file_url <- 
-   "https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data"
+bfc <- BiocFileCache::BiocFileCache(temp_path, ask = FALSE)
+file_url <-
+    "https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data"
 genome_bam <- paste0(temp_path, "/align2genome.bam")
-file.rename(bfc[[names(BiocFileCache::bfcadd(bfc, "Genome BAM", paste(file_url, "align2genome.bam", sep="/")))]], genome_bam)
+file.rename(bfc[[names(BiocFileCache::bfcadd(bfc, "Genome BAM", paste(file_url, "align2genome.bam", sep = "/")))]], genome_bam)
 
-samtools_sort_index(genome_bam, tempfile(fileext=".bam"))
+samtools_sort_index(genome_bam, tempfile(fileext = ".bam"))
 }

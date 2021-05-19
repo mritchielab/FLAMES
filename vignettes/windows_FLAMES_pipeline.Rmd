@@ -120,10 +120,10 @@ To run the minimap2 alignment part of the FLAMES pipeline, this section describe
 
 First, if `pipeline_variables$config$alignment_parameters$use_junctions` is `TRUE`, the following needs to be run, to produce `pipeline_variables$tmp_bed`.
 
-```{r, eval=FALSE}
-# THIS IS WHERE THE NEW CODE FOR gff3_to_bed12 NEEDS TO GO
+```{r, eval=TRUE}
+gff3_to_bed12(pipeline_variables$annot, pipeline_variables$tmp_bed)
 ```
-After this, the files `pipeline_variables$genome_fa` and `pipeline_variables$fastq`, need to be transfered to a system with minimap2 installed, where the main minimap2 alignement step will take place
+After this, the files `pipeline_variables$genome_fa`, `pipeline_variables$tmp_bed` and `pipeline_variables$fastq`, need to be transfered to a system with minimap2 installed, where the main minimap2 alignment step will take place
 
 After transferred, the following should be run on this new system.
 

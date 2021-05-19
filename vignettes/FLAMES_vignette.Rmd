@@ -19,6 +19,8 @@ knitr::opts_chunk$set(
 ## FLAMES Vignette
 This vignette will detail the process of running the FLAMES pipeline. It uses the bulk data pipeline (`bulk_long_pipeline`) as an example, however this vignette will be useful for those running the other FLAMES entry point, the single cell pipeline (`sc_long_pipeline`).
 
+FLAMES uses minimap2 for both the read alignment and read realignment to isoform steps of the pipeline. If a user wishes to use the FLAMES pipeline without access to minimap2, please refer to the vignette `Vignette for FLAMES on Windows`, which provides instructions for running the pipeline on Windows, which is applicable to any system without minimap2 installed. 
+
 ### Installation
 To install FLAMES, run the following:
 ```{r eval=FALSE}
