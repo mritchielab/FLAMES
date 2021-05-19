@@ -10,7 +10,9 @@
 #' @examples
 #' annot <- system.file("extdata/SIRV_anno.gtf", package = "FLAMES")
 #' out_bed <- tempfile(fileext = ".bed12")
+#' \dontrun{
 #' gff3_to_bed12(annot, out_bed)
+#' }
 #' @importFrom reticulate import_from_path
 #' @export
 gff3_to_bed12 <- function(gff3_file, bed12_file) {
