@@ -79,7 +79,7 @@ all configuration parameters}
 
 \item{Max_site_per_splice}{Maximum transcript start/end site combinations allowed per splice chain}
 
-\item{Min_sup_cnt}{Minimum number of read support an isoform decrease this number will significantly increase the number of isoform detected.}
+\item{Min_sup_cnt}{Minimum number of read support an isoform. Decreasing this number will significantly increase the number of isoform detected.}
 
 \item{Min_cnt_pct}{Minimum percentage of count for an isoform relative to total count for the same gene.}
 

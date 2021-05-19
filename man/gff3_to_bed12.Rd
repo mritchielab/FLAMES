@@ -20,5 +20,7 @@ Converts a gff3 file to a bed12
 \examples{
 annot <- system.file("extdata/SIRV_anno.gtf", package = "FLAMES")
 out_bed <- tempfile(fileext = ".bed12")
+\dontrun{
 gff3_to_bed12(annot, out_bed)
+}
 }
