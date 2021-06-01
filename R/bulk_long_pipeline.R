@@ -20,9 +20,9 @@
 #'  \item{tss_tes.bedgraph}{ - TSS TES enrichment for all reads (for QC)}
 #' }
 #'
-#' @param fastq the directory containing the fastq input files to merge into one, `merged.fastq.gz`. If `merged.fastq.gz` already
+#' @param fastq the path to the directory containing the fastq input files to merge into one, `merged.fastq.gz`. If `merged.fastq.gz` already
 #' exists, the fastq files are not merged and the existing merged file is used.
-#' @param in_bam optional BAM file which replaces fastq directory argument. This skips the genome alignment and
+#' @param in_bam optional BAM file path which replaces fastq directory argument. This skips the genome alignment and
 #' realignment steps
 #' @inheritParams sc_long_pipeline
 #'

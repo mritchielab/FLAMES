@@ -7,7 +7,8 @@
 parse_json_config(json_file)
 }
 \arguments{
-\item{json_file}{The file name to convert into an R list.}
+\item{json_file}{the file path to the JSON file to convert into an R list. 
+This can be the default FLAMES configuration file found using \code{get_default_config_file()}}
 }
 \value{
 A named R list of the parameters in \code{json_file}. Subsections are: \code{pipeline_parameters},

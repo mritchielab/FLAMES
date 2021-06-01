@@ -7,12 +7,12 @@
 gff3_to_bed12(gff3_file, bed12_file)
 }
 \arguments{
-\item{gff3_file}{The gff3_file to convert}
+\item{gff3_file}{The file path to the GFF3 file to convert}
 
-\item{bed12_file}{The filename of the bed12 output file.}
+\item{bed12_file}{The file path of the bed12 output file.}
 }
 \value{
-file path to the created bed12_file
+file path to the created bed12_file.
 }
 \description{
 Converts a gff3 file to a bed12

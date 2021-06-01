@@ -7,14 +7,15 @@
 parse_gff_tree(gff_file)
 }
 \arguments{
-\item{gff_file}{the gff3 file to parse}
+\item{gff_file}{the file path to the gff3 file to parse}
 }
 \value{
-a named list of elements:
-"chr_to_gene", "transcript_dict", "gene_to_transcript", "transcript_to_exon"
+a named list with the elements 
+"chr_to_gene", "transcript_dict", "gene_to_transcript", "transcript_to_exon", containing
+the data parsed from the gff3 file.
 }
 \description{
-Parse a Gff3 file into 3 components: chromasome to ene, transcript dictionary, gene to transcript dictionary
+Parse a Gff3 file into 3 components: chromasome to gene name, a transcript dictionary, a gene to transcript dictionary
 and a transcript to exon dictionary.
 These components are returned in a named list.
 }

@@ -7,12 +7,12 @@
 samtools_sort_index(bam_in, bam_out)
 }
 \arguments{
-\item{bam_in}{the bam file to sort and index}
+\item{bam_in}{the file path to the BAM file to sort and index}
 
-\item{bam_out}{the output indexed bam file.}
+\item{bam_out}{path to the output indexed BAM file.}
 }
 \value{
-the same value as \code{bam_out}
+file path to the created BAM
 }
 \description{
 Sort and index the given BAM file, using Rsamtools.

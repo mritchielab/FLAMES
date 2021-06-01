@@ -7,12 +7,12 @@
 samtools_as_bam(sam_in, bam_out)
 }
 \arguments{
-\item{sam_in}{the input SAM file}
+\item{sam_in}{file path to the input SAM file}
 
-\item{bam_out}{the output BAM file}
+\item{bam_out}{file path to the output BAM file}
 }
 \value{
-the same value as \code{bam_out}
+file path to the output BAM file.
 }
 \description{
 Produces a compressed binary BAM file from a text based SAM file, using Rsamtools.

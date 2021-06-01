@@ -2,10 +2,10 @@
 #'
 #' Converts a gff3 file to a bed12
 #'
-#' @param gff3_file The gff3_file to convert
-#' @param bed12_file The filename of the bed12 output file.
+#' @param gff3_file The file path to the GFF3 file to convert
+#' @param bed12_file The file path of the bed12 output file.
 #'
-#' @return file path to the created bed12_file
+#' @return file path to the created bed12_file.
 #'
 #' @examples
 #' annot <- system.file("extdata/SIRV_anno.gtf", package = "FLAMES")
@@ -33,11 +33,11 @@ gff3_to_bed12 <- function(gff3_file, bed12_file) {
 #' Uses options "-ax splice -t 12 -k14 --secondary=no \code{fa_file} \code{fq_in}"
 #'
 #' @param minimap2_prog_path Absolute path to the directory containing minimap2
-#' @param fa_file Fasta file used as a reference database for alignment
-#' @param fq_in Fastq file used as a query sequence file
-#' @param sam_out Output SAM file
-#' @param no_flank Boolean; used if studying SIRV, to let minimap2 ignore additional bases
-#' @param bed12_junc Gene annotations in BED12 format. If specified, minmap2 prefers splicing in annotations.
+#' @param fa_file Path to the fasta file used as a reference database for alignment
+#' @param fq_in File path to the fastq file used as a query sequence file
+#' @param sam_out File path to the output SAM file
+#' @param no_flank Boolean; used if studying SIRV, to tell minimap2 to ignore additional bases
+#' @param bed12_junc file path to the gene annotations in BED12 format. If specified, minmap2 prefers splicing in annotations.
 #'
 #' @return file path to the given output BAM file, \code{bam_out}
 #' @importFrom reticulate import_from_path
@@ -74,9 +74,9 @@ minimap2_align <-
 #' @description
 #' Sort and index the given BAM file, using Rsamtools.
 #'
-#' @param bam_in the bam file to sort and index
-#' @param bam_out the output indexed bam file.
-#' @return the same value as \code{bam_out}
+#' @param bam_in the file path to the BAM file to sort and index
+#' @param bam_out path to the output indexed BAM file.
+#' @return file path to the created BAM
 #' @importFrom Rsamtools sortBam indexBam
 #'
 #' @examples
@@ -101,10 +101,10 @@ samtools_sort_index <- function(bam_in, bam_out) {
 #' @description
 #' Produces a compressed binary BAM file from a text based SAM file, using Rsamtools.
 #'
-#' @param sam_in the input SAM file
-#' @param bam_out the output BAM file
+#' @param sam_in file path to the input SAM file
+#' @param bam_out file path to the output BAM file
 #'
-#' @return the same value as \code{bam_out}
+#' @return file path to the output BAM file.
 #'
 #' @examples
 #' temp_path <- tempfile()

@@ -27,42 +27,41 @@
 #' of up to 2 by default. Most of the parameters, such as the minimal distance to splice site and minimal percentage of transcript coverage
 #' can be modified by the JSON configuration file (\code{config_file}).
 #'
-#' @param annot gene annotations file in gff3  format
-#' @param fastq file path to input fastq file
-#' @param in_bam optional bam file to use instead of fastq file
-#' @param outdir directory to store all output files.
-#' @param genome_fa genome fasta file.
-#' @param minimap2_dir directory containing minimap2, k8 and paftools.js program.
-#' k8 and paftools.js are used to convert gff3 to bed12.
-#' @param downsample_ratio downsampling ratio if performing downsampling analysis.
-#' @param config_file JSON configuration file. If specified, \code{config_file} overrides
+#' @param annot The file path to gene annotations file in gff3  format
+#' @param fastq The file path to input fastq file
+#' @param in_bam Optional file path to a bam file to use instead of fastq file (skips initial alignment step)
+#' @param outdir The path to directory to store all output files.
+#' @param genome_fa The file path to genome fasta file.
+#' @param minimap2_dir Path to the directory containing minimap2, if it is not in PATH
+#' @param downsample_ratio Integer; downsampling ratio if performing downsampling analysis.
+#' @param config_file File path to the JSON configuration file. If specified, \code{config_file} overrides
 #' all configuration parameters
-#' @param do_genome_align Boolean. Specifies whether to run the genome alignment step. \code{TRUE} is recommended
-#' @param do_isoform_id Boolean. Specifies whether to run the isoform identification step. \code{TRUE} is recommended
-#' @param do_read_realign Boolean. Specifies whether to run the read realignment step. \code{TRUE} is recommended
-#' @param do_transcript_quanti Boolean. Specifies whether to run the transcript quantification step. \code{TRUE} is recommended
-#' @param gen_raw_isoform Boolean.
-#' @param has_UMI Boolean. Specifies if the data contains UMI.
-#' @param MAX_DIST Maximum distance allowed when merging splicing sites in isoform consensus clustering.
-#' @param MAX_TS_DIST Maximum distance allowed when merging transcript start/end position in isoform consensus clustering.
-#' @param MAX_SPLICE_MATCH_DIST Maximum distance allowed when merging splice site called from the data and the reference annotation.
-#' @param min_fl_exon_len Minimum length for the first exon outside the gene body in reference annotation. This is to correct the alignment artifact
-#' @param Max_site_per_splice Maximum transcript start/end site combinations allowed per splice chain
-#' @param Min_sup_cnt Minimum number of read support an isoform. Decreasing this number will significantly increase the number of isoform detected.
-#' @param Min_cnt_pct Minimum percentage of count for an isoform relative to total count for the same gene.
-#' @param Min_sup_pct Minimum percentage of count for an splice chain that support a given transcript start/end site combination.
+#' @param do_genome_align Boolean; specifies whether to run the genome alignment step. \code{TRUE} is recommended
+#' @param do_isoform_id Boolean; specifies whether to run the isoform identification step. \code{TRUE} is recommended
+#' @param do_read_realign Boolean; specifies whether to run the read realignment step. \code{TRUE} is recommended
+#' @param do_transcript_quanti Boolean; specifies whether to run the transcript quantification step. \code{TRUE} is recommended
+#' @param gen_raw_isoform Boolean; specifies whether a gff3 should be generated containing the raw isoform information in the isoform identification step
+#' @param has_UMI Boolean; specifies if the data contains UMI.
+#' @param MAX_DIST Real; maximum distance allowed when merging splicing sites in isoform consensus clustering.
+#' @param MAX_TS_DIST Real; maximum distance allowed when merging transcript start/end position in isoform consensus clustering.
+#' @param MAX_SPLICE_MATCH_DIST Real; maximum distance allowed when merging splice site called from the data and the reference annotation.
+#' @param min_fl_exon_len Real; minimum length for the first exon outside the gene body in reference annotation. This is to correct the alignment artifact
+#' @param Max_site_per_splice Real; maximum transcript start/end site combinations allowed per splice chain
+#' @param Min_sup_cnt Real; minimum number of read support an isoform. Decreasing this number will significantly increase the number of isoform detected.
+#' @param Min_cnt_pct Real; minimum percentage of count for an isoform relative to total count for the same gene.
+#' @param Min_sup_pct Real; minimum percentage of count for an splice chain that support a given transcript start/end site combination.
 #' @param strand_specific 1, -1 or 0. 1 indicates if reads are in the same
 #' strand as mRNA, -1 indicates reads are reverse complemented, 0 indicates
 #' reads are not strand specific.
-#' @param remove_incomp_reads The strenge of truncated isoform filtering. larger number means more stringent filtering.
-#' @param use_junctions whether to use known splice junctions to help correct the alignment results
-#' @param no_flank Boolean. for synthetic spike-in data. refer to Minimap2 document for detail
-#' @param use_annotation Boolean. whether to use reference to help annotate known isoforms
-#' @param min_tr_coverage Minimum percentage of isoform coverage for a read to be aligned to that isoform
-#' @param min_read_coverage Minimum percentage of read coverage for a read to be uniquely aligned to that isoform
-#' @param UMI_LEN The length of UMI sequence
-#' @param reference_csv file path to the reference csv used for demultiplexing
-#' @param match_barcode bool; specifies if demultiplexing should be performed using `FLAMES::match_cell_barcode`
+#' @param remove_incomp_reads Real; determines the strength of truncated isoform filtering. Larger number means more stringent filtering.
+#' @param use_junctions Boolean; determiens whether to use known splice junctions to help correct the alignment results
+#' @param no_flank Boolean; passed to minimap2 for synthetic spike-in data. Refer to Minimap2 document for more details
+#' @param use_annotation Boolean; specifies whether to use reference to help annotate known isoforms
+#' @param min_tr_coverage Real; minimum percentage of isoform coverage for a read to be aligned to that isoform
+#' @param min_read_coverage Real; minimum percentage of read coverage for a read to be uniquely aligned to that isoform
+#' @param UMI_LEN Integer; the length of UMI sequence in bases
+#' @param reference_csv The file path to the reference csv used for demultiplexing
+#' @param match_barcode Boolean; specifies if demultiplexing should be performed using `FLAMES::match_cell_barcode`
 #' @return \code{sc_long_pipeline} returns a SingleCellExperiment object, containing a count
 #' matrix as an assay, gene annotations under metadata, as well as a list of the other
 #' output files generated by the pipeline. The pipeline also outputs a number of output

@@ -3,7 +3,8 @@
 #' @description Convert a json configuration file into a named R list, grouped into sub lists according to their
 #'      usage in the Flames pipeline.
 #'
-#' @param json_file The file name to convert into an R list.
+#' @param json_file the file path to the JSON file to convert into an R list. 
+#' This can be the default FLAMES configuration file found using \code{get_default_config_file()}
 #'
 #' @return A named R list of the parameters in \code{json_file}. Subsections are: \code{pipeline_parameters},
 #'      \code{global_parameters}, \code{isoform_parameters}, \code{alignment_parameters}, \code{realign_parameters} and

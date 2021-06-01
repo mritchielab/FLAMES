@@ -7,9 +7,9 @@
 merge_bulk_fastq(fastq_dir, out_fastq)
 }
 \arguments{
-\item{fastq_dir}{The folder containing fastq files to merge}
+\item{fastq_dir}{Path to the folder containing fastq files to merge}
 
-\item{out_fastq}{A file which will be created to store all fastq entries. Overwrites existing files}
+\item{out_fastq}{file path to the fastq file which will be created to store all fastq entries. Overwrites existing files}
 }
 \value{
 file path to the created merged fastq file `out_fastq`

@@ -16,15 +16,15 @@ minimap2_align(
 \arguments{
 \item{minimap2_prog_path}{Absolute path to the directory containing minimap2}
 
-\item{fa_file}{Fasta file used as a reference database for alignment}
+\item{fa_file}{Path to the fasta file used as a reference database for alignment}
 
-\item{fq_in}{Fastq file used as a query sequence file}
+\item{fq_in}{File path to the fastq file used as a query sequence file}
 
-\item{sam_out}{Output SAM file}
+\item{sam_out}{File path to the output SAM file}
 
-\item{no_flank}{Boolean; used if studying SIRV, to let minimap2 ignore additional bases}
+\item{no_flank}{Boolean; used if studying SIRV, to tell minimap2 to ignore additional bases}
 
-\item{bed12_junc}{Gene annotations in BED12 format. If specified, minmap2 prefers splicing in annotations.}
+\item{bed12_junc}{file path to the gene annotations in BED12 format. If specified, minmap2 prefers splicing in annotations.}
 }
 \value{
 file path to the given output BAM file, \code{bam_out}

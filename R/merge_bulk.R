@@ -2,8 +2,8 @@
 #'
 #' Merges all fastq files in the given folder into a single file.
 #'
-#' @param fastq_dir The folder containing fastq files to merge
-#' @param out_fastq A file which will be created to store all fastq entries. Overwrites existing files
+#' @param fastq_dir Path to the folder containing fastq files to merge
+#' @param out_fastq file path to the fastq file which will be created to store all fastq entries. Overwrites existing files
 #'
 #' @return file path to the created merged fastq file `out_fastq`
 #'
