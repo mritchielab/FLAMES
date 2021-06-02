@@ -1,10 +1,9 @@
 .Rproj.user/
-FlamesR.Rproj
 .Rhistory
 .RData
 .ds_store
 *.DS_Store
-.Rproj
+*.Rproj
 .vscode
 inst/doc
 inst/python/*.pyc
