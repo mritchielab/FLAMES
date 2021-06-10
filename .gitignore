@@ -19,3 +19,6 @@ Meta
 /doc/
 /Meta/
 R/shortisoformtest.R
+vignettes/.build.timestamp
+**/*.log
+vignettes/FLAMES_vignette.md

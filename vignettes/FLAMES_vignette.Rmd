@@ -2,7 +2,8 @@
 title: "FLAMES"
 author: "Oliver Voogd"
 package: FLAMES
-output: BiocStyle::html_document
+output: 
+  BiocStyle::html_document
 vignette: >
   %\VignetteIndexEntry{FLAMES} 
   %\VignetteEngine{knitr::rmarkdown} 
@@ -32,8 +33,7 @@ For read alignment and realignment, FLAMES uses minimap2, a versatile alignment 
 
 However, this software is not available to Windows users. If a user wishes to use the FLAMES pipeline without access to minimap2, please refer to the vignette `Vignette for FLAMES on Windows`, which provides instructions for running the pipeline on Windows, which is also applicable to any system without minimap2 installed.
 
-### More 'motivating' commentary on the process of the pipeline? ask matt
-
+### Should anything else be added for further details?
 
 # FLAMES Execution
 
