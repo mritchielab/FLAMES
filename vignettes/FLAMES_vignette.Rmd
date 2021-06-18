@@ -3,7 +3,8 @@ title: "FLAMES"
 author: "Oliver Voogd"
 package: FLAMES
 output: 
-  BiocStyle::html_document
+  BiocStyle::html_document:
+    toc: true
 vignette: >
   %\VignetteIndexEntry{FLAMES} 
   %\VignetteEngine{knitr::rmarkdown} 
@@ -29,20 +30,92 @@ Input to FLAMES are fastq files generated from the long-read platform. Using the
 
 Figure \@ref(fig:workflow) provides a high level overview of the main steps in the FLAMES pipeline. The optional arguments on the left are colour coded to associate with the specific step that they apply to.
 
-For read alignment and realignment, FLAMES uses minimap2, a versatile alignment program for aligning sequences against a reference database [@minimap2]. This software needs to be downloaded prior to using the FLAMES pipeline, and can be found at [https://github.com/lh3/minimap2](https://github.com/lh3/minimap2).
+For read alignment and realignment, FLAMES uses [minimap2](https://github.com/lh3/minimap2), a versatile alignment program for aligning sequences against a reference database [@minimap2]. This software needs to be downloaded prior to using the FLAMES pipeline, and can be found at [https://github.com/lh3/minimap2](https://github.com/lh3/minimap2).
 
 However, this software is not available to Windows users. If a user wishes to use the FLAMES pipeline without access to minimap2, please refer to the vignette `Vignette for FLAMES on Windows`, which provides instructions for running the pipeline on Windows, which is also applicable to any system without minimap2 installed.
 
 ### Should anything else be added for further details?
 
-# FLAMES Execution
+# FLAMES Pipeline Execution
 
-This vignette will detail the process of running the FLAMES pipeline. It uses the bulk data pipeline (`bulk_long_pipeline`) as an example, however this vignette will be useful for those running the other FLAMES entry point, the single cell pipeline (`sc_long_pipeline`).
+This vignette will detail the process of running the FLAMES pipeline. It details the execution of both the single cell pipeline (`sc_long_pipeline`) and the bulk data pipeline (`bulk_long_pipeline`).
+
+## FLAMES Single Cell Pipeline
 
 ### Environment setup
+
 To get started, the pipeline needs access to a gene annotation file in GFF3 or GTF format, a directory containing one or more FASTQ files (which will be merged as pre-processing), a genome FASTA file, as well as the file path to minimap2, and the file path to the directory to hold output files.
 
-For this vignette, these files are downloaded from GitHub using BiocFileCache.
+The single cell pipeline can demultiplex the input data before running, if required. This can be disabled by setting the `match_barcode` argument to `FALSE` when calling the pipeline. This example dataset has already been demultiplexed.
+
+For this example, the required files are downloaded from GitHub using [BiocFileCache](http://bioconductor.org/packages/release/bioc/html/BiocFileCache.html) [@biocfilecache].
+```{r eval=TRUE, echo=TRUE}
+# download required files using BiocFileCache
+temp_path <- tempfile()
+bfc <- BiocFileCache::BiocFileCache(temp_path, ask=FALSE)
+file_url <- 
+  "https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data"
+annot <- bfc[[names(BiocFileCache::bfcadd(bfc, "Annotation", 
+                                          paste(file_url, 
+                                                "gencodeshortened.gtf", 
+                                                sep="/")))]]
+genome_fa <- bfc[[names(BiocFileCache::bfcadd(bfc, 
+                                              "Genomefa", 
+                                              paste(file_url, 
+                                                    "GRCh38shortened.fa", 
+                                                    sep="/")))]]
+
+fastq <- bfc[[names(BiocFileCache::bfcadd(bfc, "Fastq", paste(file_url, "sc_align2genome.sample.fastq.gz", sep="/")))]]
+
+# setup other environment variables
+config_file <- FLAMES::get_default_config_file()
+outdir <- tempfile() # create a temporary output directory
+if (!dir.exists(outdir)) {
+    dir.create(outdir)
+}
+```
+
+The optional argument `config_file` can be given to both `bulk_long_pipeline` and `sc_long_pipeline` in order to customise the execution of the pipelines. It is expected to be a JSON file, and an example can be found at `r system.file("extdata/SIRV_config_default.json", package="FLAMES")`. This JSON file is used in absence of both the argument `config_file` and any alteration of the other optional pipeline arguments.
+
+If `config_file` is not given, the pipeline can instead be customised by altering any of the optional arguments the pipeline allows. These customisations are then stored in a JSON file saved in the specified out directory, which allows for easier reproduction of pipeline execution. More information on the optional arguments at the contents of the JSON configuration file can be found by running `?create_config` and `?bulk_long_pipeline`.
+
+This vignette uses the default configuration file.
+
+### FLAMES execution
+
+Once the initial variables have been setup, the pipeline can be run using:
+```{r, eval=FALSE}
+library(FLAMES)
+sce <- sc_long_pipeline(annot=annot, fastq=fastq, genome_fa=genome_fa, outdir=outdir, config_file=config_file, match_barcode=FALSE)
+```
+
+As stated above, the example dataset has already been demultiplexed, so `match_barcode=FALSE` should be set to skip the preprocessing of the barcodes.
+
+If, however, the input fastq files need to be demultiplexed, then the `reference_csv` argument will need to be specified - `reference_csv` is the file path to a `.csv` of barcodes to be used as reference during demultiplexing.
+
+### FLAMES termination
+
+The directory `outdir` now contains several output files returned from this pipeline. The output files generated by this pipeline are:
+
+* `transcript_count.csv.gz` - a transcript count matrix (also contained in the output [SummarizedExperiment](https://bioconductor.org/packages/release/bioc/html/SummarizedExperiment.html) or [SingleCellExperiment](https://bioconductor.org/packages/release/bioc/html/SingleCellExperiment.html))
+* `isoform_annotated.filtered.gff3` - found isoform information in gff3 format
+* `transcript_assembly.fa` - transcript sequence from the isoforms
+* `align2genome.bam` sorted BAM file with reads aligned to genome (intermediate FLAMES step)
+* `realign2transcript.bam` - sorted realigned BAM file using the transcript_assembly.fa as reference (intermediate FLAMES step)
+* `tss_tes.bedgraph`- TSS TES enrichment for all reads (for QC)
+
+
+The pipeline also returns a [SummarizedExperiment](https://bioconductor.org/packages/release/bioc/html/SummarizedExperiment.html) or [SingleCellExperiment](https://bioconductor.org/packages/release/bioc/html/SingleCellExperiment.html) object, depending on the pipeline run, containing the data from `transcript_count.csv.gz`and `isoform_annotated.filtered.gff3` [@singlecellexperiment] [@summarizedexperiment]. This [SummarizedExperiment](https://bioconductor.org/packages/release/bioc/html/SummarizedExperiment.html) (or [SingleCellExperiment](https://bioconductor.org/packages/release/bioc/html/SingleCellExperiment.html)) object contains the same data as present in the `outdir` directory, and is given to simplify the process of reading the transcript count matrix and annotation data back into R, for further analysis.
+
+## FLAMES Bulk Pipeline
+
+A basic example of the execution of the FLAMES bulk pipeline is given below. The process for this is essentially identical to the above example for single cell data. 
+
+### Environment setup
+
+To get started, the pipeline needs access to a gene annotation file in GFF3 or GTF format, a directory containing one or more FASTQ files (which will be merged as pre-processing), a genome FASTA file, as well as the file path to minimap2, and the file path to the directory to hold output files.
+
+For this example, these files are downloaded from GitHub using [BiocFileCache](http://bioconductor.org/packages/release/bioc/html/BiocFileCache.html) [@biocfilecache].
 ```{r eval=TRUE, echo=TRUE}
 # download required files using BiocFileCache
 temp_path <- tempfile()
@@ -52,7 +125,7 @@ file_url <-
 annot <- bfc[[names(BiocFileCache::bfcadd(bfc, "Annotation", 
                                           paste(file_url, 
                                                 "SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf", 
-                                                sep="/")))]] # [[ notation is used to get the local file path of the downloaded file
+                                                sep="/")))]]
 genome_fa <- bfc[[names(BiocFileCache::bfcadd(bfc, 
                                               "Genomefa", 
                                               paste(file_url, 
@@ -68,18 +141,12 @@ file.copy(c(fastq1, fastq2), fastq_dir)
 unlink(c(fastq1, fastq2)) # the original files can be deleted
 
 # setup other environment variables
-config_file <- system.file("extdata/SIRV_config_default.json", package="FLAMES") # the configuration file is included with the FLAMES package
+config_file <- FLAMES::get_default_config_file()
 outdir <- tempfile() # create a temporary output directory
 if (!dir.exists(outdir)) {
     dir.create(outdir)
 }
 ```
-
-The optional argument `config_file` can be given to both `bulk_long_pipeline` and `sc_long_pipeline` in order to customise the execution of the pipelines. It is expected to be a JSON file, and an example can be found at `r system.file("extdata/SIRV_config_default.json", package="FLAMES")`. This JSON file is used in absence of both the argument `config_file` and any alteration of the other optional pipeline arguments.
-
-If `config_file` is not given, the pipeline can instead be customised by altering any of the optional arguments the pipeline allows. These customisations are then stored in a JSON file saved in the specified out directory, which allows for easier reproduction of pipeline execution. More information on the optional arguments at the contents of the JSON configuration file can be found by running `?create_config` and `?bulk_long_pipeline`.
-
-This vignette uses the default configuration file.
 
 ### FLAMES execution
 Once the environment has been setup, the pipeline can be executed by running:
@@ -91,22 +158,11 @@ summarizedExperiment <- bulk_long_pipeline(annot=annot, fastq=fastq_dir, outdir=
 ```
 
 ### FLAMES termination
-The directory `outdir` now contains several output files returned from this pipeline. The output files generated by this pipeline are:
-
-\itemize{
-  \item{transcript_count.csv.gz}{ - a transcript count matrix (also contained in the SummarizedExperiment)}
-  \item{isoform_annotated.filtered.gff3}{ - isoforms in gff3 format (also contained in the SummarizedExperiment)}
-  \item{transcript_assembly.fa}{ - transcript sequence from the isoforms}
-  \item{align2genome.bam}{ - sorted BAM file with reads aligned to genome}
-  \item{realign2transcript.bam}{ - sorted realigned BAM file using the transcript_assembly.fa as reference}
-  \item{tss_tes.bedgraph}{ - TSS TES enrichment for all reads (for QC)}
- }
-
-The pipeline also returns a SummarizedExperiment or SingleCellExperiment object, depending on the pipeline run, containing the data from `transcript_count.csv.gz`and `isoform_annotated.filtered.gff3`. This SummarizedExperiment (or SingleCellExperiment) object meerly contains the same data as present in the `outdir` directory, and is given to simplify the process of reading the transcript count matrix and annotation data back into R, for further analysis.
+After the bulk pipeline has completed, the output directory contains the same files as the single cell pipeline produces. `bulk_long_pipeline` also returns a [SummarizedExperiment](https://bioconductor.org/packages/release/bioc/html/SummarizedExperiment.html) object, containing the same data as the [SingleCellExperiment](https://bioconductor.org/packages/release/bioc/html/SingleCellExperiment.html) as above [@singlecellexperiment] [@summarizedexperiment].
 
 
 ## FLAMES on Windows
-Due to FLAMES requiring minimap2 to complete the pipeline, the straight FLAMES pipeline functions `bulk_long_pipeline` and `sc_long_pipeline` won't run on a Windows OS. To overcome this issue, the vignette 'Vignette for FLAMES on Windows' describes the alternate method of running the FLAMES pipelines, which requires acccess to minimap2 on an external system
+Due to FLAMES requiring minimap2 to complete the pipeline, the straight FLAMES pipeline functions `bulk_long_pipeline` and `sc_long_pipeline` won't run on a Windows OS. To overcome this issue, the vignette 'Vignette for FLAMES on Windows' describes the alternate method of running the FLAMES pipelines, which requires acccess to minimap2 on an external system.
 
 # Session Info
 ``` {r echo=FALSE}

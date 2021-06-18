@@ -320,7 +320,7 @@ if __name__ == '__main__':
     output = "/Users/voogd.o/Documents/FlamesNew/FLAMES_output/realigntester"
     print("\t\tSTART OF NEW RUN")
     parse_realigned_bam(realign_bam, transcript_fa_idx, 10, 0.75, 0.75, dict())
-
+    # parse_realigned_bam is totally fine now
     if False:
         #gff_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoforms/isoform_annotated.sample.nofilter.gff3"
         #csv_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoforms/transcript_count.sample.csv"

@@ -96,7 +96,6 @@ bulk_long_pipeline <-
                 in_bam,
                 outdir,
                 genome_fa,
-                # generic_long_pipeline(annot, infq, outdir, genome_fa,
                 minimap2_dir,
                 downsample_ratio,
                 config_file,
@@ -123,8 +122,6 @@ bulk_long_pipeline <-
                 min_read_coverage
             )
 
-
-
         se <- generate_bulk_summarized(out_files)
 
         # return the created summarizedexperiment
@@ -134,7 +131,7 @@ bulk_long_pipeline <-
 generate_bulk_summarized <- function(out_files) {
     # change this to use out_files
     counts <- read.csv(out_files$counts)
-    annot <- read.table(out_files$annot)
+    annot <- read.csv(out_files$annot, sep="\t", comment.char="#")
     colnames(annot) <-
         c(
             "SequenceID",
@@ -148,7 +145,8 @@ generate_bulk_summarized <- function(out_files) {
             "Attributes"
         )
     mdata <- list(
-        "Annotations" = out_files$annot,
+        "Annotations" = annot,
+        "AnnotationFile" = out_files$annot,
         "OutputFiles" = out_files
     )
     se <-

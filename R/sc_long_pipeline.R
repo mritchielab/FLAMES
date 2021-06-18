@@ -132,6 +132,8 @@ sc_long_pipeline <-
              use_annotation = TRUE,
              min_tr_coverage = 0.75,
              min_read_coverage = 0.75) {
+        
+        infq <- NULL
         if (is.null(in_bam)) {
             if (match_barcode) {
                 if (!file.exists(reference_csv)) {
@@ -159,7 +161,7 @@ sc_long_pipeline <-
             generic_long_pipeline(
                 annot,
                 infq,
-                in_bam = in_bam,
+                in_bam,
                 outdir,
                 genome_fa,
                 minimap2_dir,
@@ -187,7 +189,7 @@ sc_long_pipeline <-
                 min_tr_coverage,
                 min_read_coverage
             )
-
+        
         sce <- generate_sc_singlecell(out_files)
 
         sce
@@ -196,7 +198,7 @@ sc_long_pipeline <-
 generate_sc_singlecell <- function(out_files) {
     # this method requires testing using single cell data
     counts <- read.csv(out_files$counts)
-    annot <- read.table(out_files$annot)
+    annot <- read.csv(out_files$annot, sep="\t", comment.char="#")
     colnames(annot) <-
         c(
             "SequenceID",
@@ -210,7 +212,8 @@ generate_sc_singlecell <- function(out_files) {
             "Attributes"
         )
     mdata <- list(
-        "Annotations" = out_files$annot,
+        "Annotations" = annot,
+        "AnnotationFile" = out_files$annot,
         "OutputFiles" = out_files
     )
     sce <-

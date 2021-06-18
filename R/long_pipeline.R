@@ -7,7 +7,7 @@
 #' @param in_bam optional BAM file which replaces fastq directory argument. This skips the genome alignment and
 #' realignment steps
 #'
-#' @return This generic function returns NULL, instead providing output files
+#' @return This generic function returns a named list containing the output file names of the provided output files
 #' in the given `outdir` directory. These files are loaded into R in either
 #' a SummarizedExperiment or SingleCellExperiment object by the callers to this
 #' function, `sc_long_pipeline()` and `bulk_long_pipeline()` respectively.
@@ -180,7 +180,7 @@ generic_long_pipeline <-
             cat("#### Skip aligning reads to genome\n")
         }
 
-        # find isofrom
+        # find isofroms
         isoform_objects <-
             find_isoform(
                 annot,
@@ -210,11 +210,6 @@ generic_long_pipeline <-
         # quantification
         if (config$pipeline_parameters$do_transcript_quantification) {
             cat("#### Generating transcript count matrix\n")
-            # if (using_bam) {
-            # i have no idea what to do if input is a bam file. This does not work as realign_bam and transcript_fa_idx are required,
-            # which are both produced from minimap2_tr_align.
-            # realign_bam <- in_bam
-            # }
             parse_realign <-
                 parse_realigned_bam(
                     realign_bam,
@@ -223,7 +218,6 @@ generic_long_pipeline <-
                     config$transcript_counting$min_tr_coverage,
                     config$transcript_counting$min_read_coverage
                 )
-
             tr_cnt <- wrt_tr_to_csv(
                 parse_realign$bc_tr_count_dict,
                 isoform_objects$transcript_dict_i,
