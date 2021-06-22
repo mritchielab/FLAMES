@@ -12,6 +12,9 @@
 #' @seealso [sc_long_pipeline()]
 #' @seealso [bulk_long_pipeline()]
 #' @importFrom scater runUMAP
+#' @importFrom SummarizedExperiment assayNames
+#' @return Modified SummarizedExperiment (or SingleCellExperiment) containing
+#' the UMAP visualisation coordinates in the `reducedDims()` UMAP slot.
 generate_umap <- function(summarizedExperiment, counts="counts") {
   if (!(counts %in% assayNames(summarizedExperiment))) {
     stop(paste0(counts, " not found in assays"))
