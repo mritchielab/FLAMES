@@ -135,3 +135,16 @@ minimap2_tr_align <-
 
         sam_out # output file
     }
+
+#' @importFrom reticulate import_from_path
+minimap2_check_callable <- 
+    function(mm2_prog_path) {
+        available <- callBasilisk(flames_nopysam_env, function(mm2) {
+            python_path <- system.file("python", package="FLAMES")
+
+            check <- reticulate::import_from_path("minimap2_align", python_path)
+            check$check_minimap2_available(mm2)
+        }, mm2=mm2_prog_path)
+
+        return(available)
+    }

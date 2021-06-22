@@ -1,7 +1,7 @@
 Package: FLAMES
 Type: Package
 Title: FLAMES; Full Length Transcriptome Splicing and Mutation Analysis for Long-Read Data
-Version: 0.99.21
+Version: 0.99.22
 Date: 2020-12-28
 Authors@R: c(person("Tian", "Luyi", role=c("aut"),
                     email="tian.l@wehi.edu.au"),
@@ -21,7 +21,7 @@ Encoding: UTF-8
 Imports: 
     basilisk, reticulate, SingleCellExperiment, 
     SummarizedExperiment, Rsamtools, utils,
-    zlibbioc
+    zlibbioc, scater
 Suggests: 
     BiocStyle,
     knitr,

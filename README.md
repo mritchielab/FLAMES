@@ -23,6 +23,6 @@ The above figure provides a high level overview of the main steps in the FLAMES 
 
 The FLAMES vignette can be found using:
 ```
-library(FLAMES)
-browseVignettes(
+# FLAMES must be installed
+browseVignettes("FLAMES")
 ```

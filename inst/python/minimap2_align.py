@@ -45,3 +45,12 @@ def minimap2_tr_align(mm2_prog_path, fa_file, fq_in, sam_out):
         _prog=os.path.join(mm2_prog_path, "minimap2"), _index=fa_file, _fq=fq_in, _out=sam_out)
     # print align_cmd
     print subprocess.check_output([align_cmd], shell=True, stderr=subprocess.STDOUT)
+
+def check_minimap2_available(mm2_prog_path):
+    check_cmd = "{_prog} --help".format(\
+        _prog=os.path.join(mm2_prog_path, "minimap2"))
+    try:
+        subprocess.check_call([check_cmd], shell=True, stderr=subprocess.STDOUT)
+        return True
+    except(subprocess.CalledProcessError):
+        return False

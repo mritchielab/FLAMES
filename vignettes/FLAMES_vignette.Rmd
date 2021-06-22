@@ -20,7 +20,9 @@ knitr::opts_chunk$set(
 ```
 # FLAMES
 
-The FLAMES package provides a framework for performing single-cell and bulk read full-length analysis of mutations and splicing. FLAMES performs cell barcode and UMI assignment from nanopore reads as well as semi-supervised isoform detection and quantification. FLAMES is designed to be an easy and quick to use, powerful workflow for isoform detection and quantification, splicing analysis and mutation detection, and seeks to overcome the limitations of other tools, such as an inability to process single cell data, and a focus on cell barcode and UMI assignment.
+The FLAMES package provides a framework for performing single-cell and bulk read full-length analysis of mutations and splicing. FLAMES performs cell barcode and UMI assignment from nanopore reads as well as semi-supervised isoform detection and quantification. FLAMES is designed to be an easy and quick to use, powerful workflow for isoform detection and quantification, splicing analysis and mutation detection, and seeks to overcome the limitations of other tools, such as an inability to process single cell data, and a focus on cell barcode and UMI assignment [@flames].
+
+This R package was created to simplify installation and execution of the FLAMES python module, which supports the article *Comprehensive characterization of single cell full-length isoforms in human and mouse with long-read sequencing* by Tian et al. [-@flames].
 
 ```{r workflow, echo=FALSE, fig.align='center', fig.cap='FLAMES pipeline workflow summary'}
 knitr::include_graphics(system.file("images/FLAMESpipeline-01.png", package="FLAMES"))
@@ -32,13 +34,11 @@ Figure \@ref(fig:workflow) provides a high level overview of the main steps in t
 
 For read alignment and realignment, FLAMES uses [minimap2](https://github.com/lh3/minimap2), a versatile alignment program for aligning sequences against a reference database [@minimap2]. This software needs to be downloaded prior to using the FLAMES pipeline, and can be found at [https://github.com/lh3/minimap2](https://github.com/lh3/minimap2).
 
-However, this software is not available to Windows users. If a user wishes to use the FLAMES pipeline without access to minimap2, please refer to the vignette `Vignette for FLAMES on Windows`, which provides instructions for running the pipeline on Windows, which is also applicable to any system without minimap2 installed.
-
-### Should anything else be added for further details?
+However, this software is not available to Windows users. If a user wishes to use the FLAMES pipeline without access to minimap2, please refer to the vignette [Vignette for FLAMES on Windows](windows_FLAMES_pipeline.html), which provides instructions for running the pipeline on Windows, which is also applicable to any system without minimap2 installed.
 
 # FLAMES Pipeline Execution
 
-This vignette will detail the process of running the FLAMES pipeline. It details the execution of both the single cell pipeline (`sc_long_pipeline`) and the bulk data pipeline (`bulk_long_pipeline`).
+This vignette will detail the process of running the FLAMES pipeline. It details the execution of both the single cell pipeline (`sc_long_pipeline()`) and the bulk data pipeline (`bulk_long_pipeline()`).
 
 ## FLAMES Single Cell Pipeline
 
@@ -50,7 +50,6 @@ The single cell pipeline can demultiplex the input data before running, if requi
 
 For this example, the required files are downloaded from GitHub using [BiocFileCache](http://bioconductor.org/packages/release/bioc/html/BiocFileCache.html) [@biocfilecache].
 ```{r eval=TRUE, echo=TRUE}
-# download required files using BiocFileCache
 temp_path <- tempfile()
 bfc <- BiocFileCache::BiocFileCache(temp_path, ask=FALSE)
 file_url <- 
@@ -69,13 +68,13 @@ fastq <- bfc[[names(BiocFileCache::bfcadd(bfc, "Fastq", paste(file_url, "sc_alig
 
 # setup other environment variables
 config_file <- FLAMES::get_default_config_file()
-outdir <- tempfile() # create a temporary output directory
+outdir <- tempfile() 
 if (!dir.exists(outdir)) {
     dir.create(outdir)
 }
 ```
 
-The optional argument `config_file` can be given to both `bulk_long_pipeline` and `sc_long_pipeline` in order to customise the execution of the pipelines. It is expected to be a JSON file, and an example can be found at `r system.file("extdata/SIRV_config_default.json", package="FLAMES")`. This JSON file is used in absence of both the argument `config_file` and any alteration of the other optional pipeline arguments.
+The optional argument `config_file` can be given to both `bulk_long_pipeline()` and `sc_long_pipeline()` in order to customise the execution of the pipelines. It is expected to be a JSON file, and an example can be found by calling `FLAMES::get_default_config_file`, which returns the path to the default JSON configuration file. This JSON file is used in absence of both the argument `config_file` and any alteration of the other optional pipeline arguments.
 
 If `config_file` is not given, the pipeline can instead be customised by altering any of the optional arguments the pipeline allows. These customisations are then stored in a JSON file saved in the specified out directory, which allows for easier reproduction of pipeline execution. More information on the optional arguments at the contents of the JSON configuration file can be found by running `?create_config` and `?bulk_long_pipeline`.
 
@@ -117,7 +116,6 @@ To get started, the pipeline needs access to a gene annotation file in GFF3 or G
 
 For this example, these files are downloaded from GitHub using [BiocFileCache](http://bioconductor.org/packages/release/bioc/html/BiocFileCache.html) [@biocfilecache].
 ```{r eval=TRUE, echo=TRUE}
-# download required files using BiocFileCache
 temp_path <- tempfile()
 bfc <- BiocFileCache::BiocFileCache(temp_path, ask=FALSE)
 file_url <- 
@@ -142,7 +140,7 @@ unlink(c(fastq1, fastq2)) # the original files can be deleted
 
 # setup other environment variables
 config_file <- FLAMES::get_default_config_file()
-outdir <- tempfile() # create a temporary output directory
+outdir <- tempfile()
 if (!dir.exists(outdir)) {
     dir.create(outdir)
 }
@@ -162,7 +160,7 @@ After the bulk pipeline has completed, the output directory contains the same fi
 
 
 ## FLAMES on Windows
-Due to FLAMES requiring minimap2 to complete the pipeline, the straight FLAMES pipeline functions `bulk_long_pipeline` and `sc_long_pipeline` won't run on a Windows OS. To overcome this issue, the vignette 'Vignette for FLAMES on Windows' describes the alternate method of running the FLAMES pipelines, which requires acccess to minimap2 on an external system.
+Due to FLAMES requiring minimap2 to complete the pipeline, the straight FLAMES pipeline functions `bulk_long_pipeline()` and `sc_long_pipeline()` won't run on a Windows OS. To overcome this issue, the vignette 'Vignette for FLAMES on Windows' describes the alternate method of running the FLAMES pipelines, which requires acccess to minimap2 on an external system.
 
 # Session Info
 ``` {r echo=FALSE}
