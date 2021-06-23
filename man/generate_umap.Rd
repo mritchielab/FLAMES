@@ -13,6 +13,10 @@ object containing the counts to plot}
 \item{counts}{character string indicating the name of the assay to generate UMAP visualtization from.
 The assay should be accessable by `assay(summarizedExperiemnt, counts)`.}
 }
+\value{
+Modified SummarizedExperiment (or SingleCellExperiment) containing
+the UMAP visualisation coordinates in the `reducedDims()` UMAP slot.
+}
 \description{
 Generates the matrix of UMAP visualisation coordinates from a given 
 SummarizedExperiment.
