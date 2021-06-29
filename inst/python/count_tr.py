@@ -92,9 +92,7 @@ def query_len(cigar_string, hard_clipping=False):
             if ''.join(val) in read_consuming_ops:
                 result += this_len
     return result
-
-# needed? 
-#old signature; def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_read_coverage, **kwargs):
+    
 def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_read_coverage, kwargs):
     """
     """
@@ -105,24 +103,10 @@ def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_re
     read_dict = {}
     cnt_stat = Counter()
     bamfile = bs.AlignmentFile(bam_in, "rb")
+
     if "bc_file" in kwargs.keys():
         bc_dict = make_bc_dict(kwargs["bc_file"])
     for _,  rec in enumerate(bamfile):
-
-        # here's a list of operations we need to do on the bam file: (x indicates supported on bamnostic)
-        # read all lines x
-        # is_unmapped x
-        # reference_start x 
-        # reference_end x
-        # reference_name = query_name
-        # query_name x
-        # get_tag x
-        # query_alignment_length x 
-        # infer_read_length ?? - using above query_len function
-        # mapping_quality x
-        # 
-
-
         if rec.is_unmapped or rec.seq=='*':
             cnt_stat["unmapped"] += 1
             continue
@@ -156,7 +140,11 @@ def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_re
         else:
             cnt_stat["no_good_match"] += 1
             continue
-        bc, umi = r.split("#")[0].split("_")  # assume cleaned barcode
+        # below line creates issue when header line has more than one _.
+        # in this case, umi is assumed to be delimited from the barcode by the last _
+        #bc, umi = r.split("#")[0].split("_")  # assume cleaned barcode
+        split_r = r.split("#")[0].split("_")
+        bc, umi = split_r[-2], split_r[-1]
         if "bc_file" in kwargs.keys():
             bc = bc_dict[bc]
         if len(tmp)==1 and tmp[0][4]>0:

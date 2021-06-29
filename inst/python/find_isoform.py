@@ -31,18 +31,3 @@ def find_isoform(gff3, genome_bam, isoform_gff3, tss_tes_stat, genomefa,
     get_transcript_seq(genomefa, transcript_fa, chr_to_gene_i, transcript_dict_i, gene_to_transcript_i, transcript_to_exon_i,ref_dict=ref_dict)
 
     return {"transcript_dict": transcript_dict, "transcript_dict_i": transcript_dict_i}
-
-
-if __name__=="__main__":
-    annot = "/Users/voogd.o/Documents/FLAMESData/data/SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf"
-    genome_bam = "/Users/voogd.o/Documents/FLAMESData/data/align2genome.bam"
-    isoform_gff3 = "/Users/voogd.o/Documents/FlamesNew/FLAMES_output/isoform_annotated.gff3"
-    tss_tes_stat = "/Users/voogd.o/Documents/FlamesNew/FLAMES_output/tss_tes.bedgraph"
-    genome_fa = "/Users/voogd.o/Documents/FLAMESData/data/SIRV_isoforms_multi-fasta_170612a.fasta"
-    transcript_fa = "/Users/voogd.o/Documents/FLAMESData/data/transcript_assembly.fa"
-    downsample_ratio = 1
-    config_dict = parse_json_config("/Users/voogd.o/Documents/FlamesR/inst/extdata/SIRV_config_default.json")
-    raw_splice = "/Users/voogd.o/Documents/FlamesNew/FLAMES_output/splice_raw.gff3"
-
-    find_isoform(annot, genome_bam, isoform_gff3, tss_tes_stat, genome_fa,
-                transcript_fa, downsample_ratio, config_dict, raw_splice)

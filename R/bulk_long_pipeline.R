@@ -68,6 +68,37 @@ bulk_long_pipeline <-
         infq <- paste(outdir, "merged.fastq.gz", sep = "/")
         # bc_file <- paste(outdir, "pseudo_barcode_annotation.csv", sep="/")
 
+
+        check_arguments(annot,
+            fastq,
+            in_bam,
+            outdir,
+            genome_fa,
+            minimap2_dir,
+            downsample_ratio,
+            config_file,
+            do_genome_align,
+            do_isoform_id,
+            do_read_realign,
+            do_transcript_quanti,
+            gen_raw_isoform,
+            has_UMI,
+            MAX_DIST,
+            MAX_TS_DIST,
+            MAX_SPLICE_MATCH_DIST,
+            min_fl_exon_len,
+            Max_site_per_splice,
+            Min_sup_cnt,
+            Min_cnt_pct,
+            Min_sup_pct,
+            strand_specific,
+            remove_incomp_reads,
+            use_junctions,
+            no_flank,
+            use_annotation,
+            min_tr_coverage,
+            min_read_coverage)
+
         # create output directory if one doesn't exist
         if (!dir.exists(outdir)) {
             cat("Output directory does not exists: one is being created\n")

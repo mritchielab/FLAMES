@@ -1,27 +1,29 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <errno.h>
-#include <iostream>
-#include <sstream>
-#include <fstream>
+//#include <iostream>
+//#include <sstream>
+//#include <fstream>
 #include <vector>
 #include <utility>
 #include <unordered_map>
 #include <algorithm>
 #include <string>
 #include <cassert>
-#include <Rcpp.h>
-#include <R.h>
-#include "zlib.h"
+
+//#include <Rcpp.h>
+//#include <R.h>
+//#include "zlib.h"
 #include "edit_dist.h"
 #include "ssw_cpp.h"
-#include "kseq.h"
+//#include "kseq.h"
+#include "fastq_utils.h"
 using namespace Rcpp;
 
-#ifndef INIT_KSEQ
-#define INIT_KSEQ
-KSEQ_INIT(gzFile, gzread)
-#endif
+// #ifndef INIT_KSEQ
+// #define INIT_KSEQ
+// KSEQ_INIT(gzFile, gzread)
+// #endif
 
 
 //static const int MAX_DIST = 2;
@@ -76,23 +78,7 @@ int find_polyT(std::string& seq, int start_pos)
   return start_pos;
 }
 
-void fq_gz_write(gzFile out_file, std::string name, std::string qual, std::string seq) {
-    std::stringstream stream;
-    stream << "@" << name << "\n" <<
-        seq << "\n" <<
-        "+" << "\n" <<
-        qual << "\n";
-    gzputs(out_file, stream.str().c_str());
-}
 
-void fq_gz_write(gzFile out_file, kseq_t *seq) {
-    std::stringstream stream;
-    stream << "@" << seq->name.s << "\n" <<
-        (seq->seq.s) << "\n" <<
-        "+" << "\n" <<
-        (seq->qual.s) << "\n";
-    gzputs(out_file, stream.str().c_str());
-}
 
 char complement(char n)
 {
@@ -439,6 +425,7 @@ int get_hm_idx(std::string& q_seq, std::vector<std::string>& barcode_list, int m
 //' @return returns NULL
 //' @import zlibbioc
 //' @useDynLib FLAMES, .registration=TRUE
+//' @export
 // [[Rcpp::export]]
 void match_cell_barcode(String fastq_dir, String stats_file, String out_fastq, String ref_csv, int MAX_DIST, int UMI_LEN=10)
 {

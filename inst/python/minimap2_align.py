@@ -2,6 +2,8 @@ import subprocess
 import os
 #import pysam
 
+# depreciated conversion using paftools.
+# new version (gtf_to_bed in gff3_to_bed module) uses custom script
 def gff3_to_bed12(mm2_prog_path, gff3_file, bed12_file):
     if mm2_prog_path != "":
         cmd = "{_k8} {_paftools} gff2bed {_gff3} > {_bed}".format(
@@ -50,7 +52,13 @@ def check_minimap2_available(mm2_prog_path):
     check_cmd = "{_prog} --help".format(\
         _prog=os.path.join(mm2_prog_path, "minimap2"))
     try:
-        subprocess.check_call([check_cmd], shell=True, stderr=subprocess.STDOUT)
+        subprocess.check_output([check_cmd], shell=True, stderr=subprocess.STDOUT)
         return True
     except(subprocess.CalledProcessError):
         return False
+
+if __name__=="__main__":
+    mm2_path = "/Users/voogd.o/Documents/GitHub/minimap2"
+    print "\tminimap2 available at real location? ", check_minimap2_available(mm2_path)
+
+    print "\tminimap2 available at bad location? ", check_minimap2_available("/Users/voogd.o/Documents/GitHub")

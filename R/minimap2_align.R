@@ -136,6 +136,19 @@ minimap2_tr_align <-
         sam_out # output file
     }
 
+#' Check if minimap2 is available
+#' 
+#' @description Checks if minimap2 is available from given directory or in path.
+#' Uses python's subprocess module to check if the help page is accessable.
+#' 
+#' @param mm2_prog_path the path to the directory containing minimap2
+#' @return TRUE if minimap2 is available, FALSE otherwise
+#' 
+#' @examples 
+#' path = "/bad/minimap2/path"
+#' # availability will be FALSE
+#' availability = minimap2_check_callable(path)
+#' 
 #' @importFrom reticulate import_from_path
 minimap2_check_callable <- 
     function(mm2_prog_path) {

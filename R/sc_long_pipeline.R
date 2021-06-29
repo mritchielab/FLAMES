@@ -133,6 +133,36 @@ sc_long_pipeline <-
              min_tr_coverage = 0.75,
              min_read_coverage = 0.75) {
         
+        check_arguments(annot,
+            fastq,
+            in_bam,
+            outdir,
+            genome_fa,
+            minimap2_dir,
+            downsample_ratio,
+            config_file,
+            do_genome_align,
+            do_isoform_id = TRUE,
+            do_read_realign,
+            do_transcript_quanti,
+            gen_raw_isoform,
+            has_UMI,
+            MAX_DIST,
+            MAX_TS_DIST,
+            MAX_SPLICE_MATCH_DIST,
+            min_fl_exon_len,
+            Max_site_per_splice,
+            Min_sup_cnt,
+            Min_cnt_pct,
+            Min_sup_pct,
+            strand_specific,
+            remove_incomp_reads,
+            use_junctions,
+            no_flank,
+            use_annotation,
+            min_tr_coverage,
+            min_read_coverage)
+        
         infq <- NULL
         if (is.null(in_bam)) {
             if (match_barcode) {

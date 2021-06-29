@@ -41,75 +41,15 @@ generic_long_pipeline <-
              use_annotation,
              min_tr_coverage,
              min_read_coverage) {
-        if (!dir.exists(outdir)) {
-            cat("Output directory does not exists: one is being created\n")
-            dir.create(outdir)
-            print(outdir)
-        }
-        if (is.null(config_file)) {
-            config <- create_config(
-                outdir,
-                do_genome_align,
-                do_isoform_id,
-                do_read_realign,
-                do_transcript_quanti,
-                gen_raw_isoform,
-                has_UMI,
-                MAX_DIST,
-                MAX_TS_DIST,
-                MAX_SPLICE_MATCH_DIST,
-                min_fl_exon_len,
-                Max_site_per_splice,
-                Min_sup_cnt,
-                Min_cnt_pct,
-                Min_sup_pct,
-                strand_specific,
-                remove_incomp_reads,
-                use_junctions,
-                no_flank,
-                use_annotation,
-                min_tr_coverage,
-                min_read_coverage
-            )
-        } else {
-            config <- parse_json_config(config_file)
-        }
-
-        if (!config$pipeline_parameters$do_isoform_identification) {
-            stop(
-                "Isoform Identification is required for FLAMES execution. Change this value in the configuration file or \
-        set the argument as TRUE. If isoform identification is not required, you can manually execute the pipeline by following \
-        the vignette"
-            )
-        }
-
+        
         cat("Running FLAMES pipeline...\n")
-        # argument verificiation
-        if (downsample_ratio > 1 || downsample_ratio <= 0) {
-            stop("downsample_ratio should be between 0 and 1")
-        }
-        if (!is.null(fastq) &&
-            !file.exists(fastq)) {
-              stop(paste0("Make sure ", fastq, " exists."))
-          }
-        if (!file.exists(annot)) {
-              stop(paste0("Make sure ", annot, " exists."))
-          }
-        if (!file.exists(genome_fa)) {
-              stop(paste0("Make sure ", genome_fa, " exists."))
-          }
+        config <- parse_json_config(config_file)
 
         using_bam <- FALSE
         if (!is.null(in_bam)) {
             using_bam <- TRUE
             fastq <- NULL
-            if (!file.exists(in_bam)) {
-                  stop("Make sure in_bam exists")
-              }
         }
-        if (is.null(minimap2_dir)) {
-              minimap2_dir <- ""
-          }
 
         # setup of internal arguments which hold output files and intermediate files
         isoform_gff3 <- paste(outdir, "isoform_annotated.gff3", sep = "/")
@@ -257,4 +197,104 @@ generic_long_pipeline <-
                 "outdir" = outdir
             )
         )
+    }
+
+check_arguments <- 
+    function(annot,
+            fastq,
+            in_bam,
+            outdir,
+            genome_fa,
+            minimap2_dir,
+            downsample_ratio,
+            config_file,
+            do_genome_align,
+            do_isoform_id = TRUE,
+            do_read_realign,
+            do_transcript_quanti,
+            gen_raw_isoform,
+            has_UMI,
+            MAX_DIST,
+            MAX_TS_DIST,
+            MAX_SPLICE_MATCH_DIST,
+            min_fl_exon_len,
+            Max_site_per_splice,
+            Min_sup_cnt,
+            Min_cnt_pct,
+            Min_sup_pct,
+            strand_specific,
+            remove_incomp_reads,
+            use_junctions,
+            no_flank,
+            use_annotation,
+            min_tr_coverage,
+            min_read_coverage) {
+        if (!dir.exists(outdir)) {
+            cat("Output directory does not exists: one is being created\n")
+            dir.create(outdir)
+            print(outdir)
+        }
+
+        if (!do_isoform_id) {
+            stop(
+                "Isoform Identification is required for FLAMES execution. Change this value in the configuration file or \
+        set the argument as TRUE. If isoform identification is not required, you can manually execute the pipeline by following \
+        the vignette"
+            )
+        }
+
+        if (is.null(config_file)) {
+            create_config(
+                outdir,
+                do_genome_align,
+                do_isoform_id,
+                do_read_realign,
+                do_transcript_quanti,
+                gen_raw_isoform,
+                has_UMI,
+                MAX_DIST,
+                MAX_TS_DIST,
+                MAX_SPLICE_MATCH_DIST,
+                min_fl_exon_len,
+                Max_site_per_splice,
+                Min_sup_cnt,
+                Min_cnt_pct,
+                Min_sup_pct,
+                strand_specific,
+                remove_incomp_reads,
+                use_junctions,
+                no_flank,
+                use_annotation,
+                min_tr_coverage,
+                min_read_coverage
+            )
+        }
+
+        # argument verificiation
+        if (downsample_ratio > 1 || downsample_ratio <= 0) {
+            stop("downsample_ratio should be between 0 and 1")
+        }
+        if (!is.null(fastq) &&
+            !file.exists(fastq)) {
+              stop(paste0("Make sure ", fastq, " exists."))
+          }
+        if (!file.exists(annot)) {
+              stop(paste0("Make sure ", annot, " exists."))
+          }
+        if (!file.exists(genome_fa)) {
+              stop(paste0("Make sure ", genome_fa, " exists."))
+          }
+
+        if (!is.null(in_bam)) {
+            if (!file.exists(in_bam)) {
+                  stop("Make sure in_bam exists")
+              }
+        }
+        if (is.null(minimap2_dir)) {
+              minimap2_dir <- ""
+          }
+
+        if (!minimap2_check_callable(minimap2_dir)) {
+            stop(paste0("minimap2 is not available from the given directory: ", minimap2_dir))
+        }
     }

@@ -103,8 +103,6 @@ write_config <- function(config, config_file) {
 #' @param min_tr_coverage Minimum percentage of isoform coverage for a read to be aligned to that isoform
 #' @param min_read_coverage Minimum percentage of read coverage for a read to be uniquely aligned to that isoform
 #'
-#' @return the created R list object, which represents the configuration file created by this function.
-#'
 #' @examples
 #' # create the default configuartion file
 #' \dontrun{
@@ -201,5 +199,5 @@ create_config <- function(outdir,
     )
     write_config(config, config_file_path)
 
-    config
+    invisible()
 }
