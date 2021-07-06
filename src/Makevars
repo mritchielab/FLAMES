@@ -1,0 +1,4 @@
+PKG_CFLAGS+=$(shell echo'zlibbioc::pkgconfig("PKG_CFLAGS")'|\
+    "${R_HOME}/bin/R" --vanilla --slave)
+PKG_LIBS+=$(shell echo'zlibbioc::pkgconfig("PKG_LIBS_static")'|\
+    "${R_HOME}/bin/R" --vanilla --slave)

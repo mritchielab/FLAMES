@@ -30,6 +30,7 @@ match_cell_barcode <- function(fastq_dir, stats_file, out_fastq, ref_csv, MAX_DI
 #' @param out_fastq the fastq file path of the output file
 #' @return returns NULL
 #' @useDynLib FLAMES, .registration=TRUE
+#' @import zlibbioc
 merge_bulk_fastq_cpp <- function(fastq_files, out_fastq) {
     invisible(.Call(`_FLAMES_merge_bulk_fastq_cpp`, fastq_files, out_fastq))
 }

@@ -1,9 +1,6 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <errno.h>
-//#include <iostream>
-//#include <sstream>
-//#include <fstream>
 #include <vector>
 #include <utility>
 #include <unordered_map>
@@ -11,20 +8,10 @@
 #include <string>
 #include <cassert>
 
-//#include <Rcpp.h>
-//#include <R.h>
-//#include "zlib.h"
 #include "edit_dist.h"
 #include "ssw_cpp.h"
-//#include "kseq.h"
 #include "fastq_utils.h"
 using namespace Rcpp;
-
-// #ifndef INIT_KSEQ
-// #define INIT_KSEQ
-// KSEQ_INIT(gzFile, gzread)
-// #endif
-
 
 //static const int MAX_DIST = 2;
 static const int BC_LEN = 16;
