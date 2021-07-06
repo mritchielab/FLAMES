@@ -16,9 +16,3 @@ TRUE if minimap2 is available, FALSE otherwise
 Checks if minimap2 is available from given directory or in path.
 Uses python's subprocess module to check if the help page is accessable.
 }
-\examples{
-path = "/bad/minimap2/path"
-# availability will be FALSE
-availability = minimap2_check_callable(path)
-
-}

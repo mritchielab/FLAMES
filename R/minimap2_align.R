@@ -144,11 +144,6 @@ minimap2_tr_align <-
 #' @param mm2_prog_path the path to the directory containing minimap2
 #' @return TRUE if minimap2 is available, FALSE otherwise
 #' 
-#' @examples 
-#' path = "/bad/minimap2/path"
-#' # availability will be FALSE
-#' availability = minimap2_check_callable(path)
-#' 
 #' @importFrom reticulate import_from_path
 minimap2_check_callable <- 
     function(mm2_prog_path) {

@@ -10,7 +10,7 @@ bulk_long_pipeline(
   in_bam = NULL,
   outdir,
   genome_fa,
-  minimap2_dir = NULL,
+  minimap2_dir = "",
   downsample_ratio = 1,
   config_file = NULL,
   do_genome_align = TRUE,
@@ -49,7 +49,8 @@ realignment steps}
 
 \item{genome_fa}{The file path to genome fasta file.}
 
-\item{minimap2_dir}{Path to the directory containing minimap2, if it is not in PATH}
+\item{minimap2_dir}{Path to the directory containing minimap2, if it is not in PATH. Only required if either or both of
+\code{do_genome_align} and \code{do_read_realign} are \code{TRUE}.}
 
 \item{downsample_ratio}{Integer; downsampling ratio if performing downsampling analysis.}
 
