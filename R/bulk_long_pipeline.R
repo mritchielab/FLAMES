@@ -40,7 +40,7 @@ bulk_long_pipeline <-
              in_bam = NULL,
              outdir,
              genome_fa,
-             minimap2_dir = NULL,
+             minimap2_dir = "",
              downsample_ratio = 1,
              config_file = NULL,
              do_genome_align = TRUE,

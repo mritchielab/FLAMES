@@ -290,11 +290,10 @@ check_arguments <-
                   stop("Make sure in_bam exists")
               }
         }
-        if (is.null(minimap2_dir)) {
-              minimap2_dir <- ""
-          }
 
-        if (!minimap2_check_callable(minimap2_dir)) {
-            stop(paste0("minimap2 is not available from the given directory: ", minimap2_dir))
+        if (do_genome_align || do_read_realign) {
+            if (!minimap2_check_callable(minimap2_dir)) {
+                stop(paste0("minimap2 is not available from the given directory: ", minimap2_dir))
+            }
         }
     }

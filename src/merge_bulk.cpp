@@ -34,15 +34,16 @@ void merge_bulk_fastq_cpp(StringVector fastq_files, String out_fastq) {
     gzFile o_stream_gz = gzopen(out_fastq.get_cstring(), "wb2");
     Rcout << o_stream_gz << "\n";
     
+    // int array to track the number of reads processed in each fastq file.
     unsigned int * read_counts = (unsigned int *)malloc(fastq_files.size() * sizeof(unsigned));
 
-    const char *separator = "_NNN#";
+    const char *separator = "_NNN#"; // separator string between new read name and old read name
+
     for (short unsigned int i = 0; i < fastq_files.size(); i++) {
         // For every fastq file, read in each read and prefix the name line with the file name
         fp = gzopen(fastq_files(i), "r");
         seq = kseq_init(fp);
 
-        // initialise count array cell as 0
         read_counts[i] = 0;
 
         String file_name = fastq_files(i);

@@ -32,7 +32,8 @@
 #' @param in_bam Optional file path to a bam file to use instead of fastq file (skips initial alignment step)
 #' @param outdir The path to directory to store all output files.
 #' @param genome_fa The file path to genome fasta file.
-#' @param minimap2_dir Path to the directory containing minimap2, if it is not in PATH
+#' @param minimap2_dir Path to the directory containing minimap2, if it is not in PATH. Only required if either or both of 
+#' \code{do_genome_align} and \code{do_read_realign} are \code{TRUE}.
 #' @param downsample_ratio Integer; downsampling ratio if performing downsampling analysis.
 #' @param config_file File path to the JSON configuration file. If specified, \code{config_file} overrides
 #' all configuration parameters
@@ -105,7 +106,7 @@ sc_long_pipeline <-
              in_bam = NULL,
              outdir,
              genome_fa,
-             minimap2_dir = NULL,
+             minimap2_dir = "",
              downsample_ratio = 1,
              reference_csv,
              match_barcode = TRUE,
