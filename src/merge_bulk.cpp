@@ -12,7 +12,7 @@ const char * shorten_filename(const char *file_name, int length, int &out_length
     }
     const char *short_name = file_name + (slash + 1);
     out_length = length - slash - 1;
-    return short_name
+    return short_name;
 }
 
 //' Merge Bulk Fastq Files
