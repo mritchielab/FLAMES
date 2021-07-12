@@ -1,7 +1,7 @@
 # gff3 to fasta
 
 from parse_gene_anno import parse_gff_tree
-import subprocess
+#import subprocess
 CP = {"A": "T", "T": "A", "C": "G", "G": "C", "N": "N","a":"t","t":"a","c":"g","g":"c"}
 
 
