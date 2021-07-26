@@ -1,7 +1,7 @@
-RHTSLIB_LIBS=$(shell echo 'Rhtslib::pkgconfig("PKG_LIBS")'|\
-    "${R_HOME}/bin/R" --vanilla --slave)
-RHTSLIB_CPPFLAGS=$(shell echo 'Rhtslib::pkgconfig("PKG_CPPFLAGS")'|\
-    "${R_HOME}/bin/R" --vanilla --slave)
+RHTSLIB_LIBS=$(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript" -e \
+    'Rhtslib::pkgconfig("PKG_LIBS")')
+RHTSLIB_CPPFLAGS=$(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript" -e \
+    'Rhtslib::pkgconfig("PKG_CPPFLAGS")')
 
 PKG_LIBS=$(RHTSLIB_LIBS)
 PKG_CPPFLAGS=$(RHTSLIB_CPPFLAGS)
@@ -9,11 +9,11 @@ PKG_CPPFLAGS=$(RHTSLIB_CPPFLAGS)
 CXX_STD = CXX11
 
 ZLIB_CFLAGS+=$(shell echo 'zlibbioc::pkgconfig("PKG_CFLAGS")'|\
-	"${R_HOME}/bin/R" --vanilla --slave)
+    "${R_HOME}/bin/R" --vanilla --slave)
 PKG_LIBS+=$(shell echo 'zlibbioc::pkgconfig("PKG_LIBS_shared")' |\
-	"${R_HOME}/bin/R" --vanilla --slave)
+    "${R_HOME}/bin/R" --vanilla --slave)
 %.o: %.c
-	$(CC) $(ZLIB_CFLAGS) $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c $< -o $@
+    $(CC) $(ZLIB_CFLAGS) $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c $< -o $@
 
 %.o: %.cpp
-	$(CXX) $(ZLIB_CFLAGS) $(ALL_CPPFLAGS) $(ALL_CXXFLAGS) -c $< -o $@
+    $(CXX) $(ZLIB_CFLAGS) $(ALL_CPPFLAGS) $(ALL_CXXFLAGS) -c $< -o $@
