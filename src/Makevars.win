@@ -7,11 +7,3 @@ RHTSLIB_CPPFLAGS=$(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript" -e \
 
 PKG_LIBS=$(RHTSLIB_LIBS)
 PKG_CPPFLAGS=$(RHTSLIB_CPPFLAGS)
-
-%.o: %.c
-	$(CC) $(ZLIB_CFLAGS) $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c $< -
-o $@
-
-%.o: %.cpp
-	$(CXX) $(ZLIB_CFLAGS) $(ALL_CPPFLAGS) $(ALL_CXXFLAGS) -c $< -
-o $@
