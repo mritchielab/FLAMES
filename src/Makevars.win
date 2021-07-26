@@ -8,10 +8,11 @@ PKG_CPPFLAGS=$(RHTSLIB_CPPFLAGS)
 
 CXX_STD = CXX11
 
-ZLIB_CFLAGS+=$(shell echo 'zlibbioc::pkgconfig("PKG_CFLAGS")'|\
-    "${R_HOME}/bin/R" --vanilla --slave)
-PKG_LIBS+=$(shell echo 'zlibbioc::pkgconfig("PKG_LIBS_shared")' |\
-    "${R_HOME}/bin/R" --vanilla --slave)
+ZLIB_CFLAGS+=$(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript" -e \
+    'zlibbioc::pkgconfig("PKG_CFLAGS")')
+PKG_LIBS+=$(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript" -e \
+    'zlibbioc::pkgconfig("PKG_LIBS_shared")')
+
 %.o: %.c
     $(CC) $(ZLIB_CFLAGS) $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c $< -o $@
 
