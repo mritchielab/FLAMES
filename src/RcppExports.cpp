@@ -5,6 +5,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // match_cell_barcode
 void match_cell_barcode(String fastq_dir, String stats_file, String out_fastq, String ref_csv, int MAX_DIST, int UMI_LEN);
 RcppExport SEXP _FLAMES_match_cell_barcode(SEXP fastq_dirSEXP, SEXP stats_fileSEXP, SEXP out_fastqSEXP, SEXP ref_csvSEXP, SEXP MAX_DISTSEXP, SEXP UMI_LENSEXP) {
@@ -31,10 +36,22 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// parse_gff_tree_cpp
+List parse_gff_tree_cpp(const char * gff_filename);
+RcppExport SEXP _FLAMES_parse_gff_tree_cpp(SEXP gff_filenameSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const char * >::type gff_filename(gff_filenameSEXP);
+    rcpp_result_gen = Rcpp::wrap(parse_gff_tree_cpp(gff_filename));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_FLAMES_match_cell_barcode", (DL_FUNC) &_FLAMES_match_cell_barcode, 6},
     {"_FLAMES_merge_bulk_fastq_cpp", (DL_FUNC) &_FLAMES_merge_bulk_fastq_cpp, 2},
+    {"_FLAMES_parse_gff_tree_cpp", (DL_FUNC) &_FLAMES_parse_gff_tree_cpp, 1},
     {NULL, NULL, 0}
 };
 

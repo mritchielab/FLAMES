@@ -95,6 +95,7 @@ def _parse_gff_tree(gff_f):
     gene_to_transcript = {}
     transcript_to_exon = {}
     a_s = guess_annotation_source(gff_f)
+    
     if a_s == "Ensembl":
         for rec in parseGFF3(gff_f):
             #if rec.seqid != "1":  # for test
@@ -111,6 +112,7 @@ def _parse_gff_tree(gff_f):
                     print "format error."
                     raise Exception
                 transcript_to_exon.setdefault(rec.attributes["Parent"].split(':')[1], []).append([rec.start-1, rec.end])  # `-1` convert 1 based to 0 based
+    
     elif a_s == "GENCODE":
         for rec in parseGFF3(gff_f):
             if rec.type == "gene":
@@ -123,6 +125,7 @@ def _parse_gff_tree(gff_f):
                 transcript_dict[rec.attributes["transcript_id"]] = Pos(rec.seqid, rec.start-1, rec.end, rec.strand, gene_id)  # `-1` convert 1 based to 0 based
             elif rec.type == "exon":
                 transcript_to_exon.setdefault(rec.attributes["Parent"], []).append([rec.start-1, rec.end])  # `-1` convert 1 based to 0 based
+    
     for tr in transcript_to_exon:
         transcript_to_exon[tr].sort(key=lambda x: x[0])  # the GENCODE annotation might be un-ordered.
         if len(transcript_to_exon[tr])>1 and transcript_to_exon[tr][0][0] == transcript_to_exon[tr][1][0]:  # for genes in XY, there might be duplicates.
@@ -131,8 +134,10 @@ def _parse_gff_tree(gff_f):
                 if ex[0] != new_ex[-1][0] and ex[1] != new_ex[-1][0]:
                     new_ex.append(ex)
             transcript_to_exon[tr] = new_ex
+    
     for ge in gene_to_transcript:
         gene_to_transcript[ge] = list(set(gene_to_transcript[ge]))
+    
     return chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon
 
 
@@ -148,8 +153,11 @@ def _parse_gtf_tree(gtf_f):
             if "gene_id" not in rec.attributes:
                 Warning("transcript dont have `gene_id` attributes: {}".format(rec.attributes))
                 continue
+            # get the gene id
             gene_id = rec.attributes["gene_id"]
+            # make sure there no gene_id duplicates in chr_to_gene
             if gene_id not in chr_to_gene[rec.seqid]:
+                # if the gene id is not in the list associated with sequence id.
                 chr_to_gene.setdefault(rec.seqid,[]).append(gene_id)
             gene_to_transcript.setdefault(gene_id, []).append(rec.attributes["transcript_id"])
             transcript_dict[rec.attributes["transcript_id"]] = Pos(rec.seqid, rec.start-1, rec.end, rec.strand, gene_id)  # `-1` convert 1 based to 0 based
@@ -157,6 +165,7 @@ def _parse_gtf_tree(gtf_f):
             if "gene_id" not in rec.attributes:
                 Warning("exon dont have `gene_id` attributes: {}".format(rec.attributes))
                 continue
+            # make sure not duplicating insertion of rec.attributes["gene_id"]
             if rec.seqid not in chr_to_gene or rec.attributes["gene_id"] not in chr_to_gene[rec.seqid]:
                 chr_to_gene.setdefault(rec.seqid,[]).append(rec.attributes["gene_id"])
             if "transcript_id" in rec.attributes:
@@ -171,10 +180,18 @@ def _parse_gtf_tree(gtf_f):
         if len(transcript_to_exon[tr])>1 and transcript_to_exon[tr][0][0] == transcript_to_exon[tr][1][0]:  # for genes in XY, there might be duplicates.
             new_ex = [transcript_to_exon[tr][0]]
             for ex in transcript_to_exon[tr]:
+                # start in ex != most recent start in new_ex and ex end != most recent start in new_ex
                 if ex[0] != new_ex[-1][0] and ex[1] != new_ex[-1][0]:
                     new_ex.append(ex)
             transcript_to_exon[tr] = new_ex
-        transcript_dict[tr] = Pos(transcript_dict[tr].chr, transcript_to_exon[tr][0][0], transcript_to_exon[tr][-1][1], transcript_dict[tr].strand, transcript_dict[tr].parent_id)
+
+        transcript_dict[tr] = Pos(transcript_dict[tr].chr, 
+                                    transcript_to_exon[tr][0][0], 
+                                    transcript_to_exon[tr][-1][1], 
+                                    transcript_dict[tr].strand, 
+                                    transcript_dict[tr].parent_id)
+    
+    # remove duplicates from gene_to_transcript
     for ge in gene_to_transcript:
         gene_to_transcript[ge] = list(set(gene_to_transcript[ge]))
     return chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon

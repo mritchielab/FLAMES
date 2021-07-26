@@ -1,4 +1,11 @@
-PKG_CFLAGS+=$(shell echo'zlibbioc::pkgconfig("PKG_CFLAGS")'|\
-    "${R_HOME}/bin/R" --vanilla --slave)
-PKG_LIBS+=$(shell echo'zlibbioc::pkgconfig("PKG_LIBS_static")'|\
-    "${R_HOME}/bin/R" --vanilla --slave)
+## This file uses GNU make syntax $(shell ...) so we need to
+## have "SystemRequirements: GNU make" in the DESCRIPTION file.
+## See Rhtslib's vignette for details.
+
+RHTSLIB_LIBS=$(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript" -e \
+    'Rhtslib::pkgconfig("PKG_LIBS")')
+RHTSLIB_CPPFLAGS=$(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript" -e \
+    'Rhtslib::pkgconfig("PKG_CPPFLAGS")')
+
+PKG_LIBS=$(RHTSLIB_LIBS)
+PKG_CPPFLAGS=$(RHTSLIB_CPPFLAGS)
