@@ -244,7 +244,7 @@ check_arguments <-
         }
 
         if (is.null(config_file)) {
-            create_config(
+            config_file <- create_config(
                 outdir,
                 do_genome_align,
                 do_isoform_id,
@@ -296,4 +296,6 @@ check_arguments <-
                 stop(paste0("minimap2 is not available from the given directory: ", minimap2_dir))
             }
         }
+
+		return(list(config=config_file))
     }

@@ -69,7 +69,7 @@ bulk_long_pipeline <-
         # bc_file <- paste(outdir, "pseudo_barcode_annotation.csv", sep="/")
 
 
-        check_arguments(annot,
+        check_return <- check_arguments(annot,
             fastq,
             in_bam,
             outdir,
@@ -98,6 +98,8 @@ bulk_long_pipeline <-
             use_annotation,
             min_tr_coverage,
             min_read_coverage)
+
+		config_file <- check_return$config
 
         # create output directory if one doesn't exist
         if (!dir.exists(outdir)) {

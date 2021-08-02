@@ -76,6 +76,9 @@ reads are not strand specific.}
 
 \item{min_read_coverage}{Minimum percentage of read coverage for a read to be uniquely aligned to that isoform}
 }
+\value{
+file path to the config file created
+}
 \description{
 Create Configuration File From Arguments
 }
