@@ -1,5 +1,5 @@
 /*
-  Functions relating to junctions is all in here
+  Anything related to junctions are goes in here
 */
 
 #include <stdio.h>
@@ -8,7 +8,7 @@
 #include <vector>
 #include <any>
 
-typedef struct Junctions {
+typedef struct {
   /*
     a struct used for holding the junctions information
   */
@@ -45,6 +45,7 @@ blocks_to_junctions (std::vector<std::pair<int, int>> blocks)
     takes the blocks,
     converts them into a junctions object
   */
+
   Junctions output;
 
   output.left = blocks.front().first;

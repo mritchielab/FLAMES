@@ -354,47 +354,6 @@ void Isoforms::update_all_splice()
   this->lr_pair = lr_pair_tmp;
 }
 
-std::pair<std::vector<int>, std::map<int, int>>
-Isoforms::group_sites(std::vector<int> list, int smooth_window=3, int min_threshold=9999)
-{
-  // store a counter for each value in list
-  std::map<int, int> 
-  list_count;
-  for (auto i : list)
-  {
-    list_count[i] ++;
-  }
-
-  // store the unique values in list
-  std::vector<int>
-  list_unique = list;
-  std::sort(list_unique.begin(),list_unique.end());
-  list_unique.erase(std::unique(list_unique.begin(),list_unique.end()),list_unique.end());
-
-  if (list.size() < min_threshold)
-  {
-    return
-    (
-      std::pair<std::vector<int>, std::map<int, int>>
-      {list_unique, list_count}
-    );
-  }
-
-  if (list_unique.back() - list_unique.front() < 5) // they are all in the same place
-  {
-    return
-    (
-      std::pair<std::vector<int>, std::map<int, int>>
-      {list_unique, list_count}
-    );
-  }
-  const int x_size = list_unique.back() - list_unique.front() + 1 + (smooth_window - 1) / 2;
-  int * x [x_size] = {0}; // initialize an array of zeros
-  
-  
-  // At this point I realised, group_sites and site_stat
-}
-
 void Isoforms::filter_TSS_TES(std::string out_f, std::map<int, int>known_site={}, float fdr_cutoff=0.01)
 {
   std::string bedgraph_fmt = "{_ch}\t{_st}\t{_en}\t{_sc}\n";
@@ -409,6 +368,3 @@ void Isoforms::filter_TSS_TES(std::string out_f, std::map<int, int>known_site={}
     );
   };
 }
-
-// when you arrive tomorrow:
-// - try and sort maps
