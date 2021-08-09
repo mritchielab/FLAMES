@@ -1032,31 +1032,34 @@ def group_bam2isoform(bam_in, out_gff3, out_stat, summary_csv, chr_to_blocks, ge
         #if ch != "5":
         #    continue
         for ith, bl in enumerate(chr_to_blocks[ch]):
-            it_region = bamfile.fetch(ch, bl.s, bl.e)
-            TSS_TES_site = get_TSS_TES_site(transcript_to_junctions, bl.transcript_list)
-            tmp_isoform = Isoforms(ch, config)
-            for rec in it_region:
-                # if 0<downsample_ratio<1 and random.uniform(0, 1)>downsample_ratio:
-                #     continue   # downsample analysis
-                # if rec.is_secondary:
-                #     continue
-                rec.cigar = smooth_cigar(rec.cigar, thr=20)
-                rec.cigartuples = rec.cigar
-                rec.cigarstring = generate_cigar(rec.cigar)
-                blocks = get_blocks(rec)
-                junctions = blocks_to_junctions(blocks)
-                tmp_isoform.add_isoform(junctions,rec.is_reverse)
-            if len(tmp_isoform)>0:
-                tmp_isoform.update_all_splice()
-                tmp_isoform.filter_TSS_TES(tss_tes_stat,known_site=TSS_TES_site,fdr_cutoff=0.1)
-                #tmp_isoform.site_stat(tss_tes_stat)
-                # issue
-                tmp_isoform.match_known_annotation(transcript_to_junctions, transcript_dict, gene_dict, bl, fa_dict)
-                isoform_dict[(ch, bl.s, bl.e)] =tmp_isoform
-                if raw_gff3 is not None:
-                    splice_raw.write(tmp_isoform.raw_splice_to_gff3())
-                iso_annotated.write(tmp_isoform.isoform_to_gff3(isoform_pct=config["Min_cnt_pct"]))
-    #with open(iso_exact,"w") as out_f:
+			try:
+				it_region = bamfile.fetch(ch, bl.s, bl.e)
+				TSS_TES_site = get_TSS_TES_site(transcript_to_junctions, bl.transcript_list)
+				tmp_isoform = Isoforms(ch, config)
+				for rec in it_region:
+					# if 0<downsample_ratio<1 and random.uniform(0, 1)>downsample_ratio:
+					#     continue   # downsample analysis
+					# if rec.is_secondary:
+					#     continue
+					rec.cigar = smooth_cigar(rec.cigar, thr=20)
+					rec.cigartuples = rec.cigar
+					rec.cigarstring = generate_cigar(rec.cigar)
+					blocks = get_blocks(rec)
+					junctions = blocks_to_junctions(blocks)
+					tmp_isoform.add_isoform(junctions,rec.is_reverse)
+				if len(tmp_isoform)>0:
+					tmp_isoform.update_all_splice()
+					tmp_isoform.filter_TSS_TES(tss_tes_stat,known_site=TSS_TES_site,fdr_cutoff=0.1)
+					#tmp_isoform.site_stat(tss_tes_stat)
+					# issue
+					tmp_isoform.match_known_annotation(transcript_to_junctions, transcript_dict, gene_dict, bl, fa_dict)
+					isoform_dict[(ch, bl.s, bl.e)] =tmp_isoform
+					if raw_gff3 is not None:
+						splice_raw.write(tmp_isoform.raw_splice_to_gff3())
+					iso_annotated.write(tmp_isoform.isoform_to_gff3(isoform_pct=config["Min_cnt_pct"]))
+			except ValueError as ve:
+				print ve, ": ", ve.args, ". Skipping chromosome ", ch, " with start and end: ", str(bl.s) + " " + str(bl.e)
+	#with open(iso_exact,"w") as out_f:
     #    out_f.write("##gff-version 3\n")
     tss_tes_stat.close()
     iso_annotated.close()
