@@ -1,6 +1,8 @@
 #include <map>
 #include <vector>
 #include <algorithm>
+#include <cmath>
+#include <numeric>
 #include "junctions.hpp"
 
 class Isoforms
@@ -358,13 +360,90 @@ void Isoforms::filter_TSS_TES(std::string out_f, std::map<int, int>known_site={}
 {
   std::string bedgraph_fmt = "{_ch}\t{_st}\t{_en}\t{_sc}\n";
 
-  auto filter_site = [] (std::map<int, int> list_counts)
+  auto filter_site = [fdr_cutoff] (std::map<int, int> list_counts)
   {
-    std::sort(list_counts.cbegin(), list_counts.cend(),
+    // to sort the map, we need it as a vector first.
+    // note: i should find a better method for doing this
+
+    std::vector<std::pair<int, int>>
+    mx;
+
+    for (const auto & i : list_counts)
+    {
+      mx.emplace_back(i);
+    }
+
+    std::sort(mx.cbegin(), mx.cend(),
       [] (const auto & p1, const auto & p2)
       {
-        return (p1.second < p2.second);
+        return (p1.second > p2.second);
       }
     );
+
+    if (mx[0].second == 1)
+    {
+      return mx;
+    }
+    else if (mx.size() < 5)
+    {
+      return mx;
+    }
+
+    int trun_num = std::max(2, int(floor(0.05 * mx.size())));
+    float rate = 1/(
+      // the average of the second values in each pair, cutting off at trunc_num
+      std::accumulate(mx.begin(), mx.end() - trun_num, 0, 
+        [] (const auto & p1, const auto & p2)
+        {
+          return (p1.second + p2.second);
+        }
+      ) / mx.size()
+    );
+
+    std::vector<int> 
+    prob;
+
+    for (const auto & i : mx)
+    {
+      prob.emplace_back(rate * exp(-rate * i.second));
+    }
+    
+    std::vector<int>
+    cumulative_probability = std::partial_sum(prob.begin(), prob.end(), 0);
+
+    if (cumulative_probability[0] > fdr_cutoff)
+    {
+      return mx;
+    }
+    else
+    {
+      std::vector<std::pair<int, int>>
+      sliced_mx;
+
+      for (const auto & i : cumulative_probability)
+      {
+        if (i > fdr_cutoff)
+        {
+          break;
+        }
+        sliced_mx.emplace_back(mx[i]);
+      }
+      return sliced_mx;
+    }
+  };
+
+  auto insert_dist = [] (std::vector<std::pair<int, int>> fs, std::vector<int> known_site) 
+  {
+    std::vector<std::pair<int, int>>
+    tmp = {fs[0]};
+
+    if (fs.size() > 1)
+    {
+      for (auto it = fs.begin() + 1; it != fs.end(); it++)
+      {
+        int
+        clo_p = take_closest(tmp, s);
+      }
+    }
   };
 }
