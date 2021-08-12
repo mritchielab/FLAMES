@@ -9,7 +9,7 @@ The FLAMES package provides a framework for performing single-cell and bulk read
 Currently, FLAMES can be installed through R by using:
 ```
 if (!requireNamespace("devtools", quietly=TRUE)) {
-    install.packages("devtools)
+    install.packages("devtools")
 }
 library(devtools)
 install_github("OliverVoogd/FLAMES")
