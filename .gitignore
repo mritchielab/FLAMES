@@ -5,6 +5,7 @@
 *.DS_Store
 *.Rproj
 .vscode
+.idea
 inst/doc
 inst/python/*.pyc
 inst/python/__pycache__/*

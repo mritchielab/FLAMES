@@ -21,7 +21,8 @@ Encoding: UTF-8
 Imports: 
     basilisk, reticulate, SingleCellExperiment, 
     SummarizedExperiment, Rsamtools, utils,
-    zlibbioc, scater
+    zlibbioc, scater, dplyr, tidyr, magrittr,
+    S4Vectors, scuttle
 Suggests: 
     BiocStyle,
     knitr,
