@@ -12,18 +12,25 @@ typedef struct {
   /*
     a struct used for holding the junctions information
   */
-  int left;
+  std::vector<int> left;
   std::vector<int> junctions;
-  int right;
+  std::vector<int> right;
 } Junctions;
+
+typedef struct {
+  /*
+    a struct for junctions with just one value in left and right
+  */
+ int left;
+ std::vector<int> junctions;
+ int right;
+} SingleJunction;
 
 int 
 take_closest (std::vector<int> list, int num)
 {
   /*
     returns the value in list that is closest to num
-
-    optimize this further later - currently just O(n)
   */
  int output = list.back();
  list.pop_back();
@@ -48,8 +55,8 @@ blocks_to_junctions (std::vector<std::pair<int, int>> blocks)
 
   Junctions output;
 
-  output.left = blocks.front().first;
-  output.right = blocks.back().second;
+  output.left = {blocks.front().first};
+  output.right = {blocks.back().second};
 
   if (blocks.size() > 1)
   {
@@ -65,34 +72,34 @@ blocks_to_junctions (std::vector<std::pair<int, int>> blocks)
 Junctions 
 get_TSS_TES_site (std::map<std::string, Junctions> transcript_to_junctions, std::vector<std::string> tr_list)
 {
-  std::map<std::string, std::vector<int>> all_site;
+  Junctions
+  all_site;
 
   for (std::string t : tr_list) {
-    if (all_site["left"].size() > 0)
+    if (all_site.left.size() > 0)
     {
-      if (abs(take_closest(all_site["left"], transcript_to_junctions[t].left) - transcript_to_junctions[t].left) > 5)
+      if (abs(take_closest(all_site.left, transcript_to_junctions[t].left[0]) - transcript_to_junctions[t].left[0]) > 5)
       {
-        all_site["left"].push_back(transcript_to_junctions[t].left);
+        all_site.left.push_back(transcript_to_junctions[t].left[0]);
       }
     }
     else
     {
-      all_site["left"].push_back(transcript_to_junctions[t].left);
+      all_site.left.push_back(transcript_to_junctions[t].left[0]);
     }
 
-    if (all_site["right"].size() > 0)
+    if (all_site.right.size() > 0)
     {
-      if (abs(take_closest(all_site["right"], transcript_to_junctions[t].right) - transcript_to_junctions[t].right) > 5)
+      if (abs(take_closest(all_site.right, transcript_to_junctions[t].right[0]) - transcript_to_junctions[t].right[0]) > 5)
       {
-        all_site["right"].push_back(transcript_to_junctions[t].right);
+        all_site.right.push_back(transcript_to_junctions[t].right[0]);
       }
     }
     else
     {
-      all_site["right"].push_back(transcript_to_junctions[t].right);
+      all_site.right.push_back(transcript_to_junctions[t].right[0]);
     }
   }
 
-  Junctions junc;
-  return junc;
+  return all_site;
 }
