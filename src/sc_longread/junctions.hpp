@@ -7,6 +7,7 @@
 #include <map>
 #include <vector>
 #include <any>
+#include <set>
 
 typedef struct {
   /*
@@ -103,3 +104,23 @@ get_TSS_TES_site (std::map<std::string, Junctions> transcript_to_junctions, std:
 
   return all_site;
 }
+
+std::set<int> 
+get_splice_site (std::map<std::string, Junctions> transcript_to_junctions, std::vector<std::string> tr_list)
+{
+  std::set<int>
+  all_site;
+
+  // add all of the junctions of 
+  // everything from tr_list to all_site
+  for (std::string t : tr_list)
+  {
+    for (int junctions : transcript_to_junctions[t].junctions)
+    {
+      all_site.insert(junctions);
+    }
+  }
+
+  return all_site;
+}
+
