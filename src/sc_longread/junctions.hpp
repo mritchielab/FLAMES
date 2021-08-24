@@ -36,7 +36,7 @@ take_closest (std::vector<int> list, int num)
  int output = list.back();
  list.pop_back();
 
- for (int i : list) 
+ for (const auto & i : list) 
  {
    if (abs(i - num) < abs(output - num))
    {
@@ -76,7 +76,7 @@ get_TSS_TES_site (std::map<std::string, Junctions> transcript_to_junctions, std:
   Junctions
   all_site;
 
-  for (std::string t : tr_list) {
+  for (const auto & t : tr_list) {
     if (all_site.left.size() > 0)
     {
       if (abs(take_closest(all_site.left, transcript_to_junctions[t].left[0]) - transcript_to_junctions[t].left[0]) > 5)
@@ -115,7 +115,7 @@ get_splice_site (std::map<std::string, Junctions> transcript_to_junctions, std::
   // everything from tr_list to all_site
   for (std::string t : tr_list)
   {
-    for (int junctions : transcript_to_junctions[t].junctions)
+    for (const auto & junctions : transcript_to_junctions[t].junctions)
     {
       all_site.insert(junctions);
     }
@@ -123,4 +123,3 @@ get_splice_site (std::map<std::string, Junctions> transcript_to_junctions, std::
 
   return all_site;
 }
-
