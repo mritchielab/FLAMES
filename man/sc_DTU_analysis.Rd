@@ -4,19 +4,21 @@
 \alias{sc_DTU_analysis}
 \title{FLAMES Differential Transcript Usage Analysis}
 \usage{
-sc_DTU_analysis(sce, path)
+sc_DTU_analysis(sce, path, min_count = 15)
 }
 \arguments{
 \item{sce}{The \code{SingleCellExperiment} object from \code{sc_long_pipeline}, an additional \code{cluster_annotation.csv} 
 file is required under the output folder of the SCE object.}
 
-\item{path}{The path to the otput folder of \code{sc_long_pipeline} 
+\item{path}{The path to the output folder of \code{sc_long_pipeline} 
 the folder needs to contain:
 \itemize{
  \item{transcript_count.csv.gz}{ - the transcript count matrix }
  \item{isoform_FSM_annotation.csv}{ - the full splice match annotation file }
  \item{cluster_annotation.csv}{ - cluster annotation file }
 }}
+
+\item{min_count}{The minimum UMI count threshold for filtering isoforms.}
 }
 \value{
 a \code{data.frame} containing the following columns:
@@ -39,7 +41,7 @@ A cluster annotation file \code{cluster_annotation.csv} is required, please prov
 output folder of \code{sc_long_pipeline}.
 }
 \details{
-This function will search for genes that have at least two isoforms, each with more than 15 UMI counts. 
+This function will search for genes that have at least two isoforms, each with more than \code{min_count} UMI counts. 
 For each gene, the per cell transcript counts were merged by group to generate pseudo bulk samples. 
 Grouping is specified by the \code{cluster_annotation.csv} file. 
 The top 2 highly expressed transcripts for each group were selected and a UMI count matrix where 

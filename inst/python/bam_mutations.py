@@ -1,7 +1,6 @@
 # detect mutations in bam files.
 import os
-#import pysam # get rid
-import bamnostic as bs
+import pysam
 import gzip
 import numpy as np
 from scipy.stats import hypergeom
@@ -82,7 +81,7 @@ def update_corr_cnt(int_l, cb_corr_cnt):
 
 
 
-# needed?
+
 def realigned_bam_allele_coverage(bam_in, chr_to_blocks, fa_f, cov_bin_f, cb_seq_dict, vcf_f=None, min_cnt=150,min_cov=100,report_pct=(0.1,0.9) ):
     c2i = {"A":0, "C":1, "G":2, "T":3}  # four array.arrays of the same length in order A C G T
     fa_dict={}
@@ -91,8 +90,8 @@ def realigned_bam_allele_coverage(bam_in, chr_to_blocks, fa_f, cov_bin_f, cb_seq
     cb_seq_set = set(cb_seq_dict.keys())
     for c in get_fa(fa_f):
         fa_dict[c[0]] = c[1]
-    bamfile = bs.AlignmentFile(bam_in, "rb")
-    #vcf_in = bs.VariantFile(vcf_f)
+    bamfile = pysam.AlignmentFile(bam_in, "rb")
+    #vcf_in = pysam.VariantFile(vcf_f)
     cb_corr_cnt = Counter()
     vcf_c = 0
     vcf_not_c = 0
@@ -178,7 +177,7 @@ def realigned_bam_allele_coverage(bam_in, chr_to_blocks, fa_f, cov_bin_f, cb_seq
     #print pct_bin
     #print pt
 
-# needed? - not working
+
 def bam_allele_coverage(bam_in, chr_to_blocks, fa_f, cov_bin_f, vcf_f, cb_seq_dict, min_cnt=100,min_cov=50 ):
     c2i = {"A":0, "C":1, "G":2, "T":3}  # four array.arrays of the same length in order A C G T
     fa_dict={}
@@ -187,8 +186,8 @@ def bam_allele_coverage(bam_in, chr_to_blocks, fa_f, cov_bin_f, vcf_f, cb_seq_di
     cb_seq_set = set(cb_seq_dict.keys())
     for c in get_fa(fa_f):
         fa_dict[c[0]] = c[1]
-    bamfile = bs.AlignmentFile(bam_in, "rb")
-    #vcf_in = bs.VariantFile(vcf_f)
+    bamfile = pysam.AlignmentFile(bam_in, "rb")
+    #vcf_in = pysam.VariantFile(vcf_f)
     cb_corr_cnt = Counter()
     for ch in chr_to_blocks:
         print ch
@@ -234,8 +233,8 @@ def bam_allele_coverage(bam_in, chr_to_blocks, fa_f, cov_bin_f, vcf_f, cb_seq_di
         cov_bin_out.write("{},{},{}\n".format(cbs[0],cbs[1],cb_corr_cnt[cbs]))
 
 
-# needed? - notworking
-def get_all_SNV_table(bam_in, chr_to_blocks, transcript_to_exon, fa_f, out_dir, cb_seq_dict, bam_short, known_position_dict, min_cov=100, report_pct=(0.15,0.85)):
+
+def get_all_SNV_table(bam_in, chr_to_blocks, transcript_to_exon, fa_f, out_dir, cb_seq_dict, bam_short, known_positions, min_cov=100, report_pct=(0.15,0.85)):
     c2i = {"A":0, "C":1, "G":2, "T":3}  # four array.arrays of the same length in order A C G T
     fa_dict={}
     acc_pct = []
@@ -245,9 +244,9 @@ def get_all_SNV_table(bam_in, chr_to_blocks, transcript_to_exon, fa_f, out_dir, 
     reporting_summary = []
     for c in get_fa(fa_f):
         fa_dict[c[0]] = c[1]
-    bamfile = bs.AlignmentFile(bam_in, "rb")
+    bamfile = pysam.AlignmentFile(bam_in, "rb")
     if bam_short is not None:
-        bam_s = bs.AlignmentFile(bam_short, "rb")
+        bam_s = pysam.AlignmentFile(bam_short, "rb")
     cb_corr_cnt = Counter()
     for ch in chr_to_blocks:
         print ch
@@ -270,11 +269,9 @@ def get_all_SNV_table(bam_in, chr_to_blocks, transcript_to_exon, fa_f, out_dir, 
                         acc_pct.append(freq)
                         base_freq = [("A",cov[0][i]),("C",cov[1][i]),("G",cov[2][i]),("T",cov[3][i])]
                         base_freq.sort(key=lambda x:x[1],reverse=True)
-                        if v_pos == 63318364:
-                            print base_freq
                         ALT = [it[0] for it in base_freq if it[0] != fa_dict[ch][v_pos]][0] # the most enriched ALT allele
                         alt_freq = cov[c2i[ALT]][i]/tot
-                        if (report_pct[0]< alt_freq < report_pct[1]) or ((ch,v_pos) in known_position_dict):
+                        if (report_pct[0]< alt_freq < report_pct[1]) or ((ch,v_pos) in known_positions):
                             tmp_atcg_set = {}
                             if bam_short is not None:
                                 try:
@@ -290,7 +287,7 @@ def get_all_SNV_table(bam_in, chr_to_blocks, transcript_to_exon, fa_f, out_dir, 
                                 s_freq = -1
                             seq_ent = seq_entropy(fa_dict[ch][(v_pos-10):(v_pos+10)])
                             indel_freq = -1
-                            if ((ch,v_pos) in known_position_dict) or ((ex[0]+i not in homo_dict) and (seq_ent > 1) and (s_freq==-1 or (0.05<s_freq<0.95))):
+                            if ((ch,v_pos) in known_positions) or ((ex[0]+i not in homo_dict) and (seq_ent > 1) and (s_freq==-1 or (0.05<s_freq<0.95))):
                                 for pileupcolumn in bamfile.pileup(ch, v_pos, v_pos+1,truncate=True, min_base_quality=0,ignore_overlaps=False,max_depth=20000):
                                     c_keep = 0
                                     c_del = 0
@@ -344,7 +341,7 @@ def get_all_SNV_table(bam_in, chr_to_blocks, transcript_to_exon, fa_f, out_dir, 
         for ix in range(500):
             cov_bin_out.write("{},{}\n".format(pt[ix],pct_bin[ix]))
 
-# needed?
+
 def get_mito_SNV_table(bam_in, fa_f, out_dir, cb_seq_dict, bam_short, ch="chrM", min_cov=1000, report_pct=(0.15,0.85)):
     c2i = {"A":0, "C":1, "G":2, "T":3}  # four array.arrays of the same length in order A C G T
     fa_dict={}
@@ -357,8 +354,8 @@ def get_mito_SNV_table(bam_in, fa_f, out_dir, cb_seq_dict, bam_short, ch="chrM",
         fa_dict[c[0]] = c[1]
     bl = namedtuple("bl", ["s","e"])
     tmp_bl = bl(1, len(fa_dict[ch])-1)
-    bamfile = bs.AlignmentFile(bam_in, "rb")
-    bam_s = bs.AlignmentFile(bam_short, "rb")
+    bamfile = pysam.AlignmentFile(bam_in, "rb")
+    bam_s = pysam.AlignmentFile(bam_short, "rb")
     cb_corr_cnt = Counter()
     homo_dict = find_homo_regions(fa_dict[ch], [tmp_bl])
     cnt = bamfile.count(ch, 0, len(fa_dict[ch]))
@@ -441,8 +438,9 @@ def get_mito_SNV_table(bam_in, fa_f, out_dir, cb_seq_dict, bam_short, ch="chrM",
         for ix in range(500):
             cov_bin_out.write("{},{}\n".format(pt[ix],pct_bin[ix]))
 
+"""
 if __name__ == "__main__":
-    known_position_dict = {("chr18",63318364):0}
+    known_positions = [("chr18",63318364)]
     fa_f="/stornext/General/data/user_managed/grpu_mritchie_1/LuyiTian/Index/GRCh38.primary_assembly.genome.fa"
     gff_f="/stornext/General/data/user_managed/grpu_mritchie_1/LuyiTian/Index/gencode.v33.annotation.gff3"
     chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = parse_gff_tree(gff_f)
@@ -457,4 +455,5 @@ if __name__ == "__main__":
     chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = parse_gff_tree(gff_f)
     gene_dict = get_gene_flat(gene_to_transcript,transcript_to_exon)
     chr_to_blocks = get_gene_blocks(gene_dict, chr_to_gene, gene_to_transcript)
-    get_all_SNV_table(bam_in, chr_to_blocks, transcript_to_exon, fa_f, iso_dir, cb_seq_dict, bam_short,known_position_dict)
+    get_all_SNV_table(bam_in, chr_to_blocks, transcript_to_exon, fa_f, iso_dir, cb_seq_dict, bam_short,known_positions)
+"""

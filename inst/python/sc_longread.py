@@ -242,6 +242,9 @@ def find_best_splice_chain(raw_iso, junc_list, max_dist):
 
 
 def get_gene_flat(gene_to_transcript, transcript_to_exon):
+    """
+    Returns a dictionary where keys are gene names, the value is a list of all the exons of that gene.
+    """
     gene_dict = {}
     for g in gene_to_transcript:
         if type(gene_to_transcript[g]) != type([]):
@@ -252,6 +255,7 @@ def get_gene_flat(gene_to_transcript, transcript_to_exon):
                 for j in range(len(transcript_to_exon[gene_to_transcript[g][i]])):
                     j_found = False
                     for k in range(len(gene_dict[g])):
+                        # if there are overlapping, extend the exon to cover the whole area
                         if transcript_to_exon[gene_to_transcript[g][i]][j][0]> gene_dict[g][k][1] or \
                         transcript_to_exon[gene_to_transcript[g][i]][j][1]< gene_dict[g][k][0]:
                             continue

@@ -17,7 +17,9 @@ flames_env <- BasiliskEnvironment(
         "python==2.7.15.0",
         # "minimap2==2.17",
         "numpy==1.16.5",
-        "editdistance==0.5.3"
+        "editdistance==0.5.3",
+        "scipy==1.2.0",
+        "bamnostic==1.1.7"
     ),
     channels = c("bioconda", "conda-forge"),
     pip = c("pysam==0.16.0.1")

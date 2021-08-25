@@ -1,5 +1,4 @@
 # TODO:
-#       Add documentation
 #       Add parameters
 #
 #
@@ -13,7 +12,7 @@
 #' 
 #' 
 #' @details
-#' This function will search for genes that have at least two isoforms, each with more than 15 UMI counts. 
+#' This function will search for genes that have at least two isoforms, each with more than \code{min_count} UMI counts. 
 #' For each gene, the per cell transcript counts were merged by group to generate pseudo bulk samples. 
 #' Grouping is specified by the \code{cluster_annotation.csv} file. 
 #' The top 2 highly expressed transcripts for each group were selected and a UMI count matrix where 
@@ -23,13 +22,15 @@
 #' @param sce The \code{SingleCellExperiment} object from \code{sc_long_pipeline}, an additional \code{cluster_annotation.csv} 
 #' file is required under the output folder of the SCE object.
 #' 
-#' @param path The path to the otput folder of \code{sc_long_pipeline} 
+#' @param path The path to the output folder of \code{sc_long_pipeline} 
 #' the folder needs to contain:
 #' \itemize{
 #'  \item{transcript_count.csv.gz}{ - the transcript count matrix }
 #'  \item{isoform_FSM_annotation.csv}{ - the full splice match annotation file }
 #'  \item{cluster_annotation.csv}{ - cluster annotation file }
 #' }
+#' 
+#' @param min_count The minimum UMI count threshold for filtering isoforms.
 #'  
 #' @return a \code{data.frame} containing the following columns:
 #' \itemize{
@@ -52,7 +53,7 @@
 #' @importFrom scuttle addPerCellQC addPerFeatureQC isOutlier
 #' 
 #' @export
-sc_DTU_analysis <- function(sce, path){
+sc_DTU_analysis <- function(sce, path, min_count=15){
 
     # Check input
 
@@ -208,7 +209,7 @@ sc_DTU_analysis <- function(sce, path){
       rn = data_wide_tmp$tr_id
       data_wide_tmp = as.matrix(data_wide_tmp[,-1])
       rownames(data_wide_tmp) = rn
-      data_wide_tmp = data_wide_tmp[apply(data_wide_tmp,1,max)>15,apply(data_wide_tmp,2,max)>15]
+      data_wide_tmp = data_wide_tmp[apply(data_wide_tmp,1,max)>min_count,apply(data_wide_tmp,2,max)>min_count]
         if (!is.null(dim(data_wide_tmp))){
             if(ncol(data_wide_tmp)>2 & nrow(data_wide_tmp)>1){
               fit = suppressWarnings(chisq.test(data_wide_tmp))
