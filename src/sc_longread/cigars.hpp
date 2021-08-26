@@ -2,10 +2,6 @@
   All the code relating to cigars is in here
 */
 
-#include <stdio.h>
-#include <vector>
-#include <string>
-
 /*
 cigar specification:
 (lifted from the original sc_longread.py)

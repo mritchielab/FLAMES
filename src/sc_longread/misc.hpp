@@ -2,8 +2,9 @@
   miscellaneous helper functions and things
 */
 
-#include <string>
-#include <algorithm>
+
+std::vector<std::pair<int, int>>
+pairwise (std::vector<int> input);
 
 // Oliver already wrote this one 
 // - it's just here until we merge our branches
@@ -233,7 +234,15 @@ pairwise (std::vector<int> input)
 }
 
 int
-exons_overlap (std::vector<int> exons1, std::vector<int> exons2)
+iv_overlap (std::pair<int, int> iv1, std::pair<int, int> iv2)
+{
+  /* takes two ivs as pairs, calculates the overlap between them */
+
+  return std::max(0, std::min(iv1.second, iv2.second) - std::max(iv2.first, iv1.first));
+}
+
+int
+exon_overlap (std::vector<int> exons1, std::vector<int> exons2)
 {
   /* takes two exons, returns the total overlap between them */
 
@@ -246,12 +255,4 @@ exons_overlap (std::vector<int> exons1, std::vector<int> exons2)
     } 
   }
   return total;
-}
-
-int
-iv_overlap (std::pair<int, int> iv1, std::pair<int, int> iv2)
-{
-  /* takes two ivs as pairs, calculates the overlap between them */
-
-  return std::max(0, std::min(iv1.second, iv2.second) - std::max(iv2.first, iv1.first));
 }

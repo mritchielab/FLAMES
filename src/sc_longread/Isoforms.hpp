@@ -7,10 +7,6 @@
 #include <iostream>
 #include <fstream>
 
-#include "junctions.hpp"
-#include "GeneBlocks.hpp"
-#include "misc.hpp"
-
 class Isoforms
 {
   private:
@@ -45,7 +41,7 @@ class Isoforms
     known_isoforms;
     std::map<std::vector<int>, std::vector<std::pair<int, int>>> 
     raw_isoforms;
-    std::map<std::string, int> 
+    std::map<std::string, std::vector<std::vector<int>>> 
     ge_dict;
 
     Isoforms(std::string ch, std::map<std::string, int> config);
@@ -61,13 +57,15 @@ class Isoforms
     std::pair<std::vector<int>, std::map<int, int>>
     group_sites(std::vector<int> l, int smooth_window, int min_threshold);
 
-    void Isoforms::match_known_annotation (
+    void match_known_annotation (
       std::map<std::string, Junctions> transcript_to_junctions,
       std::map<std::string, Pos> transcript_dict,
       std::map<std::string, std::vector<int>> gene_dict,
       GeneBlocks one_block,
       std::map<std::string, std::vector<char>> fa_dict
     );
+
+    void isoform_to_gtt3(int isoform_pct=-1);
 
 };
 
@@ -940,7 +938,7 @@ void Isoforms::match_known_annotation (
               // line 747 sc_longread.py
               
               this->known_isoforms[known_exons] = Iso(
-                std::max(this->known_isoforms[known_exons].support_cnt, this->raw_isoforms[raw_iso_key]),
+                std::max(this->known_isoforms[known_exons].support_cnt, std::vector<int>{raw_iso_val[0].first, raw_iso_val[0].second}),
                 i,
                 transcript_dict[i].parent_id
               );
@@ -1060,7 +1058,7 @@ void Isoforms::match_known_annotation (
       {
         if (this->new_isoforms.count(new_exons) == 0)
         {
-          this->new_isoforms[new_exons] = Iso(raw_iso_val, "", "");
+          this->new_isoforms[new_exons] = Iso(this->raw_isoforms[raw_iso_key], "", "");
           this->strand_cnt[new_exons] = this->strand_cnt[raw_iso_key];
         }
         else
@@ -1289,7 +1287,7 @@ void Isoforms::match_known_annotation (
       // make tmp to store exon overlap and gene name, and populate it
       std::vector<std::pair<int, std::string>>
       tmp;
-      for (const auto & [ge, tr] : one_block.gene_to_tr) {tmp.push_back({exons_overlap(isoform_key, gene_dict[ge]), ge});}
+      for (const auto & [ge, tr] : one_block.gene_to_tr) {tmp.push_back({exon_overlap(isoform_key, gene_dict[ge]), ge});}
 
       if (this->STRAND_SPECIFIC) // if it has strand-specific protocol, use read
       {
@@ -1304,19 +1302,198 @@ void Isoforms::match_known_annotation (
         }
         tmp = new_tmp;
 
-        if (tmp.size() == 0)
-        {
-          // there's nothing left
-          continue;
-        }
+        // if there's nothing left, just skip
+        if (tmp.size() == 0) {continue;}
       }
 
+      // come back later and check that this works
       std::sort(tmp.cbegin(), tmp.cend(),
         [] (const auto & p1, const auto & p2)
         {
           return (p1.first > p2.first);
         }
       );
+
+      if (tmp[0].first > 0)
+      {
+        if (isoform_key[0] >= gene_dict[tmp[0].second][0] &&
+            isoform_key.back() <= gene_dict[tmp[0].second].back())
+        {
+          this->new_isoforms[isoform_key] = Iso(
+            this->new_isoforms[isoform_key].support_cnt,
+            "",
+            tmp[0].second
+          );
+        }
+        else if ((exon_overlap(std::vector<int>(isoform_key.begin() + 2, isoform_key.begin() + 4), gene_dict[tmp[0].second]) > 0) &&
+                 (exon_overlap(std::vector<int>(isoform_key.end() - 4, isoform_key.end() - 2), gene_dict[tmp[0].second]) > 0))
+        {
+          if ((isoform_key[1]-isoform_key[0] <= this->MIN_FL_EXON_LEN) && 
+              (exon_overlap(std::vector<int>(isoform_key.begin() + 2, isoform_key.begin() + 4), gene_dict[tmp[0].second]) == 0))
+          {
+            auto
+            ba = std::vector<char>(fa_dict[this->ch].begin() + isoform_key[0], fa_dict[this->ch].begin() + isoform_key[1]);
+            
+            if (std::count(ba.begin(), ba.end(), 'T') > 0.7 * ba.size() || std::count(ba.begin(), ba.end(), 'A') > 0.7 * ba.size()) // leftover polyA tail
+            {
+              delete_key.push_back(isoform_key);
+              update_iso_dict[std::vector<int>(isoform_key.begin()+2, isoform_key.end())] = Iso(
+                this->new_isoforms[isoform_key].support_cnt,
+                "",
+                tmp[0].second
+              );
+            }
+          }
+          else if ((isoform_key.back() - isoform_key.rbegin()[1] <= this->MIN_FL_EXON_LEN) &&
+                  (exon_overlap(std::vector<int>(isoform_key.begin(), isoform_key.begin() + 2), gene_dict[tmp[0].second])== 0))
+          {
+            auto
+            ba = std::vector<char>(fa_dict[this->ch].begin() + isoform_key.rbegin()[1], fa_dict[this->ch].begin() + isoform_key.back());
+
+            if (std::count(ba.begin(), ba.end(), 'T') > 0.7 * ba.size() || std::count(ba.begin(), ba.end(), 'A') > 0.7 * ba.size())
+            {
+              delete_key.push_back(isoform_key);
+              update_iso_dict[std::vector<int>(isoform_key.begin(), isoform_key.end() - 1)] = Iso(
+                this->new_isoforms[isoform_key].support_cnt,
+                "",
+                tmp[0].second
+              );
+            }
+          }
+          else
+          {
+            this->new_isoforms[isoform_key] = Iso(this->new_isoforms[isoform_key].support_cnt, "", tmp[0].second);
+          }
+        }
+        else
+        {
+          if (tmp[0].first > 0.8 * iso_len)
+          {
+            if ((isoform_key[1] - isoform_key[0] < this->MIN_FL_EXON_LEN) || 
+                (isoform_key.rbegin()[0] - isoform_key.rbegin()[1] < this->MIN_FL_EXON_LEN))
+            {
+              continue; // alignment artifact
+            }
+            else
+            {
+              // might be real eRNA
+              this->new_isoforms[isoform_key] = Iso(
+                this->new_isoforms[isoform_key].support_cnt,
+                "",
+                tmp[0].second
+              );
+            }
+          }
+          else
+          {
+            int total = 0; 
+            for (const auto & it : isoform_key)
+            {
+              if (splice_site.count(it) > 0) {total++;}
+            }
+
+            if (total > 4)
+            {
+              // more than 4 splice site match
+              this->new_isoforms[isoform_key] = Iso(
+                this->new_isoforms[isoform_key].support_cnt,
+                "",
+                tmp[0].second
+              );
+            }
+          }
+        }
+      }
     }
+
+    // line 910
+    // remove all the delete_key entries from new_isoforms
+    if (delete_key.size() > 0)
+    {
+      for (const auto & key : delete_key) {this->new_isoforms.erase(key);}
+    }
+
+    for (const auto & [iso_key, iso_val] : this->new_isoforms)
+    {
+      // skip if there are no matching genes
+      if (iso_val.gene_id == "") {continue;}
+
+      if (this->ge_dict.count(iso_val.gene_id) == 0) {this->ge_dict[iso_val] = {};}
+      this->ge_dict[iso_val.gene_id].push_back(iso_key);
+
+      if (!this->STRAND_SPECIFIC)
+      {
+        if (this->strand_cnt[iso_key] == std::vector<int>{0})
+        {
+          this->strand_cnt[iso_key] = 1;
+          if (transcript_dict[one_block.gene_to_tr[this->new_isoforms[iso_key].gene_id][0]].strand == '-') 
+          {
+            this->strand_cnt[iso_key] = -1;
+          }
+        }
+      }
+    }
+  }
+
+  for (const auto & [iso_key, iso_val] : this->known_isoforms)
+  {
+    if (this->ge_dict.count(this->known_isoforms[iso_key].gene_id) == 0) {this->ge_dict[iso_val] = {};}
+    this->ge_dict[this->known_isoforms[iso_key].gene_id].push_back(iso_key);
+  }
+}
+
+void
+Isoforms::isoform_to_gtt3(int isoform_pct=-1)
+{
+  auto gff3_format = [] 
+  (
+      std::string _ch="", std::string _sr="", std::string _ty="", 
+      int _st = 0, int _en = 0, std::string _sc="", 
+      char _stnd='+', std::string _ph="",  std::string _attr=""
+  )
+  {
+      /* takes a bunch of inputs, formats them and returns a string */
+
+      std::string output;
+
+      output.append(_ch); output.push_back('\t');
+      output.append(_sr); output.push_back('\t');
+      output.append(_ty); output.push_back('\t');
+      output.append(std::to_string(_st)); output.push_back('\t');
+      output.append(std::to_string(_en)); output.push_back('\t');
+      output.append(_sc); output.push_back('\t');
+      output.push_back(_stnd); output.push_back('\t');
+      output.append(_ph); output.push_back('\t');
+      output.append(_attr); output.push_back('\t');
+      return output;
+  };
+
+  std::vector<std::string>
+  gff_rec = {};
+
+  std::map<std::vector<int>, int>
+  transcript_id_dict;
+
+  if (this->new_isoforms.size() + this->known_isoforms.size() == 0) {return "";}
+
+  for (const auto & [g_key, g_val] : this->ge_dict)
+  {
+    std::vector<std::string>
+    gff_tmp = {};
+
+    int total_cnt = 0;
+    for (const auto & e : g_val)
+    {
+      if (this->new_isoforms.count(e) > 0) {total_cnt += this->new_isoforms[e].support_cnt;}
+      if (this->known_isoforms.count(e) > 0) {total_cnt += this->known_isoforms[e].support_cnt;}
+    }
+
+    std::string _attr;
+    _attr.append("ID=gene:"); _attr.append(g); 
+    _attr.append(";gene_id="); _attr.append(g); 
+    _attr.append(";support_count="); _attr.append(total_cnt);
+    
+    gff3_format(this->ch, ".", "gene", std::min())
+    gff_tmp.push_back();
   }
 }
