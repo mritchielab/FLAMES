@@ -1,4 +1,4 @@
-#include "ParseGFF3.h"
+#include "ParseGFF3.hpp"
 
 std::string ParseGFF3::formatGFFRecordAttributes(GFFRecord rec) {
     std::stringstream stream;
@@ -10,7 +10,6 @@ std::string ParseGFF3::formatGFFRecordAttributes(GFFRecord rec) {
 }
 
 
-///
 /// ParseGFF3 constructor. Open the file for reading
 ParseGFF3::ParseGFF3(const char * filename) {
     // HOW CAN WE OPEN A GZ FILE FOR READING???
@@ -48,7 +47,6 @@ std::unordered_map<std::string, std::string> ParseGFF3::parseGTFAttributes(std::
     return map;
 }
 
-///
 /// Parse the GFF3 file and generate a GFFRecord struct
 /// containing the required information:
 ///    seqid

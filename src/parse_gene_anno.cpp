@@ -341,7 +341,16 @@ List parse_gtf_tree(const char * gtf_filename) {
 
 //' Parse a GTF or GFF file
 //' @description
-//' CHANGE NAME TO REPLACE OLD PYTHON VERSION
+//' Parse a Gff3 file into 3 components: chromasome to gene name, a transcript dictionary, a gene to transcript dictionary
+//' and a transcript to exon dictionary.
+//' These components are returned in a named list.
+//'
+//' @param gff_filename the file path to the gff3 file to parse
+//' @return a named list with the elements 
+//' "chr_to_gene", "transcript_dict", "gene_to_transcript", "transcript_to_exon", containing
+//' the data parsed from the gff3 file.
+//' REPLACE THIS NAME TO REPLACE PYTHON VERSION FROM R
+//' THIS WILL BE DIRECTLY CALLED FROM R WITH NO WRAPPER
 //' @export
 // [[Rcpp::export]]
 List parse_gff_tree_cpp(const char * gff_filename) {
