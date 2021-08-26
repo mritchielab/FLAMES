@@ -17,6 +17,8 @@ class GeneBlocks
     transcript_list;
     std::map<std::string, std::vector<std::string>>
     gene_to_transcript;
+    std::map<std::string, std::vector<std::string>>
+    gene_to_tr;
 
     void add_gene(int start, int end, std::vector<std::string> transcript_list, std::string a_gene);
 };

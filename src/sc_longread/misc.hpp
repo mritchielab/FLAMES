@@ -231,3 +231,27 @@ pairwise (std::vector<int> input)
 
   return output;
 }
+
+int
+exons_overlap (std::vector<int> exons1, std::vector<int> exons2)
+{
+  /* takes two exons, returns the total overlap between them */
+
+  int total = 0;
+  for (const auto & e1 : pairwise(exons1))
+  {
+    for (const auto & e2 : pairwise(exons2))
+    {
+      total += iv_overlap(e1, e2);
+    } 
+  }
+  return total;
+}
+
+int
+iv_overlap (std::pair<int, int> iv1, std::pair<int, int> iv2)
+{
+  /* takes two ivs as pairs, calculates the overlap between them */
+
+  return std::max(0, std::min(iv1.second, iv2.second) - std::max(iv2.first, iv1.first));
+}
