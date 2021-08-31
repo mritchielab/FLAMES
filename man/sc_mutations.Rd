@@ -34,7 +34,22 @@ sc_mutations(
 \item{barcode}{TSV file for cell barcodes}
 }
 \value{
-outputs (saved to out_dir):
+a \code{data.frame} containing the following columns:
+\itemize{
+ \item{chr}{ - the chromosome where the mutation is located}
+ \item{position}
+ \item{REF}{ - the reference allele}
+ \item{ALT}{ - the alternative allele}
+ \item{REF_frequency}{ - reference allele frequency}
+ \item{REF_frequency_in_short_reads}{ - reference allele frequency in short reads (-1 when short reads not provided)}
+ \item{hypergeom_test_p_value}
+ \item{sequence_entrophy}
+ \item{INDEL_frequency}
+ \item{adj_p}{ - the adjusted p-value (by Benjamini–Hochberg correction)}
+}
+The table is sorted by decreasing adjusted P value.
+
+files saved to out_dir/mutation:
 \itemize{
      \item{ref_cnt.csv.gz}
      \item{alt_cnt.csv.gz}
