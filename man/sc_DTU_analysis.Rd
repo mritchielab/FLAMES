@@ -31,7 +31,8 @@ a \code{data.frame} containing the following columns:
  \item{p_value}{ - the p-value for the test}
  \item{adj_p}{ - the adjusted p-value (by Benjamini–Hochberg correction)}
 }
-The table is sorted by decreasing P-values.
+The table is sorted by decreasing P-values. It will also be saved as \code{sc_DTU_analysis.csv} under the
+output folder.
 }
 \description{
 Chi-square based differential transcription usage analysis. This variant is meant for single cell data.
