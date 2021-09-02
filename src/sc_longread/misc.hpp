@@ -1,5 +1,7 @@
 /*
   miscellaneous helper functions and things
+  they will not live here forever, 
+  once I figure out how to categorize them better then I will move them
 */
 
 
@@ -27,16 +29,16 @@ struct Iso
     specifically for known_isoforms and match_known_annotation
   */
 
-  long support_cnt;
+  long support_count;
   std::string transcript_id; 
   std::string gene_id;
 
-  Iso (long support_cnt_, std::string transcript_id_, std::string gene_id_)
-  {
-    support_cnt = support_cnt_;
-    transcript_id = transcript_id_;
-    gene_id = gene_id_;
-  };
+  // Iso (long support_count_, std::string transcript_id_, std::string gene_id_)
+  // {
+  //   support_count = support_count_;
+  //   transcript_id = transcript_id_;
+  //   gene_id = gene_id_;
+  // };
 };
 
 std::vector<int>
@@ -255,4 +257,68 @@ exon_overlap (std::vector<int> exons1, std::vector<int> exons2)
     } 
   }
   return total;
+}
+
+std::vector<std::pair<std::string, std::string>>
+get_fa(std::string filename)
+{
+  auto
+  strip = [] (std::string input)
+  {
+    /* removes leading and trailing whitespace */
+
+    auto start = input.begin();
+    auto end = input.rbegin();
+
+    while (isspace(*start)) {++start;}
+    while (isspace(*end)) {++end;}
+
+    return std::string(start, end.base());
+  };
+
+  auto
+  string_toupper = [] (std::string input)
+  {
+    /* converts a string to uppercase */
+
+    std::string output = input;
+
+    for (int i = 0; i < input.size(); i++)
+    {
+      output[i] = std::toupper(output[i]);
+    }
+    return output;
+  };
+
+  std::string ch = "";
+  std::vector<std::string> sequence = {};
+  std::vector<std::pair<std::string, std::string>> output;
+
+  std::ifstream infile(filename);
+
+  std::string line;
+  while (std::getline(infile, line))
+  {
+    std::cout << line;
+
+
+    if (line[0] == '>')
+    {
+      if (ch != "")
+      {
+        std::stringstream sequence_string;
+        for (const auto & i : sequence) {sequence_string << i;}
+
+        output.push_back({ch, sequence_string.str()});
+      }
+      ch = string_toupper(strip(std::string(line.begin()+1, line.end())));
+      sequence = {};
+    }
+    else
+    {
+      sequence.push_back(string_toupper(strip(line)));
+    }
+  }
+
+  return output;
 }
