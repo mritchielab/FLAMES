@@ -9,6 +9,9 @@
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
+
+#include <htslib/sam.h>
 
 #include "junctions.hpp"
 #include "misc.hpp"

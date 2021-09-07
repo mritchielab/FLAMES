@@ -45,8 +45,7 @@ std::vector<int>
 find_best_splice_chain(std::vector<int> raw_iso, std::vector<std::vector<int>> junction_list, int MAX_DIST)
 {
   int best_match[3] = {-1, 0, 0};
-  for (int i = 0; i < junction_list.size(); i++)
-  {
+  for (int i = 0; i < junction_list.size(); i++) {
     // hold onto this
     std::vector<int>
     junction = junction_list[i];
@@ -54,35 +53,27 @@ find_best_splice_chain(std::vector<int> raw_iso, std::vector<std::vector<int>> j
     // populate vector i_st with the indices of junction_list[i] entries
     // that match certain criteria
     std::vector<int> iter_start;
-    for (int j = 0; j < junction_list[i].size(); j++)
-    {
+    for (int j = 0; j < junction_list[i].size(); j++) {
 
-      if (abs((junction[j] - raw_iso[1]) < MAX_DIST))
-      {
+      if (abs((junction[j] - raw_iso[1]) < MAX_DIST)) {
         iter_start.push_back(j);
       }
     }
 
-    if (iter_start.size() == 1)
-    {
+    if (iter_start.size() == 1) {
       int iter_start_int = iter_start[0];
       int iter = iter_start_int + 1;
       int iter_end = iter_start_int;
-      while (iter < junction.size() && iter - iter_start_int + 1 < raw_iso.size())
-      {
-        if (abs(junction[iter] - raw_iso[iter - iter_start_int + 1]) < MAX_DIST)
-        {
+      while (iter < junction.size() && iter - iter_start_int + 1 < raw_iso.size()) {
+        if (abs(junction[iter] - raw_iso[iter - iter_start_int + 1]) < MAX_DIST) {
           iter_end = iter;
           iter += 1;
-        }
-        else
-        {
+        } else {
           break;
         }
       }
 
-      if (iter_end - iter_start_int >= best_match[1])
-      {
+      if (iter_end - iter_start_int >= best_match[1]) {
         best_match[0] = i;
         best_match[1] = iter_end - iter_start_int;
         best_match[2] = iter_start_int;
@@ -90,20 +81,16 @@ find_best_splice_chain(std::vector<int> raw_iso, std::vector<std::vector<int>> j
     }
   }
 
-  if (best_match[0] >= 0 && best_match[1] >= 3)
-  {
+  if (best_match[0] >= 0 && best_match[1] >= 3) {
     std::vector<int>
     updated_iso = raw_iso;
 
-    for (int i = best_match[2]; i < best_match[2] + best_match[1] + 1; i++)
-    {
+    for (int i = best_match[2]; i < best_match[2] + best_match[1] + 1; i++) {
       updated_iso[i - best_match[2] + 1] = junction_list[best_match[0]][i];
     }
 
     return updated_iso;
-  }
-  else
-  {
+  } else {
     return raw_iso;
   }
 }
@@ -116,45 +103,37 @@ if_exon_contains(std::vector<int> s1, std::vector<int> s2, int MAX_TOLERANCE)
     searching for exact match
   */
   
-  if (s2.size() == 2) // ignore single exon transcripts
-  {
+  if (s2.size() == 2) { // ignore single exon transcripts 
     return 0;
   }
 
   auto fs_elem = std::find(s1.begin(), s1.end(), s2[1]);
 
-  if (fs_elem == s1.end()) // ignore if s2[1] is not in s1
-  {
+  if (fs_elem == s1.end()) { // ignore if s2[1] is not in s1 
     return 0;
   }
 
   // get the index of the element
   int fs = std::distance(s1.begin(), fs_elem);
 
-  if ((fs == 0) || ((s2[0] - s1[fs - 1]) < -MAX_TOLERANCE)) // ignore if left is not within s1
-  {
+  if ((fs == 0) || ((s2[0] - s1[fs - 1]) < -MAX_TOLERANCE)) { // ignore if left is not within s1 
     return 0;
   }
 
-  for (int i = 2; i < s2.size() - 1; i++)
-  {
-    if (fs + i - 1 > s1.size() - 1)
-    {
+  for (int i = 2; i < s2.size() - 1; i++) {
+    if (fs + i - 1 > s1.size() - 1) {
       return 0;
     }
 
-    if (s1[fs + i - 1] != s2[i])
-    {
+    if (s1[fs + i - 1] != s2[i]) {
       return 0;
     }
   }
 
-  if (fs + s2.size() - 2 > s1.size() - 1)
-  {
+  if (fs + s2.size() - 2 > s1.size() - 1) {
     return 0;
   }
-  if ((s2.back() - s1[fs + s2.size() - 2]) > MAX_TOLERANCE)
-  {
+  if ((s2.back() - s1[fs + s2.size() - 2]) > MAX_TOLERANCE) {
     return 0;
   }
 
@@ -171,15 +150,12 @@ get_exon_sim_pct(std::vector<int> exons1, std::vector<int> exons2)
   */
 
   auto
-  pos_overlap = [] (std::pair<int, int> pos1, std::pair<int, int> pos2)
+  pos_overlap = [] (std::pair<int, int> pos1, std::pair<int, int> pos2) 
   {
     if ((pos1.second <= pos2.first) ||
-        (pos1.first >= pos2.second))
-    {
+        (pos1.first >= pos2.second)) {
       return 0;
-    }
-    else
-    {
+    } else {
       return (std::min(pos1.second, pos2.second) - std::max(pos1.first, pos2.first));
     }
   };
@@ -191,8 +167,7 @@ get_exon_sim_pct(std::vector<int> exons1, std::vector<int> exons2)
 
     int sum = 0;
     auto pairs = pairwise(exon);
-    for (const auto & pair : pairs)
-    {
+    for (const auto & pair : pairs) {
       sum += pair.second - pair.first;
     }
 
@@ -203,10 +178,8 @@ get_exon_sim_pct(std::vector<int> exons1, std::vector<int> exons2)
   auto e2_len = sum_of_exon(exons2);
 
   float total = 0;
-  for (const auto & pair1 : pairwise(exons1))
-  {
-    for (const auto & pair2 : pairwise(exons2))
-    {
+  for (const auto & pair1 : pairwise(exons1)) {
+    for (const auto & pair2 : pairwise(exons2)) {
       total += pos_overlap(pair1, pair2);
     }
   }
@@ -224,8 +197,7 @@ pairwise (std::vector<int> input)
   std::vector<std::pair<int, int>>
   output;
 
-  for (int i = 1; i < input.size(); i+=2)
-  {
+  for (int i = 1; i < input.size(); i+=2) {
     std::pair<int, int>
     new_pair = {input[i-1], input[i]};
 
@@ -249,10 +221,8 @@ exon_overlap (std::vector<int> exons1, std::vector<int> exons2)
   /* takes two exons, returns the total overlap between them */
 
   int total = 0;
-  for (const auto & e1 : pairwise(exons1))
-  {
-    for (const auto & e2 : pairwise(exons2))
-    {
+  for (const auto & e1 : pairwise(exons1)) {
+    for (const auto & e2 : pairwise(exons2)) {
       total += iv_overlap(e1, e2);
     } 
   }
@@ -283,8 +253,7 @@ get_fa(std::string filename)
 
     std::string output = input;
 
-    for (int i = 0; i < input.size(); i++)
-    {
+    for (int i = 0; i < input.size(); i++) {
       output[i] = std::toupper(output[i]);
     }
     return output;
@@ -297,25 +266,22 @@ get_fa(std::string filename)
   std::ifstream infile(filename);
 
   std::string line;
-  while (std::getline(infile, line))
-  {
+  while (std::getline(infile, line)) {
     std::cout << line;
 
 
-    if (line[0] == '>')
-    {
-      if (ch != "")
-      {
+    if (line[0] == '>') {
+      if (ch != "") {
         std::stringstream sequence_string;
-        for (const auto & i : sequence) {sequence_string << i;}
+        for (const auto & i : sequence) {
+          sequence_string << i;
+        }
 
         output.push_back({ch, sequence_string.str()});
       }
       ch = string_toupper(strip(std::string(line.begin()+1, line.end())));
       sequence = {};
-    }
-    else
-    {
+    } else {
       sequence.push_back(string_toupper(strip(line)));
     }
   }

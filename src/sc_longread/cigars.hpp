@@ -30,8 +30,7 @@ generate_cigar (std::vector <std::pair <int, int>> cigar)
   char CIGAR_CODE[] = "MIDNSHP=XB";
   std::string result = "";
 
-  for (std::pair<int, int> pair : cigar)
-  {
+  for (std::pair<int, int> pair : cigar) {
     result.append(std::to_string(pair.second));
     result.push_back(CIGAR_CODE[pair.first]);
   }
@@ -49,39 +48,24 @@ smooth_cigar (std::vector<std::pair<int, int>> cigar, int threshold=10)
 
   std::vector<std::pair<int, int>> new_cigar = {cigar[0]};
   
-  for (int i = 1; i < cigar.size(); i++)
-  {
+  for (int i = 1; i < cigar.size(); i++) {
     if (new_cigar.back().first != 0) {
       new_cigar.push_back(cigar[i]);
-    }
-    else if (cigar[i].first == 0)  // merge matched reads
-    {
+    } else if (cigar[i].first == 0) { // merge matched reads 
       new_cigar.back().second = new_cigar.back().second + cigar[i].second;
-    }
-    else if (cigar[i].first == 2)
-    {
-      if (cigar[i].second <= threshold)
-      {
+    } else if (cigar[i].first == 2) {
+      if (cigar[i].second <= threshold) {
         new_cigar.back().second = new_cigar.back().second + cigar[i].second;
-      }
-      else
-      {
+      } else {
         new_cigar.push_back(cigar[i]);
       }
-    }
-    else if (cigar[i].first == 1)
-    {
-      if (cigar[i].second > threshold)
-      {
+    } else if (cigar[i].first == 1) {
+      if (cigar[i].second > threshold) {
         new_cigar.push_back(cigar[i]);
-      }
-      else
-      {
+      } else {
         continue;
       }
-    }
-    else
-    {
+    } else {
       new_cigar.push_back(cigar[i]);
     }
   }

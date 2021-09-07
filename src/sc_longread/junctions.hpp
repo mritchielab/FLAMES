@@ -36,10 +36,8 @@ take_closest (std::vector<int> list, int num)
  int output = list.back();
  list.pop_back();
 
- for (const auto & i : list) 
- {
-   if (abs(i - num) < abs(output - num))
-   {
+ for (const auto & i : list) {
+   if (abs(i - num) < abs(output - num)) {
      output = i;
    }
  }
@@ -59,8 +57,7 @@ blocks_to_junctions (std::vector<std::pair<int, int>> blocks)
   output.left = {blocks.front().first};
   output.right = {blocks.back().second};
 
-  if (blocks.size() > 1)
-  {
+  if (blocks.size() > 1) {
     for (int i = 1; i < blocks.size(); i++) {
       output.junctions.push_back(blocks[i - 1].second);
       output.junctions.push_back(blocks[i].first);
@@ -77,27 +74,19 @@ get_TSS_TES_site (std::map<std::string, Junctions> transcript_to_junctions, std:
   all_site;
 
   for (const auto & t : tr_list) {
-    if (all_site.left.size() > 0)
-    {
-      if (abs(take_closest(all_site.left, transcript_to_junctions[t].left[0]) - transcript_to_junctions[t].left[0]) > 5)
-      {
+    if (all_site.left.size() > 0) {
+      if (abs(take_closest(all_site.left, transcript_to_junctions[t].left[0]) - transcript_to_junctions[t].left[0]) > 5) {
         all_site.left.push_back(transcript_to_junctions[t].left[0]);
       }
-    }
-    else
-    {
+    } else {
       all_site.left.push_back(transcript_to_junctions[t].left[0]);
     }
 
-    if (all_site.right.size() > 0)
-    {
-      if (abs(take_closest(all_site.right, transcript_to_junctions[t].right[0]) - transcript_to_junctions[t].right[0]) > 5)
-      {
+    if (all_site.right.size() > 0) {
+      if (abs(take_closest(all_site.right, transcript_to_junctions[t].right[0]) - transcript_to_junctions[t].right[0]) > 5) {
         all_site.right.push_back(transcript_to_junctions[t].right[0]);
       }
-    }
-    else
-    {
+    } else {
       all_site.right.push_back(transcript_to_junctions[t].right[0]);
     }
   }
@@ -113,10 +102,8 @@ get_splice_site (std::map<std::string, Junctions> transcript_to_junctions, std::
 
   // add all of the junctions of 
   // everything from tr_list to all_site
-  for (std::string t : tr_list)
-  {
-    for (const auto & junctions : transcript_to_junctions[t].junctions)
-    {
+  for (std::string t : tr_list) {
+    for (const auto & junctions : transcript_to_junctions[t].junctions) {
       all_site.insert(junctions);
     }
   }
