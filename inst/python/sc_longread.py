@@ -1036,6 +1036,7 @@ def group_bam2isoform(bam_in, out_gff3, out_stat, summary_csv, chr_to_blocks, ge
             TSS_TES_site = get_TSS_TES_site(transcript_to_junctions, bl.transcript_list)
             tmp_isoform = Isoforms(ch, config)
             for rec in it_region:
+                print rec
                 # if 0<downsample_ratio<1 and random.uniform(0, 1)>downsample_ratio:
                 #     continue   # downsample analysis
                 # if rec.is_secondary:

@@ -17,5 +17,5 @@
 #include "misc.hpp"
 #include "cigars.hpp"
 #include "GeneBlocks.hpp"
-#include "Isoforms.hpp"
+#include "Isoforms.cpp"
 #include "group_bam2isoform.hpp"

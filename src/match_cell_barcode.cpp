@@ -48,10 +48,15 @@ int find_polyT(std::string& seq, int start_pos)
         if (i<(start_pos+40))
         {
           return i;
-        }else{
-          if (start_pos+40 < (int)seq.size() ){
+        }
+        else
+        {
+          if (start_pos+40 < (int)seq.size())
+          {
             return start_pos+40;
-          }else{
+          }
+          else
+          {
             return start_pos;
           }
         }

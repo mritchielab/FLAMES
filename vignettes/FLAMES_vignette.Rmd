@@ -24,10 +24,6 @@ The FLAMES package provides a framework for performing single-cell and bulk read
 
 This R package was created to simplify installation and execution of the FLAMES python module, which supports the article *Comprehensive characterization of single cell full-length isoforms in human and mouse with long-read sequencing* by Tian et al. [-@flames].
 
-```{r workflow, echo=FALSE, fig.align='center', fig.cap='FLAMES pipeline workflow summary'}
-knitr::include_graphics(system.file("images/FLAMESpipeline-01.png", package="FLAMES"))
-```
-
 Input to FLAMES are fastq files generated from the long-read platform. Using the cell barcode annotation obtained from short-read data as the reference, the pipeline identifies and trims cell barcodes/UMI sequences from the long reads. After barcode assignment, all reads are aligned to the relevant genome to obtain a draft read alignment. The draft alignment is then polished and grouped to generate a consensus transcript assembly. All reads are aligned again using the transcript assembly as the reference and quantified. 
 
 Figure \@ref(fig:workflow) provides a high level overview of the main steps in the FLAMES pipeline. The optional arguments on the left are colour coded to associate with the specific step that they apply to.
