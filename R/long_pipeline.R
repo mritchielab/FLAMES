@@ -187,6 +187,7 @@ generic_long_pipeline <-
         return(
             list(
                 "annot" = annot,
+                "genome_fa" = genome_fa,
                 "counts" = tr_cnt_csv,
                 "isoform_annotated" = isoform_gff3_f,
                 "transcript_assembly" = transcript_fa,

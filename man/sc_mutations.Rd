@@ -5,11 +5,12 @@
 \title{FLAMES variant calling}
 \usage{
 sc_mutations(
-  fa_f,
+  sce,
+  barcode_tsv,
   bam_short,
   out_dir,
-  barcode_tsv,
-  gff_f = NULL,
+  genome_fa,
+  annot,
   known_positions = NULL,
   min_cov = 100,
   report_pct = c(0.15, 0.85),
@@ -17,17 +18,21 @@ sc_mutations(
 )
 }
 \arguments{
-\item{fa_f}{Reference genome FASTA file}
+\item{sce}{The \code{SingleCellExperiment} object from \code{sc_long_pipeline}}
 
-\item{bam_short}{Optional short read alignment BAM file}
+\item{bam_short}{(Optional) short read alignment BAM file}
 
-\item{out_dir}{Output folder of sc_long_pipeline. Output files from this function will also be saved here.}
+\item{out_dir}{(Optional) Output folder of sc_long_pipeline. Output files from this function will also be saved here.
+Use this parameter if you do not have the \code{SingleCellExperiment} object.}
 
-\item{gff_f}{Reference genome annotation file, in \code{GFF} or \code{GTF} format. If left with \code{NONE} then the \code{isoform_annotated.gff3} from \code{sc_longread_pipeline} will be used.}
+\item{genome_fa}{(Optional) Reference genome FASTA file. Use this parameter is if you do not wish \code{sc_mutation} to use the
+reference genome FASTA file from the \code{sce}'s metadata.}
 
-\item{known_positions}{A list of known positions, with by chromosome name followed by the position, e.g. ('chr1', 123, 'chr1', 124, 'chrX', 567)}
+\item{annot}{(Optional) The file path to gene annotation file in gff3 format. If provided as \code{FALSE} then the \code{isoform_annotated.gff3} from \code{sc_longread_pipeline} will be used, if not provided then the path in the \code{SingleCellExperiment} object will be used.}
 
-\item{min_cov}{The coverage threshold for filtering candidate SNVs}
+\item{known_positions}{(Optional) A list of known positions, with by chromosome name followed by the position, e.g. ('chr1', 123, 'chr1', 124, 'chrX', 567)}
+
+\item{min_cov}{The coverage threshod for filtering candidate SNVs}
 
 \item{report_pct}{The allele frequency range for filtering candidate SNVs}
 
@@ -60,4 +65,8 @@ files saved to out_dir/mutation:
 \description{
 Candidate SNVs identified with filtering by coverage threshold,
 and allele frequency range.
+}
+\details{
+Takes the \code{SingleCellExperiment} object from \code{sc_long_pipeline} and the cell barcodes as \code{barcode}.
+Alternatively, input can also be provided as \code{out_dir}, \code{genome_fa}, \code{annot}, \code{barcode}.
 }

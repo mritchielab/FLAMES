@@ -45,8 +45,8 @@ def sc_mutations(fa_f, bam_short, out_dir, barcode_tsv, gff_f=None, known_positi
 
     assert os.path.isfile(bam_in), "align2genome.bam not found under " + out_dir
 
-    if gff_f is None:
-        print "Reference annotation not provided, using isoform_annotated.gff3 instead ..."
+    if not gff_f:
+        print "Using isoform_annotated.gff3 ..."
         gff_f = os.path.join(out_dir, "isoform_annotated.gff3")
         assert os.path.isfile(gff_f), "Reference annotation not provided, isoform_annotated.gff3 not found under " + out_dir
     chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = parse_gff_tree(gff_f)
