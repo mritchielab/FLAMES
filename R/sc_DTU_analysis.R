@@ -42,7 +42,8 @@
 #'  \item{p_value}{ - the p-value for the test}
 #'  \item{adj_p}{ - the adjusted p-value (by Benjamini–Hochberg correction)}
 #' }
-#' The table is sorted by decreasing P-values.
+#' The table is sorted by decreasing P-values. It will also be saved as \code{sc_DTU_analysis.csv} under the
+#' output folder.
 #' 
 #' @importFrom dplyr group_by summarise_at top_n left_join summarise
 #' @importFrom tidyr gather pivot_wider
@@ -244,5 +245,7 @@ sc_DTU_analysis <- function(sce, path, min_count=15){
     res_df$adj_p=sapply(res_df$adj_p,function(x){min(1,x)})
     res_df = res_df[order(res_df$p_value),]
     warning("Chi-squared approximation(s) may be incorrect")
+    write.csv(res_df,file=file.path(path,"sc_DTU_analysis.csv"),row.names = FALSE)
+    cat(paste(c('Results saved to ', file.path(path,"sc_DTU_analysis.csv"), '\n')))
     return(res_df)
 }

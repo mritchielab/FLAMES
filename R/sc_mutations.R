@@ -21,7 +21,22 @@
 #' @param report_pct The allele frequency range for filtering candidate SNVs
 #' 
 #' @return
-#' outputs (saved to out_dir):
+#' a \code{data.frame} containing the following columns:
+#' \itemize{
+#'  \item{chr}{ - the chromosome where the mutation is located}
+#'  \item{position}
+#'  \item{REF}{ - the reference allele}
+#'  \item{ALT}{ - the alternative allele}
+#'  \item{REF_frequency}{ - reference allele frequency}
+#'  \item{REF_frequency_in_short_reads}{ - reference allele frequency in short reads (-1 when short reads not provided)}
+#'  \item{hypergeom_test_p_value}
+#'  \item{sequence_entrophy}
+#'  \item{INDEL_frequency}
+#'  \item{adj_p}{ - the adjusted p-value (by Benjamini–Hochberg correction)}
+#' }
+#' The table is sorted by decreasing adjusted P value.
+#' 
+#' files saved to out_dir/mutation:
 #' \itemize{
 #'      \item{ref_cnt.csv.gz}
 #'      \item{alt_cnt.csv.gz}
@@ -30,6 +45,7 @@
 #' }
 #' 
 #' @importFrom reticulate import_from_path
+#' @importFrom stats p.adjust
 #' 
 #' @export
 sc_mutations <- function(fa_f, bam_short, out_dir, barcode_tsv, gff_f=NULL, known_positions=NULL, min_cov=100, report_pct=c(0.15, 0.85), test_mode=FALSE) {
@@ -40,5 +56,12 @@ sc_mutations <- function(fa_f, bam_short, out_dir, barcode_tsv, gff_f=NULL, know
         convert$sc_mutations(fa, bam, dir, barcode, gff, positions, mincov, reportpct, test)
     }, fa = fa_f, bam = bam_short, dir = out_dir, barcode = barcode_tsv, gff=gff_f, positions = known_positions, mincov=min_cov, reportpct=report_pct, test = test_mode)
 
-   out_dir # output path 
+    allele_stat_csv <- file.path(out_dir, 'mutation', 'allele_stat.csv.gz')
+    table <- read.csv(allele_stat_csv) 
+    table$adj_p <- stats::p.adjust(table$hypergeom_test_p_value)
+    table <- table[order(table$adj_p), ]
+    rownames(table) <- NULL
+    write.csv(table, file=gzfile(allele_stat_csv), row.names=FALSE)
+    print.data.frame(head(table, n=20L))
+    table
 }
