@@ -42,8 +42,7 @@ GeneBlocks::add_gene(int start, int end, std::vector<std::string> transcript_lis
   this->end = std::max(this->end, end);
   
   // import everything from the new transcript_list
-  for (const auto & i : transcript_list)
-  {
+  for (const auto & i : transcript_list) {
     this->transcript_list.push_back(i);
   }
 
