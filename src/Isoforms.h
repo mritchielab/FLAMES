@@ -8,6 +8,10 @@
 #include <iostream>
 #include <fstream>
 
+#include "junctions.h"
+#include "misc.h"
+#include "GeneBlocks.h"
+
 class Isoforms
 {
   private:

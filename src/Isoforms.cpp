@@ -23,8 +23,9 @@ Isoforms::Isoforms(std::string ch, std::map<std::string, int> config)
   this->ch = ch;
 }
 
-/* add one new isoform to this Isoforms object,
- * by either adding it or updating an existing entry that is close to it
+/* 
+  add one new isoform to this Isoforms object,
+  by either adding it or updating an existing entry that is close to it
 */
 void Isoforms::add_isoform(Junctions junctions, bool is_reversed)
 {

@@ -72,4 +72,4 @@ smooth_cigar (std::vector<std::pair<int, int>> cigar, int threshold=10)
     }
   }
   return new_cigar;
-};
+}

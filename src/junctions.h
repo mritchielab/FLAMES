@@ -9,23 +9,8 @@
 #include <any>
 #include <set>
 
-typedef struct {
-  /*
-    a struct used for holding the junctions information
-  */
-  std::vector<int> left;
-  std::vector<int> junctions;
-  std::vector<int> right;
-} Junctions;
-
-typedef struct {
-  /*
-    a struct for junctions with just one value in left and right
-  */
- int left;
- std::vector<int> junctions;
- int right;
-} SingleJunction;
+struct Junctions;
+struct SingleJunction;
 
 int 
 take_closest (std::vector<int> list, int num);

@@ -343,7 +343,7 @@ extern "C" {
 	/*! @function
 	 @abstract  Initiate a pointer to bam1_t struct
 	 */
-	//#define bam_init1()
+	bam1_t *bam_init1();
 
 	/*! @function
 	 @abstract  Free the memory allocated for an alignment.

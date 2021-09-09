@@ -1,3 +1,5 @@
+#include "group_bam2isoform.h"
+
 void
 group_bam2isoform (
     std::string bam_in, 
@@ -13,25 +15,24 @@ group_bam2isoform (
     std::string raw_gff3 = ""
 )
 {
-    if (config.count("random_seed"))
-    {
+    if (config.count("random_seed")) {
         srand(config["random_seed"]);
-    }
-    else
-    {
+    } else {
         srand(666666);
     }
 
-    // i need to learn to read a bamfile
-
+    // read a bamfile
+    bamFile bam = bam_open(bam_in.c_str(), "r"); // bam.h
+    bam_index_t *bam_index = bam_index_load(bam_in.c_str());
+    bam_header_t *header = bam_header_read(bam); // bam.h
+    bam_close(bam);
 
     // set up all the output files
     std::ofstream iso_annotated;
     iso_annotated.open(out_gff3);
     iso_annotated << "##gff-version 3\n";
 
-    if (raw_gff3 != "")
-    {
+    if (raw_gff3 != "") {
         std::ofstream splice_raw;
         splice_raw.open(raw_gff3);
         splice_raw << "##gff-version 3\n";
@@ -46,21 +47,17 @@ group_bam2isoform (
     // import all the values of fa_f
     std::map<std::string, std::string>
     fa_dict;
-    for (const auto & c : get_fa(fa_f))
-    {
+    for (const auto & c : get_fa(fa_f)) {
         fa_dict[c.first] = c.second;
     }
 
-    for (const auto & [chr, blocks] : chr_to_blocks)
-    {
-        for (const auto & block : blocks)
-        {
+    for (const auto & [chr, blocks] : chr_to_blocks) {
+        for (const auto & block : blocks) {
             // extract this from the bam file
-            auto it_region = 0;
+            // auto it_region = bam_fetch(bam, bam_index, );
 
             auto TSS_TES_site = get_TSS_TES_site(transcript_to_junctions, block.transcript_list);
             auto tmp_isoform = Isoforms(chr, config);
-
         }
     }
 }

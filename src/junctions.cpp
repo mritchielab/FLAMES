@@ -3,22 +3,43 @@
 */
 #include "junctions.h"
 
+
+typedef struct Junctions {
+  /*
+    a struct used for holding the junctions information
+  */
+  std::vector<int> left;
+  std::vector<int> junctions;
+  std::vector<int> right;
+} Junctions;
+
+typedef struct SingleJunction {
+  /*
+    a struct for junctions with just one value in left and right
+  */
+  int left;
+  std::vector<int> junctions;
+  int right;
+} SingleJunction;
+
 int 
 take_closest (std::vector<int> list, int num)
 {
   /*
     returns the value in list that is closest to num
   */
- int output = list.back();
- list.pop_back();
 
- for (const auto & i : list) {
-   if (abs(i - num) < abs(output - num)) {
-     output = i;
-   }
- }
- return output;
+  int output = list.back();
+  list.pop_back();
+
+  for (const auto & i : list) {
+    if (abs(i - num) < abs(output - num)) {
+      output = i;
+    }
+  }
+  return output;
 }
+
 
 Junctions 
 blocks_to_junctions (std::vector<std::pair<int, int>> blocks)
@@ -42,6 +63,7 @@ blocks_to_junctions (std::vector<std::pair<int, int>> blocks)
 
   return output;
 }
+
 
 Junctions 
 get_TSS_TES_site (std::map<std::string, Junctions> transcript_to_junctions, std::vector<std::string> tr_list)
@@ -69,6 +91,7 @@ get_TSS_TES_site (std::map<std::string, Junctions> transcript_to_junctions, std:
 
   return all_site;
 }
+
 
 std::set<int> 
 get_splice_site (std::map<std::string, Junctions> transcript_to_junctions, std::vector<std::string> tr_list)
