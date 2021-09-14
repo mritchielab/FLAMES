@@ -12,7 +12,7 @@
 #' @param genome_fa (Optional) Reference genome FASTA file. Use this parameter is if you do not wish \code{sc_mutation} to use the
 #' reference genome FASTA file from the \code{sce}'s metadata.
 #' 
-#' @param bam_short (Optional) short read alignment BAM file
+#' @param bam_short (Optional) short read alignment BAM file. If provided, it is used to filter the variations. Variations in long-read data with enough short read coverage but no alternative allele will not be reported.
 #' 
 #' @param out_dir (Optional) Output folder of sc_long_pipeline. Output files from this function will also be saved here.
 #' Use this parameter if you do not have the \code{SingleCellExperiment} object.
@@ -21,11 +21,11 @@
 #' 
 #' @param annot (Optional) The file path to gene annotation file in gff3 format. If provided as \code{FALSE} then the \code{isoform_annotated.gff3} from \code{sc_longread_pipeline} will be used, if not provided then the path in the \code{SingleCellExperiment} object will be used.
 #' 
-#' @param known_positions (Optional) A list of known positions, with by chromosome name followed by the position, e.g. ('chr1', 123, 'chr1', 124, 'chrX', 567)
+#' @param known_positions (Optional) A list of known positions, with by chromosome name followed by the position, e.g. ('chr1', 123, 'chr1', 124, 'chrX', 567). These locations will not be filtered and its allele frequencies will be reported.
 #' 
-#' @param min_cov The coverage threshod for filtering candidate SNVs
+#' @param min_cov The coverage threshod for filtering candidate SNVs. Positions with reads less then this number will not be considered.
 #' 
-#' @param report_pct The allele frequency range for filtering candidate SNVs
+#' @param report_pct The allele frequency range for filtering candidate SNVs. Positions with less or higher allele frequency will not be reported. The default is 0.15-0.85.
 #' 
 #' @return
 #' a \code{data.frame} containing the following columns:
