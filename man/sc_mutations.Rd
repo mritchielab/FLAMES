@@ -13,14 +13,15 @@ sc_mutations(
   annot,
   known_positions = NULL,
   min_cov = 100,
-  report_pct = c(0.15, 0.85),
-  test_mode = FALSE
+  report_pct = c(0.1, 0.9)
 )
 }
 \arguments{
 \item{sce}{The \code{SingleCellExperiment} object from \code{sc_long_pipeline}}
 
-\item{bam_short}{(Optional) short read alignment BAM file}
+\item{barcode_tsv}{TSV file for cell barcodes}
+
+\item{bam_short}{(Optional) short read alignment BAM file. If provided, it is used to filter the variations. Variations in long-read data with enough short read coverage but no alternative allele will not be reported.}
 
 \item{out_dir}{(Optional) Output folder of sc_long_pipeline. Output files from this function will also be saved here.
 Use this parameter if you do not have the \code{SingleCellExperiment} object.}
@@ -30,13 +31,11 @@ reference genome FASTA file from the \code{sce}'s metadata.}
 
 \item{annot}{(Optional) The file path to gene annotation file in gff3 format. If provided as \code{FALSE} then the \code{isoform_annotated.gff3} from \code{sc_longread_pipeline} will be used, if not provided then the path in the \code{SingleCellExperiment} object will be used.}
 
-\item{known_positions}{(Optional) A list of known positions, with by chromosome name followed by the position, e.g. ('chr1', 123, 'chr1', 124, 'chrX', 567)}
+\item{known_positions}{(Optional) A list of known positions, with by chromosome name followed by the position, e.g. ('chr1', 123, 'chr1', 124, 'chrX', 567). These locations will not be filtered and its allele frequencies will be reported.}
 
-\item{min_cov}{The coverage threshod for filtering candidate SNVs}
+\item{min_cov}{The coverage threshold for filtering candidate SNVs. Positions with reads less then this number will not be considered.}
 
-\item{report_pct}{The allele frequency range for filtering candidate SNVs}
-
-\item{barcode}{TSV file for cell barcodes}
+\item{report_pct}{The allele frequency range for filtering candidate SNVs. Positions with less or higher allele frequency will not be reported. The default is 0.10-0.90}
 }
 \value{
 a \code{data.frame} containing the following columns:
@@ -48,7 +47,7 @@ a \code{data.frame} containing the following columns:
  \item{REF_frequency}{ - reference allele frequency}
  \item{REF_frequency_in_short_reads}{ - reference allele frequency in short reads (-1 when short reads not provided)}
  \item{hypergeom_test_p_value}
- \item{sequence_entrophy}
+ \item{sequence_entropy}
  \item{INDEL_frequency}
  \item{adj_p}{ - the adjusted p-value (by Benjamini–Hochberg correction)}
 }

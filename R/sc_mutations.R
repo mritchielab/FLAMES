@@ -17,15 +17,15 @@
 #' @param out_dir (Optional) Output folder of sc_long_pipeline. Output files from this function will also be saved here.
 #' Use this parameter if you do not have the \code{SingleCellExperiment} object.
 #' 
-#' @param barcode TSV file for cell barcodes
+#' @param barcode_tsv TSV file for cell barcodes
 #' 
 #' @param annot (Optional) The file path to gene annotation file in gff3 format. If provided as \code{FALSE} then the \code{isoform_annotated.gff3} from \code{sc_longread_pipeline} will be used, if not provided then the path in the \code{SingleCellExperiment} object will be used.
 #' 
 #' @param known_positions (Optional) A list of known positions, with by chromosome name followed by the position, e.g. ('chr1', 123, 'chr1', 124, 'chrX', 567). These locations will not be filtered and its allele frequencies will be reported.
 #' 
-#' @param min_cov The coverage threshod for filtering candidate SNVs. Positions with reads less then this number will not be considered.
+#' @param min_cov The coverage threshold for filtering candidate SNVs. Positions with reads less then this number will not be considered.
 #' 
-#' @param report_pct The allele frequency range for filtering candidate SNVs. Positions with less or higher allele frequency will not be reported. The default is 0.15-0.85.
+#' @param report_pct The allele frequency range for filtering candidate SNVs. Positions with less or higher allele frequency will not be reported. The default is 0.10-0.90
 #' 
 #' @return
 #' a \code{data.frame} containing the following columns:
@@ -37,7 +37,7 @@
 #'  \item{REF_frequency}{ - reference allele frequency}
 #'  \item{REF_frequency_in_short_reads}{ - reference allele frequency in short reads (-1 when short reads not provided)}
 #'  \item{hypergeom_test_p_value}
-#'  \item{sequence_entrophy}
+#'  \item{sequence_entropy}
 #'  \item{INDEL_frequency}
 #'  \item{adj_p}{ - the adjusted p-value (by Benjamini–Hochberg correction)}
 #' }
@@ -55,7 +55,7 @@
 #' @importFrom stats p.adjust
 #' 
 #' @export
-sc_mutations <- function(sce, barcode_tsv, bam_short, out_dir, genome_fa, annot, known_positions=NULL, min_cov=100, report_pct=c(0.15, 0.85), test_mode=FALSE) {
+sc_mutations <- function(sce, barcode_tsv, bam_short, out_dir, genome_fa, annot, known_positions=NULL, min_cov=100, report_pct=c(0.10, 0.90)) {
 
     cat('\n\n\n\n\n\n')
     if (!missing(sce)) {
@@ -71,10 +71,10 @@ sc_mutations <- function(sce, barcode_tsv, bam_short, out_dir, genome_fa, annot,
     }
 
     python_path <- system.file("python", package = "FLAMES")
-    callBasilisk(flames_env, function(fa, bam, dir, barcode, gff, positions, mincov, reportpct, test) {
+    callBasilisk(flames_env, function(fa, bam, dir, barcode, gff, positions, mincov, reportpct) {
         convert <- reticulate::import_from_path("sc_mutations", python_path)
-        convert$sc_mutations(fa, bam, dir, barcode, gff, positions, mincov, reportpct, test)
-    }, fa = genome_fa, bam = bam_short, dir = out_dir, barcode = barcode_tsv, gff=annot, positions = known_positions, mincov=min_cov, reportpct=report_pct, test = test_mode)
+        convert$sc_mutations(fa, bam, dir, barcode, gff, positions, mincov, reportpct)
+    }, fa = genome_fa, bam = bam_short, dir = out_dir, barcode = barcode_tsv, gff=annot, positions = known_positions, mincov=min_cov, reportpct=report_pct)
 
     allele_stat_csv <- file.path(out_dir, 'mutation', 'allele_stat.csv.gz')
     table <- read.csv(allele_stat_csv) 

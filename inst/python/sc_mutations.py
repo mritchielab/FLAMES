@@ -4,14 +4,14 @@ import os
 from bam_mutations import parse_gff_tree, get_gene_flat, get_gene_blocks, get_all_SNV_table
 
 
-def sc_mutations(fa_f, bam_short, out_dir, barcode_tsv, gff_f=None, known_positions=None, min_cov=100, report_pct=(0.15,0.85), test_mode=False):
+def sc_mutations(fa_f, bam_short, out_dir, barcode_tsv, gff_f=None, known_positions=None, min_cov=100, report_pct=(0.15,0.85)):
     """
-    fa_f: reference genome fa file (?)
-    bam_short: bam file for short reads (?) 
+    fa_f: reference genome fa file 
+    bam_short: bam file for short reads 
     out_dir: FLAMES output folder containing align2genome.bam and isoform_annotated.gff3
              outputs would be saved to this folder.
     barcode_tsv: barcodes.tsv file
-    known_positions: (?)
+    known_positions: known positions to include
 
     outputs (saved to out_dir):
         ref_cnt.csv.gz
@@ -51,8 +51,8 @@ def sc_mutations(fa_f, bam_short, out_dir, barcode_tsv, gff_f=None, known_positi
         assert os.path.isfile(gff_f), "Reference annotation not provided, isoform_annotated.gff3 not found under " + out_dir
     chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = parse_gff_tree(gff_f)
 
-    if test_mode:
-        chr_to_gene = {chr_to_gene.keys()[0]: chr_to_gene[chr_to_gene.keys()[0]]}
+    #if test_mode:
+    #    chr_to_gene = {chr_to_gene.keys()[0]: chr_to_gene[chr_to_gene.keys()[0]]}
 
 
     gene_dict = get_gene_flat(gene_to_transcript, transcript_to_exon)
@@ -62,9 +62,9 @@ def sc_mutations(fa_f, bam_short, out_dir, barcode_tsv, gff_f=None, known_positi
     return None
 
 
-if __name__ == '__main__':
-    """
-    For debugging only
-    """
-    sc_mutations("/Volumes/Mattlab/LuyiTian/Index/GRCh38.primary_assembly.genome.fa", None,
-                 "/Volumes/Mattlab/Changqing", "/Volumes/Mattlab/Changqing/barcodes.tsv", ["chr18", 63318364], True)
+#if __name__ == '__main__':
+#    """
+#    For debugging only
+#    """
+#    sc_mutations("/Volumes/Mattlab/LuyiTian/Index/GRCh38.primary_assembly.genome.fa", None,
+#                 "/Volumes/Mattlab/Changqing", "/Volumes/Mattlab/Changqing/barcodes.tsv", ["chr18", 63318364], True)
