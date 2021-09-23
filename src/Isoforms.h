@@ -11,14 +11,14 @@
 #include "junctions.h"
 #include "misc.h"
 #include "GeneBlocks.h"
+#include "config.h"
 
 class Isoforms
 {
   private:
     // these values will all be extracted from config
-    const int MAX_DIST, MAX_TS_DIST, MAX_SPLICE_MATCH_DIST,
-              MAX_SITE_PER_SLICE, MIN_SUP_CNT, MIN_FL_EXON_LEN,
-              MIN_SUP_PCT, STRAND_SPECIFIC, REMOVE_INCOMP_READS;
+    IsoformParameters parameters;
+    
   public:
     std::string ch;
     
@@ -51,7 +51,7 @@ class Isoforms
     std::map<std::string, std::vector<std::vector<int>>> 
     ge_dict;
 
-    Isoforms(std::string ch, std::map<std::string, int> config);
+    Isoforms(std::string ch, IsoformParameters parameters);
     void add_isoform(Junctions junctions, bool is_reversed);
     void add_one(Junctions junctions, bool strand);
     void update_one(Junctions junctions, std::vector<int> key, bool strand);

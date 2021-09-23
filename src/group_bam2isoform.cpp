@@ -1,5 +1,29 @@
 #include "group_bam2isoform.h"
 
+static int
+fetch_function(const bam1_t *b, void *data)
+{
+    std::cout << b->data << ", " << b->core.tid << ", " << b->core.pos << ", " << b->core.l_qseq << "\n";
+	return 0;
+}
+
+// [[Rcpp::export]]
+void
+bam_read (
+    std::string bam_in
+)
+{
+    // read a bamfile
+    bamFile bam = bam_open(bam_in.c_str(), "r"); // bam.h
+    bam_index_t *bam_index = bam_index_load(bam_in.c_str());
+    bam_header_t *header = bam_header_read(bam); // bam.h
+    bam_close(bam);
+
+    std::cout << "bamfile is done\n";
+    
+    auto it_region = bam_fetch(bam, bam_index, 0, 0, 1000, 0, fetch_function);
+}
+
 void
 group_bam2isoform (
     std::string bam_in, 
@@ -54,7 +78,7 @@ group_bam2isoform (
     for (const auto & [chr, blocks] : chr_to_blocks) {
         for (const auto & block : blocks) {
             // extract this from the bam file
-            // auto it_region = bam_fetch(bam, bam_index, );
+            auto it_region = bam_fetch(bam, bam_index, 0, block.start, block.end, 0, fetch_function);
 
             auto TSS_TES_site = get_TSS_TES_site(transcript_to_junctions, block.transcript_list);
             auto tmp_isoform = Isoforms(chr, config);

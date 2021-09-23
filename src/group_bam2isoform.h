@@ -2,12 +2,17 @@
 #include <map>
 #include <vector>
 #include <fstream>
+#include <iostream>
+#include <stdio.h>
+#include <Rcpp.h>
 
 #include "GeneBlocks.h"
 #include "junctions.h"
 #include "misc.h"
 #include "Isoforms.h"
 #include "bam.h"
+
+using namespace Rcpp;
 
 void
 group_bam2isoform (

@@ -1,15 +1,6 @@
 #include "Isoforms.h"
 
-Isoforms::Isoforms(std::string ch, std::map<std::string, int> config)
-: MAX_DIST              (config["MAX_DIST"]),               // Maximum distance
-  MAX_TS_DIST           (config["MAX_TS_DIST"]),            // Maximum TS (?) distance
-  MAX_SPLICE_MATCH_DIST (config["MAX_SPLICE_MATCH_DIST"]),  // Maximum splice match distance
-  MAX_SITE_PER_SLICE    (config["Max_site_per_splice"]),    // Maximum number of sites per slice
-  MIN_SUP_CNT           (config["Min_sup_cnt"]),            // Minimum support count
-  MIN_FL_EXON_LEN       (config["min_fl_exon_len"]),        // Minimum FL (?) exon length
-  MIN_SUP_PCT           (config["Min_sup_pct"]),            // Minimum support PCT (?)
-  STRAND_SPECIFIC       (config["strand_specific"]),        // Strand specific
-  REMOVE_INCOMP_READS   (config["remove_incomp_reads"])     // Remove incomprehensible (?) reads
+Isoforms::Isoforms(std::string ch, IsoformParameters parameters)
 {
   /*
     initialises the object,
@@ -19,7 +10,7 @@ Isoforms::Isoforms(std::string ch, std::map<std::string, int> config)
     (I have no idea, that's how they were when I found them)
     (change it later)
   */
-
+  this->parameters = parameters;
   this->ch = ch;
 }
 
@@ -53,8 +44,8 @@ void Isoforms::add_isoform(Junctions junctions, bool is_reversed)
         // check if there's anything very close to the key
         bool found = false;
         for (auto const & [current_key, current_value] : this->single_block_dict) {
-          if ((abs(current_key.first - target_key.first) < this->MAX_TS_DIST) and
-              (abs(current_key.second - target_key.second) < this->MAX_TS_DIST)) {
+          if ((abs(current_key.first - target_key.first) < this->parameters.MAX_TS_DIST) and
+              (abs(current_key.second - target_key.second) < this->parameters.MAX_TS_DIST)) {
             // we've found one that's very similar
             // just update it
             this->update_one(junctions, {current_key.first, current_key.second}, is_reversed);
@@ -95,7 +86,7 @@ void Isoforms::add_isoform(Junctions junctions, bool is_reversed)
             
             bool similar = true;
             for (int i = 0; i < current_key.size(); i++) {
-              if (abs(junctions.junctions[i] - current_key[i]) > this->MAX_DIST) {
+              if (abs(junctions.junctions[i] - current_key[i]) > this->parameters.MAX_DIST) {
                 // they are too far apart
                 similar = false;
                 break;
@@ -144,7 +135,7 @@ void Isoforms::add_one(Junctions junctions, bool strand)
     if (strand) {
       multiplier = -1;
     }
-    this->new_strand_counts[std::vector<int> {key.first, key.second}].push_back(multiplier * this->STRAND_SPECIFIC);
+    this->new_strand_counts[std::vector<int> {key.first, key.second}].push_back(multiplier * this->parameters.STRAND_SPECIFIC);
   } else { // multi-exon reads
     this->junction_dict[junctions.junctions] = this->junction_list.size();
     this->junction_list.push_back({junctions.junctions});
@@ -157,7 +148,7 @@ void Isoforms::add_one(Junctions junctions, bool strand)
     if (strand) {
       multiplier = -1;
     }
-    this->new_strand_counts[junctions.junctions].push_back(multiplier * this->STRAND_SPECIFIC);
+    this->new_strand_counts[junctions.junctions].push_back(multiplier * this->parameters.STRAND_SPECIFIC);
   }
 }
 
@@ -182,10 +173,10 @@ void Isoforms::update_one(Junctions junctions, std::vector<int> key, bool strand
     this->lr_pair[key].push_back(std::pair<int, int> {junctions.left[0], junctions.right[0]});
   }
   int multiplier = 1;
-  if (this->STRAND_SPECIFIC) {
+  if (this->parameters.STRAND_SPECIFIC) {
     multiplier = -1;
   }
-  this->new_strand_counts[key].push_back(multiplier * this->STRAND_SPECIFIC);
+  this->new_strand_counts[key].push_back(multiplier * this->parameters.STRAND_SPECIFIC);
 }
 
 /* returns the length of the Isoforms object 
@@ -213,7 +204,7 @@ void Isoforms::update_all_splice()
 
   // look through junction_dict
   for (auto const& [key, val] : this->junction_dict) {
-    if (this->junction_list[val].size() >= this->MIN_SUP_CNT) {
+    if (this->junction_list[val].size() >= this->parameters.STRAND_SPECIFIC) {
       // variable to store the counts
       std::map<std::vector<int>, int>
       junction_list_counts;
@@ -250,7 +241,7 @@ void Isoforms::update_all_splice()
 
   // look through single_block_dict
   for (auto const& [key, val] : this->single_block_dict) {
-    if (this->single_blocks[val].size() >= this->MIN_SUP_CNT) {
+    if (this->single_blocks[val].size() >= this->parameters.STRAND_SPECIFIC) {
       // make and populate a counter for single_blocks
       std::map<std::pair<int, int>, int>
       single_blocks_counts;
@@ -362,7 +353,7 @@ void Isoforms::filter_TSS_TES(std::ofstream out_f, Junctions known_site={}, floa
         int
         clo_p = take_closest(tmp, fs[it]);
 
-        if (abs(clo_p - fs[it]) > this->MAX_TS_DIST / 2) {
+        if (abs(clo_p - fs[it]) > this->parameters.MAX_TS_DIST / 2) {
           tmp.push_back(fs[it]);
         }
       }
@@ -374,7 +365,7 @@ void Isoforms::filter_TSS_TES(std::ofstream out_f, Junctions known_site={}, floa
         int clo_p = take_closest(tmp, s);
         
         // add it to tmp if it's far enough away
-        if (abs(clo_p - s) > this->MAX_TS_DIST) {
+        if (abs(clo_p - s) > this->parameters.MAX_TS_DIST) {
           tmp.push_back(s);
         }
       }
@@ -402,7 +393,7 @@ void Isoforms::filter_TSS_TES(std::ofstream out_f, Junctions known_site={}, floa
   std::vector<int>
   cnt_r;
 
-  if ((left_counts.size() < this->MIN_SUP_CNT) || (right_counts.size() < this->MIN_SUP_CNT)) {
+  if ((left_counts.size() < this->parameters.STRAND_SPECIFIC) || (right_counts.size() < this->parameters.STRAND_SPECIFIC)) {
     return;
   } else {
     // left
@@ -494,8 +485,8 @@ void Isoforms::filter_TSS_TES(std::ofstream out_f, Junctions known_site={}, floa
         take_closest(cnt_r, p.first.second)
       };
 
-      if ((abs(cl_p.first - p.first.first) < (0.5 * this->MAX_TS_DIST)) and
-          (abs(cl_p.second - p.first.second) < 0.5 * this->MAX_TS_DIST)) {
+      if ((abs(cl_p.first - p.first.first) < (0.5 * this->parameters.MAX_TS_DIST)) and
+          (abs(cl_p.second - p.first.second) < 0.5 * this->parameters.MAX_TS_DIST)) {
         if (pair_after_filtering.size() > 0) {
           // line 650 of sc_longread.py
 
@@ -515,7 +506,7 @@ void Isoforms::filter_TSS_TES(std::ofstream out_f, Junctions known_site={}, floa
             abs(take_closest(pair_after_filtering_right, cl_p.second) - cl_p.second)
           );
 
-          if (distance > this->MAX_TS_DIST) {
+          if (distance > this->parameters.MAX_TS_DIST) {
             if ((cl_p.first < pair.first.front()) and cl_p.second > pair.first.back()) {
               pair_after_filtering.push_back(cl_p);
             }
@@ -527,7 +518,7 @@ void Isoforms::filter_TSS_TES(std::ofstream out_f, Junctions known_site={}, floa
         }
 
         // but we only want to allow up to MAX_SITE_PER_SLICE combinations
-        if (pair_after_filtering.size() >= this->MAX_SITE_PER_SLICE) {
+        if (pair_after_filtering.size() >= this->parameters.MAX_SITE_PER_SPLICE) {
           break;
         }
       }
@@ -539,7 +530,7 @@ void Isoforms::filter_TSS_TES(std::ofstream out_f, Junctions known_site={}, floa
         // we need to sum up all of the elements in tmp_pair that meet our criteria
         int sum = 0;
         for (const auto & it : tmp_pair) {
-          if ((abs(it.first.first - p.first.first) + abs(it.first.second - p.first.second)) < this->MAX_TS_DIST) {
+          if ((abs(it.first.first - p.first.first) + abs(it.first.second - p.first.second)) < this->parameters.MAX_TS_DIST) {
             sum += it.second;
           }
         }
@@ -571,7 +562,7 @@ void Isoforms::filter_TSS_TES(std::ofstream out_f, Junctions known_site={}, floa
             abs(take_closest(pair_after_filtering_right, p.first.second) - p.first.second)
           );
 
-          if ((distance > this->MAX_TS_DIST) and 
+          if ((distance > this->parameters.MAX_TS_DIST) and 
               (p.first.first < pair.first.front()) and 
               (p.first.second > pair.first.back())) {
             // append the key of p
@@ -583,7 +574,7 @@ void Isoforms::filter_TSS_TES(std::ofstream out_f, Junctions known_site={}, floa
         }
 
         // we only want up to MAX_SITE_PER_SLICE combinations
-        if (pair_after_filtering.size() >= this->MAX_SITE_PER_SLICE) {
+        if (pair_after_filtering.size() >= this->parameters.MAX_SITE_PER_SPLICE) {
           // so just disreagard any after that point
           break;
         }
@@ -595,13 +586,13 @@ void Isoforms::filter_TSS_TES(std::ofstream out_f, Junctions known_site={}, floa
     for (const auto & p : pair_after_filtering) {
       // now we want to add the values of keys matching certain criteria
       for (const auto & it : tmp_pair) {
-        if ((abs(it.first.first - p.first) + abs(it.first.second - p.second)) < this->MAX_TS_DIST) {
+        if ((abs(it.first.first - p.first) + abs(it.first.second - p.second)) < this->parameters.MAX_TS_DIST) {
           support_count_total += it.second;
         }
       }
     }
 
-    if ((float(support_count_total) / this->lr_pair.size()) <= this->MIN_SUP_PCT) {
+    if ((float(support_count_total) / this->lr_pair.size()) <= this->parameters.MIN_SUP_PCT) {
       // not enough support counts - this often happens in the case when the TSS/TES is strongly degraded
 
       if (pair_enrich.size() == 0) {
@@ -610,7 +601,7 @@ void Isoforms::filter_TSS_TES(std::ofstream out_f, Junctions known_site={}, floa
           // we need to sum up all of the elements in tmp_pair that meet our criteria
           int sum = 0;
           for (const auto & it : tmp_pair) {
-            if ((abs(it.first.first - p.first.first) + abs(it.first.second - p.first.second)) < this->MAX_TS_DIST) {
+            if ((abs(it.first.first - p.first.first) + abs(it.first.second - p.first.second)) < this->parameters.MAX_TS_DIST) {
               sum += it.second;
             }
           }
@@ -649,7 +640,7 @@ void Isoforms::filter_TSS_TES(std::ofstream out_f, Junctions known_site={}, floa
         // add up the values to assign to raw_isoforms
         int sum = 0;
         for (const auto & it : tmp_pair) {
-          if (abs(it.first.first - p.first) + abs(it.first.second - p.second) < this->MAX_TS_DIST) {
+          if (abs(it.first.first - p.first) + abs(it.first.second - p.second) < this->parameters.MAX_TS_DIST) {
             sum += it.second;
           }
         }
@@ -712,7 +703,7 @@ void Isoforms::match_known_annotation (
     for (const auto & i : one_block.transcript_list) {
       int tmp_std;
 
-      if (this->STRAND_SPECIFIC == 0) {
+      if (this->parameters.STRAND_SPECIFIC == 0) {
         // we need to convert the pair to a vector for this lookup
         tmp_std = this->strand_counts[{exon_key.first, exon_key.second}];
       } else {
@@ -722,8 +713,8 @@ void Isoforms::match_known_annotation (
 
       if ((transcript_to_junctions[i].junctions.size() == 0) &&
           (tmp_std == this->strand_counts[{exon_key.first, exon_key.second}])) {
-        if ((abs(exon_key.first - transcript_to_junctions[i].left[0]) < this->MAX_TS_DIST) &&
-            (abs(exon_key.second - transcript_to_junctions[i].right[0]) < this->MAX_TS_DIST)) {
+        if ((abs(exon_key.first - transcript_to_junctions[i].left[0]) < this->parameters.MAX_TS_DIST) &&
+            (abs(exon_key.second - transcript_to_junctions[i].right[0]) < this->parameters.MAX_TS_DIST)) {
           std::pair<int, int>
           known_exons = {transcript_to_junctions[i].left[0], transcript_to_junctions[i].right[0]};
           if (this->known_isoforms.count({known_exons.first, known_exons.second})) { // check if it is already known
@@ -740,7 +731,7 @@ void Isoforms::match_known_annotation (
               i,
               transcript_dict[i].parent_id
             };
-            if (!this->STRAND_SPECIFIC) {
+            if (!this->parameters.STRAND_SPECIFIC) {
               this->strand_counts[{known_exons.first, known_exons.second}] = 1;
               if (transcript_dict[i].strand == '-') {
                 this->strand_counts[{known_exons.first, known_exons.second}] = -1;
@@ -771,7 +762,7 @@ void Isoforms::match_known_annotation (
     int tmp_std;
 
     for (const auto & i : one_block.transcript_list) {
-      if (!this->STRAND_SPECIFIC) {
+      if (!this->parameters.STRAND_SPECIFIC) {
         tmp_std = this->strand_counts[raw_iso_key];
       } else {
         transcript_dict[i].strand == '+' ? tmp_std = 1 : tmp_std = -1;
@@ -782,7 +773,7 @@ void Isoforms::match_known_annotation (
           (tmp_std == this->strand_counts[raw_iso_key])) {
         int iso_is_within_max_dist = 1;
         for (int j = 0; j < std::min(raw_iso_key.size() - 1, transcript_to_junctions[i].junctions.size()); j++) {
-          if (abs(raw_iso_key[j+1] - transcript_to_junctions[i].junctions[j]) > this->MAX_DIST) {
+          if (abs(raw_iso_key[j+1] - transcript_to_junctions[i].junctions[j]) > this->parameters.MAX_DIST) {
             // we don't want any to be greater than MAX_DIST
             iso_is_within_max_dist = 0;
             break;
@@ -790,8 +781,8 @@ void Isoforms::match_known_annotation (
         }
 
         if (iso_is_within_max_dist) {
-          if ((abs(raw_iso_key.front() - transcript_to_junctions[i].left[0]) < this->MAX_DIST) &&
-              (abs(raw_iso_key.back() - transcript_to_junctions[i].right[0]) < this->MAX_DIST)) {
+          if ((abs(raw_iso_key.front() - transcript_to_junctions[i].left[0]) < this->parameters.MAX_DIST) &&
+              (abs(raw_iso_key.back() - transcript_to_junctions[i].right[0]) < this->parameters.MAX_DIST)) {
             // populate known_exons with transcript_to_junctions
             std::vector<int>
             known_exons = {transcript_to_junctions[i].left[0]};
@@ -815,7 +806,7 @@ void Isoforms::match_known_annotation (
                 transcript_dict[i].parent_id
               };
 
-              if (!this->STRAND_SPECIFIC) {
+              if (!this->parameters.STRAND_SPECIFIC) {
                 // if it's not strand specific protocal, use annotation
                 this->strand_counts[known_exons] = 1;
                 if (transcript_dict[i].strand == '-') {
@@ -835,7 +826,7 @@ void Isoforms::match_known_annotation (
 
     if (!found) {
       std::vector<int>
-      new_exons = find_best_splice_chain(raw_iso_key, junction_list, this->MAX_SPLICE_MATCH_DIST);
+      new_exons = find_best_splice_chain(raw_iso_key, junction_list, this->parameters.MAX_SPLICE_MATCH_DIST);
 
       int is_strictly_increasing = 1;
       for (int i = 0; i < new_exons.size() - 1; i++) {
@@ -856,7 +847,7 @@ void Isoforms::match_known_annotation (
         if (i == 0) { // the left-most site
           int closest = take_closest(TSS_TES_site.left, a_site);
 
-          if ((abs(closest - a_site) < this->MAX_TS_DIST) && 
+          if ((abs(closest - a_site) < this->parameters.MAX_TS_DIST) && 
               (abs(closest < raw_iso_key[i + 1]))) {
             new_exons[i] = closest;
           } else {
@@ -870,7 +861,7 @@ void Isoforms::match_known_annotation (
           }
           int closest = take_closest(splice_site_vec, a_site);
 
-          if ((abs(closest - a_site) < this->MAX_SPLICE_MATCH_DIST) &&
+          if ((abs(closest - a_site) < this->parameters.MAX_SPLICE_MATCH_DIST) &&
               (closest > new_exons.back()) &&
               (closest < raw_iso_key[i + 1])) {
             new_exons[i] = closest;
@@ -879,7 +870,7 @@ void Isoforms::match_known_annotation (
           }
         } else { // then it must be the right-most site
           int closest = take_closest(TSS_TES_site.right, a_site);
-          if ((abs(closest - a_site) < this->MAX_TS_DIST) &&
+          if ((abs(closest - a_site) < this->parameters.MAX_TS_DIST) &&
               (closest > new_exons.back())) {
             new_exons[i] = closest;
           } else {
@@ -912,7 +903,7 @@ void Isoforms::match_known_annotation (
   // line 800 of sc_longread.py
 
   // remove incomplete transcript (due to 3' bias)
-  if (this->REMOVE_INCOMP_READS) {
+  if (this->parameters.REMOVE_INCOMP_READS) {
     std::vector<std::vector<int>>
     delete_key;
 
@@ -971,9 +962,9 @@ void Isoforms::match_known_annotation (
           }
         }
 
-        if ((new_isoform_key.size() < known_isoform_key.size()) && if_exon_contains(known_isoform_key, new_isoform_key, this->MAX_TS_DIST)) {
+        if ((new_isoform_key.size() < known_isoform_key.size()) && if_exon_contains(known_isoform_key, new_isoform_key, this->parameters.MAX_TS_DIST)) {
           float sim_pct_sq = pow(get_exon_sim_pct(new_isoform_key, known_isoform_key), 2);
-          if (new_isoform_val.support_count < (1 + sim_pct_sq * this->REMOVE_INCOMP_READS) * this->known_isoforms[known_isoform_key].support_count) {
+          if (new_isoform_val.support_count < (1 + sim_pct_sq * this->parameters.REMOVE_INCOMP_READS) * this->known_isoforms[known_isoform_key].support_count) {
             // remove keys with too much similarity in coverage
             delete_key.push_back(new_isoform_key);
             break;
@@ -1008,7 +999,7 @@ void Isoforms::match_known_annotation (
       for (const auto & [known_isoform_key, known_isoform_va] : exons_dict) {
         if (!this->known_isoforms.count(known_isoform_key)) {
           if (new_isoform_key.size() < known_isoform_key.size() &&
-              if_exon_contains(known_isoform_key, new_isoform_key, this->MAX_TS_DIST)) {
+              if_exon_contains(known_isoform_key, new_isoform_key, this->parameters.MAX_TS_DIST)) {
             auto 
             sim_pct = get_exon_sim_pct(new_isoform_key, known_isoform_key);
 
@@ -1068,19 +1059,19 @@ void Isoforms::match_known_annotation (
       for (int i = 0; i<isos.size() - 1; i++) {
         for (int j = i+1; j < isos.size(); j++) {
           if (isos[i].size() < isos[j].size() &&
-              if_exon_contains(isos[j], isos[i], this->MAX_TS_DIST)) {
+              if_exon_contains(isos[j], isos[i], this->parameters.MAX_TS_DIST)) {
             auto 
             sim_pct_sq = pow(get_exon_sim_pct(isos[j], isos[i]), 2);
             
-            if (this->new_isoforms[isos[i]].support_count < sim_pct_sq * this->REMOVE_INCOMP_READS * this->new_isoforms[isos[j]].support_count) {
+            if (this->new_isoforms[isos[i]].support_count < sim_pct_sq * this->parameters.REMOVE_INCOMP_READS * this->new_isoforms[isos[j]].support_count) {
               delete_key.push_back(isos[i]);
             }
           } else if (isos[i].size() > isos[j].size() && 
-                      if_exon_contains(isos[i], isos[j], this->MAX_TS_DIST)) {
+                      if_exon_contains(isos[i], isos[j], this->parameters.MAX_TS_DIST)) {
             auto 
             sim_pct_sq = pow(get_exon_sim_pct(isos[j], isos[i]), 2);
 
-            if (this->new_isoforms[isos[i]].support_count < sim_pct_sq * this->REMOVE_INCOMP_READS * this->new_isoforms[isos[j]].support_count) {
+            if (this->new_isoforms[isos[i]].support_count < sim_pct_sq * this->parameters.REMOVE_INCOMP_READS * this->new_isoforms[isos[j]].support_count) {
               delete_key.push_back(isos[j]);
             }
           }
@@ -1125,7 +1116,7 @@ void Isoforms::match_known_annotation (
         tmp.push_back({exon_overlap(isoform_key, gene_dict[ge]), ge});
       }
 
-      if (this->STRAND_SPECIFIC) { // if it has strand-specific protocol, use read
+      if (this->parameters.STRAND_SPECIFIC) { // if it has strand-specific protocol, use read
         char stnd = this->strand_counts[isoform_key] == 1 ? '+' : '-';
 
         // update tmp, only including values which match the sign
@@ -1160,7 +1151,7 @@ void Isoforms::match_known_annotation (
         }
         else if ((exon_overlap(std::vector<int>(isoform_key.begin() + 2, isoform_key.begin() + 4), gene_dict[tmp[0].second]) > 0) &&
                  (exon_overlap(std::vector<int>(isoform_key.end() - 4, isoform_key.end() - 2), gene_dict[tmp[0].second]) > 0)) {
-          if ((isoform_key[1]-isoform_key[0] <= this->MIN_FL_EXON_LEN) && 
+          if ((isoform_key[1]-isoform_key[0] <= this->parameters.MIN_FL_EXON_LEN) && 
               (exon_overlap(std::vector<int>(isoform_key.begin() + 2, isoform_key.begin() + 4), gene_dict[tmp[0].second]) == 0)) {
             auto
             ba = std::vector<char>(fa_dict[this->ch].begin() + isoform_key[0], fa_dict[this->ch].begin() + isoform_key[1]);
@@ -1173,7 +1164,7 @@ void Isoforms::match_known_annotation (
                 tmp[0].second
               };
             }
-          } else if ((isoform_key.back() - isoform_key.rbegin()[1] <= this->MIN_FL_EXON_LEN) &&
+          } else if ((isoform_key.back() - isoform_key.rbegin()[1] <= this->parameters.MIN_FL_EXON_LEN) &&
                     (exon_overlap(std::vector<int>(isoform_key.begin(), isoform_key.begin() + 2), gene_dict[tmp[0].second])== 0)) {
             auto
             ba = std::vector<char>(fa_dict[this->ch].begin() + isoform_key.rbegin()[1], fa_dict[this->ch].begin() + isoform_key.back());
@@ -1191,8 +1182,8 @@ void Isoforms::match_known_annotation (
           }
         } else {
           if (tmp[0].first > 0.8 * iso_len) {
-            if ((isoform_key[1] - isoform_key[0] < this->MIN_FL_EXON_LEN) || 
-                (isoform_key.rbegin()[0] - isoform_key.rbegin()[1] < this->MIN_FL_EXON_LEN)) {
+            if ((isoform_key[1] - isoform_key[0] < this->parameters.MIN_FL_EXON_LEN) || 
+                (isoform_key.rbegin()[0] - isoform_key.rbegin()[1] < this->parameters.MIN_FL_EXON_LEN)) {
               continue; // alignment artifact
             } else {
               // might be real eRNA
@@ -1246,7 +1237,7 @@ void Isoforms::match_known_annotation (
       // and then update the entry with iso_key
       this->ge_dict[iso_val.gene_id].push_back(iso_key);
 
-      if (!this->STRAND_SPECIFIC) {
+      if (!this->parameters.STRAND_SPECIFIC) {
         if (this->strand_counts[iso_key] == 0) {
           this->strand_counts[iso_key] = 1;
           if (transcript_dict[one_block.gene_to_tr[this->new_isoforms[iso_key].gene_id][0]].strand == '-') {
@@ -1353,7 +1344,7 @@ Isoforms::isoform_to_gtt3(int isoform_pct=-1) {
         tp_id << this->known_isoforms[exons].transcript_id;
       }
 
-      if (support_count < this->MIN_SUP_CNT) {
+      if (support_count < this->parameters.STRAND_SPECIFIC) {
         continue;
       }
       auto exon_idx = 1;

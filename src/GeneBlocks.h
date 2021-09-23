@@ -2,6 +2,9 @@
 #include <string>
 #include <map>
 
+#ifndef GENEBLOCKS
+#define GENEBLOCKS
+
 class GeneBlocks
 {
   /*
@@ -21,3 +24,5 @@ class GeneBlocks
 
     void add_gene(int start, int end, std::vector<std::string> transcript_list, std::string a_gene);
 };
+
+#endif
