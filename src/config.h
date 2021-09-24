@@ -1,100 +1,116 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <RcppCommon.h>
+#include <iostream>
+#include <Rcpp.h>
 
 #ifndef CONFIG
 #define CONFIG
 
-struct PipelineParameters
+class PipelineParameters
 {
-    bool do_genome_alignment = true;
-    bool do_isoform_identification = true;
-    bool do_read_realignment = true;
-    bool do_transcript_quantification = true;
+    public:
+        bool do_genome_alignment = true;
+        bool do_isoform_identification = true;
+        bool do_read_realignment = true;
+        bool do_transcript_quantification = true;
+
+        Rcpp::List 
+        to_R();
+        void 
+        from_R(Rcpp::List list); 
+        void 
+        print();
 };
 
-struct GlobalParameters
+class GlobalParameters
 {
-    bool generate_raw_isoform = true;
-    bool has_UMI = false;
+    public:
+        bool generate_raw_isoform = true;
+        bool has_UMI = false;
+
+        Rcpp::List to_R();
+        void from_R(Rcpp::List list); 
+        void print();
 };
 
-struct IsoformParameters 
+class IsoformParameters 
 {
-    int MAX_DIST = 10;
-    int MAX_TS_DIST = 100;
-    int MAX_SPLICE_MATCH_DIST = 10;
-    int MIN_FL_EXON_LEN = 40;
-    int MAX_SITE_PER_SPLICE = 3;
-    int MIN_SUP_CNT = 10;
+    public:
+        int MAX_DIST = 10;
+        int MAX_TS_DIST = 100;
+        int MAX_SPLICE_MATCH_DIST = 10;
+        int MIN_FL_EXON_LEN = 40;
+        int MAX_SITE_PER_SPLICE = 3;
+        int MIN_SUP_CNT = 10;
 
-    float MIN_CNT_PCT = 0.01;
-    float MIN_SUP_PCT = 0.2;
+        float MIN_CNT_PCT = 0.01;
+        float MIN_SUP_PCT = 0.2;
 
-    int STRAND_SPECIFIC = 1;
-    int REMOVE_INCOMP_READS = 5;
+        int STRAND_SPECIFIC = 1;
+        int REMOVE_INCOMP_READS = 5;
+
+        Rcpp::List to_R();
+        void from_R(Rcpp::List list); 
+        void print();
 };
 
-struct AlignmentParameters 
+class AlignmentParameters 
 {
-    bool use_junctions = true;
-    bool no_flank = true;
+    public:
+        bool use_junctions = true;
+        bool no_flank = true;
+
+        Rcpp::List to_R();
+        void from_R(Rcpp::List list); 
+        void print();
 };
 
-struct RealignParameters
+class RealignParameters
 {
-    bool use_annotation = true;
+    public:
+        bool use_annotation = true;
+
+        Rcpp::List to_R();
+        void from_R(Rcpp::List list); 
+        void print();
 };
 
-struct TranscriptCounting
+class TranscriptCounting
 {
-    float min_tr_coverage = 0.75;
-    float min_read_coverage = 0.75;
+    public:
+        float min_tr_coverage = 0.75;
+        float min_read_coverage = 0.75;
+
+        Rcpp::List to_R();
+        void from_R(Rcpp::List list); 
+        void print();
 };
 
-struct Config
+class Config
 {
-    PipelineParameters
-    pipeline_parameters;
+    public:
+        PipelineParameters
+        pipeline_parameters;
 
-    GlobalParameters
-    global_parameters;
+        GlobalParameters
+        global_parameters;
 
-    IsoformParameters
-    isoform_parameters;
+        IsoformParameters
+        isoform_parameters;
 
-    AlignmentParameters
-    alignment_parameters;
+        AlignmentParameters
+        alignment_parameters;
 
-    RealignParameters
-    realign_parameters;
+        RealignParameters
+        realign_parameters;
 
-    TranscriptCounting
-    transcript_counting;
+        TranscriptCounting
+        transcript_counting;
+
+        Rcpp::List to_R();
+        void from_R(Rcpp::List list); 
+        void print();
 };
 
 #endif
-
-namespace Rcpp {
-    template <>
-    SEXP wrap(const PipelineParameters& pipeline_parameters);
-
-    template <>
-    SEXP wrap(const GlobalParameters& global_parameters);
-
-    template <>
-    SEXP wrap(const IsoformParameters& isoform_parameters);
-
-    template <>
-    SEXP wrap(const AlignmentParameters& alignment_parameters);
-
-    template <>
-    SEXP wrap(const RealignParameters& realign_parameters);
-    
-    template <>
-    SEXP wrap(const TranscriptCounting& transcript_counting);
-    
-    template <>
-    SEXP wrap(const Config& config);
-}

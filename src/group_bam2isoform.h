@@ -25,6 +25,6 @@ group_bam2isoform (
     std::map<std::string, Junctions> transcript_to_junctions,
     std::map<std::string, Pos> transcript_dict,
     std::string fa_f,
-    std::map<std::string, int> config,
+    Config config,
     std::string raw_gff3
 );

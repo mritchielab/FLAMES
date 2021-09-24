@@ -67,9 +67,9 @@ if_exon_contains(std::vector<int> s1, std::vector<int> s2, int MAX_TOLERANCE)
 {
   /*
     checks if s2 is in s1
-    searching for exact match
+    only searches for exact matches
   */
-  
+
   if (s2.size() == 2) { // ignore single exon transcripts 
     return 0;
   }

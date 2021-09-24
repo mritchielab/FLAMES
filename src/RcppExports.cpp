@@ -56,8 +56,23 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// minimap2_align_cpp
+void minimap2_align_cpp(std::string mm2_prog_path, std::string fa_file, std::string fq_in, std::string sam_out, bool no_flank, std::string bed12_junc);
+RcppExport SEXP _FLAMES_minimap2_align_cpp(SEXP mm2_prog_pathSEXP, SEXP fa_fileSEXP, SEXP fq_inSEXP, SEXP sam_outSEXP, SEXP no_flankSEXP, SEXP bed12_juncSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type mm2_prog_path(mm2_prog_pathSEXP);
+    Rcpp::traits::input_parameter< std::string >::type fa_file(fa_fileSEXP);
+    Rcpp::traits::input_parameter< std::string >::type fq_in(fq_inSEXP);
+    Rcpp::traits::input_parameter< std::string >::type sam_out(sam_outSEXP);
+    Rcpp::traits::input_parameter< bool >::type no_flank(no_flankSEXP);
+    Rcpp::traits::input_parameter< std::string >::type bed12_junc(bed12_juncSEXP);
+    minimap2_align_cpp(mm2_prog_path, fa_file, fq_in, sam_out, no_flank, bed12_junc);
+    return R_NilValue;
+END_RCPP
+}
 // parse_json_config_cpp
-Config parse_json_config_cpp(std::string json_file);
+Rcpp::List parse_json_config_cpp(std::string json_file);
 RcppExport SEXP _FLAMES_parse_json_config_cpp(SEXP json_fileSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -67,13 +82,25 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// print_config_cpp
+void print_config_cpp(Rcpp::List list);
+RcppExport SEXP _FLAMES_print_config_cpp(SEXP listSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::List >::type list(listSEXP);
+    print_config_cpp(list);
+    return R_NilValue;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_FLAMES_flames_test_func", (DL_FUNC) &_FLAMES_flames_test_func, 0},
     {"_FLAMES_bam_read", (DL_FUNC) &_FLAMES_bam_read, 1},
     {"_FLAMES_match_cell_barcode", (DL_FUNC) &_FLAMES_match_cell_barcode, 6},
     {"_FLAMES_merge_bulk_fastq_cpp", (DL_FUNC) &_FLAMES_merge_bulk_fastq_cpp, 2},
+    {"_FLAMES_minimap2_align_cpp", (DL_FUNC) &_FLAMES_minimap2_align_cpp, 6},
     {"_FLAMES_parse_json_config_cpp", (DL_FUNC) &_FLAMES_parse_json_config_cpp, 1},
+    {"_FLAMES_print_config_cpp", (DL_FUNC) &_FLAMES_print_config_cpp, 1},
     {NULL, NULL, 0}
 };
 

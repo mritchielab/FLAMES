@@ -9,9 +9,7 @@ fetch_function(const bam1_t *b, void *data)
 
 // [[Rcpp::export]]
 void
-bam_read (
-    std::string bam_in
-)
+bam_read (std::string bam_in)
 {
     // read a bamfile
     bamFile bam = bam_open(bam_in.c_str(), "r"); // bam.h
@@ -35,15 +33,15 @@ group_bam2isoform (
     std::map<std::string, Junctions> transcript_to_junctions,
     std::map<std::string, Pos> transcript_dict,
     std::string fa_f,
-    std::map<std::string, int> config,
+    Config config,
     std::string raw_gff3 = ""
 )
 {
-    if (config.count("random_seed")) {
-        srand(config["random_seed"]);
-    } else {
-        srand(666666);
-    }
+    // if (config.count("random_seed")) {
+    //     srand(config["random_seed"]);
+    // } else {
+    //     srand(666666);
+    // }
 
     // read a bamfile
     bamFile bam = bam_open(bam_in.c_str(), "r"); // bam.h
@@ -81,7 +79,7 @@ group_bam2isoform (
             auto it_region = bam_fetch(bam, bam_index, 0, block.start, block.end, 0, fetch_function);
 
             auto TSS_TES_site = get_TSS_TES_site(transcript_to_junctions, block.transcript_list);
-            auto tmp_isoform = Isoforms(chr, config);
+            auto tmp_isoform = Isoforms(chr, config.isoform_parameters);
         }
     }
 }

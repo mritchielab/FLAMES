@@ -3,10 +3,11 @@
 GeneBlocks::GeneBlocks (int start, int end, std::vector<std::string> transcript_list, std::string a_gene)
 {
   /* 
-    initializes all of the object properties 
+    initializes the object attributes
   */
  
-  this->start = start; this->end = end;
+  this->start = start;
+  this->end = end;
   this->transcript_list = transcript_list;
   this->gene_to_transcript[a_gene] = transcript_list;
 }

@@ -1,7 +1,7 @@
 #include "parse_json_config.h"
 
 // [[Rcpp::export]]
-Config
+Rcpp::List
 parse_json_config_cpp(std::string json_file)
 {
   std::ifstream file(json_file);
@@ -15,7 +15,17 @@ parse_json_config_cpp(std::string json_file)
     std::cout << "problem with config; expect errors!!\n";
   }
 
-  return load_json_config(json);
+  return load_json_config(json).to_R();
+}
+
+// [[Rcpp::export]]
+void
+print_config_cpp(Rcpp::List list)
+{
+  Config config;
+  config.from_R(list);
+  std::cout << "\tParameters in configuration file:\n";
+  config.print();
 }
 
 int
@@ -109,7 +119,7 @@ verify_json_config(Json::Value json)
 
   // check that these values are valid booleans
   if (!json["global_parameters"]["generate_raw_isoform"].isBool() || 
-      !json["global_parameters"]["has_UMI"].isBool() {
+      !json["global_parameters"]["has_UMI"].isBool()) {
     return 0;
   }
 

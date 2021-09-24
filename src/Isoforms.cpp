@@ -652,6 +652,11 @@ void Isoforms::filter_TSS_TES(std::ofstream out_f, Junctions known_site={}, floa
   }
 }
 
+
+/*
+  this function does most of the heavy lifting in the Isoform class
+  it does of stuff - honestly my eyes glaze over when I try to understand it all at once
+*/
 void Isoforms::match_known_annotation (
   std::map<std::string, Junctions> transcript_to_junctions,
   std::map<std::string, Pos> transcript_dict,
