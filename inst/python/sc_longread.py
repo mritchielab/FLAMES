@@ -1012,6 +1012,10 @@ class Isoforms(object):
 
 
 def group_bam2isoform(bam_in, out_gff3, out_stat, summary_csv, chr_to_blocks, gene_dict, transcript_to_junctions, transcript_dict, fa_f, config, downsample_ratio, raw_gff3=None):
+    print 'group_bam2isoform'
+    print 'config:'
+    print config
+    
     if "random_seed" in config.keys():
         random.seed(config["random_seed"])
     else:
