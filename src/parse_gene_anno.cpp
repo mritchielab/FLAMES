@@ -11,43 +11,42 @@
 
 using namespace Rcpp;
 
-// REMOVE THIS ASAP
-void test_printing(std::unordered_map<String, std::unordered_map<String, bool>> chr_to_gene,
-    std::unordered_map<String, Pos> transcript_dict,
-    std::unordered_map<String, std::unordered_map<String, bool>> gene_to_transcript,
-    std::unordered_map<String, std::list<StartEndPair>> transcript_to_exon) {
+// void test_printing(std::unordered_map<String, std::unordered_map<String, bool>> chr_to_gene,
+//     std::unordered_map<String, Pos> transcript_dict,
+//     std::unordered_map<String, std::unordered_map<String, bool>> gene_to_transcript,
+//     std::unordered_map<String, std::list<StartEndPair>> transcript_to_exon) {
     
-    Rcout << "chr_to_gene:\n";
-    for (auto ch = chr_to_gene.begin(); ch != chr_to_gene.end(); ch++) {
-        Rcout << ch->first.get_cstring() << ":\n";
-        for (auto gene = chr_to_gene[ch->first].begin(); gene != chr_to_gene[ch->first].end(); gene++) {
-            Rcout << "\t" << gene->first.get_cstring() <<"\n";
-        }
-    }
+//     Rcout << "chr_to_gene:\n";
+//     for (auto ch = chr_to_gene.begin(); ch != chr_to_gene.end(); ch++) {
+//         Rcout << ch->first.get_cstring() << ":\n";
+//         for (auto gene = chr_to_gene[ch->first].begin(); gene != chr_to_gene[ch->first].end(); gene++) {
+//             Rcout << "\t" << gene->first.get_cstring() <<"\n";
+//         }
+//     }
 
-    Rcout << "transcript_dict:\n";
-    for (auto tr = transcript_dict.begin(); tr != transcript_dict.end(); tr++) {
-        Rcout << tr->first.get_cstring() << ":\n";
-        Pos pos = tr->second;
-        Rcout << "\tPos(chr='" << pos.chr << "\', start=" << pos.start << ", end=" << pos.end << ", strand=\'" << pos.strand << "\', parent_id=\'" << pos.parent_id << "\')\n";
-    }
+//     Rcout << "transcript_dict:\n";
+//     for (auto tr = transcript_dict.begin(); tr != transcript_dict.end(); tr++) {
+//         Rcout << tr->first.get_cstring() << ":\n";
+//         Pos pos = tr->second;
+//         Rcout << "\tPos(chr='" << pos.chr << "\', start=" << pos.start << ", end=" << pos.end << ", strand=\'" << pos.strand << "\', parent_id=\'" << pos.parent_id << "\')\n";
+//     }
 
-    Rcout << "gene_to_transcript:\n";
-    for (auto gene : gene_to_transcript) {
-        Rcout << gene.first.get_cstring() << ":\n";
-        for (auto tr : gene.second) {
-            Rcout << "\t" << tr.first.get_cstring() <<"\n";
-        }
-    }
+//     Rcout << "gene_to_transcript:\n";
+//     for (auto gene : gene_to_transcript) {
+//         Rcout << gene.first.get_cstring() << ":\n";
+//         for (auto tr : gene.second) {
+//             Rcout << "\t" << tr.first.get_cstring() <<"\n";
+//         }
+//     }
 
-    Rcout << "transcript_to_exon:\n";
-    for (auto tr : transcript_to_exon) {
-        Rcout << tr.first.get_cstring() << ":\n";
-        for (auto pair : tr.second) {
-            Rcout << pair.start << " " << pair.end << "\n";
-        }
-    }
-}
+//     Rcout << "transcript_to_exon:\n";
+//     for (auto tr : transcript_to_exon) {
+//         Rcout << tr.first.get_cstring() << ":\n";
+//         for (auto pair : tr.second) {
+//             Rcout << pair.start << " " << pair.end << "\n";
+//         }
+//     }
+// }
 
 /// Create a Rcpp::List from an unordered_map.
 /// Specificially used for chr_to_gene and gene_to_transcript in order to export each object
@@ -264,7 +263,6 @@ List parse_gff_tree(const char * gff_filename) {
 }
 
 //' Parse a non gzip GTF file
-// THIS IS FINISHED
 List parse_gtf_tree(const char * gtf_filename) {
   // return dictionaries are: chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon
     std::unordered_map<String, std::unordered_map<String, bool>>    chr_to_gene; // map of chr to map of genes (second map for efficient searching)
@@ -349,8 +347,6 @@ List parse_gtf_tree(const char * gtf_filename) {
 //' @return a named list with the elements 
 //' "chr_to_gene", "transcript_dict", "gene_to_transcript", "transcript_to_exon", containing
 //' the data parsed from the gff3 file.
-//' REPLACE THIS NAME TO REPLACE PYTHON VERSION FROM R
-//' THIS WILL BE DIRECTLY CALLED FROM R WITH NO WRAPPER
 //' @export
 // [[Rcpp::export]]
 List parse_gff_tree_cpp(const char * gff_filename) {
