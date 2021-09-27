@@ -11,7 +11,10 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> ed172a7a239bc274fc783946abb0c0cd94124eef
 // flames_test_func
 int flames_test_func();
 RcppExport SEXP _FLAMES_flames_test_func() {
@@ -32,6 +35,9 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+<<<<<<< HEAD
+>>>>>>> ed172a7a239bc274fc783946abb0c0cd94124eef
+=======
 >>>>>>> ed172a7a239bc274fc783946abb0c0cd94124eef
 // match_cell_barcode
 void match_cell_barcode(String fastq_dir, String stats_file, String out_fastq, String ref_csv, int MAX_DIST, int UMI_LEN);
@@ -60,6 +66,7 @@ BEGIN_RCPP
 END_RCPP
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 // parse_gff_tree_cpp
 List parse_gff_tree_cpp(const char * gff_filename);
 RcppExport SEXP _FLAMES_parse_gff_tree_cpp(SEXP gff_filenameSEXP) {
@@ -72,6 +79,8 @@ BEGIN_RCPP
 END_RCPP
 }
 =======
+=======
+>>>>>>> ed172a7a239bc274fc783946abb0c0cd94124eef
 // minimap2_align_cpp
 void minimap2_align_cpp(std::string mm2_prog_path, std::string fa_file, std::string fq_in, std::string sam_out, bool no_flank, std::string bed12_junc);
 RcppExport SEXP _FLAMES_minimap2_align_cpp(SEXP mm2_prog_pathSEXP, SEXP fa_fileSEXP, SEXP fq_inSEXP, SEXP sam_outSEXP, SEXP no_flankSEXP, SEXP bed12_juncSEXP) {
@@ -108,6 +117,9 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+<<<<<<< HEAD
+>>>>>>> ed172a7a239bc274fc783946abb0c0cd94124eef
+=======
 >>>>>>> ed172a7a239bc274fc783946abb0c0cd94124eef
 
 static const R_CallMethodDef CallEntries[] = {
@@ -116,7 +128,13 @@ static const R_CallMethodDef CallEntries[] = {
     {"_FLAMES_match_cell_barcode", (DL_FUNC) &_FLAMES_match_cell_barcode, 6},
     {"_FLAMES_merge_bulk_fastq_cpp", (DL_FUNC) &_FLAMES_merge_bulk_fastq_cpp, 2},
 <<<<<<< HEAD
+<<<<<<< HEAD
     {"_FLAMES_parse_gff_tree_cpp", (DL_FUNC) &_FLAMES_parse_gff_tree_cpp, 1},
+=======
+    {"_FLAMES_minimap2_align_cpp", (DL_FUNC) &_FLAMES_minimap2_align_cpp, 6},
+    {"_FLAMES_parse_json_config_cpp", (DL_FUNC) &_FLAMES_parse_json_config_cpp, 1},
+    {"_FLAMES_print_config_cpp", (DL_FUNC) &_FLAMES_print_config_cpp, 1},
+>>>>>>> ed172a7a239bc274fc783946abb0c0cd94124eef
 =======
     {"_FLAMES_minimap2_align_cpp", (DL_FUNC) &_FLAMES_minimap2_align_cpp, 6},
     {"_FLAMES_parse_json_config_cpp", (DL_FUNC) &_FLAMES_parse_json_config_cpp, 1},

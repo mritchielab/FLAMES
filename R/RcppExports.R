@@ -35,9 +35,6 @@ merge_bulk_fastq_cpp <- function(fastq_files, out_fastq) {
     invisible(.Call(`_FLAMES_merge_bulk_fastq_cpp`, fastq_files, out_fastq))
 }
 
-#' Parse a non gzip GTF file
-NULL
-
 #' Parse a GTF or GFF file
 #' @description
 #' CHANGE NAME TO REPLACE OLD PYTHON VERSION
