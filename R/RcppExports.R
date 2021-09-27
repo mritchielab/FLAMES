@@ -34,12 +34,3 @@ match_cell_barcode <- function(fastq_dir, stats_file, out_fastq, ref_csv, MAX_DI
 merge_bulk_fastq_cpp <- function(fastq_files, out_fastq) {
     invisible(.Call(`_FLAMES_merge_bulk_fastq_cpp`, fastq_files, out_fastq))
 }
-
-#' Parse a GTF or GFF file
-#' @description
-#' CHANGE NAME TO REPLACE OLD PYTHON VERSION
-#' @export
-parse_gff_tree_cpp <- function(gff_filename) {
-    .Call(`_FLAMES_parse_gff_tree_cpp`, gff_filename)
-}
-
