@@ -14,7 +14,10 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> ed172a7a239bc274fc783946abb0c0cd94124eef
 =======
 >>>>>>> ed172a7a239bc274fc783946abb0c0cd94124eef
 =======
@@ -44,6 +47,9 @@ END_RCPP
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> ed172a7a239bc274fc783946abb0c0cd94124eef
+=======
 >>>>>>> ed172a7a239bc274fc783946abb0c0cd94124eef
 =======
 >>>>>>> ed172a7a239bc274fc783946abb0c0cd94124eef
@@ -81,6 +87,7 @@ END_RCPP
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 // parse_gff_tree_cpp
 List parse_gff_tree_cpp(const char * gff_filename);
 RcppExport SEXP _FLAMES_parse_gff_tree_cpp(SEXP gff_filenameSEXP) {
@@ -93,6 +100,8 @@ BEGIN_RCPP
 END_RCPP
 }
 =======
+=======
+>>>>>>> ed172a7a239bc274fc783946abb0c0cd94124eef
 =======
 >>>>>>> ed172a7a239bc274fc783946abb0c0cd94124eef
 =======
@@ -138,6 +147,9 @@ END_RCPP
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> ed172a7a239bc274fc783946abb0c0cd94124eef
+=======
 >>>>>>> ed172a7a239bc274fc783946abb0c0cd94124eef
 =======
 >>>>>>> ed172a7a239bc274fc783946abb0c0cd94124eef
@@ -155,7 +167,13 @@ static const R_CallMethodDef CallEntries[] = {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     {"_FLAMES_parse_gff_tree_cpp", (DL_FUNC) &_FLAMES_parse_gff_tree_cpp, 1},
+=======
+    {"_FLAMES_minimap2_align_cpp", (DL_FUNC) &_FLAMES_minimap2_align_cpp, 6},
+    {"_FLAMES_parse_json_config_cpp", (DL_FUNC) &_FLAMES_parse_json_config_cpp, 1},
+    {"_FLAMES_print_config_cpp", (DL_FUNC) &_FLAMES_print_config_cpp, 1},
+>>>>>>> ed172a7a239bc274fc783946abb0c0cd94124eef
 =======
     {"_FLAMES_minimap2_align_cpp", (DL_FUNC) &_FLAMES_minimap2_align_cpp, 6},
     {"_FLAMES_parse_json_config_cpp", (DL_FUNC) &_FLAMES_parse_json_config_cpp, 1},
