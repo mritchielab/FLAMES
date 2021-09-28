@@ -8,6 +8,7 @@
 #include <fstream>
 #include <sstream>
 #include <cstring>
+#include "Pos.h"
 
 using namespace Rcpp;
 
@@ -23,14 +24,6 @@ struct GFFRecord {
     std::string strand;
     std::string phase;
     std::unordered_map<std::string, std::string> attributes;
-};
-
-struct Pos {
-    std::string chr;
-    int start;
-    int end;
-    std::string strand;
-    std::string parent_id;
 };
 
 struct StartEndPair {

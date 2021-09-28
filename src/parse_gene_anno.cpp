@@ -1,13 +1,4 @@
-#include <unordered_map>
-#include <forward_list>
-#include <list>
-#include <string>
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <cstring>
-#include <Rcpp.h>
-#include "ParseGFF3.h"
+#include "parse_gene_anno.h"
 
 using namespace Rcpp;
 
@@ -200,7 +191,7 @@ List parse_gff_tree(const char * gff_filename) {
                 std::string gene_id = parent_att.substr(find_colon + 1, parent_att.length());
 
                 gene_to_transcript[gene_id][rec.attributes["transcript_id"]] = true;
-                Pos pos {rec.seqid, rec.start-1, rec.end, rec.strand, gene_id};
+                Pos pos {rec.seqid, rec.start-1, rec.end, rec.strand[0], gene_id};
                 transcript_dict[rec.attributes["transcript_id"]] = pos;
             } else if (rec.type == "exon") {
                 std::string parent_att = rec.attributes["Parent"];
@@ -235,7 +226,7 @@ List parse_gff_tree(const char * gff_filename) {
                 std::string gene_id = rec.attributes["Parent"];
 
                 gene_to_transcript[rec.seqid][gene_id] = true;
-                transcript_dict[rec.attributes["transcript_id"]] = Pos {rec.seqid, rec.start-1, rec.end, rec.strand, gene_id};
+                transcript_dict[rec.attributes["transcript_id"]] = Pos {rec.seqid, rec.start-1, rec.end, rec.strand[0], gene_id};
             } else if (rec.type == "exon") {
                 StartEndPair sep {rec.start-1, rec.end};
                 transcript_to_exon[rec.attributes["Parent"]].push_back(sep);
@@ -292,7 +283,7 @@ List parse_gtf_tree(const char * gtf_filename) {
             chr_to_gene[rec.seqid][gene_id] = true;
             
             gene_to_transcript[gene_id][rec.attributes["transcript_id"]] = true;
-            transcript_dict[rec.attributes["transcript_id"]] = Pos {rec.seqid, rec.start-1, rec.end, rec.strand, gene_id};
+            transcript_dict[rec.attributes["transcript_id"]] = Pos {rec.seqid, rec.start-1, rec.end, rec.strand[0], gene_id};
 
         } else if (rec.type == "exon") {
             if (rec.attributes["gene_id"].length() == 0) {
@@ -306,7 +297,7 @@ List parse_gtf_tree(const char * gtf_filename) {
                 // if rec.attributes["transcript_id"] not in transcript_dict
                 if (transcript_dict[rec.attributes["transcript_id"]].chr.length() == 0) {
                     gene_to_transcript[rec.attributes["gene_id"]][rec.attributes["transcript_id"]] = true;
-                    transcript_dict[rec.attributes["transcript_id"]] = Pos {rec.seqid, -1, 1, rec.strand, rec.attributes["gene_id"]};
+                    transcript_dict[rec.attributes["transcript_id"]] = Pos {rec.seqid, -1, 1, rec.strand[0], rec.attributes["gene_id"]};
                 }
 
                 StartEndPair sep {rec.start-1, rec.end};

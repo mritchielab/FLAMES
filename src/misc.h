@@ -8,24 +8,10 @@
 #include <algorithm>
 #include <fstream>
 #include <sstream>
+#include "Pos.h"
 
-#ifndef POS_ISO
-
-#define POS_ISO
-
-// Oliver already wrote this one 
-// - it's just here until we merge our branches
-struct Pos 
-{
-  /*
-    this is a struct to populate junction_dict
-  */
-  std::string chr;
-  int start, end;
-  char strand;
-  std::string parent_id;
-};
-
+#ifndef ISO
+#define ISO
 
 struct Iso
 {

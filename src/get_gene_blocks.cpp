@@ -3,6 +3,8 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <string>
+#include <vector>
 
 #include <unordered_map>
 
@@ -27,8 +29,12 @@ using namespace Rcpp;
 // get_gene_flat which gives gene_dict from gene_to_transcript and transcript_to_exon
 // remove_similar_tr from gene_to_transcript and transcript_to_exon
 // 
-void get_gene_blocks(?? gene_dict, 
-                    std::unordered_map<String, std::unordered_map<String, bool>> chr_to_gene, 
-                    std::unordered_map<String, std::unordered_map<String, bool>> gene_to_transcript) {
+void get_gene_blocks 
+(
+    std::unordered_map<std::string, std::vector<std::pair<int, int>>> gene_dict, 
+    std::unordered_map<String, std::unordered_map<String, bool>> chr_to_gene, 
+    std::unordered_map<String, std::unordered_map<String, bool>> gene_to_transcript
+)
+{
                         
-                    }
+}

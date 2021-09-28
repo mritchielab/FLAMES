@@ -23,13 +23,16 @@ find_isoform_cpp
     // convert the chr_to_gene Rcpp::List to a std::unordered_map
     std::unordered_map<std::string, std::vector<std::string>>
     chr_to_gene;
-    for (const auto & [key, val] : gene_anno["chr_to_gene"]) {
-        chr_to_gene[std::as(key)] = Rcpp::as(val);
-    }
+    // for (const auto & [key, val] : gene_anno["chr_to_gene"]) {
+    //     chr_to_gene[Rcpp::as(key)] = Rcpp::as(val);
+    // }
     
     std::unordered_map<std::string, Pos>
     transcript_dict;
-    
+
+    // for (const auto & [key, val] : gene_anno["chr_to_gene"]) {
+    //     chr_to_gene[Rcpp::as(key)] = val;
+    // }
     
     std::unordered_map<std::string, std::vector<std::string>>
     gene_to_transcript;

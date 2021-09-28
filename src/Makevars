@@ -2,6 +2,8 @@
 ## have "SystemRequirements: GNU make" in the DESCRIPTION file.
 ## See Rhtslib's vignette for details.
 
+CXX_STD = CXX17
+
 RHTSLIB_LIBS=$(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript" -e \
     'Rhtslib::pkgconfig("PKG_LIBS")')
 RHTSLIB_CPPFLAGS=$(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript" -e \
