@@ -1,4 +1,4 @@
-#' Parse Gff3 file
+#' Parse Gff3 file [Depreciated]
 #'
 #' @description
 #' Parse a Gff3 file into 3 components: chromasome to gene name, a transcript dictionary, a gene to transcript dictionary

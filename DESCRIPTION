@@ -28,7 +28,8 @@ Suggests:
     rmarkdown,
     markdown,
     BiocFileCache
-LinkingTo: Rcpp
+LinkingTo: Rcpp, Rhtslib
+SystemRequirements: GNU make, C++11
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr
 URL: https://github.com/OliverVoogd/FLAMES

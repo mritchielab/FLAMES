@@ -10,7 +10,7 @@
 
 #include "edit_dist.h"
 #include "ssw_cpp.h"
-#include "fastq_utils.h"
+#include "fastq_utils.hpp"
 using namespace Rcpp;
 
 //static const int MAX_DIST = 2;

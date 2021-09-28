@@ -1,6 +1,19 @@
-#include "fastq_utils.h"
+#include "fastq_utils.hpp"
+
+
+#ifndef INIT_KSEQ
+#define INIT_KSEQ
+KSEQ_INIT(gzFile, gzread)
+#endif
+
+void REMOVE_WARNINGS() {
+    (void)&kseq_init;
+    (void)&kseq_read;
+    (void)&kseq_destroy;
+}
 
 void fq_gz_write(gzFile out_file, std::string name, std::string qual, std::string seq) {
+    (void)REMOVE_WARNINGS();
     std::stringstream stream;
     stream << "@" << name << "\n" <<
         seq << "\n" <<
