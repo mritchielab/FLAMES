@@ -134,7 +134,7 @@ sc_long_pipeline <-
              min_tr_coverage = 0.75,
              min_read_coverage = 0.75) {
         
-        check_arguments(annot,
+        checked_args <- check_arguments(annot,
             fastq,
             in_bam,
             outdir,
@@ -163,6 +163,8 @@ sc_long_pipeline <-
             use_annotation,
             min_tr_coverage,
             min_read_coverage)
+
+		config_file <- checked_args$config
         
         infq <- NULL
         if (is.null(in_bam)) {
