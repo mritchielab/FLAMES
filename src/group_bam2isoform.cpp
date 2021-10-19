@@ -3,9 +3,11 @@
 static int
 fetch_function(const bam1_t *b, void *data)
 {
-    int * i = (int*)data;
+    int * found = (int*)data;
+    // print out some output
     std::cout << b->data << ", " << b->core.tid << ", " << b->core.pos << ", " << b->core.l_qseq << "\n";
-    (*i) = 6;
+    // and change i to 6 to signify that we've found something
+    (*found)++;
 	return 0;
 }
 
@@ -20,11 +22,11 @@ bam_read (std::string bam_in, int s, int e)
 
     std::cout << "bamfile is done\n";
     
-    int i = 5;
+    int found = 0;
 
-    std::cout << "newi is " << i << "\n";
-    bam_fetch(bam, bam_index, 0, s, e, &i, fetch_function);
-    std::cout << "now i is " << i << " and it region is " << "\n";
+    std::cout << "found is " << i << "\n";
+    auto it_region = bam_fetch(bam, bam_index, 0, s, e, &found, fetch_function);
+    std::cout << "now found is " << found << " and it region is " << it_region << "\n";
 
     bam_close(bam);
 }
