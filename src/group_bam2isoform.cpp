@@ -24,7 +24,7 @@ bam_read (std::string bam_in, int s, int e)
     
     int found = 0;
 
-    std::cout << "found is " << i << "\n";
+    std::cout << "found is " << found << "\n";
     auto it_region = bam_fetch(bam, bam_index, 0, s, e, &found, fetch_function);
     std::cout << "now found is " << found << " and it region is " << it_region << "\n";
 
