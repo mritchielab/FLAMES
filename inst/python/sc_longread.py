@@ -1037,9 +1037,16 @@ def group_bam2isoform(bam_in, out_gff3, out_stat, summary_csv, chr_to_blocks, ge
         #    continue
         for ith, bl in enumerate(chr_to_blocks[ch]):
             it_region = bamfile.fetch(ch, bl.s, bl.e)
+            print 'reading file '
+            print bam_in
+            print 'at '
+            print ch
+            print bl.s
+            print bl.e
             TSS_TES_site = get_TSS_TES_site(transcript_to_junctions, bl.transcript_list)
             tmp_isoform = Isoforms(ch, config)
             for rec in it_region:
+                print 'found a rec in this one too'
                 # if 0<downsample_ratio<1 and random.uniform(0, 1)>downsample_ratio:
                 #     continue   # downsample analysis
                 # if rec.is_secondary:

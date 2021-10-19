@@ -36,5 +36,5 @@ void get_gene_blocks
     std::unordered_map<String, std::unordered_map<String, bool>> gene_to_transcript
 )
 {
-                        
+    
 }

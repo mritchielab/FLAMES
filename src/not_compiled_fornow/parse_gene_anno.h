@@ -7,7 +7,9 @@
 #include <sstream>
 #include <cstring>
 #include <Rcpp.h>
+
 #include "ParseGFF3.hpp"
+#include "StartEndPair.hpp"
 
 using namespace Rcpp;
 

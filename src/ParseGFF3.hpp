@@ -8,7 +8,9 @@
 #include <fstream>
 #include <sstream>
 #include <cstring>
+
 #include "Pos.h"
+#include "StartEndPair.hpp"
 
 using namespace Rcpp;
 
@@ -24,11 +26,6 @@ struct GFFRecord {
     std::string strand;
     std::string phase;
     std::unordered_map<std::string, std::string> attributes;
-};
-
-struct StartEndPair {
-    int start;
-    int end;
 };
 
 bool StartEndPairCompare (const StartEndPair &a, const StartEndPair &b);

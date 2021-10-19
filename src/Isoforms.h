@@ -1,3 +1,6 @@
+#ifndef ISOFORMS
+#define ISOFORMS
+
 #include <map>
 #include <vector>
 #include <algorithm>
@@ -8,6 +11,7 @@
 #include <iostream>
 #include <fstream>
 
+#include "Pos.h"
 #include "junctions.h"
 #include "misc.h"
 #include "GeneBlocks.h"
@@ -20,6 +24,8 @@ class Isoforms
     IsoformParameters parameters;
     
   public:
+    Isoforms(std::string ch, IsoformParameters parameters);
+    
     std::string ch;
     
     std::map<std::vector<int>, int> 
@@ -51,7 +57,6 @@ class Isoforms
     std::map<std::string, std::vector<std::vector<int>>> 
     ge_dict;
 
-    Isoforms(std::string ch, IsoformParameters parameters);
     void add_isoform(Junctions junctions, bool is_reversed);
     void add_one(Junctions junctions, bool strand);
     void update_one(Junctions junctions, std::vector<int> key, bool strand);
@@ -74,3 +79,5 @@ class Isoforms
 
     std::string isoform_to_gtt3(int isoform_pct);
 };
+
+#endif

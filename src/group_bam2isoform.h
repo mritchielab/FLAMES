@@ -14,6 +14,13 @@
 
 using namespace Rcpp;
 
+
+static int
+fetch_function(const bam1_t *b, void *data);
+
+void
+bam_read (std::string bam_in, int s, int e);
+
 void
 group_bam2isoform (
     std::string bam_in, 
