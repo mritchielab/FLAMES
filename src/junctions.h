@@ -48,10 +48,10 @@ Junctions
 blocks_to_junctions (std::vector<StartEndPair> blocks);
 
 Junctions 
-get_TSS_TES_site (std::map<std::string, Junctions> transcript_to_junctions, std::vector<std::string> tr_list);
+get_TSS_TES_site (std::unordered_map<std::string, Junctions> transcript_to_junctions, std::vector<std::string> tr_list);
 
 std::set<int> 
-get_splice_site (std::map<std::string, Junctions> transcript_to_junctions, std::vector<std::string> tr_list);
+get_splice_site (std::unordered_map<std::string, Junctions> transcript_to_junctions, std::vector<std::string> tr_list);
 
 int
 is_exon_similar

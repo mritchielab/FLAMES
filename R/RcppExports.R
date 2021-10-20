@@ -47,8 +47,12 @@ merge_bulk_fastq_cpp <- function(fastq_files, out_fastq) {
     invisible(.Call(`_FLAMES_merge_bulk_fastq_cpp`, fastq_files, out_fastq))
 }
 
-minimap2_align_cpp <- function(mm2_prog_path, fa_file, fq_in, sam_out, no_flank = FALSE, bed12_junc = "") {
+minimap2_align_cpp <- function(mm2_prog_path, fa_file, fq_in, sam_out, no_flank, bed12_junc) {
     invisible(.Call(`_FLAMES_minimap2_align_cpp`, mm2_prog_path, fa_file, fq_in, sam_out, no_flank, bed12_junc))
+}
+
+minimap2_tr_align_cpp <- function(mm2_prog_path, fa_file, fq_in, sam_out) {
+    invisible(.Call(`_FLAMES_minimap2_tr_align_cpp`, mm2_prog_path, fa_file, fq_in, sam_out))
 }
 
 parse_gff_or_gtf_R <- function(filename) {

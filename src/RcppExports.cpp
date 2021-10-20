@@ -91,6 +91,19 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// minimap2_tr_align_cpp
+void minimap2_tr_align_cpp(std::string mm2_prog_path, std::string fa_file, std::string fq_in, std::string sam_out);
+RcppExport SEXP _FLAMES_minimap2_tr_align_cpp(SEXP mm2_prog_pathSEXP, SEXP fa_fileSEXP, SEXP fq_inSEXP, SEXP sam_outSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type mm2_prog_path(mm2_prog_pathSEXP);
+    Rcpp::traits::input_parameter< std::string >::type fa_file(fa_fileSEXP);
+    Rcpp::traits::input_parameter< std::string >::type fq_in(fq_inSEXP);
+    Rcpp::traits::input_parameter< std::string >::type sam_out(sam_outSEXP);
+    minimap2_tr_align_cpp(mm2_prog_path, fa_file, fq_in, sam_out);
+    return R_NilValue;
+END_RCPP
+}
 // parse_gff_or_gtf_R
 Rcpp::List parse_gff_or_gtf_R(std::string filename);
 RcppExport SEXP _FLAMES_parse_gff_or_gtf_R(SEXP filenameSEXP) {
@@ -131,6 +144,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_FLAMES_match_cell_barcode", (DL_FUNC) &_FLAMES_match_cell_barcode, 6},
     {"_FLAMES_merge_bulk_fastq_cpp", (DL_FUNC) &_FLAMES_merge_bulk_fastq_cpp, 2},
     {"_FLAMES_minimap2_align_cpp", (DL_FUNC) &_FLAMES_minimap2_align_cpp, 6},
+    {"_FLAMES_minimap2_tr_align_cpp", (DL_FUNC) &_FLAMES_minimap2_tr_align_cpp, 4},
     {"_FLAMES_parse_gff_or_gtf_R", (DL_FUNC) &_FLAMES_parse_gff_or_gtf_R, 1},
     {"_FLAMES_parse_json_config_cpp", (DL_FUNC) &_FLAMES_parse_json_config_cpp, 1},
     {"_FLAMES_print_config_cpp", (DL_FUNC) &_FLAMES_print_config_cpp, 1},

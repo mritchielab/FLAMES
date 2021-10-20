@@ -2,10 +2,18 @@
 
 // [[Rcpp::export]]
 void
-minimap2_align_cpp(std::string mm2_prog_path, std::string fa_file, std::string fq_in, std::string sam_out, bool no_flank = false, std::string bed12_junc = "")
+minimap2_align_cpp
+(
+    std::string mm2_prog_path,
+    std::string fa_file,
+    std::string fq_in,
+    std::string sam_out,
+    bool no_flank,
+    std::string bed12_junc
+)
 {
     /*
-        calls minimap2 from the command line, given all the necessary parameters
+        calls minimap2 from the command line to align to genome, given all the necessary parameters
         default command is:
         {mm2_prog_path}/minimap2 -ax splice -t 12  -k14 --secondary=no {fa_file} {fq_in} -o {sam_out}
     */
@@ -31,6 +39,28 @@ minimap2_align_cpp(std::string mm2_prog_path, std::string fa_file, std::string f
             << flank_cmd << " -k14 --secondary=no " 
             << fa_file << " " 
             << fq_in << " -o " << sam_out;
+    // call it
+    system(align_cmd.str().c_str());
+}
+
+// [[Rcpp::export]]
+void
+minimap2_tr_align_cpp
+(
+    std::string mm2_prog_path,
+    std::string fa_file,
+    std::string fq_in,
+    std::string sam_out
+)
+{
+    /* calls minimap2 to align to transcript */
+
+    std::stringstream align_cmd;
+    align_cmd << mm2_prog_path << "minimap2" 
+            << " -ax map-ont -p 0.9 --end-bonus 10 -N 3 -t 12 " 
+            << fa_file << " " 
+            << fq_in << " " 
+            << sam_out;
     // call it
     system(align_cmd.str().c_str());
 }

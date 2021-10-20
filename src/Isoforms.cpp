@@ -658,9 +658,9 @@ void Isoforms::filter_TSS_TES(std::ofstream out_f, Junctions known_site={}, floa
   it does of stuff - honestly my eyes glaze over when I try to understand it all at once
 */
 void Isoforms::match_known_annotation (
-  std::map<std::string, Junctions> transcript_to_junctions,
-  std::map<std::string, Pos> transcript_dict,
-  std::map<std::string, std::vector<int>> gene_dict,
+  std::unordered_map<std::string, Junctions> transcript_to_junctions,
+  std::unordered_map<std::string, Pos> transcript_dict,
+  std::unordered_map<std::string, std::vector<StartEndPair>> gene_dict,
   GeneBlocks one_block,
   std::map<std::string, std::vector<char>> fa_dict
 )
@@ -671,12 +671,12 @@ void Isoforms::match_known_annotation (
 
   std::vector<std::vector<int>>
   junction_list;
-  std::map<std::vector<int>, std::string>
+  std::unordered_map<std::vector<int>, std::string>
   junction_dict;
 
   std::vector<std::vector<int>>
   exons_list;
-  std::map<std::vector<int>, std::string>
+  std::unordered_map<std::vector<int>, std::string>
   exons_dict;
 
   // populate junction_list, junction_dictionary
@@ -710,7 +710,7 @@ void Isoforms::match_known_annotation (
 
       if (this->parameters.STRAND_SPECIFIC == 0) {
         // we need to convert the pair to a vector for this lookup
-        tmp_std = this->strand_counts[{exon_key.first, exon_key.second}];
+        tmp_std = this->strand_counts[{exon_key.start, exon_key.end}];
       } else {
         // little shorthand if else for you there ;)
         transcript_dict[i].strand == '+' ? tmp_std = 1 : tmp_std = 0;

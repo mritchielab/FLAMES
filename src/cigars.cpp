@@ -22,7 +22,7 @@ B   BAM_CBACK   9
 */
 
 std::string
-generate_cigar (std::vector <std::pair <int, int>> cigar)
+generate_cigar (std::vector<CigarPair> cigar)
 {
   /*
     takes a cigar as a vector of pairs of ints,
@@ -32,15 +32,15 @@ generate_cigar (std::vector <std::pair <int, int>> cigar)
   char CIGAR_CODE[] = "MIDNSHP=XB";
   std::string result = "";
 
-  for (std::pair<int, int> pair : cigar) {
-    result.append(std::to_string(pair.second));
-    result.push_back(CIGAR_CODE[pair.first]);
+  for (const auto & pair : cigar) {
+    result.append(std::to_string(pair.len));
+    result.push_back(CIGAR_CODE[pair.op]);
   }
   return result;
 }
 
-std::vector<std::pair<int, int>>
-smooth_cigar (std::vector<std::pair<int, int>> cigar, int threshold=10)
+std::vector<CigarPair>
+smooth_cigar (std::vector<CigarPair> cigar, int threshold)
 {
   /*
     takes a cigar as a vector of int pairs,
@@ -48,21 +48,21 @@ smooth_cigar (std::vector<std::pair<int, int>> cigar, int threshold=10)
     returns the smooth cigar as a vector of int pairs
   */
 
-  std::vector<std::pair<int, int>> new_cigar = {cigar[0]};
+  std::vector<CigarPair> new_cigar = {cigar[0]};
   
   for (int i = 1; i < cigar.size(); i++) {
-    if (new_cigar.back().first != 0) {
+    if (new_cigar.back().op != 0) {
       new_cigar.push_back(cigar[i]);
-    } else if (cigar[i].first == 0) { // merge matched reads 
-      new_cigar.back().second = new_cigar.back().second + cigar[i].second;
-    } else if (cigar[i].first == 2) {
-      if (cigar[i].second <= threshold) {
-        new_cigar.back().second = new_cigar.back().second + cigar[i].second;
+    } else if (cigar[i].op == 0) { // merge matched reads 
+      new_cigar.back().len = new_cigar.back().len + cigar[i].len;
+    } else if (cigar[i].op == 2) {
+      if (cigar[i].len <= threshold) {
+        new_cigar.back().len = new_cigar.back().len + cigar[i].len;
       } else {
         new_cigar.push_back(cigar[i]);
       }
-    } else if (cigar[i].first == 1) {
-      if (cigar[i].second > threshold) {
+    } else if (cigar[i].op == 1) {
+      if (cigar[i].len > threshold) {
         new_cigar.push_back(cigar[i]);
       } else {
         continue;

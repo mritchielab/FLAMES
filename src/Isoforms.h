@@ -28,33 +28,33 @@ class Isoforms
     
     std::string ch;
     
-    std::map<std::vector<int>, int> 
+    std::unordered_map<std::vector<int>, int> 
     junction_dict;
     std::vector<std::vector<std::vector<int>>> 
     junction_list;
 
-    std::map<std::vector<int>, std::vector<std::pair<int, int>>>
+    std::unordered_map<std::vector<int>, std::vector<StartEndPair>>
     lr_pair;
     std::vector<int> 
     left;
     std::vector<int> 
     right;
 
-    std::map<std::pair<int, int>, int> 
+    std::unordered_map<StartEndPair, int> 
     single_block_dict;
-    std::vector<std::vector<std::pair<int, int>>> 
+    std::vector<std::vector<StartEndPair>> 
     single_blocks;
-    std::map<std::vector<int>, int> 
+    std::unordered_map<std::vector<int>, int> 
     strand_counts;
-    std::map<std::vector<int>, std::vector<int>>
+    std::unordered_map<std::vector<int>, std::vector<int>>
     new_strand_counts;
-    std::map<std::vector<int>, Iso> 
+    std::unordered_map<std::vector<int>, Iso> 
     new_isoforms;
-    std::map<std::vector<int>, Iso> 
+    std::unordered_map<std::vector<int>, Iso> 
     known_isoforms;
-    std::map<std::vector<int>, int> 
+    std::unordered_map<std::vector<int>, int> 
     raw_isoforms;
-    std::map<std::string, std::vector<std::vector<int>>> 
+    std::unordered_map<std::string, std::vector<std::vector<int>>> 
     ge_dict;
 
     void add_isoform(Junctions junctions, bool is_reversed);
@@ -66,15 +66,15 @@ class Isoforms
     void filter_TSS_TES(std::ofstream out_f, Junctions known_site, float fdr_cutoff); 
 
     //unused
-    std::pair<std::vector<int>, std::map<int, int>>
+    std::pair<std::vector<int>, std::unordered_map<int, int>>
     group_sites(std::vector<int> l, int smooth_window, int min_threshold);
 
     void match_known_annotation (
-      std::map<std::string, Junctions> transcript_to_junctions,
-      std::map<std::string, Pos> transcript_dict,
-      std::map<std::string, std::vector<int>> gene_dict,
+      std::unordered_map<std::string, Junctions> transcript_to_junctions,
+      std::unordered_map<std::string, Pos> transcript_dict,
+      std::unordered_map<std::string, std::vector<StartEndPair>> gene_dict,
       GeneBlocks one_block,
-      std::map<std::string, std::vector<char>> fa_dict
+      std::unordered_map<std::string, std::vector<char>> fa_dict
     );
 
     std::string isoform_to_gtt3(int isoform_pct);

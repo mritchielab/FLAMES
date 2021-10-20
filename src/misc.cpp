@@ -5,9 +5,6 @@
 */
 #include "misc.h"
 
-
-
-
 std::vector<int>
 find_best_splice_chain(std::vector<int> raw_iso, std::vector<std::vector<int>> junction_list, int MAX_DIST)
 {

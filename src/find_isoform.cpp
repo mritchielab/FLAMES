@@ -50,18 +50,18 @@ find_isoform_cpp
 
     // next we find isoforms
     std::cout << "### Finding Isoforms\n";
-    // group_bam2isoform(
-    //     genome_bam,
-    //     isoform_gff3,
-    //     tss_test_stat,
-    //     "",
-    //     &chr_to_blocks,
-    //     &gene_dict,
-    //     &transcript_to_junctions,
-    //     &transcript_dict,
-    //     &genomefa,
-    //     &(config.isoform_parameters)
-    // );
+    group_bam2isoform(
+        genome_bam,
+        isoform_gff3,
+        tss_test_stat,
+        "",
+        &chr_to_blocks,
+        &gene_dict,
+        &transcript_to_junctions,
+        &transcript_dict,
+        &genomefa,
+        &(config.isoform_parameters)
+    );
 
     // get fasta
     GFFData isoform_gff = parse_gff_tree(isoform_gff3);
