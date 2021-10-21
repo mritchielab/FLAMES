@@ -2,6 +2,7 @@
 #define ISOFORMS
 
 #include <map>
+#include <unordered_map>
 #include <vector>
 #include <algorithm>
 #include <cmath>
@@ -11,6 +12,7 @@
 #include <iostream>
 #include <fstream>
 
+#include "StartEndPair.hpp"
 #include "Pos.h"
 #include "junctions.h"
 #include "misc.h"
@@ -72,7 +74,7 @@ class Isoforms
     void match_known_annotation (
       std::unordered_map<std::string, Junctions> transcript_to_junctions,
       std::unordered_map<std::string, Pos> transcript_dict,
-      std::unordered_map<std::string, std::vector<StartEndPair>> gene_dict,
+      std::unordered_map<std::string, std::vector<int>> gene_dict,
       GeneBlocks one_block,
       std::unordered_map<std::string, std::vector<char>> fa_dict
     );

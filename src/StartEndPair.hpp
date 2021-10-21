@@ -25,35 +25,47 @@ struct StartEndPair {
     this is so that we can use a std::vector<StartEndPair> as a key in a dictionary
 */
 namespace std {
-    template <>
-        struct hash<StartEndPair>
+    template <> struct hash<StartEndPair>
+    {
+        std::size_t operator()(const StartEndPair& k) const
         {
-            std::size_t operator()(const StartEndPair& k) const
-            {
-                using std::size_t;
-                using std::hash;
+            using std::size_t;
+            using std::hash;
 
-                return ((hash<int>()(k.start)
-                    ^ (hash<int>()(k.end) << 1)) >> 1);
-            }
-        };
+            return ((hash<int>()(k.start)
+                ^ (hash<int>()(k.end) << 1)) >> 1);
+        }
+    };
 
-    template<>
-        struct hash<vector<StartEndPair>>
+    template<> struct hash<vector<StartEndPair>>
+    {
+        std::size_t operator()(const vector<StartEndPair>& vec) const
         {
-            std::size_t operator()(const vector<StartEndPair>& vec) const
-            {
-                using std::size_t;
-                using std::hash;
+            using std::size_t;
+            using std::hash;
 
-                std::size_t seed = vec.size();
+            std::size_t seed = vec.size();
 
-                for (auto& pair : vec) {
-                    seed ^= ((hash<int>()(pair.start) ^ (hash<int>()(pair.end))) >> 1);
-                }
-                return seed;
+            for (auto& pair : vec) {
+                seed ^= ((hash<int>()(pair.start) ^ (hash<int>()(pair.end))) >> 1);
             }
-        };
+            return seed;
+        }
+    };
+    
+    template <> struct hash<vector<int>>
+    {
+        size_t operator()(vector<int> const& vec) const 
+        {
+            size_t seed = vec.size();
+            for(auto& i : vec) {
+                seed ^= i + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+            }
+            return seed;
+        }
+    };
 }
+
+
 
 #endif

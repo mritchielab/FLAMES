@@ -28,14 +28,14 @@ void Isoforms::add_isoform(Junctions junctions, bool is_reversed)
     } else {
       // there is already stuff in single_block_dict
       // first, check if this key is already in there
-      std::pair<int, int> 
+      StartEndPair
       target_key = {junctions.left[0], junctions.right[0]};
 
       if (this->single_block_dict.count(target_key) > 0) {
         // this time the key must be converted to vector
         // we really need to fix this
         std::vector<int> 
-        target_key_vector = {target_key.first, target_key.second};
+        target_key_vector = {target_key.start, target_key.end};
 
         // the key is already present - so just update it
         this->update_one(junctions, target_key_vector, is_reversed);
@@ -44,11 +44,11 @@ void Isoforms::add_isoform(Junctions junctions, bool is_reversed)
         // check if there's anything very close to the key
         bool found = false;
         for (auto const & [current_key, current_value] : this->single_block_dict) {
-          if ((abs(current_key.first - target_key.first) < this->parameters.MAX_TS_DIST) and
-              (abs(current_key.second - target_key.second) < this->parameters.MAX_TS_DIST)) {
+          if ((abs(current_key.start - target_key.start) < this->parameters.MAX_TS_DIST) and
+              (abs(current_key.end - target_key.end) < this->parameters.MAX_TS_DIST)) {
             // we've found one that's very similar
             // just update it
-            this->update_one(junctions, {current_key.first, current_key.second}, is_reversed);
+            this->update_one(junctions, {current_key.start, current_key.end}, is_reversed);
             found = true;
             break;
           }
@@ -124,18 +124,18 @@ void Isoforms::add_one(Junctions junctions, bool strand)
   new_strand_counts;
 
   if (junctions.junctions.size() == 0) { // single-exon
-    std::pair<int, int> key = 
+    StartEndPair key = 
     {junctions.left[0], junctions.right[0]};
 
     this->single_block_dict[key] = this->single_blocks.size();
     this->single_blocks.push_back({key});
-    this->new_strand_counts[std::vector<int> {key.first, key.second}] = {};
+    this->new_strand_counts[std::vector<int> {key.start, key.end}] = {};
 
     int multiplier = 1;
     if (strand) {
       multiplier = -1;
     }
-    this->new_strand_counts[std::vector<int> {key.first, key.second}].push_back(multiplier * this->parameters.STRAND_SPECIFIC);
+    this->new_strand_counts[std::vector<int> {key.start, key.end}].push_back(multiplier * this->parameters.STRAND_SPECIFIC);
   } else { // multi-exon reads
     this->junction_dict[junctions.junctions] = this->junction_list.size();
     this->junction_list.push_back({junctions.junctions});
@@ -162,15 +162,15 @@ void Isoforms::update_one(Junctions junctions, std::vector<int> key, bool strand
     std::pair<int, int>
     new_element = {junctions.left[0], junctions.right[0]};
 
-    std::pair<int, int>
+    StartEndPair
     key_pair = {key[0], key[1]};
 
-    this->single_blocks[this->single_block_dict[key_pair]].push_back(new_element);
+    this->single_blocks[this->single_block_dict[key_pair]].push_back(key_pair);
   } else { // multi-exon reads 
     this->junction_list[this->junction_dict[key]].push_back(junctions.junctions);
     this->left.push_back(junctions.left[0]);
     this->right.push_back(junctions.right[0]);
-    this->lr_pair[key].push_back(std::pair<int, int> {junctions.left[0], junctions.right[0]});
+    this->lr_pair[key].push_back({junctions.left[0], junctions.right[0]});
   }
   int multiplier = 1;
   if (this->parameters.STRAND_SPECIFIC) {
@@ -193,25 +193,25 @@ int Isoforms::len()
 void Isoforms::update_all_splice()
 {
 
-  std::map<std::vector<int>, int>
+  std::unordered_map<std::vector<int>, int>
   junction_tmp;
-  std::map<std::pair<int, int>, int>
+  std::unordered_map<StartEndPair, int>
   single_block_tmp;
-  std::map<std::vector<int>, int>
+  std::unordered_map<std::vector<int>, int>
   strand_counts_tmp;
-  std::map<std::vector<int>, std::vector<std::pair<int,int>>>
+  std::unordered_map<std::vector<int>, std::vector<StartEndPair>>
   lr_pair_tmp;
 
   // look through junction_dict
   for (auto const& [key, val] : this->junction_dict) {
     if (this->junction_list[val].size() >= this->parameters.STRAND_SPECIFIC) {
       // variable to store the counts
-      std::map<std::vector<int>, int>
+      std::unordered_map<std::vector<int>, int>
       junction_list_counts;
 
       // populate the counts container
       for (auto i : this->junction_list[val]) {
-        junction_list_counts[i] ++;
+        junction_list_counts[i]++;
       }
       
       // pull out the key for the 
@@ -223,10 +223,10 @@ void Isoforms::update_all_splice()
       junction_tmp[new_key] = this->junction_dict[key];
       
       // the name is a bit silly, but this is to count the occurrences of keys in strand_counts
-      std::map<int, int>
+      std::unordered_map<int, int>
       strand_counts_counts;
       for (auto i : this->new_strand_counts[key]) {
-        strand_counts_counts[i] ++;
+        strand_counts_counts[i]++;
       }
       // get the key for the most common
       // value in max_strand_counts
@@ -243,10 +243,10 @@ void Isoforms::update_all_splice()
   for (auto const& [key, val] : this->single_block_dict) {
     if (this->single_blocks[val].size() >= this->parameters.STRAND_SPECIFIC) {
       // make and populate a counter for single_blocks
-      std::map<std::pair<int, int>, int>
+      std::unordered_map<StartEndPair, int>
       single_blocks_counts;
       for (auto i : this->single_blocks[val]) {
-        single_blocks_counts[i] ++;
+        single_blocks_counts[i]++;
       }
 
       auto new_key = (*std::max_element(
@@ -254,17 +254,17 @@ void Isoforms::update_all_splice()
       )).first;
 
       single_block_tmp[new_key] = this->single_block_dict[key];
-      std::map<int, int>
+      std::unordered_map<int, int>
       strand_counts_counts;
-      for (auto i : this->new_strand_counts[{key.first, key.second}]) {
-        strand_counts_counts[i] ++;
+      for (auto i : this->new_strand_counts[{key.start, key.end}]) {
+        strand_counts_counts[i]++;
       }
 
       auto max_strand_counts = (*std::max_element(
         strand_counts_counts.cbegin(), strand_counts_counts.cend()
       )).first;
 
-      strand_counts_tmp[{new_key.first, new_key.second}] = max_strand_counts;
+      strand_counts_tmp[{new_key.start, new_key.end}] = max_strand_counts;
     }
   }
 
@@ -280,7 +280,7 @@ void Isoforms::filter_TSS_TES(std::ofstream out_f, Junctions known_site={}, floa
 {
   std::string bedgraph_fmt = "{_ch}\t{_st}\t{_en}\t{_sc}\n";
 
-  auto filter_site = [fdr_cutoff] (std::map<int, int> list_counts) {
+  auto filter_site = [fdr_cutoff] (std::unordered_map<int, int> list_counts) {
     // to sort the map, we need it as a vector first
     std::vector<std::pair<int, int>>
     mx;
@@ -288,6 +288,7 @@ void Isoforms::filter_TSS_TES(std::ofstream out_f, Junctions known_site={}, floa
       mx.emplace_back(i);
     }
 
+    // sort it
     std::sort(mx.begin(), mx.end(),
       [] (const auto & p1, const auto & p2) {
         return (p1.second > p2.second);
@@ -375,7 +376,7 @@ void Isoforms::filter_TSS_TES(std::ofstream out_f, Junctions known_site={}, floa
   };
   
   // make counts objects for both left and right
-  std::map<int, int>
+  std::unordered_map<int, int>
   left_counts;
   for (const auto & i : this->left) {
     left_counts[i]++;
@@ -384,7 +385,7 @@ void Isoforms::filter_TSS_TES(std::ofstream out_f, Junctions known_site={}, floa
   std::vector<int>
   cnt_l;
 
-  std::map<int, int>
+  std::unordered_map<int, int>
   right_counts;
   for (const auto & i : this->right) {
     right_counts[i]++;
@@ -393,7 +394,8 @@ void Isoforms::filter_TSS_TES(std::ofstream out_f, Junctions known_site={}, floa
   std::vector<int>
   cnt_r;
 
-  if ((left_counts.size() < this->parameters.STRAND_SPECIFIC) || (right_counts.size() < this->parameters.STRAND_SPECIFIC)) {
+  if ((left_counts.size() < this->parameters.STRAND_SPECIFIC) || 
+      (right_counts.size() < this->parameters.STRAND_SPECIFIC)) {
     return;
   } else {
     // left
@@ -451,14 +453,14 @@ void Isoforms::filter_TSS_TES(std::ofstream out_f, Junctions known_site={}, floa
 
   for (const auto & pair : lr_pair) {
     // first we need a counts map, which we populate
-    std::map<std::pair<int, int>, int>
+    std::unordered_map<StartEndPair, int>
     pair_counts;
     for (const auto & i : pair.second) {
       pair_counts[i]++;
     }
 
     // then to sort it, we need to convert to a vector
-    std::vector<std::pair<std::pair<int, int>, int>>
+    std::vector<std::pair<StartEndPair, int>>
     tmp_pair;
     for (const auto & i : pair_counts) {
       tmp_pair.push_back(i);
@@ -470,23 +472,23 @@ void Isoforms::filter_TSS_TES(std::ofstream out_f, Junctions known_site={}, floa
       }
     );
 
-    std::vector<std::pair<int, int>>
+    std::vector<StartEndPair>
     pair_after_filtering;
 
     // lines like these make me think, 
     // maybe i've not thought this architecture out well enough...
-    std::vector<std::pair<std::pair<int, int>, int>>
+    std::vector<std::pair<StartEndPair, int>>
     pair_enrich;
 
     for (const auto & p : tmp_pair) {
-      std::pair<int, int>
+      StartEndPair
       cl_p = {
-        take_closest(cnt_l, p.first.first),
-        take_closest(cnt_r, p.first.second)
+        take_closest(cnt_l, p.first.start),
+        take_closest(cnt_r, p.first.end)
       };
 
-      if ((abs(cl_p.first - p.first.first) < (0.5 * this->parameters.MAX_TS_DIST)) and
-          (abs(cl_p.second - p.first.second) < 0.5 * this->parameters.MAX_TS_DIST)) {
+      if ((abs(cl_p.start - p.first.start) < (0.5 * this->parameters.MAX_TS_DIST)) and
+          (abs(cl_p.end - p.first.end) < 0.5 * this->parameters.MAX_TS_DIST)) {
         if (pair_after_filtering.size() > 0) {
           // line 650 of sc_longread.py
 
@@ -497,22 +499,22 @@ void Isoforms::filter_TSS_TES(std::ofstream out_f, Junctions known_site={}, floa
           pair_after_filtering_right;
 
           for (const auto & it : pair_after_filtering) {
-            pair_after_filtering_left.push_back(it.first);
-            pair_after_filtering_right.push_back(it.second);
+            pair_after_filtering_left.push_back(it.start);
+            pair_after_filtering_right.push_back(it.end);
           }
 
           int distance = (
-            abs(take_closest(pair_after_filtering_left, cl_p.first) - cl_p.first) +
-            abs(take_closest(pair_after_filtering_right, cl_p.second) - cl_p.second)
+            abs(take_closest(pair_after_filtering_left, cl_p.start) - cl_p.start) +
+            abs(take_closest(pair_after_filtering_right, cl_p.end) - cl_p.end)
           );
 
           if (distance > this->parameters.MAX_TS_DIST) {
-            if ((cl_p.first < pair.first.front()) and cl_p.second > pair.first.back()) {
+            if ((cl_p.start < pair.first.front()) and cl_p.end > pair.first.back()) {
               pair_after_filtering.push_back(cl_p);
             }
           }
         } else {
-          if ((cl_p.first < pair.first.front()) and (cl_p.second > pair.first.back())) {
+          if ((cl_p.start < pair.first.front()) and (cl_p.end > pair.first.back())) {
             pair_after_filtering.push_back(cl_p);
           }
         }
@@ -530,7 +532,7 @@ void Isoforms::filter_TSS_TES(std::ofstream out_f, Junctions known_site={}, floa
         // we need to sum up all of the elements in tmp_pair that meet our criteria
         int sum = 0;
         for (const auto & it : tmp_pair) {
-          if ((abs(it.first.first - p.first.first) + abs(it.first.second - p.first.second)) < this->parameters.MAX_TS_DIST) {
+          if ((abs(it.first.start - p.first.start) + abs(it.first.end - p.first.end)) < this->parameters.MAX_TS_DIST) {
             sum += it.second;
           }
         }
@@ -553,22 +555,22 @@ void Isoforms::filter_TSS_TES(std::ofstream out_f, Junctions known_site={}, floa
           pair_after_filtering_right;
 
           for (const auto & it : pair_after_filtering) {
-            pair_after_filtering_left.push_back(it.first);
-            pair_after_filtering_right.push_back(it.second);
+            pair_after_filtering_left.push_back(it.start);
+            pair_after_filtering_right.push_back(it.end);
           }
 
           int distance = (
-            abs(take_closest(pair_after_filtering_left, p.first.first) - p.first.first) +
-            abs(take_closest(pair_after_filtering_right, p.first.second) - p.first.second)
+            abs(take_closest(pair_after_filtering_left, p.first.start) - p.first.start) +
+            abs(take_closest(pair_after_filtering_right, p.first.end) - p.first.end)
           );
 
           if ((distance > this->parameters.MAX_TS_DIST) and 
-              (p.first.first < pair.first.front()) and 
-              (p.first.second > pair.first.back())) {
+              (p.first.start < pair.first.front()) and 
+              (p.first.end > pair.first.back())) {
             // append the key of p
             pair_after_filtering.push_back(p.first);
           }
-        } else if ((p.first.first < pair.first.front()) and (p.first.second > pair.first.back())) {
+        } else if ((p.first.start < pair.first.front()) and (p.first.end > pair.first.back())) {
           // append the key of p
           pair_after_filtering.push_back(p.first);
         }
@@ -586,7 +588,7 @@ void Isoforms::filter_TSS_TES(std::ofstream out_f, Junctions known_site={}, floa
     for (const auto & p : pair_after_filtering) {
       // now we want to add the values of keys matching certain criteria
       for (const auto & it : tmp_pair) {
-        if ((abs(it.first.first - p.first) + abs(it.first.second - p.second)) < this->parameters.MAX_TS_DIST) {
+        if ((abs(it.first.start - p.start) + abs(it.first.end - p.end)) < this->parameters.MAX_TS_DIST) {
           support_count_total += it.second;
         }
       }
@@ -601,7 +603,7 @@ void Isoforms::filter_TSS_TES(std::ofstream out_f, Junctions known_site={}, floa
           // we need to sum up all of the elements in tmp_pair that meet our criteria
           int sum = 0;
           for (const auto & it : tmp_pair) {
-            if ((abs(it.first.first - p.first.first) + abs(it.first.second - p.first.second)) < this->parameters.MAX_TS_DIST) {
+            if ((abs(it.first.start - p.first.start) + abs(it.first.end - p.first.end)) < this->parameters.MAX_TS_DIST) {
               sum += it.second;
             }
           }
@@ -618,11 +620,11 @@ void Isoforms::filter_TSS_TES(std::ofstream out_f, Junctions known_site={}, floa
 
       std::vector<int>
       tmp_ex;
-      tmp_ex.push_back(int(pair_enrich[0].first.first));
+      tmp_ex.push_back(int(pair_enrich[0].first.start));
       for (int i : pair.first) {
         tmp_ex.push_back(i);
       }
-      tmp_ex.push_back(int(pair_enrich[0].first.second));
+      tmp_ex.push_back(int(pair_enrich[0].first.end));
 
       this->raw_isoforms[tmp_ex] = pair.second.size();
       this->strand_counts[tmp_ex] = this->strand_counts[pair.first];
@@ -631,16 +633,16 @@ void Isoforms::filter_TSS_TES(std::ofstream out_f, Junctions known_site={}, floa
       for (const auto & p : pair_after_filtering) {
         std::vector<int>
         tmp_ex;
-        tmp_ex.push_back(int(p.first));
+        tmp_ex.push_back(int(p.start));
         for (int i : pair.first) {
           tmp_ex.push_back(i);
         }
-        tmp_ex.push_back(int(p.second));
+        tmp_ex.push_back(int(p.end));
 
         // add up the values to assign to raw_isoforms
         int sum = 0;
         for (const auto & it : tmp_pair) {
-          if (abs(it.first.first - p.first) + abs(it.first.second - p.second) < this->parameters.MAX_TS_DIST) {
+          if (abs(it.first.start - p.start) + abs(it.first.end - p.end) < this->parameters.MAX_TS_DIST) {
             sum += it.second;
           }
         }
@@ -657,12 +659,13 @@ void Isoforms::filter_TSS_TES(std::ofstream out_f, Junctions known_site={}, floa
   this function does most of the heavy lifting in the Isoform class
   it does of stuff - honestly my eyes glaze over when I try to understand it all at once
 */
-void Isoforms::match_known_annotation (
+void Isoforms::match_known_annotation 
+(
   std::unordered_map<std::string, Junctions> transcript_to_junctions,
   std::unordered_map<std::string, Pos> transcript_dict,
-  std::unordered_map<std::string, std::vector<StartEndPair>> gene_dict,
+  std::unordered_map<std::string, std::vector<int>> gene_dict,
   GeneBlocks one_block,
-  std::map<std::string, std::vector<char>> fa_dict
+  std::unordered_map<std::string, std::vector<char>> fa_dict
 )
 {
 
@@ -710,16 +713,16 @@ void Isoforms::match_known_annotation (
 
       if (this->parameters.STRAND_SPECIFIC == 0) {
         // we need to convert the pair to a vector for this lookup
-        tmp_std = this->strand_counts[{exon_key.start, exon_key.end}];
+        tmp_std = this->strand_counts[{exon_key.start, exon_key.end}]; // this is where i'm up to
       } else {
         // little shorthand if else for you there ;)
         transcript_dict[i].strand == '+' ? tmp_std = 1 : tmp_std = 0;
       }
 
       if ((transcript_to_junctions[i].junctions.size() == 0) &&
-          (tmp_std == this->strand_counts[{exon_key.first, exon_key.second}])) {
-        if ((abs(exon_key.first - transcript_to_junctions[i].left[0]) < this->parameters.MAX_TS_DIST) &&
-            (abs(exon_key.second - transcript_to_junctions[i].right[0]) < this->parameters.MAX_TS_DIST)) {
+          (tmp_std == this->strand_counts[{exon_key.start, exon_key.end}])) {
+        if ((abs(exon_key.start - transcript_to_junctions[i].left[0]) < this->parameters.MAX_TS_DIST) &&
+            (abs(exon_key.end - transcript_to_junctions[i].right[0]) < this->parameters.MAX_TS_DIST)) {
           std::pair<int, int>
           known_exons = {transcript_to_junctions[i].left[0], transcript_to_junctions[i].right[0]};
           if (this->known_isoforms.count({known_exons.first, known_exons.second})) { // check if it is already known
@@ -1146,7 +1149,7 @@ void Isoforms::match_known_annotation (
       );
 
       if (tmp[0].first > 0) {
-        if (isoform_key[0] >= gene_dict[tmp[0].second][0] &&
+        if (isoform_key[0] >= gene_dict[tmp[0].second].front() &&
             isoform_key.back() <= gene_dict[tmp[0].second].back()) {
           this->new_isoforms[isoform_key] = {
             this->new_isoforms[isoform_key].support_count,
