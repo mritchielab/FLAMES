@@ -2,7 +2,6 @@
 #define START_END_PAIR
 
 #include <vector>
-
 struct StartEndPair {
     int start;
     int end;
@@ -16,8 +15,33 @@ struct StartEndPair {
     bool operator<(const StartEndPair &other) const
     {
         // compare a and b, return true if a is 'less than' b
-        // in this case, 'less than' is defined if a.start is less than b.start
-        return (start < other.start);
+        if (start < other.start) {
+            return true;
+        } else if ((start == other.start) && (end < other.end)) {
+            return true;
+        }
+        return false;
+    }
+
+    bool operator>(const StartEndPair &other) const
+    {
+        // compare a and b, return true if a is 'greater than' b
+        if (start > other.start) {
+            return true;
+        } else if ((start == other.start) && (end > other.end)) {
+            return true;
+        }
+        return false;
+    }
+
+    bool operator>=(const StartEndPair &other) const
+    {
+        return ((*this) > other) || ((*this) == other);
+    }
+
+    bool operator<=(const StartEndPair &other) const
+    {
+        return ((*this) < other) || ((*this) == other);
     }
 };
 

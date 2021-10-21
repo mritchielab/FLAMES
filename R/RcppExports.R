@@ -67,3 +67,7 @@ print_config_cpp <- function(list) {
     invisible(.Call(`_FLAMES_print_config_cpp`, list))
 }
 
+read_entire_bam <- function(bam_in) {
+    invisible(.Call(`_FLAMES_read_entire_bam`, bam_in))
+}
+

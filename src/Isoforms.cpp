@@ -1,19 +1,5 @@
 #include "Isoforms.h"
 
-Isoforms::Isoforms(std::string ch, IsoformParameters parameters)
-{
-  /*
-    initialises the object,
-    extracting all the const values from config
-
-    (why are config keys a mix of CAPS, lower, and Sentence Case?)
-    (I have no idea, that's how they were when I found them)
-    (change it later)
-  */
-  this->parameters = parameters;
-  this->ch = ch;
-}
-
 /* 
   add one new isoform to this Isoforms object,
   by either adding it or updating an existing entry that is close to it
@@ -276,7 +262,7 @@ void Isoforms::update_all_splice()
 
 /* take a known site, write it to an output file and include it in raw_isoforms and strand_count
  */
-void Isoforms::filter_TSS_TES(std::ofstream out_f, Junctions known_site={}, float fdr_cutoff=0.01)
+void Isoforms::filter_TSS_TES(std::ofstream * out_f, Junctions known_site, float fdr_cutoff)
 {
   std::string bedgraph_fmt = "{_ch}\t{_st}\t{_en}\t{_sc}\n";
 
@@ -407,7 +393,7 @@ void Isoforms::filter_TSS_TES(std::ofstream out_f, Junctions known_site={}, floa
     } else {
       // print everything to out_f
       for (const auto & it : fs_l) {
-        out_f << this->ch << "\t" 
+        (*out_f) << this->ch << "\t" 
               << it.first << "\t" 
               << it.first + 1 << "\t" 
               << it.second << "\n";
@@ -433,7 +419,7 @@ void Isoforms::filter_TSS_TES(std::ofstream out_f, Junctions known_site={}, floa
     } else {
       // print everything to out_f
       for (const auto & it : fs_r) {
-        out_f << this->ch << "\t"
+        (*out_f) << this->ch << "\t"
               << it.first << "\t"
               << it.first + 1 << "\t"
               << it.second << "\n";
@@ -663,9 +649,9 @@ void Isoforms::match_known_annotation
 (
   std::unordered_map<std::string, Junctions> transcript_to_junctions,
   std::unordered_map<std::string, Pos> transcript_dict,
-  std::unordered_map<std::string, std::vector<int>> gene_dict,
+  std::unordered_map<std::string, std::vector<StartEndPair>> gene_dict,
   GeneBlocks one_block,
-  std::unordered_map<std::string, std::vector<char>> fa_dict
+  std::unordered_map<std::string, std::string> fa_dict
 )
 {
 
@@ -1114,7 +1100,7 @@ void Isoforms::match_known_annotation
       int iso_len = 0;
       auto iso_pairs = pairwise(isoform_key);
       for (const auto & i : iso_pairs) {
-        iso_len += i.second - i.first;
+        iso_len += i.end - i.start;
       }
       
       // make tmp to store exon overlap and gene name, and populate it
@@ -1149,8 +1135,8 @@ void Isoforms::match_known_annotation
       );
 
       if (tmp[0].first > 0) {
-        if (isoform_key[0] >= gene_dict[tmp[0].second].front() &&
-            isoform_key.back() <= gene_dict[tmp[0].second].back()) {
+        if (isoform_key.front() >= gene_dict[tmp[0].second].front().start &&
+            isoform_key.back() <= gene_dict[tmp[0].second].back().end) {
           this->new_isoforms[isoform_key] = {
             this->new_isoforms[isoform_key].support_count,
             "",

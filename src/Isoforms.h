@@ -26,7 +26,19 @@ class Isoforms
     IsoformParameters parameters;
     
   public:
-    Isoforms(std::string ch, IsoformParameters parameters);
+    Isoforms(std::string ch, IsoformParameters parameters)
+    {
+      /*
+        initialises the object,
+        extracting all the const values from config
+
+        (why are config keys a mix of CAPS, lower, and Sentence Case?)
+        (I have no idea, that's how they were when I found them)
+        (change it later)
+      */
+      this->parameters = parameters;
+      this->ch = ch;
+    }
     
     std::string ch;
     
@@ -65,7 +77,7 @@ class Isoforms
     int len();
     void update_all_splice();
 
-    void filter_TSS_TES(std::ofstream out_f, Junctions known_site, float fdr_cutoff); 
+    void filter_TSS_TES(std::ofstream * out_f, Junctions known_site={}, float fdr_cutoff=0.01); 
 
     //unused
     std::pair<std::vector<int>, std::unordered_map<int, int>>
@@ -74,9 +86,9 @@ class Isoforms
     void match_known_annotation (
       std::unordered_map<std::string, Junctions> transcript_to_junctions,
       std::unordered_map<std::string, Pos> transcript_dict,
-      std::unordered_map<std::string, std::vector<int>> gene_dict,
+      std::unordered_map<std::string, std::vector<StartEndPair>> gene_dict,
       GeneBlocks one_block,
-      std::unordered_map<std::string, std::vector<char>> fa_dict
+      std::unordered_map<std::string, std::string> fa_dict
     );
 
     std::string isoform_to_gtt3(int isoform_pct);

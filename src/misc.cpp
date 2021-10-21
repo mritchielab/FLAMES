@@ -114,13 +114,13 @@ get_exon_sim_pct(std::vector<int> exons1, std::vector<int> exons2)
   */
 
   auto
-  pos_overlap = [] (std::pair<int, int> pos1, std::pair<int, int> pos2) 
+  pos_overlap = [] (StartEndPair pos1, StartEndPair pos2) 
   {
-    if ((pos1.second <= pos2.first) ||
-        (pos1.first >= pos2.second)) {
+    if ((pos1.end <= pos2.start) ||
+        (pos1.start >= pos2.end)) {
       return 0;
     } else {
-      return (std::min(pos1.second, pos2.second) - std::max(pos1.first, pos2.first));
+      return (std::min(pos1.end, pos2.end) - std::max(pos1.start, pos2.start));
     }
   };
 
@@ -132,7 +132,8 @@ get_exon_sim_pct(std::vector<int> exons1, std::vector<int> exons2)
     int sum = 0;
     auto pairs = pairwise(exon);
     for (const auto & pair : pairs) {
-      sum += pair.second - pair.first;
+      // add the length of each pair onto the total
+      sum += pair.end - pair.start;
     }
 
     return sum;
@@ -150,19 +151,19 @@ get_exon_sim_pct(std::vector<int> exons1, std::vector<int> exons2)
   return total / std::max(e1_len, e2_len);
 }
 
-std::vector<std::pair<int, int>>
+std::vector<StartEndPair>
 pairwise (std::vector<int> input)
 {
   /*
     takes a vector,
-    splits it up into a vector of pairs
+    splits it up into a vector of StartEndPairs
     {1, 2, 3, 4, 5} -> {{1, 2}, {3, 4}}
   */
-  std::vector<std::pair<int, int>>
+  std::vector<StartEndPair>
   output;
 
   for (int i = 1; i < input.size(); i+=2) {
-    std::pair<int, int>
+    StartEndPair
     new_pair = {input[i-1], input[i]};
 
     output.push_back(new_pair);
@@ -172,21 +173,21 @@ pairwise (std::vector<int> input)
 }
 
 int
-iv_overlap (std::pair<int, int> iv1, std::pair<int, int> iv2)
+iv_overlap (StartEndPair iv1, StartEndPair iv2)
 {
   /* takes two ivs as pairs, calculates the overlap between them */
 
-  return std::max(0, std::min(iv1.second, iv2.second) - std::max(iv2.first, iv1.first));
+  return std::max(0, std::min(iv1.end, iv2.end) - std::max(iv2.start, iv1.start));
 }
 
 int
-exon_overlap (std::vector<int> exons1, std::vector<int> exons2)
+exon_overlap (std::vector<int> exons1, std::vector<StartEndPair> exons2)
 {
   /* takes two exons, returns the total overlap between them */
 
   int total = 0;
   for (const auto & e1 : pairwise(exons1)) {
-    for (const auto & e2 : pairwise(exons2)) {
+    for (const auto & e2 : exons2) {
       total += iv_overlap(e1, e2);
     } 
   }

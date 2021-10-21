@@ -54,13 +54,12 @@ find_isoform_cpp
         genome_bam,
         isoform_gff3,
         tss_test_stat,
-        "",
         &chr_to_blocks,
         &gene_dict,
         &transcript_to_junctions,
         &transcript_dict,
-        &genomefa,
-        &(config.isoform_parameters)
+        genomefa,
+        config.isoform_parameters
     );
 
     // get fasta

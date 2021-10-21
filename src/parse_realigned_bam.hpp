@@ -3,6 +3,10 @@
 #include <fstream>
 #include <vector>
 #include <sstream>
+#include <iostream>
+
+#include "bam.h"
+#include "group_bam2isoform.h"
 
 void
 parse_realigned_bam(
@@ -14,3 +18,6 @@ parse_realigned_bam(
     std::string kwargs
 );
 
+
+std::unordered_map<std::string, std::string>
+make_bc_dict(std::string bc_anno);

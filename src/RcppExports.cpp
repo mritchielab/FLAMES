@@ -136,6 +136,16 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// read_entire_bam
+void read_entire_bam(std::string bam_in);
+RcppExport SEXP _FLAMES_read_entire_bam(SEXP bam_inSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type bam_in(bam_inSEXP);
+    read_entire_bam(bam_in);
+    return R_NilValue;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_FLAMES_find_isoform_cpp", (DL_FUNC) &_FLAMES_find_isoform_cpp, 9},
@@ -148,6 +158,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_FLAMES_parse_gff_or_gtf_R", (DL_FUNC) &_FLAMES_parse_gff_or_gtf_R, 1},
     {"_FLAMES_parse_json_config_cpp", (DL_FUNC) &_FLAMES_parse_json_config_cpp, 1},
     {"_FLAMES_print_config_cpp", (DL_FUNC) &_FLAMES_print_config_cpp, 1},
+    {"_FLAMES_read_entire_bam", (DL_FUNC) &_FLAMES_read_entire_bam, 1},
     {NULL, NULL, 0}
 };
 

@@ -32,7 +32,7 @@ fetch_function(const bam1_t *b, void *data)
     std::cout << b->data << ", " << b->core.tid << ", " << b->core.pos << ", " << b->core.n_cigar << "\n";
 
     rec.reference_start = b->core.pos;
-    rec.reference_end = b->core.pos + b->core.l_qseq;
+    // rec.reference_end = b->core.pos + bam_cigar2qlen(b->core.n_cigar, bam_get_cigar(b));
     rec.is_reverse = b->core.flag;
     rec.cigar = generate_cigar_pairs(b);
 
@@ -73,7 +73,7 @@ get_blocks(Record record)
             (op == BAM_CEQUAL) ||
             (op == BAM_CDIFF)) {
             // add it to the blocks and move on
-            blocks.push_back({pos, pos + len})
+            blocks.push_back({pos, pos + len});
             pos += 1;
         } else if (
             (op == BAM_CDEL) ||
@@ -97,7 +97,7 @@ group_bam2isoform (
     std::unordered_map<std::string, Pos>                        * transcript_dict,
     std::string fa_f,
     IsoformParameters isoform_parameters,
-    std::string raw_gff3 =
+    std::string raw_gff3
 )
 {
     // if (config.count("random_seed")) {
@@ -118,8 +118,8 @@ group_bam2isoform (
     iso_annotated << "##gff-version 3\n";
 
     // add to splice_raw if we are planning on outputting raw_gff3
+    std::ofstream splice_raw;
     if (raw_gff3 != "") {
-        std::ofstream splice_raw;
         splice_raw.open(raw_gff3);
         splice_raw << "##gff-version 3\n";
     }
@@ -127,11 +127,11 @@ group_bam2isoform (
     std::ofstream 
     tss_tes_stat (out_stat);
 
-    std::map<std::vector<int>, Iso>
-    isoform_dict;
+    std::unordered_map<IsoformKey, Isoforms*>
+    isoform_dict = {};
 
     // import all the values of fa_f
-    std::map<std::string, std::string>
+    std::unordered_map<std::string, std::string>
     fa_dict;
     for (const auto & c : get_fa(fa_f)) {
         fa_dict[c.first] = c.second;
@@ -148,7 +148,7 @@ group_bam2isoform (
 
             auto it_region = bam_fetch(bam, bam_index, tid, block.start, block.end, &records, fetch_function);
             auto TSS_TES_site = get_TSS_TES_site((*transcript_to_junctions), block.transcript_list);
-            auto tmp_isoform = Isoforms(chr, isoform_parameters);
+            auto tmp_isoform = new Isoforms (chr, isoform_parameters);
 
             // add all the records in the bamfile to the Isoform object
             for (const auto & rec : records) {
@@ -160,22 +160,37 @@ group_bam2isoform (
                 tmp_blocks = get_blocks(rec);
                 auto
                 junctions = blocks_to_junctions(tmp_blocks);
-                tmp_isoform.add_isoform(junctions, rec.is_reverse);
+                tmp_isoform->add_isoform(junctions, rec.is_reverse);
             }
 
             // then process the isoform
-            if (tmp_isoform.len() > 0) {
-                tmp_isoform.update_all_splice();
-                tmp_isoform.filter_TSS_TES(tss_tes_stat, TSS_TES_site, 0.1);
-                tmp_isoform.match_known_annotation(
+            if (tmp_isoform->len() > 0) {
+                tmp_isoform->update_all_splice();
+                tmp_isoform->filter_TSS_TES(&tss_tes_stat, TSS_TES_site, (float)0.1);
+                tmp_isoform->match_known_annotation(
                     (*transcript_to_junctions),
                     (*transcript_dict),
                     (*gene_dict),
                     block,
                     fa_dict
                 );
-                // isoform_dict[]
+
+                // isoform_dict[{chr, block.start, block.end}] = Isoforms(chr, isoform_parameters);
+                isoform_dict[{chr, block.start, block.end}] = tmp_isoform;
+                
+                if (raw_gff3 != "") {
+                    // todo - i haven't written the Isoforms function to do this yet
+                    // splice_raw.write(tmp_isoform()); 
+                }
+                iso_annotated << tmp_isoform->isoform_to_gtt3(isoform_parameters.MIN_CNT_PCT);
             }
         }
+    }
+
+    // finally, close all the files
+    tss_tes_stat.close();
+    iso_annotated.close();
+    if (raw_gff3 != "") {
+        splice_raw.close();
     }
 }

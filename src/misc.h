@@ -9,6 +9,7 @@
 #include <fstream>
 #include <sstream>
 #include "Pos.h"
+#include "StartEndPair.hpp"
 
 #ifndef ISO
 #define ISO
@@ -27,7 +28,7 @@ struct Iso
 
 #endif
 
-std::vector<std::pair<int, int>>
+std::vector<StartEndPair>
 pairwise (std::vector<int> input);
 
 std::vector<int>
@@ -39,14 +40,11 @@ if_exon_contains(std::vector<int> s1, std::vector<int> s2, int MAX_TOLERANCE);
 float
 get_exon_sim_pct(std::vector<int> exons1, std::vector<int> exons2);
 
-std::vector<std::pair<int, int>>
-pairwise (std::vector<int> input);
+int
+iv_overlap (StartEndPair iv1, StartEndPair iv2);
 
 int
-iv_overlap (std::pair<int, int> iv1, std::pair<int, int> iv2);
-
-int
-exon_overlap (std::vector<int> exons1, std::vector<int> exons2);
+exon_overlap (std::vector<int> exons1, std::vector<StartEndPair> exons2);
 
 std::vector<std::pair<std::string, std::string>>
 get_fa(std::string filename);
