@@ -1,13 +1,17 @@
 Package: FLAMES
 Type: Package
-Title: FLAMES; Full Length Transcriptome Splicing and Mutation Analysis for Long-Read Data
-Version: 0.99.31
+Title: FLAMES: Full Length Analysis of Mutations and Splicing in long read RNA-seq data
+Version: 0.99.32
 Date: 2020-12-28
 Authors@R: c(person("Tian", "Luyi", role=c("aut"),
                     email="tian.l@wehi.edu.au"),
              person("Voogd", "Oliver", role=c("aut", "cre"),
                     email="voogd.o@wehi.edu.au"),
-             person("Su", "Shian",  role=c("aut"),
+             person("Schuster", "Jakob", role=c("aut),
+		    email="schuster.j@wehi.edu.au"),
+	     person("Wang", "Changqing", role=c("aut"),
+		    email="wang.ch@wehi.edu.au"),
+	     person("Su", "Shian",  role=c("aut"),
                     email="su.s@wehi.edu.au"),
              person("Ritchie","Matthew", role=c("ctb"),
                     email="mritchie@wehi.edu.au"))
