@@ -13,6 +13,8 @@
 #' @seealso [bulk_long_pipeline()]
 #' @importFrom scater runUMAP
 #' @importFrom SummarizedExperiment assayNames
+#' @importFrom dplyr expr
+#' 
 #' @return Modified SummarizedExperiment (or SingleCellExperiment) containing
 #' the UMAP visualisation coordinates in the `reducedDims()` UMAP slot.
 generate_umap <- function(summarizedExperiment, counts="counts") {

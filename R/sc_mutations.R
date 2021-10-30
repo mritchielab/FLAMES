@@ -53,6 +53,8 @@
 #' 
 #' @importFrom reticulate import_from_path
 #' @importFrom stats p.adjust
+#' @importFrom utils write.csv
+#' @importFrom S4Vectors head
 #' 
 #' @export
 sc_mutations <- function(sce, barcode_tsv, bam_short, out_dir, genome_fa, annot, known_positions=NULL, min_cov=100, report_pct=c(0.10, 0.90)) {

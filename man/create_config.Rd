@@ -88,9 +88,8 @@ Also writes the object to a JSON file, which is located with the prefix 'config_
 }
 \examples{
 # create the default configuartion file
-\dontrun{
 config <- create_config(
-    getwd(), TRUE, TRUE,
+    tempfile(), TRUE, TRUE,
     TRUE, TRUE,
     TRUE, FALSE,
     10, 100, 10,
@@ -99,5 +98,4 @@ config <- create_config(
     TRUE, TRUE,
     TRUE, 0.75, 0.75
 )
-}
 }

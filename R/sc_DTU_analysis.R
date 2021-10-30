@@ -45,14 +45,15 @@
 #' The table is sorted by decreasing P-values. It will also be saved as \code{sc_DTU_analysis.csv} under the
 #' output folder.
 #' 
-#' @importFrom dplyr group_by summarise_at top_n left_join summarise
+#' @importFrom dplyr group_by summarise_at top_n left_join summarise groups
 #' @importFrom tidyr gather pivot_wider
 #' @importFrom magrittr "%>%"
 #' @importFrom S4Vectors DataFrame
 #' @importFrom SingleCellExperiment counts SingleCellExperiment
 #' @importFrom SummarizedExperiment rowData colData
 #' @importFrom scuttle addPerCellQC addPerFeatureQC isOutlier
-#' 
+#' @importFrom utils write.csv
+#' @importFrom stats chisq.test
 #' @export
 sc_DTU_analysis <- function(sce, path, min_count=15){
 
@@ -65,7 +66,7 @@ sc_DTU_analysis <- function(sce, path, min_count=15){
     # sce object from sc_long_pipeline
     if (!missing(sce)) {
 
-      if (class(sce) != "SingleCellExperiment"){
+      if (!is(sce, "SingleCellExperiment")){
         stop("sce need to be an SingleCellExperiment Object returned by sc_long_pipeline()")
       }
       if (!file.exists(file.path(sce@metadata$OutputFiles$outdir,"isoform_FSM_annotation.csv"))) {
@@ -219,7 +220,7 @@ sc_DTU_analysis <- function(sce, path, min_count=15){
               df = c(df,fit$parameter)
               p_value = c(p_value,fit$p.value)
               cs = colSums( fit$residuals^2 )
-              DTU_group = c(DTU_group, names(cs[order(cs,decreasing = T)[1]]) )
+              DTU_group = c(DTU_group, names(cs[order(cs,decreasing = TRUE)[1]]) )
               if(nrow(data_wide_tmp)==2){
                 rs = rowSums(data_wide_tmp)
                 DTU_tr = c(DTU_tr,names(rs[order(rs)[1]]) )
@@ -230,7 +231,7 @@ sc_DTU_analysis <- function(sce, path, min_count=15){
                 }else{
                   re1 = rowSums(fit$residuals[-hi1,]^2)
                 }
-                DTU_tr = c(DTU_tr, names(re1[order(re1,decreasing = T)[1]]))
+                DTU_tr = c(DTU_tr, names(re1[order(re1,decreasing = TRUE)[1]]))
               }
             }
         }
