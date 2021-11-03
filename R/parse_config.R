@@ -106,6 +106,8 @@ write_config <- function(config, config_file) {
 #' @return file path to the config file created
 #' @examples
 #' # create the default configuartion file
+#' output = tempfile()
+#' \dontrun{
 #' config <- create_config(
 #'     tempfile(), TRUE, TRUE,
 #'     TRUE, TRUE,
@@ -116,6 +118,7 @@ write_config <- function(config, config_file) {
 #'     TRUE, TRUE,
 #'     TRUE, 0.75, 0.75
 #' )
+#' }
 #' @importFrom reticulate import_from_path
 #' @export
 create_config <- function(outdir,
