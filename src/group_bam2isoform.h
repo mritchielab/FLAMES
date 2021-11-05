@@ -13,28 +13,15 @@
 #include "bam.h"
 #include "StartEndPair.hpp"
 #include "cigars.h"
+#include "BamRecord.hpp"
 
 using namespace Rcpp;
 
-#ifndef REC
-#define REC
+#ifndef ISOKEY
+#define ISOKEY
 
-/*  a struct for handling each record in a bam file
+/*  struct that we can use as a key in a map
 */
-struct Record {
-    std::vector<CigarPair>
-    cigar;
-    std::string
-    cigar_string;
-
-    int
-    reference_start;
-    int
-    reference_end;
-    bool
-    is_reverse;
-};
-
 struct IsoformKey {
     std::string chr;
     int start;
@@ -76,6 +63,14 @@ namespace std {
     };
 }
 
+/*  quick struct so we have something to pass down both ref name and records
+    to the BAM fetch_function
+*/
+struct DataStruct {
+    bam_header_t * header;
+    std::vector<BAMRecord> * records;
+};
+
 #define BAM_CMATCH      0   // CIGAR character for matching
 #define BAM_CDEL        2   
 #define BAM_CREF_SKIP   3
@@ -91,7 +86,7 @@ void
 bam_read (std::string bam_in, int s, int e);
 
 std::vector<StartEndPair>
-get_blocks(Record record);
+get_blocks(BAMRecord record);
 
 void
 group_bam2isoform (
@@ -106,4 +101,3 @@ group_bam2isoform (
     IsoformParameters isoform_parameters,
     std::string raw_gff3 = ""
 );
-

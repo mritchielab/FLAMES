@@ -48,7 +48,7 @@ blocks_to_junctions (std::vector<StartEndPair> blocks)
 
 
 Junctions 
-get_TSS_TES_site (std::map<std::string, Junctions> transcript_to_junctions, std::vector<std::string> tr_list)
+get_TSS_TES_site (std::unordered_map<std::string, Junctions> transcript_to_junctions, std::vector<std::string> tr_list)
 {
     Junctions
     all_site;

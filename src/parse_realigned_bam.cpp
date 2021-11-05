@@ -37,9 +37,13 @@ file_to_map(std::string filename)
 void
 read_entire_bam
 (
-    std::string bam_in
+    std::string bam_in, std::string log_out
 )
 {
+    // open the outfile
+    std::ofstream
+    log (log_out);
+
     // read a bamfile
     bamFile bam = bam_open(bam_in.c_str(), "r"); // bam.h
     bam_index_t *bam_index = bam_index_load(bam_in.c_str());
@@ -48,7 +52,10 @@ read_entire_bam
     bam1_t *b = bam_init1();
 
     while (bam_read1(bam, b) >= 0) {
-        std::cout << b->core.tid << ", " << b->core.pos << "\n";
+        // std::cout << b->core.tid << ", " << b->core.pos << "\n";
+        log << "tid=" << b->core.tid << "\tflag=" << b->core.flag << "\n";
+        BAMRecord rec = read_record(b, header);
+        std::cout << rec.reference_name << "\n";
     }
     bam_close(bam);
 }
@@ -80,16 +87,6 @@ parse_realigned_bam
     std::unordered_map<std::string, int>
     count_stat = {};
 
-    // read a bamfile
-    bamFile bam = bam_open(bam_in.c_str(), "r"); // bam.h
-    bam_index_t *bam_index = bam_index_load(bam_in.c_str());
-    bam_header_t *header = bam_header_read(bam); // bam.h
-
-    bam1_t *b = bam_init1();
-    while (bam_read1(bam, b) >= 0) {
-        std::cout << b->core.tid << ", " << b->core.pos << "\n";
-    }
-    bam_close(bam);
 
     std::unordered_map<std::string, std::string>
     bc_dict;
@@ -98,10 +95,39 @@ parse_realigned_bam
     }
 
     
+    // read a bamfile
+    bamFile bam = bam_open(bam_in.c_str(), "r"); // bam.h
+    bam_index_t *bam_index = bam_index_load(bam_in.c_str());
+    bam_header_t *header = bam_header_read(bam); // bam.h
+
     // produce and populate a records file
-    std::vector<Record>
+    std::vector<BAMRecord>
     records = {};
-    // bam_fetch(bam, bam_index, tid, block.start, block.end, &records, fetch_function);
+    // iterate over every entry in the bam
+    bam1_t *b = bam_init1();
+    while (bam_read1(bam, b) >= 0) {
+        std::cout << b->core.tid << ", " << b->core.pos << "\n";
+        
+        BAMRecord rec = read_record(b, header);
+        records.push_back(rec);
+    }
+    bam_close(bam);
+
+    for (const auto & rec : records) {
+        // if it's unmapped, just update the count and continue
+        if (rec.flag.read_unmapped) {
+            count_stat["unmapped"] += 1;
+            continue;
+        }
+
+        int
+        map_start = rec.reference_start;
+        int
+        map_end = rec.reference_end;
+
+        std::string
+        tr = rec.reference_name;
+    }
 }
 
 

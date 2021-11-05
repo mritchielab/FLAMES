@@ -19,4 +19,4 @@ std::string
 generate_cigar (std::vector<CigarPair> cigar);
 
 std::vector<CigarPair>
-smooth_cigar (std::vector<CigarPair> cigar, int threshold=10);
+smooth_cigar (std::vector<CigarPair> cigar, int threshold);

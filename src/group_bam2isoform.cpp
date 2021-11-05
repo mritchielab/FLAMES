@@ -1,41 +1,14 @@
 #include "group_bam2isoform.h"
 
-/*  take a bam entry,
-    populate a vector with all of its CIGAR operations
-    this is to mimic the output of bamnostic's default cigar from bamfile.fetch
-*/
-std::vector<CigarPair>
-generate_cigar_pairs(const bam1_t *b)
-{
-    std::vector<CigarPair>
-    cigar_pairs;
-
-    // iterate over the cigar
-    const auto cigar = bam_get_cigar(b);
-    for (int k = 0; k < b->core.n_cigar; k++) {
-        cigar_pairs.push_back((CigarPair){
-            bam_cigar_op(cigar[k]),
-            bam_cigar_oplen(cigar[k])
-        });
-    }
-    return cigar_pairs;
-}
-
 static int
 fetch_function(const bam1_t *b, void *data)
 {
-    Record
-    rec;
+    DataStruct * data_struct = (DataStruct*)data;
 
-    std::vector<Record> (*records) = (std::vector<Record>*)data;
+    std::vector<BAMRecord> (*records) = data_struct->records;
+    bam_header_t * header = data_struct->header;
 
-    std::cout << b->data << ", " << b->core.tid << ", " << b->core.pos << ", " << b->core.n_cigar << "\n";
-
-    rec.reference_start = b->core.pos;
-    // rec.reference_end = b->core.pos + bam_cigar2qlen(b->core.n_cigar, bam_get_cigar(b));
-    rec.is_reverse = b->core.flag;
-    rec.cigar = generate_cigar_pairs(b);
-
+    BAMRecord rec = read_record(b, header);
     records->push_back(rec);
 	return 0;
 }
@@ -50,18 +23,21 @@ bam_read (std::string bam_in, int s, int e)
     bam_header_t *header = bam_header_read(bam); // bam.h
     int tid = bam_get_tid(header, "chr22");
 
+    
+
     std::cout << "bamfile is done\n";
     std::cout << "tid is " << tid << "\n";
 
-    std::vector<Record>
+    std::vector<BAMRecord>
     records;
-    auto it_region = bam_fetch(bam, bam_index, tid, s, e, &records, fetch_function);
+    DataStruct data = {header, &records};
+    auto it_region = bam_fetch(bam, bam_index, tid, s, e, &data, fetch_function);
 
     bam_close(bam);
 }
 
 std::vector<StartEndPair>
-get_blocks(Record record)
+get_blocks(BAMRecord record)
 {
     std::vector<StartEndPair>
     blocks = {};
@@ -143,10 +119,11 @@ group_bam2isoform (
 
             int tid = bam_get_tid(header, chr.c_str());
             
-            std::vector<Record>
+            std::vector<BAMRecord>
             records = {};
 
-            auto it_region = bam_fetch(bam, bam_index, tid, block.start, block.end, &records, fetch_function);
+            DataStruct data = {header, &records};
+            auto it_region = bam_fetch(bam, bam_index, tid, block.start, block.end, &data, fetch_function);
             auto TSS_TES_site = get_TSS_TES_site((*transcript_to_junctions), block.transcript_list);
             auto tmp_isoform = new Isoforms (chr, isoform_parameters);
 
@@ -160,7 +137,7 @@ group_bam2isoform (
                 tmp_blocks = get_blocks(rec);
                 auto
                 junctions = blocks_to_junctions(tmp_blocks);
-                tmp_isoform->add_isoform(junctions, rec.is_reverse);
+                tmp_isoform->add_isoform(junctions, rec.flag.read_reverse_strand);
             }
 
             // then process the isoform
