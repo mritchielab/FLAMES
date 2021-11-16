@@ -52,22 +52,74 @@ read_entire_bam
     bam1_t *b = bam_init1();
 
     while (bam_read1(bam, b) >= 0) {
-        // std::cout << b->core.tid << ", " << b->core.pos << "\n";
-        log << "tid=" << b->core.tid << "\tflag=" << b->core.flag << "\n";
+        // skip the invalid tid entries
+        if (b->core.tid == -1) {
+            continue;
+        }
         BAMRecord rec = read_record(b, header);
+        log << "tid=" << b->core.tid 
+            << "\tflag=" << b->core.flag 
+            << "\t\tname=" << rec.reference_name 
+            << "\treference_start=" << rec.reference_start 
+            << "\treference_end=" << rec.reference_end 
+            << "\tread_name=" << rec.read_name
+            << "\tquality=" << rec.mapping_quality << "\n";
+        
         std::cout << rec.reference_name << "\n";
     }
     bam_close(bam);
 }
 
-void
+int
+query_len(std::string cigar_string, bool hard_clipping)
+{
+    /*
+        https://stackoverflow.com/questions/39710796/infer-the-length-of-a-sequence-using-the-cigar
+        Given a CIGAR string, return the number of bases consumed from the
+        query sequence.
+        CIGAR is a sequence of the form <operations><operator> such that operations is an integer giving 
+        the number of times the operator is used
+        M = match
+        I = Insertion
+        S = Soft clipping
+        = = sequence match
+        X = sequence mismatch
+    */
+
+   // set up which operations should consume a read
+   std::vector<char> read_consuming_ops;
+   if (!hard_clipping) {
+       read_consuming_ops = {'M', 'I', 'S', '=', 'X'};
+   } else {
+       read_consuming_ops = {'M', 'I', 'S', 'H', '=', 'X'};
+   }
+
+   int result = 0;
+   int this_len = 0;
+   for (const auto & c : cigar_string) {
+       if (isdigit(c)) {
+           // if it's an int, update the len
+           this_len = int(c);
+       } else {
+           // check if it's in the read_consuming_ops
+           if (std::count(read_consuming_ops.begin(), read_consuming_ops.end(), c) > 0) {
+               // if so we have to add it
+               result += this_len;
+           }
+       }
+   }
+
+   return result;
+}
+
+RealignedBamData
 parse_realigned_bam
 (
     std::string bam_in,
     std::string fa_idx_f,
-    std::string min_sup_reads,
-    std::string min_tr_coverage,
-    std::string min_read_coverage,
+    int         min_sup_reads,
+    float       min_tr_coverage,
+    float       min_read_coverage,
     std::unordered_map<std::string, std::string> kwargs
 )
 {
@@ -75,14 +127,24 @@ parse_realigned_bam
     std::unordered_map<std::string, int>
     fa_idx = file_to_map(fa_idx_f);
 
-    std::unordered_map<std::string, std::string>
+    std::unordered_map<std::string, std::unordered_map<std::string, std::vector<std::string>>>
     bc_tr_count_dict = {};
 
-    std::unordered_map<std::string, std::string>
-    bc_tr_badvoc_count_dict = {};
+    std::unordered_map<std::string, std::unordered_map<std::string, std::vector<std::string>>>
+    bc_tr_badcov_count_dict = {};
 
-    std::unordered_map<std::string, std::string>
+    std::unordered_map<std::string, std::vector<float>>
     tr_cov_dict = {};
+
+    struct ReadDictEntry {
+        std::string tr;
+        int         AS_tag;
+        float       tr_cov;
+        float       length;
+        float       quality;
+    };
+    std::unordered_map<std::string, std::vector<ReadDictEntry>>
+    read_dict;
     
     std::unordered_map<std::string, int>
     count_stat = {};
@@ -108,6 +170,10 @@ parse_realigned_bam
     while (bam_read1(bam, b) >= 0) {
         std::cout << b->core.tid << ", " << b->core.pos << "\n";
         
+        if (b->core.tid == -1) {
+            std::cout << "skipping\n";
+            continue;
+        }
         BAMRecord rec = read_record(b, header);
         records.push_back(rec);
     }
@@ -127,7 +193,194 @@ parse_realigned_bam
 
         std::string
         tr = rec.reference_name;
+        
+        
+        float
+        tr_cov = (float)((map_end - map_start)/fa_idx[tr]);
+        // if there is no dictionary entry for this tr_cov, create one
+        if (tr_cov_dict.count(tr) == 0) {
+            tr_cov_dict[tr] = {};
+        }
+        // then add the new cov
+        tr_cov_dict[tr].push_back(tr_cov);
+
+        int inferred_read_length = query_len(rec.cigar_string);
+        float tr_length = (float)(rec.query_alignment_length)/inferred_read_length;
+
+        // set up the entry we're about to add to the dictionary
+        ReadDictEntry new_read_entry = {
+            tr,
+            rec.AS_tag,
+            tr_cov,
+            tr_length,
+            rec.mapping_quality
+        };
+
+        // create a dictionary entry if there isn't already one
+        if (read_dict.count(rec.read_name) == 0) {
+            read_dict[rec.read_name] = {};
+            
+            read_dict[rec.read_name].push_back(new_read_entry);
+        } else {
+            if (rec.AS_tag > read_dict[rec.read_name][0].AS_tag) {
+                read_dict[rec.read_name].insert(read_dict[rec.read_name].begin(), new_read_entry);
+            } else if (new_read_entry.AS_tag == read_dict[rec.read_name][0].AS_tag &&
+                        new_read_entry.length == read_dict[rec.read_name][0].length) {
+                if (new_read_entry.tr_cov > read_dict[rec.read_name][0].tr_cov) { // choose the one with higher transcript coverage, might be internal TSS
+                    read_dict[rec.read_name].insert(read_dict[rec.read_name].begin(), new_read_entry);
+                }
+            } else {
+                read_dict[rec.read_name].push_back(new_read_entry);
+            }
+        }
+
+        // see if tr is in the fa_idx, if not then log it as "not in annotation"
+        if (fa_idx.count(tr) == 0) {
+            count_stat["not in annotation"] += 1;
+            std::cout << "\t" << tr << " not in annotation ???\n";
+        }
     }
+
+    // build up a new dict of only the tr entries that have sufficient coverage
+    // (at least 90% coverage on at least min_sup_reads)
+    std::vector<std::string>
+    tr_kept;
+    for (const auto & [tr, covs] : tr_cov_dict) {
+        // count up how many of the coverages are above the acceptable value of 90%
+        int sup_read_count = 0;
+        for (const auto & cov : covs) {
+            if (cov > 0.9) {
+                sup_read_count++;
+            }
+        }
+        
+        // if the overall threshold is met for this tr, add it to the new dict
+        if (sup_read_count > min_sup_reads) {
+            tr_kept.push_back(tr);
+        }
+    }
+
+    std::unordered_map<std::string, int>
+    unique_tr_count;
+    for (const auto & [read_name, entries] : read_dict) {
+        if (entries[0].tr_cov > 0.9) {
+            if (unique_tr_count.count(entries[0].tr) == 0) {
+                unique_tr_count[entries[0].tr] = 0;
+            }
+            unique_tr_count[entries[0].tr]++;
+        }
+    }
+
+    for (const auto & [read_name, entries] : read_dict) {
+        // collect the entries from the read_dict that have enough coverage to have been retained
+        std::vector<ReadDictEntry>
+        tmp;
+        for (const auto & entry : entries) {
+            if (std::count(tr_kept.begin(), tr_kept.end(), entry.tr) > 0) {
+                tmp.push_back(entry);
+            }
+        }
+
+        ReadDictEntry hit;
+        if (tmp.size() > 0) {
+            hit = tmp[0];
+        } else { // if there are none left, just update "no good match" and skip it
+            count_stat["no good match"] += 1;
+            continue;
+        }
+
+        std::vector<std::string>
+        read_name_split;
+
+        std::string current_split = ""; 
+        for (const auto & c : read_name) {
+            if (c != '#' &&
+                c != '_') {
+                // just add the character
+                current_split += c;
+            } else {
+                // or add it to the end and reset the current string
+                read_name_split.push_back(current_split);
+                current_split = "";
+            }
+
+            if (c == '#') {
+                // if we find one of these, also terminate the loop
+                break;
+            }
+        }
+
+        std::string
+        bc = read_name_split[read_name_split.size() - 2];
+        std::string
+        umi = read_name_split[read_name_split.size() - 1];
+
+        if (kwargs.count("bc_file")) {
+            bc = bc_dict[bc];
+        }
+
+        if (tmp.size() == 1 &&
+            tmp[0].quality > 0) {
+            // initialise the dictionary entries if necesary
+            if (bc_tr_count_dict.count(bc) == 0) {
+                bc_tr_count_dict[bc] = {};
+            }
+            if (bc_tr_count_dict[bc].count(hit.tr) == 0) {
+                bc_tr_count_dict[bc][hit.tr] = {};
+            }
+            // and then add the umi
+            bc_tr_count_dict[bc][hit.tr].push_back(umi);
+            count_stat["counted_reads"] += 1;
+        } else if (tmp.size() > 1 &&
+            tmp[0].AS_tag == tmp[1].AS_tag &&
+            tmp[0].tr_cov == tmp[1].tr_cov) {
+            if (hit.AS_tag > 0.8) {
+                if (bc_tr_count_dict.count(bc) == 0) {
+                    bc_tr_count_dict[bc] = {};
+                }
+                if (bc_tr_count_dict[bc].count(hit.tr) == 0) {
+                    bc_tr_count_dict[bc][hit.tr] = {};
+                }
+
+                bc_tr_count_dict[bc][hit.tr].push_back(umi);
+                count_stat["counted_reads"] += 1;
+            } else {
+                count_stat["ambiguous_reads"] += 1;
+                if (bc_tr_badcov_count_dict.count(bc) == 0) {
+                    bc_tr_badcov_count_dict[bc] = {};
+                }
+                if (bc_tr_badcov_count_dict[bc].count(hit.tr) == 0) {
+                    bc_tr_badcov_count_dict[bc][hit.tr] = {};
+                }
+                bc_tr_badcov_count_dict[bc][hit.tr].push_back(umi);
+            }
+        } else if (hit.tr_cov < min_tr_coverage ||
+            hit.length < min_read_coverage) {
+            count_stat["not_enough_coverage"] += 1;
+            if (bc_tr_badcov_count_dict.count(bc) == 0) {
+                bc_tr_badcov_count_dict[bc] = {};
+            }
+            if (bc_tr_badcov_count_dict[bc].count(hit.tr) == 0) {
+                bc_tr_badcov_count_dict[bc][hit.tr] = {};
+            }
+            bc_tr_badcov_count_dict[bc][hit.tr].push_back(umi);
+        } else {
+            if (bc_tr_count_dict.count(bc) == 0) {
+                bc_tr_badcov_count_dict[bc] = {};
+            }
+            if (bc_tr_count_dict[bc].count(hit.tr) == 0) {
+                bc_tr_badcov_count_dict[bc][hit.tr] = {};
+            }
+            bc_tr_count_dict[bc][hit.tr].push_back(umi);
+            count_stat["counted_reads"] += 1;
+        }
+    }
+    
+    std::cout << "Mapping counts:" << "\n";
+    for (const auto & [key, val] : count_stat) {
+        std::cout << "\t" << key << ": " << val << "\n";
+    }
+    return RealignedBamData {bc_tr_count_dict, bc_tr_badcov_count_dict, tr_kept};
 }
 
 

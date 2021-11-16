@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <codecvt>
 #include <Rcpp.h>
 
 #include "bam.h"
@@ -52,6 +53,16 @@ struct BAMRecord {
     reference_start;
     int
     reference_end;
+    
+    std::string
+    read_name;
+
+    float
+    AS_tag;
+    int
+    query_alignment_length;
+    int
+    mapping_quality;
     Flag
     flag;
 };
@@ -64,6 +75,6 @@ Flag
 read_flag(int);
 
 BAMRecord
-read_record(const bam1_t*, bam_header_t*);
+read_record(const bam1_t*, const bam_header_t*);
 
 #endif
