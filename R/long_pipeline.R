@@ -11,6 +11,183 @@
 #' in the given `outdir` directory. These files are loaded into R in either
 #' a SummarizedExperiment or SingleCellExperiment object by the callers to this
 #' function, `sc_long_pipeline()` and `bulk_long_pipeline()` respectively.
+
+generic_long_pipeline_cpp <-
+    function(annot,
+             fastq,
+             in_bam,
+             outdir,
+             genome_fa,
+             minimap2_dir,
+             downsample_ratio,
+             config_file,
+             do_genome_align,
+             do_isoform_id = TRUE,
+             do_read_realign,
+             do_transcript_quanti,
+             gen_raw_isoform,
+             has_UMI,
+             MAX_DIST,
+             MAX_TS_DIST,
+             MAX_SPLICE_MATCH_DIST,
+             min_fl_exon_len,
+             Max_site_per_splice,
+             Min_sup_cnt,
+             Min_cnt_pct,
+             Min_sup_pct,
+             strand_specific,
+             remove_incomp_reads,
+             use_junctions,
+             no_flank,
+             use_annotation,
+             min_tr_coverage,
+             min_read_coverage) {
+        cat("Running FLAMES pipeline...\n")
+        config <- parse_json_config_cpp(config_file)
+
+        using_bam <- FALSE
+        if (!is.null(in_bam)) {
+            using_bam <- TRUE
+            fastq <- NULL
+        }
+
+        # setup of internal arguments which hold output files and intermediate files
+        isoform_gff3 <- paste(outdir, "isoform_annotated.gff3", sep = "/")
+        isoform_gff3_f <- paste(outdir, "isoform_annotated.filtered.gff3",
+            sep =
+                "/"
+        )
+        FSM_anno_out <- paste(outdir, "isoform_FSM_annotation.csv", sep = "/")
+        raw_splice_isoform <- paste(outdir, "splice_raw.gff3", sep = "/")
+        tss_tes_stat <- paste(outdir, "tss_tes.bedgraph", sep = "/")
+        transcript_fa <- paste(outdir, "transcript_assembly.fa", sep = "/")
+        transcript_fa_idx <- paste(outdir, "transcript_assembly.fa.fai",
+            sep =
+                "/"
+        )
+        tmp_bam <- paste(outdir, "tmp_align.bam", sep = "/")
+        tmp_bed <- paste(outdir, "tmp_splice_anno.bed12", sep = "/")
+        tmp_sam <- paste(outdir, "tmp_align.sam", sep = "/")
+        genome_bam <- paste(outdir, "align2genome.bam", sep = "/")
+        realign_bam <- paste(outdir, "realign2transcript.bam", sep = "/")
+        tr_cnt_csv <- paste(outdir, "transcript_count.csv.gz", sep = "/")
+        tr_badcov_cnt_csv <- paste(outdir, "transcript_count.bad_coverage.csv.gz",
+            sep =
+                "/"
+        )
+
+        cat("#### Input parameters:\n")
+        print_config_cpp(config)
+        cat("\tgene annotation:", annot, "\n")
+        cat("\tgenome fasta:", genome_fa, "\n")
+        if (using_bam) {
+            cat("\tinput bam:", in_bam, "\n")
+            genome_bam <- in_bam
+        } else {
+              cat("\tinput fastq:", fastq, "\n")
+          }
+        cat("\toutput directory:", outdir, "\n")
+        cat("\tdirectory containing minimap2:", minimap2_dir, "\n")
+        # align reads to genome
+        if (config$pipeline_parameters$do_genome_alignment) {
+            cat("#### Aligning reads to genome using minimap2\n")
+
+            if (config$alignment_parameters$use_junctions) {
+                gtf_to_bed_cpp(annot, tmp_bed, "")
+            }
+            minimap2_align_cpp(
+                minimap2_dir,
+                genome_fa,
+                fastq,
+                tmp_sam,
+                no_flank = config$alignment_parameters$no_flank,
+                bed12_junc = if (config$alignment_parameters$use_junctions) {
+                      tmp_bed
+                  } else {
+                      NULL
+                  }
+            )
+            samtools_as_bam(tmp_sam, tmp_bam)
+            samtools_sort_index(tmp_bam, genome_bam)
+            file.remove(tmp_sam)
+            file.remove(tmp_bam)
+            if (config$alignment_parameters$use_junctions) {
+                  file.remove(tmp_bed)
+              }
+        } else {
+            cat("#### Skip aligning reads to genome\n")
+        }
+
+        # find isofroms
+        cat("annot:",annot,"\n")
+        cat("genome_bam:",genome_bam,"\n")
+        cat("isoform_gff3:",isoform_gff3,"\n")
+        cat("tss_tes_stat:",tss_tes_stat,"\n")
+        cat("genome_fa:",genome_fa,"\n")
+        cat("transcript_fa:",transcript_fa,"\n")
+        cat("downsample_ratio:",downsample_ratio,"\n")
+        raw <- "nothing"
+        cat("raw:",raw,"\n")
+        isoform_objects <-
+            find_isoform_cpp(
+                annot,
+                genome_bam,
+                isoform_gff3,
+                tss_tes_stat,
+                genome_fa,
+                transcript_fa,
+                downsample_ratio,
+                config,
+                raw
+            )
+        
+        # realign to transcript
+        # if (!using_bam && do_read_realign) {
+        if (do_read_realign) {
+            cat("#### Realign to transcript using minimap2\n")
+            minimap2_tr_align_cpp(minimap2_dir, transcript_fa, fastq, tmp_sam)
+            samtools_as_bam(tmp_sam, tmp_bam)
+            samtools_sort_index(tmp_bam, realign_bam)
+            file.remove(tmp_sam)
+            file.remove(tmp_bam)
+        } else {
+            cat("#### Skip read realignment\n")
+        }
+
+
+        # quantification
+        if (config$pipeline_parameters$do_transcript_quantification) {
+            quantification(
+                config,
+                realign_bam,
+                transcript_fa_idx,
+                isoform_objects,
+                tr_cnt_csv,
+                tr_badcov_cnt_csv,
+                isoform_gff3,
+                annot,
+                isoform_gff3_f,
+                FSM_anno_out
+            );
+        } else {
+            cat("#### Skip transcript quantification\n")
+        }
+
+        return(
+            list(
+                "annot" = annot,
+                "counts" = tr_cnt_csv,
+                "isoform_annotated" = isoform_gff3_f,
+                "transcript_assembly" = transcript_fa,
+                "config" = config_file,
+                "align_bam" = genome_bam,
+                "realign2transcript" = realign_bam,
+                "tss_tes" = tss_tes_stat,
+                "outdir" = outdir
+            )
+        )
+}
+
 generic_long_pipeline <-
     function(annot,
              fastq,

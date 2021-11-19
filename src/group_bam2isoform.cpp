@@ -3,9 +3,10 @@
 static int
 fetch_function(const bam1_t *b, void *data)
 {
+    std::cout << "bam fetch on " << b->core.pos << "\n";
     DataStruct * data_struct = (DataStruct*)data;
 
-    std::vector<BAMRecord> (*records) = data_struct->records;
+    std::vector<BAMRecord> * records = data_struct->records;
     bam_header_t * header = data_struct->header;
 
     BAMRecord rec = read_record(b, header);
@@ -15,13 +16,13 @@ fetch_function(const bam1_t *b, void *data)
 
 // [[Rcpp::export]]
 void
-bam_read (std::string bam_in, int s, int e)
+bam_read (std::string bam_in, std::string chr, int s, int e)
 {
     // read a bamfile
     bamFile bam = bam_open(bam_in.c_str(), "r"); // bam.h
     bam_index_t *bam_index = bam_index_load(bam_in.c_str());
     bam_header_t *header = bam_header_read(bam); // bam.h
-    int tid = bam_get_tid(header, "chr22");
+    int tid = bam_get_tid(header, chr.c_str());
 
     
 
@@ -113,21 +114,46 @@ group_bam2isoform (
         fa_dict[c.first] = c.second;
     }
 
-    for (const auto & [chr, blocks] : (*chr_to_blocks)) {
-        for (const auto & block : blocks) {
+    std::vector<BAMRecord>
+    records = {};
+    std::cout << "\tmade records\n";
+    DataStruct data = {header, &records};
+    std::cout << "\tmade datastruct\n";
+
+    std::cout << "made it to the big for\n";
+    for (auto & [chr, blocks] : (*chr_to_blocks)) {
+        std::cout << "started loop with " << chr << "\n";
+        int tid = bam_get_tid(header, chr.c_str());
+
+        for (auto & block : blocks) {
+            std::cout << "started inner loop with " << block.start << ", " << block.end << "\n";
+            if (block.start == 8208472) {
+                std::cout << "!! SKIPPING the danger zone !!\n";
+                continue;
+            }
+            records = {};
+            std::cout << "\tcleared records";
             // extract this from the bam file
 
-            int tid = bam_get_tid(header, chr.c_str());
-            
-            std::vector<BAMRecord>
-            records = {};
+            std::cout << "\tabout to bamfetch";
+            std::cout << "\n\t\tbam:" << bam_in
+                    << "\n\t\tbam_index:" << bam_index
+                    << "\n\t\ttid:" << tid
+                    << "\n\t\tblock.start:" << block.start
+                    << "\n\t\tblock.end:" << block.end
+                    << "\n\t\tblock.transcript_list.front():" << block.transcript_list.front()
+                    << "\n\t\t&data:" << &data
+                    << "\n\t\t&fetch_function:" << &fetch_function << "\n";
 
-            DataStruct data = {header, &records};
-            auto it_region = bam_fetch(bam, bam_index, tid, block.start, block.end, &data, fetch_function);
-            auto TSS_TES_site = get_TSS_TES_site((*transcript_to_junctions), block.transcript_list);
+            bam_fetch(bam, bam_index, tid, block.start, block.end, &data, &fetch_function);
+            std::cout << "bam_fetch done\n";
+            auto TSS_TES_site = get_TSS_TES_site((*transcript_to_junctions), (block.transcript_list));
+            std::cout << "get_TSS_TES_site done\n";
             auto tmp_isoform = new Isoforms (chr, isoform_parameters);
+            std::cout << "initialised everything\n";
 
             // add all the records in the bamfile to the Isoform object
+            std::cout << "started inner inner for\n";
             for (const auto & rec : records) {
                 auto
                 cigar_smooth = smooth_cigar(rec.cigar, 20);
@@ -139,9 +165,11 @@ group_bam2isoform (
                 junctions = blocks_to_junctions(tmp_blocks);
                 tmp_isoform->add_isoform(junctions, rec.flag.read_reverse_strand);
             }
+            std::cout << "finished inner inner for\n";
 
             // then process the isoform
             if (tmp_isoform->len() > 0) {
+                std::cout << "\tisoform len>0\n";
                 tmp_isoform->update_all_splice();
                 tmp_isoform->filter_TSS_TES(&tss_tes_stat, TSS_TES_site, (float)0.1);
                 tmp_isoform->match_known_annotation(
@@ -160,6 +188,7 @@ group_bam2isoform (
                     // splice_raw.write(tmp_isoform()); 
                 }
                 iso_annotated << tmp_isoform->isoform_to_gtt3(isoform_parameters.MIN_CNT_PCT);
+                std::cout << "\treached the end of the isoform len block\n";
             }
         }
     }

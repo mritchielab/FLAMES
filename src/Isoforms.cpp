@@ -461,8 +461,6 @@ void Isoforms::filter_TSS_TES(std::ofstream * out_f, Junctions known_site, float
     std::vector<StartEndPair>
     pair_after_filtering;
 
-    // lines like these make me think, 
-    // maybe i've not thought this architecture out well enough...
     std::vector<std::pair<StartEndPair, int>>
     pair_enrich;
 
@@ -686,7 +684,7 @@ void Isoforms::match_known_annotation
   }
 
   Junctions
-  TSS_TES_site = get_TSS_TES_site(transcript_to_junctions, one_block.transcript_list);
+  TSS_TES_site = get_TSS_TES_site(transcript_to_junctions, (one_block.transcript_list));
 
   // if this is a single-exon read, we're done
   if (splice_site.size() == 0) {

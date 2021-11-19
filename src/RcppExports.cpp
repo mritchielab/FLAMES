@@ -11,9 +11,10 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // find_isoform_cpp
-void find_isoform_cpp(std::string gff3, std::string genome_bam, std::string isoform_gff3, std::string tss_test_stat, std::string genomefa, std::string transcript_fa, int downsample_ratio, Rcpp::List config_list, std::string raw_splice_isoform);
+Rcpp::List find_isoform_cpp(std::string gff3, std::string genome_bam, std::string isoform_gff3, std::string tss_test_stat, std::string genomefa, std::string transcript_fa, int downsample_ratio, Rcpp::List config_list, std::string raw_splice_isoform);
 RcppExport SEXP _FLAMES_find_isoform_cpp(SEXP gff3SEXP, SEXP genome_bamSEXP, SEXP isoform_gff3SEXP, SEXP tss_test_statSEXP, SEXP genomefaSEXP, SEXP transcript_faSEXP, SEXP downsample_ratioSEXP, SEXP config_listSEXP, SEXP raw_splice_isoformSEXP) {
 BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string >::type gff3(gff3SEXP);
     Rcpp::traits::input_parameter< std::string >::type genome_bam(genome_bamSEXP);
@@ -24,8 +25,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type downsample_ratio(downsample_ratioSEXP);
     Rcpp::traits::input_parameter< Rcpp::List >::type config_list(config_listSEXP);
     Rcpp::traits::input_parameter< std::string >::type raw_splice_isoform(raw_splice_isoformSEXP);
-    find_isoform_cpp(gff3, genome_bam, isoform_gff3, tss_test_stat, genomefa, transcript_fa, downsample_ratio, config_list, raw_splice_isoform);
-    return R_NilValue;
+    rcpp_result_gen = Rcpp::wrap(find_isoform_cpp(gff3, genome_bam, isoform_gff3, tss_test_stat, genomefa, transcript_fa, downsample_ratio, config_list, raw_splice_isoform));
+    return rcpp_result_gen;
 END_RCPP
 }
 // flames_test_func
@@ -39,14 +40,27 @@ BEGIN_RCPP
 END_RCPP
 }
 // bam_read
-void bam_read(std::string bam_in, int s, int e);
-RcppExport SEXP _FLAMES_bam_read(SEXP bam_inSEXP, SEXP sSEXP, SEXP eSEXP) {
+void bam_read(std::string bam_in, std::string chr, int s, int e);
+RcppExport SEXP _FLAMES_bam_read(SEXP bam_inSEXP, SEXP chrSEXP, SEXP sSEXP, SEXP eSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string >::type bam_in(bam_inSEXP);
+    Rcpp::traits::input_parameter< std::string >::type chr(chrSEXP);
     Rcpp::traits::input_parameter< int >::type s(sSEXP);
     Rcpp::traits::input_parameter< int >::type e(eSEXP);
-    bam_read(bam_in, s, e);
+    bam_read(bam_in, chr, s, e);
+    return R_NilValue;
+END_RCPP
+}
+// gtf_to_bed_cpp
+void gtf_to_bed_cpp(std::string in_gtf, std::string out_bed, std::string chrom_sizes_file);
+RcppExport SEXP _FLAMES_gtf_to_bed_cpp(SEXP in_gtfSEXP, SEXP out_bedSEXP, SEXP chrom_sizes_fileSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type in_gtf(in_gtfSEXP);
+    Rcpp::traits::input_parameter< std::string >::type out_bed(out_bedSEXP);
+    Rcpp::traits::input_parameter< std::string >::type chrom_sizes_file(chrom_sizes_fileSEXP);
+    gtf_to_bed_cpp(in_gtf, out_bed, chrom_sizes_file);
     return R_NilValue;
 END_RCPP
 }
@@ -151,7 +165,8 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_FLAMES_find_isoform_cpp", (DL_FUNC) &_FLAMES_find_isoform_cpp, 9},
     {"_FLAMES_flames_test_func", (DL_FUNC) &_FLAMES_flames_test_func, 0},
-    {"_FLAMES_bam_read", (DL_FUNC) &_FLAMES_bam_read, 3},
+    {"_FLAMES_bam_read", (DL_FUNC) &_FLAMES_bam_read, 4},
+    {"_FLAMES_gtf_to_bed_cpp", (DL_FUNC) &_FLAMES_gtf_to_bed_cpp, 3},
     {"_FLAMES_match_cell_barcode", (DL_FUNC) &_FLAMES_match_cell_barcode, 6},
     {"_FLAMES_merge_bulk_fastq_cpp", (DL_FUNC) &_FLAMES_merge_bulk_fastq_cpp, 2},
     {"_FLAMES_minimap2_align_cpp", (DL_FUNC) &_FLAMES_minimap2_align_cpp, 6},

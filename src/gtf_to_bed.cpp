@@ -1,11 +1,16 @@
 #include "gtf_to_bed.h"
 
+// [[Rcpp::export]]
 void
-gtf_to_bed (std::string in_gtf, std::string out_bed, std::string chrom_sizes_file = "")
+gtf_to_bed_cpp(std::string in_gtf, std::string out_bed, std::string chrom_sizes_file)
 {
+  std::cout << "started gtf_to_bed_cpp\n";
+
   std::ifstream gtf (in_gtf);
   std::ofstream bed (out_bed);
   std::ifstream chrom_sizes;
+
+  std::cout << "opened the files\n";
 
   bool is_bed = (out_bed.substr(out_bed.length() - 3, out_bed.length()) != "psl") ? true : false;
 
@@ -39,7 +44,7 @@ gtf_to_bed (std::string in_gtf, std::string out_bed, std::string chrom_sizes_fil
     std::vector<int> vector
   ) 
   {
-    std::stringstream stringstream;
+    std::stringstream stringstream = (std::stringstream)("");
     for (auto i : vector) {
       stringstream << i << ',';
     }
@@ -81,8 +86,7 @@ gtf_to_bed (std::string in_gtf, std::string out_bed, std::string chrom_sizes_fil
   // lambda function to write rows to a psl file
   // format described here: http://genome.ucsc.edu/FAQ/FAQformat#format2
   auto
-  psl_write_row = [] (
-    std::ofstream& file,
+  psl_write_row = [&bed] (
     int matches,
     int misMatches,
     int repMatches,
@@ -106,7 +110,7 @@ gtf_to_bed (std::string in_gtf, std::string out_bed, std::string chrom_sizes_fil
     std::string tStarts
   ) 
   {
-    file << matches << "\t"
+    bed << matches << "\t"
         << misMatches << "\t"
         << repMatches << "\t"
         << nCount << "\t"
@@ -141,16 +145,14 @@ gtf_to_bed (std::string in_gtf, std::string out_bed, std::string chrom_sizes_fil
     file << data.back() << '\n';
   };
 
-
-
   std::string prev_transcript = "";
   std::string prev_chrom;
   std::string prev_gene;
   std::string prev_strand;
 
   int blockcount;
-  std::vector<int> blockstarts;
-  std::vector<int> blocksizes;
+  std::vector<int> blockstarts = {};
+  std::vector<int> blocksizes = {};
 
   std::string gtf_line;
   std::string this_transcript;
@@ -165,7 +167,7 @@ gtf_to_bed (std::string in_gtf, std::string out_bed, std::string chrom_sizes_fil
   std::vector<int> qstarts;
 
   while (std::getline(gtf, gtf_line)) {
-    if (line[0] == '#') {
+    if (gtf_line[0] == '#') {
       continue;
     }
     
@@ -185,12 +187,10 @@ gtf_to_bed (std::string in_gtf, std::string out_bed, std::string chrom_sizes_fil
     if (ty != "exon") {
       continue;
     }
-
     // just get a substring of the attributes entry
     auto transcript_id = values[8].find("transcript_id") + 15;
     this_transcript = values[8].substr(transcript_id, values[8].length());
     this_transcript = this_transcript.substr(0, this_transcript.find("\""));
-
     // once all the exons for a transcript are read, write the psl/bed entry
     if (this_transcript != prev_transcript) {
       if (prev_transcript != "") {
@@ -199,7 +199,6 @@ gtf_to_bed (std::string in_gtf, std::string out_bed, std::string chrom_sizes_fil
           std::reverse(blocksizes.begin(), blocksizes.end());
           std::reverse(blockstarts.begin(), blockstarts.end());
         }
-
         // target (eg chrom)
         tstart = blockstarts.front();
         tend = blockstarts.back() + blockstarts.back();
@@ -222,15 +221,28 @@ gtf_to_bed (std::string in_gtf, std::string out_bed, std::string chrom_sizes_fil
             qstarts.push_back(pos);
           }
         }
-
         if (is_bed) { // bed specific
           std::vector<int>
-          relative_blockstarts; // stores the block starts relative to the transcript start
+          relative_blockstarts = {}; // stores the block starts relative to the transcript start
           for (auto block : blockstarts) {
             relative_blockstarts.push_back(block - tstart);
           }
 
-          bed_write_row(bed, prev_chrom, tstart, tend, qname, 1000, prev_strand, tstart, tend, 0, blockcount, vector_to_str(blocksizes), vector_to_str(relative_blockstarts));
+          // log with bed formatting
+          bed <<prev_chrom<<"\t"
+                    <<tstart<<"\t"
+                    <<tend<<"\t"
+                    <<qname<<"\t"
+                    <<1000<<"\t"
+                    <<prev_strand<<"\t"
+                    <<tstart<<"\t"
+                    <<tend<<"\t"
+                    <<0<<"\t"
+                    <<blockcount<<"\t"
+                    <<vector_to_str(blocksizes)<<"\t"
+                    <<vector_to_str(relative_blockstarts)<<"\n";
+          
+          // bed_write_row(bed, prev_chrom, tstart, tend, qname, 1000, prev_strand, tstart, tend, 0, blockcount, vector_to_str(blocksizes), vector_to_str(relative_blockstarts));
         } else { // psl specific
 
           // to get the query sequence size value for the pcl, we look in the dictionary
@@ -243,12 +255,11 @@ gtf_to_bed (std::string in_gtf, std::string out_bed, std::string chrom_sizes_fil
             }
           }
 
-          psl_write_row(bed, 0, 0, 0, 0, 0, 0, 0, 0, prev_strand, qname, qsize, 0, qsize, prev_chrom, tsize, tstart, tend, int(blockcount), vector_to_str(blocksizes), vector_to_str(qstarts), vector_to_str(blockstarts));
+          psl_write_row(0, 0, 0, 0, 0, 0, 0, 0, prev_strand, qname, qsize, 0, qsize, prev_chrom, tsize, tstart, tend, (int)blockcount, vector_to_str(blocksizes), vector_to_str(qstarts), vector_to_str(blockstarts));
         }
       }
 
       // reset everything for the next line
-
       blockstarts = {};
       blocksizes = {};
       prev_transcript = this_transcript;
@@ -261,8 +272,11 @@ gtf_to_bed (std::string in_gtf, std::string out_bed, std::string chrom_sizes_fil
       prev_chrom = chrom;
       prev_strand = strand;
     }
+
+    blockstarts.push_back(start);
+    blocksizes.push_back(end - start);
   }
-  
+  // last entry...
   if (blockcount > 1 && blockstarts[0] > blockstarts[1]) { // need to reverse exons
     std::reverse(blocksizes.begin(), blocksizes.end());
     std::reverse(blockstarts.begin(), blockstarts.end());
@@ -287,7 +301,21 @@ gtf_to_bed (std::string in_gtf, std::string out_bed, std::string chrom_sizes_fil
       relative_blockstarts.push_back(block - tstart);
     }
 
-    bed_write_row(bed, chrom, tstart, tend, qname, 1000, strand, start, end, 0, blockcount, vector_to_str(blocksizes), vector_to_str(relative_blockstarts));
+    // bed_write_row(bed, chrom, tstart, tend, qname, 1000, strand, start, end, 0, blockcount, vector_to_str(blocksizes), vector_to_str(relative_blockstarts));
+    // log with bed formatting
+    bed <<chrom<<"\t"
+              <<tstart<<"\t"
+              <<tend<<"\t"
+              <<qname<<"\t"
+              <<1000<<"\t"
+              <<strand<<"\t"
+              <<start<<"\t"
+              <<end<<"\t"
+              <<0<<"\t"
+              <<blockcount<<"\t"
+              <<vector_to_str(blocksizes)<<"\t"
+              <<vector_to_str(relative_blockstarts)<<"\n";
+
   } else { // psl specific
     // to get the query sequence size value for the pcl, we look in the dictionary
     int tsize = 0;
@@ -299,7 +327,7 @@ gtf_to_bed (std::string in_gtf, std::string out_bed, std::string chrom_sizes_fil
       }
     }
 
-    psl_write_row(bed, 0, 0, 0, 0, 0, 0, 0, 0, prev_strand, qname, qsize, 0, qsize, prev_chrom, tsize, tstart, tend, int(blockcount), vector_to_str(blocksizes), vector_to_str(qstarts), vector_to_str(blockstarts));
+    psl_write_row(0, 0, 0, 0, 0, 0, 0, 0, prev_strand, qname, qsize, 0, qsize, prev_chrom, tsize, tstart, tend, int(blockcount), vector_to_str(blocksizes), vector_to_str(qstarts), vector_to_str(blockstarts));
   }
 
   if (missing_chroms.size() > 0) {
@@ -309,4 +337,5 @@ gtf_to_bed (std::string in_gtf, std::string out_bed, std::string chrom_sizes_fil
     }
     std::cout << "\n";
   }
+  std::cout << "finished gtf_to_bed_cpp\n";
 }

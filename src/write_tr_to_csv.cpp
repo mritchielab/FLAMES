@@ -1,5 +1,41 @@
 #include "write_tr_to_csv.hpp"
 
+
+int
+edit_distance(std::string s1, std::string s2)
+{
+    /*  
+        calculates Levenshtein distance between two strings
+        (code adapted from:
+            https://www.programcreek.com/cpp/?code=salman-bhai%2FDS-Algo-Handbook%2FDS-Algo-Handbook-master%2FAlgorithms%2FDynamic_Programming%2FEdit_Distance%2FeditDistanceTopDown.cpp
+        )
+    */
+    int m = s1.size();
+    int n = s2.size();
+    int dp[m][n];
+
+    for (int i = 0; i <= m; ++i) {
+        for (int j = 0; j <= n; j++) {
+            if (i == 0) {
+                // if first string is empty,
+                // minimum j operations in that row
+                dp[i][j] = j;
+            } else if (j == 0) {
+                // if second string is empty,
+                // minimum i operations for that row
+                dp[i][j] = i;
+            } else if (s1[i-1] == s2[j-1]) {
+                // if last characters are the same, go ahead for the rest of the characters
+                dp[i][j] = dp[i-1][j-1];
+            } else {
+                dp[i][j] = 1 + std::min(std::min(dp[i][j-1], dp[i-1][j]), dp[i-1][j-1]);
+            }
+        }
+    }
+
+    return dp[m][n];
+}
+
 int
 umi_dedup
 (
@@ -17,6 +53,10 @@ umi_dedup
             l_count[i]++;
         }
 
+        if (l_count.size() == 1) {
+            return 1;
+        }
+
         // to sort it, we need to convert to a vector
         std::vector<std::pair<std::string, int>>
         l_count_vec;
@@ -29,25 +69,28 @@ umi_dedup
             }
         );
 
-        if (l_count.size() == 1) {
-            return 1;
-        }
         
-        std::map<char, std::string>
+        std::vector<std::string>
         rm_umi;
 
         for (int i = 0; i < l_count.size(); ++i) {
-            for (int j = l_count.size(); j > i; j--) {
-                if (rm_umi.count(l_count[j][0]) == 0) {
-
+            for (int j = l_count.size(); j > i; j--) { // first assess the low abundant UMI
+                if (std::count(rm_umi.begin(), rm_umi.end(), l_count_vec[j].first) == 0) { 
+                    if (edit_distance(l_count_vec[i].first, l_count_vec[j].first) < 2) {
+                        rm_umi.push_back(l_count_vec[j].first);
+                    }
                 }
             }
         }
+
+        return l_count.size() - rm_umi.size();
+    } else {
+        return l.size();
     }
 }
 
-void
-write_tr_to_csv
+std::unordered_map<std::string, int>
+write_tr_to_csv_cpp
 (
     std::unordered_map<std::string, std::unordered_map<std::string, std::vector<std::string>>>
     bc_tr_count_dict,
@@ -87,10 +130,33 @@ write_tr_to_csv
 
     std::unordered_map<std::string, int>
     tr_count;
-
+    // get a sum of the number of unique (non-duplicate) UMIs for each tr 
     for (const auto & tr : all_tr) {
-        int
-        count_l = 0;
-        for ()
+        tr_count[tr] = 0;
+        std::vector<int>
+        count_l = {};
+        for (auto & [bc, tr_count_dict] : bc_tr_count_dict) {
+            if (tr_count_dict.count(tr) > 0) {
+                count_l.push_back(umi_dedup(tr_count_dict[tr], has_UMI));
+                tr_count[tr] += count_l.back();
+            } else {
+                count_l.push_back(0);
+            }
+        }
+
+        if (transcript_dict.count(tr) > 0) {
+            csv << tr << "," << transcript_dict[tr].parent_id << ",";
+        } else if (transcript_dict_ref.size() > 0 && transcript_dict_ref.count(tr) > 0) {
+            csv << tr << "," << transcript_dict_ref[tr].parent_id << ",";
+        } else {
+            std::cout << "Cannot find transcript in transcript_dict: " << tr << "\n";
+            return {};
+        }
+
+        for (const auto & x : count_l) {
+            csv << x << ",";
+        }
     }
+    csv << "\n";
+    return tr_count;
 }

@@ -43,7 +43,7 @@ class Isoforms
     std::string ch;
     
     std::unordered_map<std::vector<int>, int> 
-    junction_dict;
+    junction_dict = {};
     std::vector<std::vector<std::vector<int>>> 
     junction_list;
 
@@ -55,7 +55,7 @@ class Isoforms
     right;
 
     std::unordered_map<StartEndPair, int> 
-    single_block_dict;
+    single_block_dict = {};
     std::vector<std::vector<StartEndPair>> 
     single_blocks;
     std::unordered_map<std::vector<int>, int> 

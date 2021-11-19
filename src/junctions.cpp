@@ -43,34 +43,71 @@ blocks_to_junctions (std::vector<StartEndPair> blocks)
         }
     }
 
-    return output;
+    return output; 
 }
 
 
 Junctions 
-get_TSS_TES_site (std::unordered_map<std::string, Junctions> transcript_to_junctions, std::vector<std::string> tr_list)
+get_TSS_TES_site
+(
+    std::unordered_map<std::string, Junctions> transcript_to_junctions,
+    std::vector<std::string> tr_list
+)
 {
+    std::cout << "started get_TSS_TES_site\n";
     Junctions
     all_site;
 
+    std::cout << "calling on this list:";
+    for (const auto & tr : tr_list) {
+        std::cout << tr << ",";
+    }
+    std::cout << "\n";
+
     for (const auto & t : tr_list) {
+        std::cout << "iterating with " << t << "\n";
+        if (transcript_to_junctions.count(t) == 0) {
+            std::cout << "\t\tit's not in here\n";
+        } else {
+            std::cout << "\t\tit's in here\n";
+        }
+
         if (all_site.left.size() > 0) {
+            if (transcript_to_junctions[t].left.size() == 0) {
+                std::cout << "\t\t\tthere's nothing in the left\n";
+            }
             if (abs(take_closest(all_site.left, transcript_to_junctions[t].left[0]) - transcript_to_junctions[t].left[0]) > 5) {
                 all_site.left.push_back(transcript_to_junctions[t].left[0]);
             }
         } else {
+            if (transcript_to_junctions[t].left.size() == 0) {
+                std::cout << "\t\t\tthere's nothing in the left\n";
+            }
             all_site.left.push_back(transcript_to_junctions[t].left[0]);
         }
 
+        std::cout << "checked left\n";
+
         if (all_site.right.size() > 0) {
+            if (transcript_to_junctions[t].right.size() == 0) {
+                std::cout << "\t\t\tthere's nothing in the right\n";
+            }
             if (abs(take_closest(all_site.right, transcript_to_junctions[t].right[0]) - transcript_to_junctions[t].right[0]) > 5) {
                 all_site.right.push_back(transcript_to_junctions[t].right[0]);
             }
         } else {
+
+            if (transcript_to_junctions[t].right.size() == 0) {
+                std::cout << "\t\t\tthere's nothing in the right\n";
+            }
             all_site.right.push_back(transcript_to_junctions[t].right[0]);
         }
+
+        std::cout << "checked right\n";
+        std::cout << "reached the end of a loop\n";
     }
 
+    std::cout << "finished get_TSS_TES_site\n";
     return all_site;
 }
 
@@ -153,10 +190,14 @@ remove_similar_tr
 (
     std::unordered_map<std::string, std::vector<std::string>>   * gene_to_transcript,
     std::unordered_map<std::string, std::vector<StartEndPair>>  * transcript_to_exon,
-    int threshold = 10 
+    int threshold
 )
 {
-    for (const auto & [gene, transcript] : (*gene_to_transcript)) {
+    std::cout << "started remove_similar_tr\n";
+    int
+    dup_count = 0, t1, t2;
+    
+    for (const auto &[gene, transcript] : (*gene_to_transcript)) {
         // ignore anything short
         if (transcript.size() < 2) {
             continue;
@@ -165,31 +206,31 @@ remove_similar_tr
         // keep a set of all the duplicates
         std::set<int>
         dup_set = {};
-        int
-        dup_count = 0;
 
         // iterate through every pair of transcripts t1 and t2 in the gene
-        for (int t1 = 0; t1 < transcript.size() - 1; ++t1) {
-            for (int t2 = t1 + 1; t1 < transcript.size(); ++t2) {
-                if (is_exon_similar((*transcript_to_exon)[transcript[t1]], (*transcript_to_exon)[transcript[t2]], threshold)) {
+        for (t1 = 0; t1 < transcript.size() - 1; ++t1) {
+            for (t2 = t1 + 1; t2 < transcript.size(); ++t2) {
+            // std::cout << "t2 is " << t2 << " / " << transcript.size() << "\n";
+                if (is_exon_similar(&(*transcript_to_exon)[transcript[t1]], &(*transcript_to_exon)[transcript[t2]], threshold)) {
                     dup_set.insert(t2);
                     dup_count++;
                 }
             }
         }
-
+        
         // then remove the duplicates
         if (dup_count > 0) {
             for (const auto & i : dup_set) {
                 (*gene_to_transcript)[gene].erase(transcript.begin() + i);
             }
         }
-        std::cout << "\tRemoved " << dup_count << " similar transcripts in gene annotation";
     }
+    std::cout << "\tRemoved " << dup_count << " similar transcripts in gene annotation\n";
+    std::cout << "finished remove_similar_tr\n";
 }
 
 int
-is_exon_similar(std::vector<StartEndPair> exon1, std::vector<StartEndPair> exon2, int threshold)
+is_exon_similar(std::vector<StartEndPair> * exon1, std::vector<StartEndPair> * exon2, int threshold)
 {
     /* 
         takes two exons,
@@ -197,14 +238,14 @@ is_exon_similar(std::vector<StartEndPair> exon1, std::vector<StartEndPair> exon2
     */
 
     // make sure they're the same size
-    if (exon1.size() != exon2.size()) {
+    if (exon1->size() != exon2->size()) {
         return false;
     }
 
     // then add up the difference
     int diff = 0;
-    for (int i = 0; i < exon1.size(); ++i) {
-        diff += abs(exon1[i].start - exon2[i].start) + abs(exon1[i].end - exon2[i].end);
+    for (int i = 0; i < exon1->size(); ++i) {
+        diff += std::abs((*exon1)[i].start - (*exon2)[i].start) + std::abs((*exon1)[i].end - (*exon2)[i].end);
         if (diff > threshold) {
             return false;
         }

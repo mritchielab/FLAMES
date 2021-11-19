@@ -2,15 +2,19 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 find_isoform_cpp <- function(gff3, genome_bam, isoform_gff3, tss_test_stat, genomefa, transcript_fa, downsample_ratio, config_list, raw_splice_isoform) {
-    invisible(.Call(`_FLAMES_find_isoform_cpp`, gff3, genome_bam, isoform_gff3, tss_test_stat, genomefa, transcript_fa, downsample_ratio, config_list, raw_splice_isoform))
+    .Call(`_FLAMES_find_isoform_cpp`, gff3, genome_bam, isoform_gff3, tss_test_stat, genomefa, transcript_fa, downsample_ratio, config_list, raw_splice_isoform)
 }
 
 flames_test_func <- function() {
     .Call(`_FLAMES_flames_test_func`)
 }
 
-bam_read <- function(bam_in, s, e) {
-    invisible(.Call(`_FLAMES_bam_read`, bam_in, s, e))
+bam_read <- function(bam_in, chr, s, e) {
+    invisible(.Call(`_FLAMES_bam_read`, bam_in, chr, s, e))
+}
+
+gtf_to_bed_cpp <- function(in_gtf, out_bed, chrom_sizes_file) {
+    invisible(.Call(`_FLAMES_gtf_to_bed_cpp`, in_gtf, out_bed, chrom_sizes_file))
 }
 
 #' Match Cell Barcodes

@@ -11,11 +11,16 @@ from itertools import groupby
 
 
 def umi_dedup(l, has_UMI):
+    print "umi_dedup"
+    print l
+
     if has_UMI:
         l_cnt = Counter(l).most_common()
         if len(l_cnt)==1:
             return 1
         rm_umi = {}
+
+        print l_cnt
         for ith in range(len(l_cnt)-1):
             for jth in range(len(l_cnt)-1,ith,-1):  # first assess the low abundant UMI
                 if l_cnt[jth][0] not in rm_umi:
@@ -96,6 +101,7 @@ def query_len(cigar_string, hard_clipping=False):
 def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_read_coverage, kwargs):
     """
     """
+    print "parsing realigned bam"
     fa_idx = dict((it.strip().split()[0],int(it.strip().split()[1]) ) for it in open(fa_idx_f))
     bc_tr_count_dict = {}
     bc_tr_badcov_count_dict = {}
@@ -117,6 +123,7 @@ def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_re
         tr_cov_dict.setdefault(tr,[]).append(tr_cov)
 
         inferred_read_length = query_len(rec.cigarstring)
+        print(rec.query_name)
         if rec.query_name not in read_dict:
             read_dict.setdefault(rec.query_name,[]).append((tr, rec.get_tag("AS"), tr_cov, float(rec.query_alignment_length)/inferred_read_length, rec.mapping_quality))
         else:

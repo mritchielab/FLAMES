@@ -87,11 +87,13 @@ parse_gtf_tree(std::string filename)
 GFFData
 parse_gff_tree(std::string filename)
 {
+    std::cout << "started parse_gff_tree on " << filename << "\n";
     // create an object to store chr_to_gene, transcript_dict, 
     // gene_to_transcript, transcript_to_exon 
     GFFData gff_data;
 
     std::string annotation_source = guess_annotation_source(filename.c_str());
+    std::cout << annotation_source << "\n";
 
     if (annotation_source == "Ensembl") {
         // create the GFF3 parser
@@ -100,10 +102,10 @@ parse_gff_tree(std::string filename)
 
         GFFRecord rec = parser.nextRecord();
         while (!parser.empty()) {
-            if (rec.attributes["gene_id"].length() != 0) {
+            if (rec.attributes.count("gene_id") > 0) {
                 gff_data.chr_to_gene[rec.seqid].push_back(rec.attributes["gene_id"]);
             }
-            if (rec.attributes["Parent"].length() != 0) {
+            if (rec.attributes.count("Parent") > 0) {
                 std::string parent_att = rec.attributes["Parent"];
                 int find_colon = parent_att.find(":");
 
@@ -114,6 +116,7 @@ parse_gff_tree(std::string filename)
                 Pos pos = {rec.seqid, rec.start-1, rec.end, rec.strand[0], gene_id};
                 gff_data.transcript_dict[rec.attributes["transcript_id"]] = pos;
             } else if (rec.type == "exon") {
+                std::cout << "\t\texon\n";
                 std::string parent_att = rec.attributes["Parent"];
                 int find_colon = parent_att.find(":");
 
@@ -126,6 +129,7 @@ parse_gff_tree(std::string filename)
 
                 StartEndPair sep {rec.start-1, rec.end};
                 gff_data.transcript_to_exon[gene_id].push_back(sep);
+                std::cout << "added " << sep.start << "," << sep.end << " to " << gene_id << "\n";
             }
 
             rec = parser.nextRecord();
@@ -139,16 +143,19 @@ parse_gff_tree(std::string filename)
         GFFRecord rec = parser.nextRecord();
 
         while (!parser.empty()) {
+            // std::cout << "rec parent is " << rec.attributes["Parent"] << "\n"; 
+            
             if (rec.type == "gene") {
                 gff_data.chr_to_gene[rec.seqid].push_back(rec.attributes["gene_id"]); // add the gene_id to the chr_to_gene[seqid] map
             } else if (rec.type == "transcript") {
-                std::string gene_id = rec.attributes["Parent"];
+                std::string gene_id = rec.attributes["gene_id"];
 
                 gff_data.gene_to_transcript[rec.seqid].push_back(gene_id);
                 gff_data.transcript_dict[rec.attributes["transcript_id"]] = {rec.seqid, rec.start-1, rec.end, rec.strand[0], gene_id};
             } else if (rec.type == "exon") {
                 StartEndPair sep {rec.start-1, rec.end};
-                gff_data.transcript_to_exon[rec.attributes["Parent"]].push_back(sep);
+                gff_data.transcript_to_exon[rec.attributes["gene_id"]].push_back(sep);
+                std::cout << "added " << sep.start << "," << sep.end << " to " << rec.attributes["gene_id"] << "\n";
             }
 
             rec = parser.nextRecord();
@@ -159,6 +166,7 @@ parse_gff_tree(std::string filename)
 
     gff_data.remove_transcript_duplicates(true);
 
+    std::cout << "finished parse_gff_tree\n";
     return gff_data;
 }
 

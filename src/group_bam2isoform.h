@@ -83,7 +83,7 @@ static int
 fetch_function(const bam1_t *b, void *data);
 
 void
-bam_read (std::string bam_in, int s, int e);
+bam_read (std::string bam_in, std::string chr, int s, int e);
 
 std::vector<StartEndPair>
 get_blocks(BAMRecord record);
@@ -99,5 +99,5 @@ group_bam2isoform (
     std::unordered_map<std::string, Pos>                        * transcript_dict,
     std::string fa_f,
     IsoformParameters isoform_parameters,
-    std::string raw_gff3 = ""
+    std::string raw_gff3
 );

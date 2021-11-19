@@ -67,6 +67,7 @@ struct BAMRecord {
     flag;
 };
 
+#endif
 
 std::vector<CigarPair>
 generate_cigar_pairs(const bam1_t*);
@@ -76,5 +77,3 @@ read_flag(int);
 
 BAMRecord
 read_record(const bam1_t*, const bam_header_t*);
-
-#endif

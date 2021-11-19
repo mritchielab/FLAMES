@@ -166,6 +166,7 @@ List remove_transcript_duplicates_to_list(std::unordered_map<String, std::list<S
 }
 
 List parse_gff_tree(const char * gff_filename) {
+    std::cout << "started parse_gff_tree\n";
         std::unordered_map<String, std::unordered_map<String, bool>>    chr_to_gene; // map of chr to map of genes (second map for efficient searching)
     std::unordered_map<String, Pos>                                 transcript_dict;
     std::unordered_map<String, std::unordered_map<String, bool>>    gene_to_transcript;
@@ -236,7 +237,6 @@ List parse_gff_tree(const char * gff_filename) {
         }
 
         parser.close();
-
     }
 
     // Remove duplicates from the transcript_to_exon map and also 
@@ -250,6 +250,7 @@ List parse_gff_tree(const char * gff_filename) {
         _["transcript_dict"]= create_list_map_to_pos(transcript_dict), 
         _["gene_to_transcript"]= create_list_map_to_map(gene_to_transcript),
         _["transcript_to_exon"]= transcript_to_exon_list);
+    std::cout << "finished parse_gff_tree\n";
     return returnList;
 }
 

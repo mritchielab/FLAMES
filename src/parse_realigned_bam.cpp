@@ -136,13 +136,6 @@ parse_realigned_bam
     std::unordered_map<std::string, std::vector<float>>
     tr_cov_dict = {};
 
-    struct ReadDictEntry {
-        std::string tr;
-        int         AS_tag;
-        float       tr_cov;
-        float       length;
-        float       quality;
-    };
     std::unordered_map<std::string, std::vector<ReadDictEntry>>
     read_dict;
     
@@ -151,7 +144,7 @@ parse_realigned_bam
 
 
     std::unordered_map<std::string, std::string>
-    bc_dict;
+    bc_dict = {};
     if (kwargs.count("bc_file") > 0) {
         bc_dict = make_bc_dict(kwargs["bc_file"]);
     }

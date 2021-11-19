@@ -90,6 +90,7 @@ def guess_annotation_source(gff_f):
 
 
 def _parse_gff_tree(gff_f):
+    print "started parse_gff_tree"
     chr_to_gene = {}
     transcript_dict = {}
     gene_to_transcript = {}
@@ -117,14 +118,18 @@ def _parse_gff_tree(gff_f):
         for rec in parseGFF3(gff_f):
             if rec.type == "gene":
                 chr_to_gene.setdefault(rec.seqid,[]).append(rec.attributes["gene_id"])
+                print "added key " + rec.seqid + " to chr_to_gene"
             elif rec.type == "transcript":
                 gene_id = rec.attributes["Parent"]
                 if gene_id not in chr_to_gene[rec.seqid]:
                     chr_to_gene.setdefault(rec.seqid,[]).append(gene_id)
+                    print "added key " + rec.seqid + " to chr_to_gene"
                 gene_to_transcript.setdefault(gene_id, []).append(rec.attributes["transcript_id"])
+                print "added key " + gene_id + " and val " + rec.attributes["transcript_id"] + " to gene_to_transcript"
                 transcript_dict[rec.attributes["transcript_id"]] = Pos(rec.seqid, rec.start-1, rec.end, rec.strand, gene_id)  # `-1` convert 1 based to 0 based
             elif rec.type == "exon":
                 transcript_to_exon.setdefault(rec.attributes["Parent"], []).append([rec.start-1, rec.end])  # `-1` convert 1 based to 0 based
+                print "added key " + rec.attributes["Parent"] + " to transcript_to_exon"
     
     for tr in transcript_to_exon:
         transcript_to_exon[tr].sort(key=lambda x: x[0])  # the GENCODE annotation might be un-ordered.

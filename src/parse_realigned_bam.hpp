@@ -24,18 +24,43 @@ struct RealignedBamData {
     tr_kept;
 };
 
+struct ReadDictEntry {
+    std::string tr;
+    int         AS_tag;
+    float       tr_cov;
+    float       length;
+    float       quality;
+};
+
 #endif
 
-RealignedBamData
-parse_realigned_bam(
-    std::string bam_in,
-    std::string fa_idx_f,
-    std::string min_sup_reads,
-    std::string min_tr_coverage,
-    std::string min_read_coverage,
-    std::string kwargs
+std::unordered_map<std::string, int>
+file_to_map(std::string filename);
+
+
+void
+read_entire_bam
+(
+    std::string bam_in, std::string log_out
 );
 
+
+int
+query_len(std::string cigar_string, bool hard_clipping);
+
+
+
+
+RealignedBamData
+parse_realigned_bam
+(
+    std::string bam_in,
+    std::string fa_idx_f,
+    int         min_sup_reads,
+    float       min_tr_coverage,
+    float       min_read_coverage,
+    std::unordered_map<std::string, std::string> kwargs
+);
 
 int
 query_len(std::string cigar_string, bool hard_clipping=false);

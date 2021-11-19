@@ -55,9 +55,11 @@ pos_from_R(List list)
 {
     Pos pos;
 
-    // pos.chr = list["chr"];
-    // pos.start = 
-    // pos.parent_id = list["parent_id"];
+    pos.chr = (Rcpp::String)(list["chr"]);
+    pos.start = atoi(list["start"]);
+    pos.end = atoi(list["end"]);
+    pos.strand = list["strand"];
+    pos.parent_id = (Rcpp::String)list["parent_id"];
     return pos;
 }
 

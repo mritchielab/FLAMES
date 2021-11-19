@@ -155,11 +155,13 @@ def is_exon_similar(ex1, ex2, thr):
     for i in range(len(ex1)):
         cum_diff += abs(ex1[i][0]-ex2[i][0])+abs(ex1[i][1]-ex2[i][1])
         if cum_diff > thr:
+            # print "not similar"
             return False
     return True
 
 
 def remove_similar_tr(gene_to_transcript, transcript_to_exon, thr=10):
+    print "started remove_similar_tr"
     dup_stat = Counter()
     for g in gene_to_transcript:
         if type(gene_to_transcript[g]) != type([]):
@@ -172,11 +174,12 @@ def remove_similar_tr(gene_to_transcript, transcript_to_exon, thr=10):
                 if is_exon_similar(transcript_to_exon[gene_to_transcript[g][tr_idx]],transcript_to_exon[gene_to_transcript[g][tr2_idx]], thr):
                     dup_list.append(tr2_idx)
                     dup_stat["duplicated_transcripts"] += 1
-                    #print gene_to_transcript[g][tr2_idx]
+                    print gene_to_transcript[g][tr2_idx]
         if len(dup_list) > 0:
             dup_list = list(set(dup_list))
             gene_to_transcript[g] = [i for j, i in enumerate(gene_to_transcript[g]) if j not in dup_list]
     print "\tRemoved similar transcripts in gene annotation:", str(dup_stat)
+    print "finished remove_similar_tr"
 
 def test_tr(gene_to_transcript):
     i = 0
@@ -1037,22 +1040,22 @@ def group_bam2isoform(bam_in, out_gff3, out_stat, summary_csv, chr_to_blocks, ge
         #    continue
         for ith, bl in enumerate(chr_to_blocks[ch]):
             it_region = bamfile.fetch(ch, bl.s, bl.e)
-            print 'reading'
-            print ch
-            print 'at'
-            print bl.s
-            print bl.e
+            # print 'reading'
+            # print ch
+            # print 'at'
+            # print bl.s
+            # print bl.e
             
             TSS_TES_site = get_TSS_TES_site(transcript_to_junctions, bl.transcript_list)
             tmp_isoform = Isoforms(ch, config)
             for rec in it_region:
-                print 'found a rec'
-                print 'cigar:'
-                print rec.cigar
-                print 'rec.reference_start:'
-                print rec.reference_start
-                print 'rec.is_reverse:'
-                print rec.is_reverse
+                # print 'found a rec'
+                # print 'cigar:'
+                # print rec.cigar
+                # print 'rec.reference_start:'
+                # print rec.reference_start
+                # print 'rec.reference_name:'
+                # print rec.reference_name
 
                 # if 0<downsample_ratio<1 and random.uniform(0, 1)>downsample_ratio:
                 #     continue   # downsample analysis
