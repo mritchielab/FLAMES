@@ -59,7 +59,7 @@ minimap2_tr_align_cpp
     align_cmd << mm2_prog_path << "minimap2" 
             << " -ax map-ont -p 0.9 --end-bonus 10 -N 3 -t 12 " 
             << fa_file << " " 
-            << fq_in << " " 
+            << fq_in << " -o " 
             << sam_out;
     // call it
     system(align_cmd.str().c_str());

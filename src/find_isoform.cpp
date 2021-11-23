@@ -115,6 +115,7 @@ find_isoform_cpp
     // next we find isoforms
     std::cout << "#### Finding Isoforms\n";
     group_bam2isoform(
+    // minimal_group_bam2isoform(
         genome_bam,
         isoform_gff3,
         tss_test_stat,
@@ -128,7 +129,7 @@ find_isoform_cpp
     );
 
     std::cout << "group_bam2isoform finished\n";
-
+    // return Rcpp::List();
     // get fasta
     GFFData isoform_gff = parse_gff_or_gtf(isoform_gff3);
 
@@ -138,30 +139,6 @@ find_isoform_cpp
     auto transcript_to_exon_iso = isoform_gff.transcript_to_exon;
 
     std::cout << "assigned everything from isoform_gff\n";
-    
-    std::cout << "chr_to_gene:\n";
-    for (const auto & [chr, gene] : chr_to_gene) {
-        std::cout << "\tchr:" << chr << "\n";
-        std::cout << "\tgene:" << gene.front() << " ... " << gene.back() << "\n";
-    }
-
-    std::cout << "transcript_dict:\n";
-    for (const auto & [tr, pos] : transcript_dict) {
-        std::cout << "\ttr:" << tr << "\n";
-        std::cout << "\tpos:" << pos.start << ", " << pos.end << "\n";
-    }
-
-    std::cout << "gene_to_transcript:\n";
-    for (const auto & [gene, transcript] : gene_to_transcript) {
-        std::cout << "\tgene:" << gene << "\n";
-        std::cout << "\ttranscript:" << transcript.front() << "\n";
-    }
-
-    std::cout << "transcript_to_exon:\n";
-    for (const auto & [tr, exon] : transcript_to_exon) {
-        std::cout << "\ttr:" << tr << "\n";
-        std::cout << "\tex:" << exon.front().start << "\n";
-    }
 
     ReferenceDict
     ref_dict = {

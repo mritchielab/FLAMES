@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
-#include "ParseGFF3.hpp"
+#include "Pos.h"
 #include "StartEndPair.hpp"
 
 // a quick struct for a reference dictionary

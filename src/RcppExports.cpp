@@ -161,6 +161,25 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// quantification_cpp
+void quantification_cpp(Rcpp::List config_list, std::string realign_bam, std::string transcript_fa_idx, Rcpp::List isoform_objects_list, std::string tr_cnt_csv, std::string tr_badcov_cnt_csv, std::string isoform_gff3, std::string annot, std::string isoform_gff3_f, std::string FSM_anno_out);
+RcppExport SEXP _FLAMES_quantification_cpp(SEXP config_listSEXP, SEXP realign_bamSEXP, SEXP transcript_fa_idxSEXP, SEXP isoform_objects_listSEXP, SEXP tr_cnt_csvSEXP, SEXP tr_badcov_cnt_csvSEXP, SEXP isoform_gff3SEXP, SEXP annotSEXP, SEXP isoform_gff3_fSEXP, SEXP FSM_anno_outSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::List >::type config_list(config_listSEXP);
+    Rcpp::traits::input_parameter< std::string >::type realign_bam(realign_bamSEXP);
+    Rcpp::traits::input_parameter< std::string >::type transcript_fa_idx(transcript_fa_idxSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type isoform_objects_list(isoform_objects_listSEXP);
+    Rcpp::traits::input_parameter< std::string >::type tr_cnt_csv(tr_cnt_csvSEXP);
+    Rcpp::traits::input_parameter< std::string >::type tr_badcov_cnt_csv(tr_badcov_cnt_csvSEXP);
+    Rcpp::traits::input_parameter< std::string >::type isoform_gff3(isoform_gff3SEXP);
+    Rcpp::traits::input_parameter< std::string >::type annot(annotSEXP);
+    Rcpp::traits::input_parameter< std::string >::type isoform_gff3_f(isoform_gff3_fSEXP);
+    Rcpp::traits::input_parameter< std::string >::type FSM_anno_out(FSM_anno_outSEXP);
+    quantification_cpp(config_list, realign_bam, transcript_fa_idx, isoform_objects_list, tr_cnt_csv, tr_badcov_cnt_csv, isoform_gff3, annot, isoform_gff3_f, FSM_anno_out);
+    return R_NilValue;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_FLAMES_find_isoform_cpp", (DL_FUNC) &_FLAMES_find_isoform_cpp, 9},
@@ -175,6 +194,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_FLAMES_parse_json_config_cpp", (DL_FUNC) &_FLAMES_parse_json_config_cpp, 1},
     {"_FLAMES_print_config_cpp", (DL_FUNC) &_FLAMES_print_config_cpp, 1},
     {"_FLAMES_read_entire_bam", (DL_FUNC) &_FLAMES_read_entire_bam, 2},
+    {"_FLAMES_quantification_cpp", (DL_FUNC) &_FLAMES_quantification_cpp, 10},
     {NULL, NULL, 0}
 };
 

@@ -82,5 +82,6 @@ void merge_bulk_fastq_cpp(StringVector fastq_files, String out_fastq) {
         Rcout << c_file_name << ": " << read_counts[i] << "\n";
     }
 
+    free(read_counts);
     gzclose(o_stream_gz);
 }

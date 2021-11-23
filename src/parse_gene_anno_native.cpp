@@ -129,7 +129,7 @@ parse_gff_tree(std::string filename)
 
                 StartEndPair sep {rec.start-1, rec.end};
                 gff_data.transcript_to_exon[gene_id].push_back(sep);
-                std::cout << "added " << sep.start << "," << sep.end << " to " << gene_id << "\n";
+                std::cout << "Ensembl added " << sep.start << "," << sep.end << " to " << gene_id << "\n";
             }
 
             rec = parser.nextRecord();
@@ -155,7 +155,7 @@ parse_gff_tree(std::string filename)
             } else if (rec.type == "exon") {
                 StartEndPair sep {rec.start-1, rec.end};
                 gff_data.transcript_to_exon[rec.attributes["gene_id"]].push_back(sep);
-                std::cout << "added " << sep.start << "," << sep.end << " to " << rec.attributes["gene_id"] << "\n";
+                std::cout << "GENCODE added " << sep.start << "," << sep.end << " to " << rec.attributes["gene_id"] << "\n";
             }
 
             rec = parser.nextRecord();

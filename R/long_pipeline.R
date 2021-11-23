@@ -141,6 +141,10 @@ generic_long_pipeline_cpp <-
                 raw
             )
         
+        isoform_objects
+        
+        return(isoform_objects)
+
         # realign to transcript
         # if (!using_bam && do_read_realign) {
         if (do_read_realign) {
@@ -157,7 +161,7 @@ generic_long_pipeline_cpp <-
 
         # quantification
         if (config$pipeline_parameters$do_transcript_quantification) {
-            quantification(
+            quantification_cpp(
                 config,
                 realign_bam,
                 transcript_fa_idx,
@@ -310,6 +314,8 @@ generic_long_pipeline <-
                 config,
                 raw
             )
+        
+        cat(isoform_objects)
 
         # realign to transcript
         # if (!using_bam && do_read_realign) {

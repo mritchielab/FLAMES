@@ -170,6 +170,7 @@ parse_realigned_bam
         BAMRecord rec = read_record(b, header);
         records.push_back(rec);
     }
+    
     bam_close(bam);
 
     for (const auto & rec : records) {

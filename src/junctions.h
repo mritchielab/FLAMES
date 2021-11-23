@@ -14,30 +14,26 @@
 #include "ParseGFF3.hpp"
 #include "StartEndPair.hpp"
 
-struct Junctions;
-struct SingleJunction;
-
 #ifndef JUNCTIONS
-
 #define JUNCTIONS
 
-typedef struct Junctions {
+struct Junctions {
   /*
     a struct used for holding the junctions information
   */
   std::vector<int> left;
   std::vector<int> junctions;
   std::vector<int> right;
-} Junctions;
+};
 
-typedef struct SingleJunction {
+struct SingleJunction {
   /*
     a struct for junctions with just one value in left and right
   */
   int left;
   std::vector<int> junctions;
   int right;
-} SingleJunction;
+};
 
 #endif
 
@@ -50,8 +46,8 @@ blocks_to_junctions (std::vector<StartEndPair> blocks);
 Junctions 
 get_TSS_TES_site
 (
-    std::unordered_map<std::string, Junctions> transcript_to_junctions,
-    std::vector<std::string> tr_list
+    std::unordered_map<std::string, Junctions> * transcript_to_junctions,
+    const std::vector<std::string> * tr_list
 );
 
 std::set<int> 

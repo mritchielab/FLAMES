@@ -1,5 +1,6 @@
 #include "quantification.hpp"
 
+// [[Rcpp::export]]
 void
 quantification_cpp
 (
@@ -20,7 +21,8 @@ quantification_cpp
     // unwrap things from R
     Config config;
     config.from_R(config_list);
-    IsoformObjects isoform_objects = isoform_objects_from_R(isoform_objects_list);
+    // IsoformObjects isoform_objects = isoform_objects_from_R(isoform_objects_list);
+    IsoformObjects isoform_objects = {};
 
     auto
     parse_realign = parse_realigned_bam(

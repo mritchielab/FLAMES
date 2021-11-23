@@ -684,7 +684,7 @@ void Isoforms::match_known_annotation
   }
 
   Junctions
-  TSS_TES_site = get_TSS_TES_site(transcript_to_junctions, (one_block.transcript_list));
+  TSS_TES_site = get_TSS_TES_site(&transcript_to_junctions, &(one_block.transcript_list));
 
   // if this is a single-exon read, we're done
   if (splice_site.size() == 0) {
