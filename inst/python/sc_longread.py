@@ -584,6 +584,10 @@ class Isoforms(object):
             out_f.write(bedgraph_fmt.format(_ch=self.ch, _st=i, _en=i+1, _sc=l_cnt[i]))
 
     def filter_TSS_TES(self, out_f, known_site=None, fdr_cutoff=0.01):
+        print "started filter_TSS_TES"
+        print "\tlen(self.lr_pair):"
+        print  len(self.lr_pair)
+
         bedgraph_fmt = "{_ch}\t{_st}\t{_en}\t{_sc}\n"
         def filter_site(l_cnt):
             mx = np.array(l_cnt.most_common())
@@ -641,6 +645,8 @@ class Isoforms(object):
                 cnt_r = insert_dist(fs_r[:,0],known_site["right"] if known_site is not None else None)
                 cnt_r.sort()
         for j in self.lr_pair:
+            print "len(self.lr_pair[j]):"
+            print len(self.lr_pair[j])
             tmp_pair = Counter(self.lr_pair[j]).most_common()
             pair_after_filtering = []
             pair_enrich = []
@@ -1036,19 +1042,28 @@ def group_bam2isoform(bam_in, out_gff3, out_stat, summary_csv, chr_to_blocks, ge
     for c in get_fa(fa_f):
         fa_dict[c[0]] = c[1]
     for ch in chr_to_blocks:
+        print "\t\tstarting on {} which has {} blocks".format(ch, len(chr_to_blocks[ch]))
         #if ch != "5":
         #    continue
+        num = 0
         for ith, bl in enumerate(chr_to_blocks[ch]):
+            printline = "looking at {} block: ({}, {})".format(num, bl.s, bl.e)
+            num = num+1
+            print printline
+
             it_region = bamfile.fetch(ch, bl.s, bl.e)
             # print 'reading'
             # print ch
             # print 'at'
             # print bl.s
             # print bl.e
-            
+
             TSS_TES_site = get_TSS_TES_site(transcript_to_junctions, bl.transcript_list)
             tmp_isoform = Isoforms(ch, config)
+            recnum = 0
             for rec in it_region:
+                print 'looking at rec {}'.format(recnum)
+                recnum = recnum+1
                 # print 'found a rec'
                 # print 'cigar:'
                 # print rec.cigar
@@ -1066,8 +1081,11 @@ def group_bam2isoform(bam_in, out_gff3, out_stat, summary_csv, chr_to_blocks, ge
                 rec.cigarstring = generate_cigar(rec.cigar)
                 blocks = get_blocks(rec)
                 junctions = blocks_to_junctions(blocks)
+                print "\t\tadding junctions to isoform:"
+                print junctions
                 tmp_isoform.add_isoform(junctions,rec.is_reverse)
             if len(tmp_isoform)>0:
+                print "\t\tfound an isoform of len>0\n"
                 tmp_isoform.update_all_splice()
                 tmp_isoform.filter_TSS_TES(tss_tes_stat,known_site=TSS_TES_site,fdr_cutoff=0.1)
                 #tmp_isoform.site_stat(tss_tes_stat)

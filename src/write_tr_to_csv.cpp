@@ -108,6 +108,8 @@ write_tr_to_csv_cpp
     has_UMI
 )
 {
+    std::cout << "started write_tr_to_csv_cpp\n";
+
     std::ofstream
     csv (csv_f);
 
@@ -120,6 +122,8 @@ write_tr_to_csv_cpp
             }
         }
     }
+
+    std::cout << "all_tr is " << all_tr.size() << " long\n";
 
     // write the header to the csv
     csv << "transcript_id,gene_id";
@@ -157,6 +161,9 @@ write_tr_to_csv_cpp
             csv << x << ",";
         }
     }
+
+    std::cout << "tr_count is " << tr_count.size() << " long\n";
+    
     csv << "\n";
     return tr_count;
 }

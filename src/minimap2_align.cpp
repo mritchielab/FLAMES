@@ -39,7 +39,7 @@ minimap2_align_cpp
             << flank_cmd << " -k14 --secondary=no " 
             << fa_file << " " 
             << fq_in << " -o " << sam_out;
-    // call it
+    // call itV
     system(align_cmd.str().c_str());
 }
 

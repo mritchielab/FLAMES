@@ -10,6 +10,26 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// pos_to_R_test
+List pos_to_R_test();
+RcppExport SEXP _FLAMES_pos_to_R_test() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(pos_to_R_test());
+    return rcpp_result_gen;
+END_RCPP
+}
+// pos_from_R_test
+void pos_from_R_test(List list);
+RcppExport SEXP _FLAMES_pos_from_R_test(SEXP listSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type list(listSEXP);
+    pos_from_R_test(list);
+    return R_NilValue;
+END_RCPP
+}
 // find_isoform_cpp
 Rcpp::List find_isoform_cpp(std::string gff3, std::string genome_bam, std::string isoform_gff3, std::string tss_test_stat, std::string genomefa, std::string transcript_fa, int downsample_ratio, Rcpp::List config_list, std::string raw_splice_isoform);
 RcppExport SEXP _FLAMES_find_isoform_cpp(SEXP gff3SEXP, SEXP genome_bamSEXP, SEXP isoform_gff3SEXP, SEXP tss_test_statSEXP, SEXP genomefaSEXP, SEXP transcript_faSEXP, SEXP downsample_ratioSEXP, SEXP config_listSEXP, SEXP raw_splice_isoformSEXP) {
@@ -182,6 +202,8 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_FLAMES_pos_to_R_test", (DL_FUNC) &_FLAMES_pos_to_R_test, 0},
+    {"_FLAMES_pos_from_R_test", (DL_FUNC) &_FLAMES_pos_from_R_test, 1},
     {"_FLAMES_find_isoform_cpp", (DL_FUNC) &_FLAMES_find_isoform_cpp, 9},
     {"_FLAMES_flames_test_func", (DL_FUNC) &_FLAMES_flames_test_func, 0},
     {"_FLAMES_bam_read", (DL_FUNC) &_FLAMES_bam_read, 4},

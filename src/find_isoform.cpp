@@ -70,9 +70,21 @@ find_isoform_cpp
     GFFData gene_anno = parse_gff_or_gtf(gff3);
 
     auto chr_to_gene        = gene_anno.chr_to_gene;
+    std::cout << "chr_to_gene is size " << chr_to_gene.size() << "\n";
+    for (const auto & [chr, gene] : chr_to_gene) {
+        std::cout << "\t" << chr << ":" << gene.size() << "\n";
+    }
+
+    std::cout << "chr_to_gene is currently " << chr_to_gene.size() << " long\n";
     auto transcript_dict    = gene_anno.transcript_dict;
+    std::cout << "transcript_dict is currently " << transcript_dict.size() << " long\n";
     auto gene_to_transcript = gene_anno.gene_to_transcript;
+    std::cout << "gene_to_transcript is currently " << gene_to_transcript.size() << " long\n";
+    for (const auto & [gene, transcript] : gene_to_transcript) {
+        std::cout << "\t" << gene << ":" << transcript.size() << "\n";
+    }
     auto transcript_to_exon = gene_anno.transcript_to_exon;
+    std::cout << "transcript_to_exon is currently " << transcript_to_exon.size() << " long\n";
 
     // get the junctions using transcript_to_exon
     std::unordered_map<std::string, Junctions>
@@ -80,6 +92,8 @@ find_isoform_cpp
     for (const auto & [transcript, exon] : transcript_to_exon) {
         transcript_to_junctions[transcript] = blocks_to_junctions(exon);
     }
+    std::cout << "transcript_to_junctions is currently " << transcript_to_junctions.size() << " long\n";
+
 
     // std::cout << "gene_to_transcript:\n";
     // for (const auto & [gene, transcript] : gene_to_transcript) {
@@ -101,10 +115,15 @@ find_isoform_cpp
     std::cout << "finished remove_rimilar_tr\n";
     auto
     gene_dict = get_gene_flat(&gene_to_transcript, &transcript_to_exon);
+    std::cout << "gene_dict is currently " << gene_dict.size() << " long\n";
     
     std::cout << "finished get_gene_flat\n";
     auto
     chr_to_blocks = get_gene_blocks(&gene_dict, &chr_to_gene, &gene_to_transcript);
+    std::cout << "chr_to_blocks is currently " << chr_to_blocks.size() << " long\n";
+    for (const auto & [chr, block] : chr_to_blocks) {
+        std::cout << "\t" << chr << ":" << block.size() << "\n";
+    }
 
     std::cout << "finished get_gene_blocks\n";
 
@@ -167,6 +186,26 @@ find_isoform_cpp
     std::cout << "finished get_transcript_seq\n";
 
     IsoformObjects isoform_objects = {transcript_dict, transcript_dict_iso};
+    
+    std::ofstream
+    out_test ("isoform_objects.txt");
+
+    out_test << "transcript_dict:\n";
+    for (const auto & [key, val] : isoform_objects.transcript_dict) {
+        out_test << "\t" << key << ":" << val.chr << "," << val.start << "," << val.end << "\n";
+    }
+
+    out_test << "transcript_dict_iso:\n";
+    
+
+    Rcpp::List isoform_objects_list = isoform_objects_to_R(&isoform_objects);
+    // std::ofstream
+    // out_test2 ("isoform_objects_r.txt");
+    // for (const auto & [key, val] : isoform_objects_list["transcript_dict"]) {
+    //     out_test << "\t" << key << ":" << val.chr << "," << val.start << "," << val.end << "\n";
+    // }
+
+
 
     return isoform_objects_to_R(&isoform_objects);
 }

@@ -140,10 +140,6 @@ generic_long_pipeline_cpp <-
                 config,
                 raw
             )
-        
-        isoform_objects
-        
-        return(isoform_objects)
 
         # realign to transcript
         # if (!using_bam && do_read_realign) {
@@ -315,8 +311,6 @@ generic_long_pipeline <-
                 raw
             )
         
-        cat(isoform_objects)
-
         # realign to transcript
         # if (!using_bam && do_read_realign) {
         if (do_read_realign) {

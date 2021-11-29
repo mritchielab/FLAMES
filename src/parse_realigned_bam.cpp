@@ -9,6 +9,7 @@ file_to_map(std::string filename)
             word 4
             dhgukrahgk 10
     */
+    std::cout << "started file_to_map\n";
     std::unordered_map<std::string, int>
     map;
 
@@ -16,7 +17,9 @@ file_to_map(std::string filename)
     file(filename);
 
     std::string line;
+    int lines = 0;
     while (std::getline(file, line)) {
+        lines++;
         std::stringstream
         linestream (line);
 
@@ -29,6 +32,8 @@ file_to_map(std::string filename)
 
         map[words[0]] = atoi(words[1].c_str());
     }
+
+    std::cout << "file was " << lines << " lines long\n";
 
     return map;
 }
@@ -123,9 +128,12 @@ parse_realigned_bam
     std::unordered_map<std::string, std::string> kwargs
 )
 {
+    std::cout << "started parse_realigned_bam\n";
+
     // we need to read in the fa_idx_f file line by line, adding each one to the dict
     std::unordered_map<std::string, int>
     fa_idx = file_to_map(fa_idx_f);
+    std::cout << "fa_idx is " << fa_idx.size() << " long\n"; 
 
     std::unordered_map<std::string, std::unordered_map<std::string, std::vector<std::string>>>
     bc_tr_count_dict = {};
@@ -148,6 +156,7 @@ parse_realigned_bam
     if (kwargs.count("bc_file") > 0) {
         bc_dict = make_bc_dict(kwargs["bc_file"]);
     }
+    std::cout << "bc_dict is " << bc_dict.size() << " long\n";
 
     
     // read a bamfile
@@ -161,10 +170,7 @@ parse_realigned_bam
     // iterate over every entry in the bam
     bam1_t *b = bam_init1();
     while (bam_read1(bam, b) >= 0) {
-        std::cout << b->core.tid << ", " << b->core.pos << "\n";
-        
         if (b->core.tid == -1) {
-            std::cout << "skipping\n";
             continue;
         }
         BAMRecord rec = read_record(b, header);
@@ -173,6 +179,7 @@ parse_realigned_bam
     
     bam_close(bam);
 
+    std::cout << "records is " << records.size() << " long\n";
     for (const auto & rec : records) {
         // if it's unmapped, just update the count and continue
         if (rec.flag.read_unmapped) {

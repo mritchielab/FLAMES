@@ -261,8 +261,8 @@ get_gene_blocks
         gene_list;
         for (const auto & gene : genes) {
             gene_list.push_back({
-                (*gene_dict)[gene][0].start, 
-                (*gene_dict)[gene][0].end, 
+                (*gene_dict)[gene].front().start, 
+                (*gene_dict)[gene].back().end, 
                 (*gene_to_transcript)[gene], 
                 gene
             });

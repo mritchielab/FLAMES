@@ -9,7 +9,7 @@ fetch_function(const bam1_t *b, void *data)
     bam_header_t * header = data_struct->header;
 
     BAMRecord rec = read_record(b, header);
-    // records->push_back(rec);
+    records->push_back(rec);
 	return 0;
 }
 
@@ -168,11 +168,17 @@ group_bam2isoform (
     std::vector<BAMRecord>
     records = {};
     DataStruct data = {header, &records};
-    
+
+    std::cout << "\tlooking at chr_to_blocks of len " << chr_to_blocks->size() << "\n";
     for (const auto & [chr, blocks] : (*chr_to_blocks)) {
         int tid = bam_get_tid(header, chr.c_str());
+        std::cout << "\t\tstarting on " << chr << " which has " << blocks.size() << " blocks\n";
 
+        int ith = 0;
         for (const auto & block : blocks) {
+            std::cout << "looking at " << ith << " block: (" << block.start << ", " << block.end << ")\n";
+            ith++;
+
             records = {};
             // extract this from the bam file
 
@@ -181,7 +187,10 @@ group_bam2isoform (
             auto tmp_isoform = new Isoforms (chr, isoform_parameters);
             
             // add all the records in the bamfile to the Isoform object
+            int recnum = 0;
             for (const auto & rec : records) {
+                std::cout << "\tlooking at rec " << recnum << "\n";
+                recnum++;
                 auto
                 cigar_smooth = smooth_cigar(rec.cigar, 20);
                 auto
@@ -190,13 +199,23 @@ group_bam2isoform (
                 tmp_blocks = get_blocks(rec);
                 auto
                 junctions = blocks_to_junctions(tmp_blocks);
+                
+                std::cout << "\t\tadding junctions to isoform:\n{'right':" << junctions.right[0]; 
+                std::cout << ", 'junctions': (";
+                for (const auto & j : junctions.junctions) {
+                    std::cout << j << ", ";
+                }
+                std::cout << "), 'left': " << junctions.left[0] << "}\n";
                 tmp_isoform->add_isoform(junctions, rec.flag.read_reverse_strand);
             }
 
             // then process the isoform
             if (tmp_isoform->len() > 0) {
+                std::cout << "\t\tfound an isoform with len>0\n";
                 tmp_isoform->update_all_splice();
+                std::cout << "finished update_all_splice\n";
                 tmp_isoform->filter_TSS_TES(&tss_tes_stat, TSS_TES_site, (float)0.1);
+                std::cout << "finished filter_TSS_TES\n";
                 tmp_isoform->match_known_annotation(
                     (*transcript_to_junctions),
                     (*transcript_dict),
@@ -204,7 +223,7 @@ group_bam2isoform (
                     block,
                     fa_dict
                 );
-
+                std::cout << "made it to isoform_dict adding\n";
                 // isoform_dict[{chr, block.start, block.end}] = Isoforms(chr, isoform_parameters);
                 isoform_dict[{chr, block.start, block.end}] = tmp_isoform;
                 
@@ -212,8 +231,10 @@ group_bam2isoform (
                     // todo - i haven't written the Isoforms function to do this yet
                     // splice_raw.write(tmp_isoform()); 
                 }
+                std::cout << "made it to isoform_annotated adding\n";
                 iso_annotated << tmp_isoform->isoform_to_gtt3(isoform_parameters.MIN_CNT_PCT);
             }
+            std::cout << "made it to deletion\n";
             delete tmp_isoform;
         }
     }

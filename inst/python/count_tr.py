@@ -37,6 +37,10 @@ def wrt_tr_to_csv(bc_tr_count_dict, transcript_dict, csv_f, transcript_dict_ref=
     for bc in bc_tr_count_dict:
         all_tr.update(bc_tr_count_dict[bc].keys())
     all_tr = list(all_tr)
+
+    print "len(all_tr):"
+    print len(all_tr)
+
     f.write("transcript_id,gene_id,"+",".join([x for x in bc_tr_count_dict])+"\n" )
     tr_cnt = {}
     for tr in all_tr:
@@ -51,6 +55,8 @@ def wrt_tr_to_csv(bc_tr_count_dict, transcript_dict, csv_f, transcript_dict_ref=
             exit(1)
         f.write(",".join([str(x) for x in cnt_l])+"\n")
     f.close()
+    print "len(tr_cnt):"
+    print len(tr_cnt)
     return tr_cnt
 
 
@@ -102,7 +108,16 @@ def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_re
     """
     """
     print "parsing realigned bam"
+    with open(fa_idx_f, 'r') as f:
+        lines = 0
+        for line in f:
+            lines += 1
+        print "lines in file:"
+        print lines
+
     fa_idx = dict((it.strip().split()[0],int(it.strip().split()[1]) ) for it in open(fa_idx_f))
+    print "len(fa_idx):"
+    print len(fa_idx)
     bc_tr_count_dict = {}
     bc_tr_badcov_count_dict = {}
     tr_cov_dict = {}

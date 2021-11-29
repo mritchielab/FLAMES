@@ -50,17 +50,39 @@ pos_to_R(Pos * pos)
     );
 }
 
+// [[Rcpp::export]]
+List
+pos_to_R_test()
+{
+    Pos pos = {"chr21", 124, 128, '-', "dan"};
+    std::cout << "created pos on " << pos.chr << "\n";
+    return pos_to_R(&pos);
+}
+
 Pos
 pos_from_R(List list)
 {
     Pos pos;
 
     pos.chr = (Rcpp::String)(list["chr"]);
-    pos.start = atoi(list["start"]);
-    pos.end = atoi(list["end"]);
+    pos.start = list["start"];
+    pos.end = list["end"];
     pos.strand = list["strand"];
     pos.parent_id = (Rcpp::String)list["parent_id"];
     return pos;
+}
+
+// [[Rcpp::export]]
+void
+pos_from_R_test(List list)
+{
+    Pos pos = pos_from_R(list);
+    std::cout << "created a pos\n"
+        << "\tchr:" << pos.chr << "\n"
+        << "\tstart:" << pos.start << "\n"
+        << "\tend:" << pos.end << "\n"
+        << "\tstrand:" << pos.strand << "\n"
+        << "\tparent_id:" << pos.parent_id << "\n";
 }
 
 // void
