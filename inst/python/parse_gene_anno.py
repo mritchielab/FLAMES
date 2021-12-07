@@ -148,15 +148,24 @@ def _parse_gff_tree(gff_f):
 
 
 def _parse_gtf_tree(gtf_f):
+    print "started parse_gtf_tree"
     chr_to_gene = {}
     transcript_dict = {}
     gene_to_transcript = {}
     transcript_to_exon = {}
+
+    recnum = 0
     for rec in parseGFF3(gtf_f):
+        print "\tparsing record {}".format(recnum)
+        recnum = recnum+1
+
         if rec.type == "gene":
+            print "\t\trec type was gene"
             chr_to_gene.setdefault(rec.seqid,[]).append(rec.attributes["gene_id"])
         elif rec.type == "transcript":
+            print "\t\trec type was transcript"
             if "gene_id" not in rec.attributes:
+                print "\t\t\trec has no gene_id"
                 Warning("transcript dont have `gene_id` attributes: {}".format(rec.attributes))
                 continue
             # get the gene id
@@ -164,20 +173,30 @@ def _parse_gtf_tree(gtf_f):
             # make sure there no gene_id duplicates in chr_to_gene
             if gene_id not in chr_to_gene[rec.seqid]:
                 # if the gene id is not in the list associated with sequence id.
+                print "\t\t\tappending {} to chr_to_gene[{}]".format(gene_id, rec.seqid)
                 chr_to_gene.setdefault(rec.seqid,[]).append(gene_id)
+            print "\t\t\tappending {} to gene_to_transcript[{}]".format(rec.attributes["transcript_id"], gene_id)
             gene_to_transcript.setdefault(gene_id, []).append(rec.attributes["transcript_id"])
+            print "\t\t\tappending ({},{}) to transcript_dict[{}]".format(rec.start-1, rec.end, rec.attributes["transcript_id"])
             transcript_dict[rec.attributes["transcript_id"]] = Pos(rec.seqid, rec.start-1, rec.end, rec.strand, gene_id)  # `-1` convert 1 based to 0 based
         elif rec.type == "exon":
+            print "\t\trec type was exon"
             if "gene_id" not in rec.attributes:
+                print "\t\t\trec has no gene_id"
                 Warning("exon dont have `gene_id` attributes: {}".format(rec.attributes))
                 continue
             # make sure not duplicating insertion of rec.attributes["gene_id"]
             if rec.seqid not in chr_to_gene or rec.attributes["gene_id"] not in chr_to_gene[rec.seqid]:
+                print "\t\t\tappending {} to chr_to_gene[{}]".format(rec.attributes["gene_id"], rec.seqid)
                 chr_to_gene.setdefault(rec.seqid,[]).append(rec.attributes["gene_id"])
             if "transcript_id" in rec.attributes:
+                print "\t\t\ttranscript_id in rec.attributes"
                 if rec.attributes["transcript_id"] not in transcript_dict:
+                    print "\t\t\tappending {} to gene_to_transcript[{}]".format(rec.attributes["transcript_id"], rec.attributes["gene_id"])
                     gene_to_transcript.setdefault(rec.attributes["gene_id"],[]).append(rec.attributes["transcript_id"])
+                    print "\t\t\tappending ({},{}) to transcript_dict[{}]".format(-1, 1, rec.attributes["gene_id"])
                     transcript_dict[rec.attributes["transcript_id"]] = Pos(rec.seqid, -1, 1, rec.strand, rec.attributes["gene_id"])
+                print "\t\t\tappending ({},{}) to transcript_to_exon[{}]".format(rec.start-1, rec.end, rec.attributes["transcript_id"])
                 transcript_to_exon.setdefault(rec.attributes["transcript_id"], []).append([rec.start-1, rec.end])  # `-1` convert 1 based to 0 based
             else:
                 Warning("exon dont have `transcript_id` attributes: {}".format(rec.attributes))

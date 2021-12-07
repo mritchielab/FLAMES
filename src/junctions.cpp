@@ -5,7 +5,11 @@
 
 
 int 
-take_closest (std::vector<int> list, int num)
+take_closest
+(
+    std::vector<int> list,
+    int num
+)
 {
     /*
         returns the value in list that is closest to num
@@ -50,70 +54,43 @@ blocks_to_junctions (std::vector<StartEndPair> blocks)
 Junctions 
 get_TSS_TES_site
 (
-    std::unordered_map<std::string, Junctions> transcript_to_junctions,
-    std::vector<std::string> tr_list
+    std::unordered_map<std::string, Junctions> * transcript_to_junctions,
+    const std::vector<std::string> * tr_list
 )
 {
-    std::cout << "started get_TSS_TES_site\n";
     Junctions
     all_site;
+    all_site.left = {};
+    all_site.right = {};
 
-    std::cout << "calling on this list:";
-    for (const auto & tr : tr_list) {
-        std::cout << tr << ",";
-    }
-    std::cout << "\n";
-
-    for (const auto & t : tr_list) {
-        std::cout << "iterating with " << t << "\n";
-        if (transcript_to_junctions.count(t) == 0) {
-            std::cout << "\t\tit's not in here\n";
-        } else {
-            std::cout << "\t\tit's in here\n";
-        }
-
+    for (const auto & t : *tr_list) {
         if (all_site.left.size() > 0) {
-            if (transcript_to_junctions[t].left.size() == 0) {
-                std::cout << "\t\t\tthere's nothing in the left\n";
-            }
-            if (abs(take_closest(all_site.left, transcript_to_junctions[t].left[0]) - transcript_to_junctions[t].left[0]) > 5) {
-                all_site.left.push_back(transcript_to_junctions[t].left[0]);
+            if (abs(take_closest(all_site.left, (*transcript_to_junctions)[t].left[0]) - (*transcript_to_junctions)[t].left[0]) > 5) {
+                all_site.left.push_back((*transcript_to_junctions)[t].left[0]);
             }
         } else {
-            if (transcript_to_junctions[t].left.size() == 0) {
-                std::cout << "\t\t\tthere's nothing in the left\n";
-            }
-            all_site.left.push_back(transcript_to_junctions[t].left[0]);
+            all_site.left.push_back((*transcript_to_junctions)[t].left[0]);
         }
-
-        std::cout << "checked left\n";
 
         if (all_site.right.size() > 0) {
-            if (transcript_to_junctions[t].right.size() == 0) {
-                std::cout << "\t\t\tthere's nothing in the right\n";
-            }
-            if (abs(take_closest(all_site.right, transcript_to_junctions[t].right[0]) - transcript_to_junctions[t].right[0]) > 5) {
-                all_site.right.push_back(transcript_to_junctions[t].right[0]);
+            if (abs(take_closest(all_site.right, (*transcript_to_junctions)[t].right[0]) - (*transcript_to_junctions)[t].right[0]) > 5) {
+                all_site.right.push_back((*transcript_to_junctions)[t].right[0]);
             }
         } else {
-
-            if (transcript_to_junctions[t].right.size() == 0) {
-                std::cout << "\t\t\tthere's nothing in the right\n";
-            }
-            all_site.right.push_back(transcript_to_junctions[t].right[0]);
+            all_site.right.push_back((*transcript_to_junctions)[t].right[0]);
         }
-
-        std::cout << "checked right\n";
-        std::cout << "reached the end of a loop\n";
     }
 
-    std::cout << "finished get_TSS_TES_site\n";
     return all_site;
 }
 
 
 std::set<int> 
-get_splice_site (std::unordered_map<std::string, Junctions> transcript_to_junctions, std::vector<std::string> tr_list)
+get_splice_site 
+(
+    std::unordered_map<std::string, Junctions> transcript_to_junctions,
+    std::vector<std::string> tr_list
+)
 {
     std::set<int>
     all_site;
@@ -230,7 +207,12 @@ remove_similar_tr
 }
 
 int
-is_exon_similar(std::vector<StartEndPair> * exon1, std::vector<StartEndPair> * exon2, int threshold)
+is_exon_similar
+(
+    std::vector<StartEndPair> * exon1, 
+    std::vector<StartEndPair> * exon2, 
+    int threshold
+)
 {
     /* 
         takes two exons,
@@ -279,8 +261,8 @@ get_gene_blocks
         gene_list;
         for (const auto & gene : genes) {
             gene_list.push_back({
-                (*gene_dict)[gene][0].start, 
-                (*gene_dict)[gene][0].end, 
+                (*gene_dict)[gene].front().start, 
+                (*gene_dict)[gene].back().end, 
                 (*gene_to_transcript)[gene], 
                 gene
             });
@@ -323,6 +305,5 @@ get_gene_blocks
             }
         }
     }
-
     return chr_to_blocks;
 }

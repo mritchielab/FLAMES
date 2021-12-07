@@ -3,7 +3,6 @@
 static int
 fetch_function(const bam1_t *b, void *data)
 {
-    Rcpp::Rcout << "bam fetch on " << b->core.pos << "\n";
     DataStruct * data_struct = (DataStruct*)data;
 
     std::vector<BAMRecord> * records = data_struct->records;
@@ -26,8 +25,8 @@ bam_read (std::string bam_in, std::string chr, int s, int e)
 
     
 
-    std::cout << "bamfile is done\n";
-    std::cout << "tid is " << tid << "\n";
+    Rcpp::Rcout << "bamfile is done\n";
+    Rcpp::Rcout << "tid is " << tid << "\n";
 
     std::vector<BAMRecord>
     records;
@@ -64,6 +63,59 @@ get_blocks(BAMRecord record)
 }
 
 void
+minimal_group_bam2isoform
+(
+
+    std::string bam_in, 
+    std::string out_gff3, 
+    std::string out_stat, 
+    std::unordered_map<std::string, std::vector<GeneBlocks>>    * chr_to_blocks, 
+    std::unordered_map<std::string, std::vector<StartEndPair>>  * gene_dict, 
+    std::unordered_map<std::string, Junctions>                  * transcript_to_junctions,
+    std::unordered_map<std::string, Pos>                        * transcript_dict,
+    std::string fa_f,
+    IsoformParameters isoform_parameters,
+    std::string raw_gff3
+)
+{
+    // read a bamfile
+    bamFile bam = bam_open(bam_in.c_str(), "r"); // bam.h
+    bam_index_t *bam_index = bam_index_load(bam_in.c_str());
+    bam_header_t *header = bam_header_read(bam); // bam.h
+
+
+    std::vector<BAMRecord>
+    records = {};
+    Rcpp::Rcout << "\tmade records\n";
+    DataStruct data = {header, &records};
+
+
+    Rcpp::Rcout << "made it to the big for\n";
+    for (const auto & [chr, blocks] : (*chr_to_blocks)) {
+        Rcpp::Rcout << "started loop with " << chr << "\n";
+        int tid = bam_get_tid(header, chr.c_str());
+
+        for (const auto & block : blocks) {
+            Rcpp::Rcout << "started inner loop with " << block.start << ", " << block.end << "\n";
+            // if (block.start == 8208472) {
+            //     Rcpp::Rcout << "!! SKIPPING the danger zone !!\n";
+            //     continue;
+            // }
+            Rcpp::Rcout << "\tcleared records";
+            // extract this from the bam file
+
+            Rcpp::Rcout << "\tabout to bamfetch\n";
+
+            auto it = bam_fetch(bam, bam_index, tid, block.start, block.end, &data, &fetch_function);
+            Rcpp::Rcout << "bam_fetch done\n";
+        }
+    }
+
+
+    bam_close(bam);
+}
+
+void
 group_bam2isoform (
     std::string bam_in, 
     std::string out_gff3, 
@@ -87,7 +139,6 @@ group_bam2isoform (
     bamFile bam = bam_open(bam_in.c_str(), "r"); // bam.h
     bam_index_t *bam_index = bam_index_load(bam_in.c_str());
     bam_header_t *header = bam_header_read(bam); // bam.h
-    // bam_close(bam);
 
     // set up all the output files
     std::ofstream iso_annotated;
@@ -116,45 +167,30 @@ group_bam2isoform (
 
     std::vector<BAMRecord>
     records = {};
-    std::cout << "\tmade records\n";
     DataStruct data = {header, &records};
-    std::cout << "\tmade datastruct\n";
 
-    std::cout << "made it to the big for\n";
-    for (auto & [chr, blocks] : (*chr_to_blocks)) {
-        std::cout << "started loop with " << chr << "\n";
+    Rcpp::Rcout << "\tlooking at chr_to_blocks of len " << chr_to_blocks->size() << "\n";
+    for (const auto & [chr, blocks] : (*chr_to_blocks)) {
         int tid = bam_get_tid(header, chr.c_str());
+        Rcpp::Rcout << "\t\tstarting on " << chr << " which has " << blocks.size() << " blocks\n";
 
-        for (auto & block : blocks) {
-            std::cout << "started inner loop with " << block.start << ", " << block.end << "\n";
-            if (block.start == 8208472) {
-                std::cout << "!! SKIPPING the danger zone !!\n";
-                continue;
-            }
+        int ith = 0;
+        for (const auto & block : blocks) {
+            Rcpp::Rcout << "looking at " << ith << " block: (" << block.start << ", " << block.end << ")\n";
+            ith++;
+
             records = {};
-            std::cout << "\tcleared records";
             // extract this from the bam file
 
-            std::cout << "\tabout to bamfetch";
-            std::cout << "\n\t\tbam:" << bam_in
-                    << "\n\t\tbam_index:" << bam_index
-                    << "\n\t\ttid:" << tid
-                    << "\n\t\tblock.start:" << block.start
-                    << "\n\t\tblock.end:" << block.end
-                    << "\n\t\tblock.transcript_list.front():" << block.transcript_list.front()
-                    << "\n\t\t&data:" << &data
-                    << "\n\t\t&fetch_function:" << &fetch_function << "\n";
-
-            bam_fetch(bam, bam_index, tid, block.start, block.end, &data, &fetch_function);
-            std::cout << "bam_fetch done\n";
-            auto TSS_TES_site = get_TSS_TES_site((*transcript_to_junctions), (block.transcript_list));
-            std::cout << "get_TSS_TES_site done\n";
+            auto it = bam_fetch(bam, bam_index, tid, block.start, block.end, &data, &fetch_function);
+            auto TSS_TES_site = get_TSS_TES_site(transcript_to_junctions, &(block.transcript_list));
             auto tmp_isoform = new Isoforms (chr, isoform_parameters);
-            std::cout << "initialised everything\n";
-
+            
             // add all the records in the bamfile to the Isoform object
-            std::cout << "started inner inner for\n";
+            int recnum = 0;
             for (const auto & rec : records) {
+                Rcpp::Rcout << "\tlooking at rec " << recnum << "\n";
+                recnum++;
                 auto
                 cigar_smooth = smooth_cigar(rec.cigar, 20);
                 auto
@@ -163,15 +199,23 @@ group_bam2isoform (
                 tmp_blocks = get_blocks(rec);
                 auto
                 junctions = blocks_to_junctions(tmp_blocks);
+                
+                Rcpp::Rcout << "\t\tadding junctions to isoform:\n{'right':" << junctions.right[0]; 
+                Rcpp::Rcout << ", 'junctions': (";
+                for (const auto & j : junctions.junctions) {
+                    Rcpp::Rcout << j << ", ";
+                }
+                Rcpp::Rcout << "), 'left': " << junctions.left[0] << "}\n";
                 tmp_isoform->add_isoform(junctions, rec.flag.read_reverse_strand);
             }
-            std::cout << "finished inner inner for\n";
 
             // then process the isoform
             if (tmp_isoform->len() > 0) {
-                std::cout << "\tisoform len>0\n";
+                Rcpp::Rcout << "\t\tfound an isoform with len>0\n";
                 tmp_isoform->update_all_splice();
+                Rcpp::Rcout << "finished update_all_splice\n";
                 tmp_isoform->filter_TSS_TES(&tss_tes_stat, TSS_TES_site, (float)0.1);
+                Rcpp::Rcout << "finished filter_TSS_TES\n";
                 tmp_isoform->match_known_annotation(
                     (*transcript_to_junctions),
                     (*transcript_dict),
@@ -179,7 +223,7 @@ group_bam2isoform (
                     block,
                     fa_dict
                 );
-
+                Rcpp::Rcout << "made it to isoform_dict adding\n";
                 // isoform_dict[{chr, block.start, block.end}] = Isoforms(chr, isoform_parameters);
                 isoform_dict[{chr, block.start, block.end}] = tmp_isoform;
                 
@@ -187,18 +231,19 @@ group_bam2isoform (
                     // todo - i haven't written the Isoforms function to do this yet
                     // splice_raw.write(tmp_isoform()); 
                 }
+                Rcpp::Rcout << "made it to isoform_annotated adding\n";
                 iso_annotated << tmp_isoform->isoform_to_gff3(isoform_parameters.MIN_CNT_PCT);
-                std::cout << "\treached the end of the isoform len block\n";
             }
+            Rcpp::Rcout << "made it to deletion\n";
+            delete tmp_isoform;
         }
     }
 
     // finally, close all the files
+    bam_close(bam);
     tss_tes_stat.close();
     iso_annotated.close();
     if (raw_gff3 != "") {
         splice_raw.close();
     }
-
-	bam_close(bam);
 }

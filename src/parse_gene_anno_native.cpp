@@ -44,6 +44,7 @@ parse_gff_or_gtf(std::string filename)
 GFFData
 parse_gtf_tree(std::string filename)
 {
+    std::cout << "started parse_gtf_tree\n";
     // create an object to store chr_to_gene, transcript_dict, 
     // gene_to_transcript, transcript_to_exon 
     GFFData gff_data;
@@ -54,6 +55,7 @@ parse_gtf_tree(std::string filename)
     while (!parser.empty()) {
 		std::string gene_id = rec.attributes["gene_id"];
         if (rec.type == "gene") {
+            std::cout << "\t\trec type was gene\n";
             // add this records data to chr_to_gene
             gff_data.chr_to_gene[rec.seqid].push_back(gene_id);
         } else if (rec.type == "transcript") {
@@ -67,6 +69,7 @@ parse_gtf_tree(std::string filename)
 			}
 
             gff_data.gene_to_transcript[gene_id].push_back(rec.attributes["transcript_id"]);
+            std::cout << "\t\t\tappending {" << rec.start-1 << "," << rec.end << "} to transcript_dict[" << rec.attributes["transcript_id"] << "]\n";
             gff_data.transcript_dict[rec.attributes["transcript_id"]] = {rec.seqid, rec.start - 1, rec.end, rec.strand[0], gene_id};
 
         } else if (rec.type == "exon") {
@@ -94,11 +97,13 @@ parse_gtf_tree(std::string filename)
         rec = parser.nextRecord();
     }
 
+    
     // Remove duplicates from the transcript_to_exon map
-    gff_data.remove_transcript_duplicates(true);
+    // gff_data.remove_transcript_duplicates(true);
 
     parser.close();
     
+    std::cout << "finished parse_gtf_tree\n";
     return gff_data;
 }
 
@@ -194,6 +199,7 @@ parse_gff_tree(std::string filename)
             rec = parser.nextRecord();
         }
 
+        std::cout << "made it to the end of the parser\n";
         parser.close();
     }
 

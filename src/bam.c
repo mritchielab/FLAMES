@@ -135,19 +135,14 @@ const char *bam_get_library(bam_header_t *h, const bam1_t *b)
 
 int bam_fetch(bamFile fp, const bam_index_t *idx, int tid, int beg, int end, void *data, bam_fetch_f func)
 {
-	printf("~ started bam_fetch from inside bam.c\n");
 	int ret;
 	bam_iter_t iter;
 	bam1_t *b;
 	b = bam_init1();
-	printf("~ up to the iter_query\n");
 	iter = bam_iter_query(idx, tid, beg, end);
-	printf("~ up to the while\n");
 	while ((ret = bam_iter_read(fp, iter, b)) >= 0) func(b, data);
-	printf("~ up to the destroying\n");
 	bam_iter_destroy(iter);
 	bam_destroy1(b);
-	printf("~ done\n");
 	return (ret == -1)? 0 : ret;
 }
 

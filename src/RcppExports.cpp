@@ -10,6 +10,26 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// pos_to_R_test
+List pos_to_R_test();
+RcppExport SEXP _FLAMES_pos_to_R_test() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(pos_to_R_test());
+    return rcpp_result_gen;
+END_RCPP
+}
+// pos_from_R_test
+void pos_from_R_test(List list);
+RcppExport SEXP _FLAMES_pos_from_R_test(SEXP listSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type list(listSEXP);
+    pos_from_R_test(list);
+    return R_NilValue;
+END_RCPP
+}
 // find_isoform_cpp
 Rcpp::List find_isoform_cpp(std::string gff3, std::string genome_bam, std::string isoform_gff3, std::string tss_tes_stat, std::string genomefa, std::string transcript_fa, int downsample_ratio, Rcpp::List config_list, std::string raw_splice_isoform);
 RcppExport SEXP _FLAMES_find_isoform_cpp(SEXP gff3SEXP, SEXP genome_bamSEXP, SEXP isoform_gff3SEXP, SEXP tss_tes_statSEXP, SEXP genomefaSEXP, SEXP transcript_faSEXP, SEXP downsample_ratioSEXP, SEXP config_listSEXP, SEXP raw_splice_isoformSEXP) {
@@ -161,6 +181,25 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// quantification_cpp
+void quantification_cpp(Rcpp::List config_list, std::string realign_bam, std::string transcript_fa_idx, Rcpp::List isoform_objects_list, std::string tr_cnt_csv, std::string tr_badcov_cnt_csv, std::string isoform_gff3, std::string annot, std::string isoform_gff3_f, std::string FSM_anno_out);
+RcppExport SEXP _FLAMES_quantification_cpp(SEXP config_listSEXP, SEXP realign_bamSEXP, SEXP transcript_fa_idxSEXP, SEXP isoform_objects_listSEXP, SEXP tr_cnt_csvSEXP, SEXP tr_badcov_cnt_csvSEXP, SEXP isoform_gff3SEXP, SEXP annotSEXP, SEXP isoform_gff3_fSEXP, SEXP FSM_anno_outSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::List >::type config_list(config_listSEXP);
+    Rcpp::traits::input_parameter< std::string >::type realign_bam(realign_bamSEXP);
+    Rcpp::traits::input_parameter< std::string >::type transcript_fa_idx(transcript_fa_idxSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type isoform_objects_list(isoform_objects_listSEXP);
+    Rcpp::traits::input_parameter< std::string >::type tr_cnt_csv(tr_cnt_csvSEXP);
+    Rcpp::traits::input_parameter< std::string >::type tr_badcov_cnt_csv(tr_badcov_cnt_csvSEXP);
+    Rcpp::traits::input_parameter< std::string >::type isoform_gff3(isoform_gff3SEXP);
+    Rcpp::traits::input_parameter< std::string >::type annot(annotSEXP);
+    Rcpp::traits::input_parameter< std::string >::type isoform_gff3_f(isoform_gff3_fSEXP);
+    Rcpp::traits::input_parameter< std::string >::type FSM_anno_out(FSM_anno_outSEXP);
+    quantification_cpp(config_list, realign_bam, transcript_fa_idx, isoform_objects_list, tr_cnt_csv, tr_badcov_cnt_csv, isoform_gff3, annot, isoform_gff3_f, FSM_anno_out);
+    return R_NilValue;
+END_RCPP
+}
 // tester
 void tester(bool f);
 RcppExport SEXP _FLAMES_tester(SEXP fSEXP) {
@@ -175,6 +214,8 @@ END_RCPP
 RcppExport SEXP run_testthat_tests(SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_FLAMES_pos_to_R_test", (DL_FUNC) &_FLAMES_pos_to_R_test, 0},
+    {"_FLAMES_pos_from_R_test", (DL_FUNC) &_FLAMES_pos_from_R_test, 1},
     {"_FLAMES_find_isoform_cpp", (DL_FUNC) &_FLAMES_find_isoform_cpp, 9},
     {"_FLAMES_flames_test_func", (DL_FUNC) &_FLAMES_flames_test_func, 0},
     {"_FLAMES_bam_read", (DL_FUNC) &_FLAMES_bam_read, 4},
@@ -187,6 +228,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_FLAMES_parse_json_config_cpp", (DL_FUNC) &_FLAMES_parse_json_config_cpp, 1},
     {"_FLAMES_print_config_cpp", (DL_FUNC) &_FLAMES_print_config_cpp, 1},
     {"_FLAMES_read_entire_bam", (DL_FUNC) &_FLAMES_read_entire_bam, 2},
+    {"_FLAMES_quantification_cpp", (DL_FUNC) &_FLAMES_quantification_cpp, 10},
     {"_FLAMES_tester", (DL_FUNC) &_FLAMES_tester, 1},
     {"run_testthat_tests", (DL_FUNC) &run_testthat_tests, 1},
     {NULL, NULL, 0}

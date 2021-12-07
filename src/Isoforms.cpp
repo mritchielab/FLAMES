@@ -30,8 +30,8 @@ void Isoforms::add_isoform(Junctions junctions, bool is_reversed)
         // check if there's anything very close to the key
         bool found = false;
         for (auto const & [current_key, current_value] : this->single_block_dict) {
-          if ((abs(current_key.start - target_key.start) < this->parameters.MAX_TS_DIST) and
-              (abs(current_key.end - target_key.end) < this->parameters.MAX_TS_DIST)) {
+          if ((std::abs(current_key.start - target_key.start) < this->parameters.MAX_TS_DIST) &&
+              (std::abs(current_key.end - target_key.end) < this->parameters.MAX_TS_DIST)) {
             // we've found one that's very similar
             // just update it
             this->update_one(junctions, {current_key.start, current_key.end}, is_reversed);
@@ -72,7 +72,7 @@ void Isoforms::add_isoform(Junctions junctions, bool is_reversed)
             
             bool similar = true;
             for (int i = 0; i < current_key.size(); i++) {
-              if (abs(junctions.junctions[i] - current_key[i]) > this->parameters.MAX_DIST) {
+              if (std::abs(junctions.junctions[i] - current_key[i]) > this->parameters.MAX_DIST) {
                 // they are too far apart
                 similar = false;
                 break;
@@ -128,6 +128,7 @@ void Isoforms::add_one(Junctions junctions, bool strand)
     this->left.push_back(junctions.left[0]);
     this->right.push_back(junctions.right[0]);
     this->lr_pair[junctions.junctions] = {};
+    this->lr_pair[junctions.junctions].push_back({junctions.left[0],junctions.right[0]});
 
     this->new_strand_counts[junctions.junctions] = {};
     int multiplier = 1;
@@ -156,6 +157,7 @@ void Isoforms::update_one(Junctions junctions, std::vector<int> key, bool strand
     this->junction_list[this->junction_dict[key]].push_back(junctions.junctions);
     this->left.push_back(junctions.left[0]);
     this->right.push_back(junctions.right[0]);
+    std::cout << "updating one\n";
     this->lr_pair[key].push_back({junctions.left[0], junctions.right[0]});
   }
   int multiplier = 1;
@@ -196,9 +198,11 @@ void Isoforms::update_all_splice()
       junction_list_counts;
 
       // populate the counts container
+      std::cout << "junction_list[val] size is " << this->junction_list[val].size() << "\n";
       for (auto i : this->junction_list[val]) {
         junction_list_counts[i]++;
       }
+      std::cout << "junction_list_counts size is " << junction_list_counts.size() << "\n";
       
       // pull out the key for the 
       // most common value in the counts map
@@ -226,7 +230,7 @@ void Isoforms::update_all_splice()
   }
 
   // look through single_block_dict
-  for (auto const& [key, val] : this->single_block_dict) {
+  for (auto const & [key, val] : this->single_block_dict) {
     if (this->single_blocks[val].size() >= this->parameters.STRAND_SPECIFIC) {
       // make and populate a counter for single_blocks
       std::unordered_map<StartEndPair, int>
@@ -258,12 +262,14 @@ void Isoforms::update_all_splice()
   this->junction_dict = junction_tmp;
   this->strand_counts = strand_counts_tmp;
   this->lr_pair = lr_pair_tmp;
+  std::cout << "updating lr_pair with " << lr_pair_tmp.size() << "\n";
 }
 
 /* take a known site, write it to an output file and include it in raw_isoforms and strand_count
  */
 void Isoforms::filter_TSS_TES(std::ofstream * out_f, Junctions known_site, float fdr_cutoff)
 {
+  std::cout << "! started filter_TSS_TES\n";
   std::string bedgraph_fmt = "{_ch}\t{_st}\t{_en}\t{_sc}\n";
 
   auto filter_site = [fdr_cutoff] (std::unordered_map<int, int> list_counts) {
@@ -340,7 +346,7 @@ void Isoforms::filter_TSS_TES(std::ofstream * out_f, Junctions known_site, float
         int
         clo_p = take_closest(tmp, fs[it]);
 
-        if (abs(clo_p - fs[it]) > this->parameters.MAX_TS_DIST / 2) {
+        if (std::abs(clo_p - fs[it]) > this->parameters.MAX_TS_DIST / 2) {
           tmp.push_back(fs[it]);
         }
       }
@@ -352,7 +358,7 @@ void Isoforms::filter_TSS_TES(std::ofstream * out_f, Junctions known_site, float
         int clo_p = take_closest(tmp, s);
         
         // add it to tmp if it's far enough away
-        if (abs(clo_p - s) > this->parameters.MAX_TS_DIST) {
+        if (std::abs(clo_p - s) > this->parameters.MAX_TS_DIST) {
           tmp.push_back(s);
         }
       }
@@ -379,6 +385,8 @@ void Isoforms::filter_TSS_TES(std::ofstream * out_f, Junctions known_site, float
 
   std::vector<int>
   cnt_r;
+
+  std::cout << "! line 384\n";
 
   if ((left_counts.size() < this->parameters.STRAND_SPECIFIC) || 
       (right_counts.size() < this->parameters.STRAND_SPECIFIC)) {
@@ -437,13 +445,42 @@ void Isoforms::filter_TSS_TES(std::ofstream * out_f, Junctions known_site, float
     }
   }
 
-  for (const auto & pair : lr_pair) {
+
+  std::cout << "! now iterating over pairs\n";
+
+  std::ofstream
+  pairs_out ("pairs-out.txt");
+  for (const auto & [key, val] : this->lr_pair) {
+    pairs_out << "(";
+    for (const auto & i : key) {
+      pairs_out << i << ",";
+    }
+    pairs_out << "):\n";
+    pairs_out << "\t";
+    for (const auto & i : val) {
+      pairs_out << "(" << i.start << "," << i.end << ") ";
+    }
+    pairs_out << "\n";
+  }
+
+  std::cout << "this->lr_pair size is " << this->lr_pair.size() << "\n";
+
+  for (const auto & pair : this->lr_pair) {
+    std::cout << "pair.second size is " << pair.second.size() << "\n";
+    if (pair.second.size() == 0) {
+      continue;
+    }
+
     // first we need a counts map, which we populate
     std::unordered_map<StartEndPair, int>
-    pair_counts;
+    pair_counts = {};
     for (const auto & i : pair.second) {
+      if (pair_counts.count(i) == 0) {
+        pair_counts[i] = 0;
+      }
       pair_counts[i]++;
     }
+    std::cout << "pair_counts size is " << pair_counts.size() << "\n";
 
     // then to sort it, we need to convert to a vector
     std::vector<std::pair<StartEndPair, int>>
@@ -451,6 +488,7 @@ void Isoforms::filter_TSS_TES(std::ofstream * out_f, Junctions known_site, float
     for (const auto & i : pair_counts) {
       tmp_pair.push_back(i);
     }
+    std::cout << "tmp_pair size is " << tmp_pair.size() << "\n";
 
     std::sort(tmp_pair.begin(), tmp_pair.end(),
       [] (const auto & p1, const auto & p2) {
@@ -464,6 +502,8 @@ void Isoforms::filter_TSS_TES(std::ofstream * out_f, Junctions known_site, float
     std::vector<std::pair<StartEndPair, int>>
     pair_enrich;
 
+
+    std::cout << "! started iterating tmp_pair\n";
     for (const auto & p : tmp_pair) {
       StartEndPair
       cl_p = {
@@ -471,8 +511,8 @@ void Isoforms::filter_TSS_TES(std::ofstream * out_f, Junctions known_site, float
         take_closest(cnt_r, p.first.end)
       };
 
-      if ((abs(cl_p.start - p.first.start) < (0.5 * this->parameters.MAX_TS_DIST)) and
-          (abs(cl_p.end - p.first.end) < 0.5 * this->parameters.MAX_TS_DIST)) {
+      if ((std::abs(cl_p.start - p.first.start) < (0.5 * this->parameters.MAX_TS_DIST)) and
+          (std::abs(cl_p.end - p.first.end) < 0.5 * this->parameters.MAX_TS_DIST)) {
         if (pair_after_filtering.size() > 0) {
           // line 650 of sc_longread.py
 
@@ -488,8 +528,8 @@ void Isoforms::filter_TSS_TES(std::ofstream * out_f, Junctions known_site, float
           }
 
           int distance = (
-            abs(take_closest(pair_after_filtering_left, cl_p.start) - cl_p.start) +
-            abs(take_closest(pair_after_filtering_right, cl_p.end) - cl_p.end)
+            std::abs(take_closest(pair_after_filtering_left, cl_p.start) - cl_p.start) +
+            std::abs(take_closest(pair_after_filtering_right, cl_p.end) - cl_p.end)
           );
 
           if (distance > this->parameters.MAX_TS_DIST) {
@@ -509,17 +549,20 @@ void Isoforms::filter_TSS_TES(std::ofstream * out_f, Junctions known_site, float
         }
       }
     }
+    std::cout << "! finished iterating tmp_pair\n";
 
     if (pair_after_filtering.size() == 0) {
+      std::cout << "! pair_after_filtering.size==0\n";
       // then search for isoform-specific enrichment
       for (const auto & p : tmp_pair) {
         // we need to sum up all of the elements in tmp_pair that meet our criteria
         int sum = 0;
         for (const auto & it : tmp_pair) {
-          if ((abs(it.first.start - p.first.start) + abs(it.first.end - p.first.end)) < this->parameters.MAX_TS_DIST) {
+          if ((std::abs(it.first.start - p.first.start) + std::abs(it.first.end - p.first.end)) < this->parameters.MAX_TS_DIST) {
             sum += it.second;
           }
         }
+        std::cout << "added " << p.first.start << "," << p.first.end << " to pair_enrich\n";
         pair_enrich.push_back({p.first, sum});
       }
       std::sort(
@@ -544,8 +587,8 @@ void Isoforms::filter_TSS_TES(std::ofstream * out_f, Junctions known_site, float
           }
 
           int distance = (
-            abs(take_closest(pair_after_filtering_left, p.first.start) - p.first.start) +
-            abs(take_closest(pair_after_filtering_right, p.first.end) - p.first.end)
+            std::abs(take_closest(pair_after_filtering_left, p.first.start) - p.first.start) +
+            std::abs(take_closest(pair_after_filtering_right, p.first.end) - p.first.end)
           );
 
           if ((distance > this->parameters.MAX_TS_DIST) and 
@@ -569,29 +612,34 @@ void Isoforms::filter_TSS_TES(std::ofstream * out_f, Junctions known_site, float
 
     int support_count_total = 0;
 
+    std::cout << "! iterating pair_after_filtering\n";
     for (const auto & p : pair_after_filtering) {
       // now we want to add the values of keys matching certain criteria
       for (const auto & it : tmp_pair) {
-        if ((abs(it.first.start - p.start) + abs(it.first.end - p.end)) < this->parameters.MAX_TS_DIST) {
+        if ((std::abs(it.first.start - p.start) + std::abs(it.first.end - p.end)) < this->parameters.MAX_TS_DIST) {
           support_count_total += it.second;
         }
       }
     }
 
     if ((float(support_count_total) / this->lr_pair.size()) <= this->parameters.MIN_SUP_PCT) {
+      std::cout << "! first part of the if\n";
       // not enough support counts - this often happens in the case when the TSS/TES is strongly degraded
 
       if (pair_enrich.size() == 0) {
+        std::cout << "size == 0\n";
+        std::cout << "tmp_pair size is " << tmp_pair.size() << "\n";
         for (const auto & p : tmp_pair) {
           // add it to pair_enrich
           // we need to sum up all of the elements in tmp_pair that meet our criteria
           int sum = 0;
           for (const auto & it : tmp_pair) {
-            if ((abs(it.first.start - p.first.start) + abs(it.first.end - p.first.end)) < this->parameters.MAX_TS_DIST) {
+            if ((std::abs(it.first.start - p.first.start) + std::abs(it.first.end - p.first.end)) < this->parameters.MAX_TS_DIST) {
               sum += it.second;
             }
           }
           pair_enrich.push_back({p.first, sum});
+          std::cout << "adding " << p.first.start << "," << p.first.end << " to pair_enrich\n";
         }
         std::sort(
           pair_enrich.begin(), pair_enrich.end(),
@@ -602,31 +650,36 @@ void Isoforms::filter_TSS_TES(std::ofstream * out_f, Junctions known_site, float
         );
       }
 
+      std::cout << "! defining tmp_ex\n";
       std::vector<int>
-      tmp_ex;
-      tmp_ex.push_back(int(pair_enrich[0].first.start));
+      tmp_ex = {};
+      std::cout << "! pair_enrich.size() is " << pair_enrich.size() << "\n";
+      tmp_ex.push_back((int)(pair_enrich[0].first.start));
       for (int i : pair.first) {
         tmp_ex.push_back(i);
       }
-      tmp_ex.push_back(int(pair_enrich[0].first.end));
+      tmp_ex.push_back((int)(pair_enrich[0].first.end));
 
+      std::cout << "! defined tmp_ex\n";
       this->raw_isoforms[tmp_ex] = pair.second.size();
       this->strand_counts[tmp_ex] = this->strand_counts[pair.first];
     } else {
+
+      std::cout << "! else instead\n";
       // now, add filtered TSS/TES to raw_isoforms
       for (const auto & p : pair_after_filtering) {
         std::vector<int>
         tmp_ex;
-        tmp_ex.push_back(int(p.start));
+        tmp_ex.push_back((int)(p.start));
         for (int i : pair.first) {
           tmp_ex.push_back(i);
         }
-        tmp_ex.push_back(int(p.end));
+        tmp_ex.push_back((int)(p.end));
 
         // add up the values to assign to raw_isoforms
         int sum = 0;
         for (const auto & it : tmp_pair) {
-          if (abs(it.first.start - p.start) + abs(it.first.end - p.end) < this->parameters.MAX_TS_DIST) {
+          if (std::abs(it.first.start - p.start) + std::abs(it.first.end - p.end) < this->parameters.MAX_TS_DIST) {
             sum += it.second;
           }
         }
@@ -636,6 +689,9 @@ void Isoforms::filter_TSS_TES(std::ofstream * out_f, Junctions known_site, float
       }
     }
   }
+
+
+  std::cout << "! finished filter_TSS_TES\n";
 }
 
 
@@ -684,7 +740,7 @@ void Isoforms::match_known_annotation
   }
 
   Junctions
-  TSS_TES_site = get_TSS_TES_site(transcript_to_junctions, (one_block.transcript_list));
+  TSS_TES_site = get_TSS_TES_site(&transcript_to_junctions, &(one_block.transcript_list));
 
   // if this is a single-exon read, we're done
   if (splice_site.size() == 0) {
@@ -705,8 +761,8 @@ void Isoforms::match_known_annotation
 
       if ((transcript_to_junctions[i].junctions.size() == 0) &&
           (tmp_std == this->strand_counts[{exon_key.start, exon_key.end}])) {
-        if ((abs(exon_key.start - transcript_to_junctions[i].left[0]) < this->parameters.MAX_TS_DIST) &&
-            (abs(exon_key.end - transcript_to_junctions[i].right[0]) < this->parameters.MAX_TS_DIST)) {
+        if ((std::abs(exon_key.start - transcript_to_junctions[i].left[0]) < this->parameters.MAX_TS_DIST) &&
+            (std::abs(exon_key.end - transcript_to_junctions[i].right[0]) < this->parameters.MAX_TS_DIST)) {
           std::pair<int, int>
           known_exons = {transcript_to_junctions[i].left[0], transcript_to_junctions[i].right[0]};
           if (this->known_isoforms.count({known_exons.first, known_exons.second})) { // check if it is already known
@@ -765,7 +821,7 @@ void Isoforms::match_known_annotation
           (tmp_std == this->strand_counts[raw_iso_key])) {
         int iso_is_within_max_dist = 1;
         for (int j = 0; j < std::min(raw_iso_key.size() - 1, transcript_to_junctions[i].junctions.size()); j++) {
-          if (abs(raw_iso_key[j+1] - transcript_to_junctions[i].junctions[j]) > this->parameters.MAX_DIST) {
+          if (std::abs(raw_iso_key[j+1] - transcript_to_junctions[i].junctions[j]) > this->parameters.MAX_DIST) {
             // we don't want any to be greater than MAX_DIST
             iso_is_within_max_dist = 0;
             break;
@@ -773,8 +829,8 @@ void Isoforms::match_known_annotation
         }
 
         if (iso_is_within_max_dist) {
-          if ((abs(raw_iso_key.front() - transcript_to_junctions[i].left[0]) < this->parameters.MAX_DIST) &&
-              (abs(raw_iso_key.back() - transcript_to_junctions[i].right[0]) < this->parameters.MAX_DIST)) {
+          if ((std::abs(raw_iso_key.front() - transcript_to_junctions[i].left[0]) < this->parameters.MAX_DIST) &&
+              (std::abs(raw_iso_key.back() - transcript_to_junctions[i].right[0]) < this->parameters.MAX_DIST)) {
             // populate known_exons with transcript_to_junctions
             std::vector<int>
             known_exons = {transcript_to_junctions[i].left[0]};
@@ -839,8 +895,8 @@ void Isoforms::match_known_annotation
         if (i == 0) { // the left-most site
           int closest = take_closest(TSS_TES_site.left, a_site);
 
-          if ((abs(closest - a_site) < this->parameters.MAX_TS_DIST) && 
-              (closest < raw_iso_key[i + 1])) {
+          if ((std::abs(closest - a_site) < this->parameters.MAX_TS_DIST) && 
+              (std::abs(closest < raw_iso_key[i + 1]))) {
             new_exons[i] = closest;
           } else {
             new_exons[i] = a_site;
@@ -853,7 +909,7 @@ void Isoforms::match_known_annotation
           }
           int closest = take_closest(splice_site_vec, a_site);
 
-          if ((abs(closest - a_site) < this->parameters.MAX_SPLICE_MATCH_DIST) &&
+          if ((std::abs(closest - a_site) < this->parameters.MAX_SPLICE_MATCH_DIST) &&
               (closest > new_exons.back()) &&
               (closest < raw_iso_key[i + 1])) {
             new_exons[i] = closest;
@@ -862,7 +918,7 @@ void Isoforms::match_known_annotation
           }
         } else { // then it must be the right-most site
           int closest = take_closest(TSS_TES_site.right, a_site);
-          if ((abs(closest - a_site) < this->parameters.MAX_TS_DIST) &&
+          if ((std::abs(closest - a_site) < this->parameters.MAX_TS_DIST) &&
               (closest > new_exons.back())) {
             new_exons[i] = closest;
           } else {
