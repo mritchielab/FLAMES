@@ -3,7 +3,7 @@
 static int
 fetch_function(const bam1_t *b, void *data)
 {
-    std::cout << "bam fetch on " << b->core.pos << "\n";
+    Rcpp::Rcout << "bam fetch on " << b->core.pos << "\n";
     DataStruct * data_struct = (DataStruct*)data;
 
     std::vector<BAMRecord> * records = data_struct->records;
@@ -87,7 +87,7 @@ group_bam2isoform (
     bamFile bam = bam_open(bam_in.c_str(), "r"); // bam.h
     bam_index_t *bam_index = bam_index_load(bam_in.c_str());
     bam_header_t *header = bam_header_read(bam); // bam.h
-    bam_close(bam);
+    // bam_close(bam);
 
     // set up all the output files
     std::ofstream iso_annotated;
@@ -187,7 +187,7 @@ group_bam2isoform (
                     // todo - i haven't written the Isoforms function to do this yet
                     // splice_raw.write(tmp_isoform()); 
                 }
-                iso_annotated << tmp_isoform->isoform_to_gtt3(isoform_parameters.MIN_CNT_PCT);
+                iso_annotated << tmp_isoform->isoform_to_gff3(isoform_parameters.MIN_CNT_PCT);
                 std::cout << "\treached the end of the isoform len block\n";
             }
         }
@@ -199,4 +199,6 @@ group_bam2isoform (
     if (raw_gff3 != "") {
         splice_raw.close();
     }
+
+	bam_close(bam);
 }

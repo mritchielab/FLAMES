@@ -1,4 +1,18 @@
+#include <string>
+#include <unordered_map>
+#include <vector>
+#include <Rcpp.h>
+
+#include "config.h"
+#include "misc.h"
+#include "parse_gene_anno_native.h"
+#include "junctions.h"
+#include "gff3_to_fa.hpp"
+#include "group_bam2isoform.h"
+#include "ReferenceDict.hpp"
+
 #include "find_isoform.h"
+
 
 Rcpp::List
 isoform_objects_to_R(IsoformObjects * isoform_objects)
@@ -56,7 +70,7 @@ find_isoform_cpp
     std::string gff3, 
     std::string genome_bam, 
     std::string isoform_gff3, 
-    std::string tss_test_stat, 
+    std::string tss_tes_stat, 
     std::string genomefa, 
     std::string transcript_fa, 
     int         downsample_ratio, 
@@ -64,60 +78,59 @@ find_isoform_cpp
     std::string raw_splice_isoform
 )
 {
-    std::cout << "#### Reading Gene Annotations\n";
+    Rcpp::Rcout << "#### Reading Gene Annotations\n";
 
     // first, extract from the gff file
-    GFFData gene_anno = parse_gff_or_gtf(gff3);
+    GFFData gene_anno = parse_gff_or_gtf(gff3); // parse_gene_anno_native.h
 
-    auto chr_to_gene        = gene_anno.chr_to_gene;
-    auto transcript_dict    = gene_anno.transcript_dict;
-    auto gene_to_transcript = gene_anno.gene_to_transcript;
-    auto transcript_to_exon = gene_anno.transcript_to_exon;
+    std::unordered_map<std::string, std::vector<std::string>> 	chr_to_gene       	= gene_anno.chr_to_gene;
+    std::unordered_map<std::string, Pos> 						transcript_dict    	= gene_anno.transcript_dict;
+    std::unordered_map<std::string, std::vector<std::string>> 	gene_to_transcript	= gene_anno.gene_to_transcript;
+    std::unordered_map<std::string, std::vector<StartEndPair>> 	transcript_to_exon 	= gene_anno.transcript_to_exon;
 
     // get the junctions using transcript_to_exon
-    std::unordered_map<std::string, Junctions>
-    transcript_to_junctions;
+    std::unordered_map<std::string, Junctions> transcript_to_junctions;
     for (const auto & [transcript, exon] : transcript_to_exon) {
-        transcript_to_junctions[transcript] = blocks_to_junctions(exon);
+        transcript_to_junctions[transcript] = blocks_to_junctions(exon); // junctions.h
     }
 
-    // std::cout << "gene_to_transcript:\n";
+    // Rcpp::Rcout << "gene_to_transcript:\n";
     // for (const auto & [gene, transcript] : gene_to_transcript) {
-    //     std::cout << "gene:" << gene << "\ntranscript:";
+    //     Rcpp::Rcout << "gene:" << gene << "\ntranscript:";
     //     for (const auto & tr : transcript) {
-    //         std::cout << tr << ",";
+    //         Rcpp::Rcout << tr << ",";
     //     }
     // }
 
-    // std::cout << "transcript_to_junctions:\n";
+    // Rcpp::Rcout << "transcript_to_junctions:\n";
     // for (const auto & [transcript, junctions] : transcript_to_junctions) {
-    //     std::cout << "transcript:" << transcript << "\n";
-    //     std::cout << "junctions:" << junctions.left[0] << "," << junctions.right[0] << "\n";
+    //     Rcpp::Rcout << "transcript:" << transcript << "\n";
+    //     Rcpp::Rcout << "junctions:" << junctions.left[0] << "," << junctions.right[0] << "\n";
     // }
     
     // remove transcripts that are too similar
-    remove_similar_tr(&gene_to_transcript, &transcript_to_exon, 10);
+    remove_similar_tr(&gene_to_transcript, &transcript_to_exon, 10); // junctions.h
     
-    std::cout << "finished remove_rimilar_tr\n";
-    auto
-    gene_dict = get_gene_flat(&gene_to_transcript, &transcript_to_exon);
+    Rcpp::Rcout << "finished remove_similar_tr\n";
+    std::unordered_map<std::string, std::vector<StartEndPair>>
+    gene_dict = get_gene_flat(&gene_to_transcript, &transcript_to_exon); // junctions.h
     
-    std::cout << "finished get_gene_flat\n";
-    auto
-    chr_to_blocks = get_gene_blocks(&gene_dict, &chr_to_gene, &gene_to_transcript);
+    Rcpp::Rcout << "finished get_gene_flat\n";
+    std::unordered_map<std::string, std::vector<GeneBlocks>>
+    chr_to_blocks = get_gene_blocks(&gene_dict, &chr_to_gene, &gene_to_transcript); // junctions.h
 
-    std::cout << "finished get_gene_blocks\n";
+    Rcpp::Rcout << "finished get_gene_blocks\n";
 
     Config config;
     config.from_R(config_list);
     
-    std::cout << "extracted config\n";
+    Rcpp::Rcout << "extracted config\n";
     // next we find isoforms
-    std::cout << "#### Finding Isoforms\n";
+    Rcpp::Rcout << "#### Finding Isoforms\n";
     group_bam2isoform(
         genome_bam,
         isoform_gff3,
-        tss_test_stat,
+        tss_tes_stat,
         &chr_to_blocks,
         &gene_dict,
         &transcript_to_junctions,
@@ -127,7 +140,7 @@ find_isoform_cpp
         ""
     );
 
-    std::cout << "group_bam2isoform finished\n";
+    Rcpp::Rcout << "group_bam2isoform finished\n";
 
     // get fasta
     GFFData isoform_gff = parse_gff_or_gtf(isoform_gff3);
@@ -137,30 +150,30 @@ find_isoform_cpp
     auto gene_to_transcript_iso = isoform_gff.gene_to_transcript;
     auto transcript_to_exon_iso = isoform_gff.transcript_to_exon;
 
-    std::cout << "assigned everything from isoform_gff\n";
+    Rcpp::Rcout << "assigned everything from isoform_gff\n";
     
-    std::cout << "chr_to_gene:\n";
+    Rcpp::Rcout << "chr_to_gene:\n";
     for (const auto & [chr, gene] : chr_to_gene) {
-        std::cout << "\tchr:" << chr << "\n";
-        std::cout << "\tgene:" << gene.front() << " ... " << gene.back() << "\n";
+        Rcpp::Rcout << "\tchr:" << chr << "\n";
+        Rcpp::Rcout << "\tgene:" << gene.front() << " ... " << gene.back() << "\n";
     }
 
-    std::cout << "transcript_dict:\n";
+    Rcpp::Rcout << "transcript_dict:\n";
     for (const auto & [tr, pos] : transcript_dict) {
-        std::cout << "\ttr:" << tr << "\n";
-        std::cout << "\tpos:" << pos.start << ", " << pos.end << "\n";
+        Rcpp::Rcout << "\ttr:" << tr << "\n";
+        Rcpp::Rcout << "\tpos:" << pos.start << ", " << pos.end << "\n";
     }
 
-    std::cout << "gene_to_transcript:\n";
+    Rcpp::Rcout << "gene_to_transcript:\n";
     for (const auto & [gene, transcript] : gene_to_transcript) {
-        std::cout << "\tgene:" << gene << "\n";
-        std::cout << "\ttranscript:" << transcript.front() << "\n";
+        Rcpp::Rcout << "\tgene:" << gene << "\n";
+        Rcpp::Rcout << "\ttranscript:" << transcript.front() << "\n";
     }
 
-    std::cout << "transcript_to_exon:\n";
+    Rcpp::Rcout << "transcript_to_exon:\n";
     for (const auto & [tr, exon] : transcript_to_exon) {
-        std::cout << "\ttr:" << tr << "\n";
-        std::cout << "\tex:" << exon.front().start << "\n";
+        Rcpp::Rcout << "\ttr:" << tr << "\n";
+        Rcpp::Rcout << "\tex:" << exon.front().start << "\n";
     }
 
     ReferenceDict
@@ -171,13 +184,13 @@ find_isoform_cpp
         transcript_to_exon
     };
 
-    std::cout << "wrapped them in a ReferenceDict\n";
+    Rcpp::Rcout << "wrapped them in a ReferenceDict\n";
 
     if (!config.realign_parameters.use_annotation) {
         ref_dict = {};
     }
 
-    std::cout << "up to get_transcript_seq\n";
+    Rcpp::Rcout << "up to get_transcript_seq\n";
     get_transcript_seq(
         genomefa,
         transcript_fa,
@@ -187,7 +200,7 @@ find_isoform_cpp
         &transcript_to_exon_iso,
         &ref_dict
     );
-    std::cout << "finished get_transcript_seq\n";
+    Rcpp::Rcout << "finished get_transcript_seq\n";
 
     IsoformObjects isoform_objects = {transcript_dict, transcript_dict_iso};
 

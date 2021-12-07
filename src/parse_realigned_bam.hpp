@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include "bam.h"
+#include "BamRecord.hpp"
 #include "group_bam2isoform.h"
 
 #ifndef REALIGNED_BAM_DATA
@@ -26,10 +27,10 @@ struct RealignedBamData {
 
 struct ReadDictEntry {
     std::string tr;
-    int         AS_tag;
+    float       AS_tag;
     float       tr_cov;
     float       length;
-    float       quality;
+    int         quality;
 };
 
 #endif

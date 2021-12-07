@@ -1,5 +1,6 @@
-#include "config.h"
 #include <Rcpp.h>
+
+#include "config.h"
 
 Rcpp::List
 PipelineParameters::to_R()
@@ -24,7 +25,7 @@ PipelineParameters::from_R(Rcpp::List list)
 void
 PipelineParameters::print()
 {
-  std::cout << "\tpipeline_parameters\n"
+  Rcpp::Rcout << "\tpipeline_parameters\n"
             << "\t\tdo_genome_alignment : " << this->do_genome_alignment << "\n"
             << "\t\tdo_isoform_identification : " << this->do_isoform_identification << "\n"
             << "\t\tdo_read_realignment : " << this->do_read_realignment << "\n"
@@ -50,7 +51,7 @@ GlobalParameters::from_R(Rcpp::List list)
 void
 GlobalParameters::print()
 {
-  std::cout << "\tglobal parameters\n"
+  Rcpp::Rcout << "\tglobal parameters\n"
             << "\t\tgenerate_raw_isoform : " << this->generate_raw_isoform << "\n"
             << "\t\thas_UMI : " << this->has_UMI << "\n";
 }
@@ -94,7 +95,7 @@ IsoformParameters::from_R(Rcpp::List list)
 void
 IsoformParameters::print()
 {
-  std::cout << "\tisoform_parameters\n"
+  Rcpp::Rcout << "\tisoform_parameters\n"
             << "\t\tMAX_DIST : " << this->MAX_DIST << "\n"
             << "\t\tMAX_TS_DIST : " << this->MAX_TS_DIST << "\n"
             << "\t\tMAX_SPLICE_MATCH_DIST : " << this->MAX_SPLICE_MATCH_DIST << "\n"
@@ -128,7 +129,7 @@ AlignmentParameters::from_R(Rcpp::List list)
 void
 AlignmentParameters::print()
 {
-    std::cout << "\talignment parameters\n"
+    Rcpp::Rcout << "\talignment parameters\n"
               << "\t\tuse_junctions : " << this->use_junctions << "\n"
               << "\t\tno_flank : " << this->no_flank << "\n";
 }
@@ -150,7 +151,7 @@ RealignParameters::from_R(Rcpp::List list)
 void
 RealignParameters::print()
 {
-    std::cout << "\trealign parameters\n"
+    Rcpp::Rcout << "\trealign parameters\n"
               << "\t\tuse_annotation : " << this->use_annotation << "\n";
 }
 
@@ -173,7 +174,7 @@ TranscriptCounting::from_R(Rcpp::List list)
 void
 TranscriptCounting::print()
 {
-    std::cout << "\ttranscript counting\n"
+    Rcpp::Rcout << "\ttranscript counting\n"
               << "\t\tmin_tr_coverage : " << this->min_tr_coverage << "\n"
               << "\t\tmin_read_coverage : " << this->min_read_coverage << "\n";
 }
@@ -199,6 +200,12 @@ Config::from_R(Rcpp::List list)
     this->alignment_parameters.from_R(list["alignment_parameters"]);
     this->realign_parameters.from_R(list["realign_parameters"]);
     this->transcript_counting.from_R(list["transcript_counting"]);
+}
+
+Config::Config(Rcpp::List list) {
+	from_R(list);
+}
+Config::Config() {
 }
 
 void

@@ -2,7 +2,7 @@
 % Please edit documentation in R/parse_gene_anno.R
 \name{parse_gff_tree}
 \alias{parse_gff_tree}
-\title{Parse Gff3 file}
+\title{Parse Gff3 file [Depreciated]}
 \usage{
 parse_gff_tree(gff_file)
 }

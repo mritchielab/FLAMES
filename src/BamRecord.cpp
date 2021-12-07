@@ -11,11 +11,11 @@ generate_cigar_pairs(const bam1_t *b)
     cigar_pairs;
 
     // iterate over the cigar
-    const auto cigar = bam_get_cigar(b);
+    const uint32_t *cigar = bam_get_cigar(b);
     for (int k = 0; k < b->core.n_cigar; k++) {
         cigar_pairs.push_back((CigarPair){
-            bam_cigar_op(cigar[k]),
-            bam_cigar_oplen(cigar[k])
+            (int)bam_cigar_op(cigar[k]),
+            (int)bam_cigar_oplen(cigar[k])
         });
     }
     return cigar_pairs;

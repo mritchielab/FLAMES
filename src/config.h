@@ -1,11 +1,7 @@
-#include <string>
-#include <vector>
-#include <map>
-#include <iostream>
-#include <Rcpp.h>
-
 #ifndef CONFIG
 #define CONFIG
+
+#include <Rcpp.h>
 
 class PipelineParameters
 {
@@ -110,6 +106,8 @@ class Config
 
         Rcpp::List to_R();
         void from_R(Rcpp::List list); 
+		Config();
+		Config(Rcpp::List list);
         void print();
 };
 

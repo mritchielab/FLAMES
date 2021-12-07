@@ -19,7 +19,7 @@ find_best_splice_chain(std::vector<int> raw_iso, std::vector<std::vector<int>> j
     std::vector<int> iter_start;
     for (int j = 0; j < junction_list[i].size(); j++) {
 
-      if (abs((junction[j] - raw_iso[1]) < MAX_DIST)) {
+      if (abs(junction[j] - raw_iso[1]) < MAX_DIST) {
         iter_start.push_back(j);
       }
     }

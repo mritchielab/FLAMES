@@ -1,4 +1,72 @@
+#include <unordered_map>
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <cstring>
+#include <utility>
+#include <cctype>
+#include <Rcpp.h>
+
+#include "Pos.h"
 #include "ParseGFF3.hpp"
+
+
+// parse any leading spaces from the start of a token
+// returns a ParseResult of {leading spaces, rest of string}
+ParseResult parseSpaces(std::string full) {
+	for (int i = 0; i < full.size(); i++) {
+		if (!isspace(full[i])) {
+			return ParseResult (full.substr(0, i), full.substr(i, std::string::npos));
+		}
+	}
+
+	return ParseResult (std::string(), full);
+}
+
+// Parse a GFF3 column, each separated by spaces
+// returns a ParseResult of {Column, rest of string}
+ParseResult parseColumn(std::string full) {
+	// parse away any leading spaces
+	full = parseSpaces(full).second;
+	// parse the token up until any closing spaces.
+	for (int i = 0; i < full.size(); i++) {
+		if (isspace(full[i])) {
+			return ParseResult (full.substr(0, i), full.substr(i+1, std::string::npos));
+		}
+	}
+
+	return ParseResult (std::string(), full);
+}
+
+// parse a key value pair separated by =
+// returns a ParseResult of {key, value}
+ParseResult parseKeyValue(std::string full) {
+	return parseKeyValue(full, '=');
+}
+ParseResult parseKeyValue(std::string full, char seperator) {
+	int sep = full.find(seperator);
+	if (sep != std::string::npos) {
+		return ParseResult (full.substr(0, sep), full.substr(sep+1, std::string::npos));
+	}
+
+	return ParseResult ();
+}
+
+// parse an attribute from a colon separated list
+// returns a ParseResult of {attribute, rest of string}
+ParseResult parseAttribute(std::string full) {
+	// parse away any leading spaces
+	full = parseSpaces(full).second;
+	int colonPos = full.find(';');
+
+	if (colonPos != std::string::npos) {
+		return ParseResult (full.substr(0, colonPos), full.substr(colonPos+1, std::string::npos));
+	}
+
+	return ParseResult (full, std::string());
+}
+
+
 
 std::string ParseGFF3::formatGFFRecordAttributes(GFFRecord rec) {
     std::stringstream stream;
@@ -11,40 +79,39 @@ std::string ParseGFF3::formatGFFRecordAttributes(GFFRecord rec) {
 
 
 /// ParseGFF3 constructor. Open the file for reading
-ParseGFF3::ParseGFF3(const char * filename) {
+ParseGFF3::ParseGFF3(std::string filename) {
     // HOW CAN WE OPEN A GZ FILE FOR READING???
+	// below is for non gzipped file
     this->in_stream = std::ifstream (filename);
+}
+
+ParseGFF3::~ParseGFF3() {
+	this->close();
 }
 
 bool ParseGFF3::empty(void) {
     return this->isEmpty;
 }
 
+// parse a list of attributes of the form <attribute>;<attribute;... where <attribute> = <key>=<value>
 std::unordered_map<std::string, std::string> ParseGFF3::parseGTFAttributes(std::string attributes) {
-    std::unordered_map<std::string, std::string> map {};
+	std::unordered_map<std::string, std::string> map {};
 
-    std::stringstream token;
-    std::string key;
-    bool firstQ = true;
-    for (std::string::iterator it = attributes.begin(); it != attributes.end(); ++it) {
-        if (*it == ';') {
-            map[key] = token.str();
-            token.str(std::string ());
-            firstQ = true;
-        } else if (*it == '\"') {
-            if (firstQ) {
-                key = token.str();
-                token.str(std::string());
-                firstQ = false;
-            }
-        } else if (*it != ' ') {
-            token << *it;
-        }
-    }
-    // insert the final pair into the map
-    //map[key] = token.str();
+	ParseResult res = parseAttribute(attributes);
+	ParseResult kv;
+	while (res.first.size() != 0) {
+		// parse the key value and add it to the map
+		kv = parseKeyValue(res.first);
+		if (kv.first.size() != 0) map[kv.first] = kv.second;
 
-    return map;
+		res = parseAttribute(res.second);
+	}
+
+	// parse the final attribute
+	kv = parseKeyValue(res.second);
+	if (kv.first.size() != 0) map[kv.first] = kv.second;
+
+	return map;
 }
 
 /// Parse the GFF3 file and generate a GFFRecord struct
@@ -63,46 +130,42 @@ GFFRecord ParseGFF3::nextRecord() {
         std::string line;
         std::stringstream token;
         std::string columns[9];
-        int cur_col = 0;
 
-        if (getline(in_stream, line)) {
-            // iterate over the current and grab the 9 tab separated columns
-            for (std::string::iterator it = line.begin(); it != line.end(); ++it) {
-                // loop through every character in the line
-                if (*it == '\t') {
-                    // insert the token into the column array and increment column
-                    columns[cur_col++] = token.str();
-                    token.str(std::string ()); // reset the stringstream by setting it to the empty string
-                } else if (*it != ' ') {
-                    // insert the character into the current token if not whitespace
-                    token << *it;
-                }
-            }
-            // after end of line need to flush the stringstream to the array
-            columns[cur_col++] = token.str();
+		getline(in_stream, line);
+		// find the first line without a # (signifying a comment line)
+		while (in_stream.is_open() && (line[0] == '#')) {
+			getline(in_stream, line);
+			continue;
+		}
 
-            // make sure GFF line is valid
-            if (cur_col != 9) {
-                Rcout << "Invalid line in GFF file format.\n";
-                return {};
-            }
+		// check for empty file
+		if (line.size() != 0) {
+			for (int i = 0; i < 8; i++) {
+				if (line.size() == 0) {
+					Rcpp::Rcout << "Invalid line in GFF file format.\n";
+					return {};
+				}
 
-            return GFFRecord {
-                (columns[0] != ".") ? columns[0] : std::string (), // seqid
-                (columns[1] != ".") ? columns[1] : std::string (), // source
-                (columns[2] != ".") ? columns[2] : std::string (), // type
-                (columns[3] != ".") ? std::stoi(columns[3]) : -1, // start: int
-                (columns[4] != ".") ? std::stoi(columns[4]) : -1, // end: int 
-                (columns[5] != ".") ? std::stof(columns[5]) : -1, // score: float
-                (columns[6] != ".") ? columns[6] : std::string (), // strand (+, -, .)
-                (columns[7] != ".") ? columns[7] : std::string (), // phase
-                (columns[8] != ".") ? this->parseGTFAttributes(columns[8]) : std::unordered_map<std::string, std::string> () // atribute unordered_map<string, string>
-            };
-        }
+				ParseResult pr = parseColumn(line);
+				columns[i] = pr.first;
+				line = pr.second;
+			}
 
-        this->isEmpty = true;
-        return {};
-    }
+			columns[8] = line; // fill the attributes as the final parsed end of the line
+
+			return GFFRecord {
+				(columns[0] != ".") ? columns[0] : std::string (), // seqid
+				(columns[1] != ".") ? columns[1] : std::string (), // source
+				(columns[2] != ".") ? columns[2] : std::string (), // type
+				(columns[3] != ".") ? std::stoi(columns[3]) : -1, // start: int
+				(columns[4] != ".") ? std::stoi(columns[4]) : -1, // end: int 
+				(columns[5] != ".") ? std::stof(columns[5]) : -1, // score: float
+				(columns[6] != ".") ? columns[6] : std::string (), // strand (+, -, .)
+				(columns[7] != ".") ? columns[7] : std::string (), // phase
+				(columns[8] != ".") ? this->parseGTFAttributes(columns[8]) : std::unordered_map<std::string, std::string> () // atribute unordered_map<string, string>
+			};
+		}
+	}
 
     /// return an empty struct if invalid input, or we reach the end of the file.
     this->isEmpty = true; // through an error instead?
@@ -113,13 +176,7 @@ void ParseGFF3::close(void) {
     in_stream.close();
 }
 
-bool StartEndPairCompare(const StartEndPair &a, const StartEndPair &b) {
-    // compare a and b, return true if a is 'less than' b
-    // in this case, 'less than' is defined if a.start is less than b.start
-    return a.start < b.start;
-}
-
-std::string guess_annotation_source(const char * filename) {
+std::string guess_annotation_source(std::string filename) {
     int idx = 0;
     // parse the file and check for "GENCODE" or "Ensembl" ???
     // Surely there is a better way to do this
@@ -127,10 +184,12 @@ std::string guess_annotation_source(const char * filename) {
     std::string line;
     while (getline(file, line)) {
         if (line.find("GENCODE") != std::string::npos) {
-            Rcout << "Parse GENCODE annotation\n";
+            Rcpp::Rcout << "Parse GENCODE annotation\n";
+			file.close();
             return "GENCODE";
         } else if (line.find("1\tEnsembl") != std::string::npos) {
-            Rcout << "Parse Ensembl annotation\n";
+            Rcpp::Rcout << "Parse Ensembl annotation\n";
+			file.close();
             return "Ensembl";
         }
 
@@ -138,6 +197,6 @@ std::string guess_annotation_source(const char * filename) {
             break;
         }
     }
-
+	file.close();
     return "Ensembl";
 }

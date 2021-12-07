@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <Rcpp.h>
 
+#include "config.h"
 #include "GeneBlocks.h"
 #include "junctions.h"
 #include "misc.h"
@@ -79,8 +80,9 @@ struct DataStruct {
 
 #endif
 
-static int
-fetch_function(const bam1_t *b, void *data);
+// don't need to declare static function inside header
+// static int
+// fetch_function(const bam1_t *b, void *data);
 
 void
 bam_read (std::string bam_in, std::string chr, int s, int e);

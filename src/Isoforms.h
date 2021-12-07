@@ -91,7 +91,7 @@ class Isoforms
       std::unordered_map<std::string, std::string> fa_dict
     );
 
-    std::string isoform_to_gtt3(int isoform_pct);
+    std::string isoform_to_gff3(float isoform_pct);
 };
 
 #endif

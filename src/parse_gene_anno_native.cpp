@@ -1,6 +1,28 @@
+#include <unordered_map>
+#include <string>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <vector>
+#include <list>
+#include <Rcpp.h>
+
+#include "ParseGFF3.hpp"
+#include "Pos.h"
+#include "StartEndPair.hpp"
+
 #include "parse_gene_anno_native.h"
 
 using namespace Rcpp;
+
+static bool vectorContains(std::string a, std::vector<std::string> v) {
+	for (auto it : v) {
+		if (a == it) {
+			return true;
+		}
+	}
+	return false;
+}
 
 // [[Rcpp::export]]
 Rcpp::List
@@ -25,47 +47,44 @@ parse_gtf_tree(std::string filename)
     // create an object to store chr_to_gene, transcript_dict, 
     // gene_to_transcript, transcript_to_exon 
     GFFData gff_data;
-
     // create the GFF3 parser
     ParseGFF3 parser (filename.c_str());
 
-    // for every record in the GFF3 file
     GFFRecord rec = parser.nextRecord();
     while (!parser.empty()) {
+		std::string gene_id = rec.attributes["gene_id"];
         if (rec.type == "gene") {
             // add this records data to chr_to_gene
-            gff_data.chr_to_gene[rec.seqid].push_back(rec.attributes["gene_id"]);
+            gff_data.chr_to_gene[rec.seqid].push_back(gene_id);
         } else if (rec.type == "transcript") {
-            if (rec.attributes["gene_id"].length() == 0) {
+            if (gene_id.length() == 0) {
                 warning("Transcript did not have 'gene_id' attribute: %s", parser.formatGFFRecordAttributes(rec));
                 continue;
             }
 
-            std::string gene_id = rec.attributes["gene_id"];
-            // insert the gene_id into the chr_to_gene[rec.seqid] map.
-            // the chosen DS ensures there are no duplicates.
-            gff_data.chr_to_gene[rec.seqid].push_back(gene_id);
+			if (!vectorContains(gene_id, gff_data.chr_to_gene[rec.seqid])) {
+            	gff_data.chr_to_gene[rec.seqid].push_back(gene_id);
+			}
 
             gff_data.gene_to_transcript[gene_id].push_back(rec.attributes["transcript_id"]);
             gff_data.transcript_dict[rec.attributes["transcript_id"]] = {rec.seqid, rec.start - 1, rec.end, rec.strand[0], gene_id};
 
         } else if (rec.type == "exon") {
-            if (rec.attributes["gene_id"].length() == 0) {
+            if (gene_id.length() == 0) {
                 warning("Exon did not have 'gene_id' attribute: %s", parser.formatGFFRecordAttributes(rec));
                 continue;
-            }
-            gff_data.chr_to_gene[rec.seqid].push_back(rec.attributes["gene_id"]);
+            } else if (!vectorContains(gene_id, gff_data.chr_to_gene[rec.seqid])) {
+            	gff_data.chr_to_gene[rec.seqid].push_back(gene_id);
+			}
             
-            // if "transcript_id" in rec.attributes keys
-            if (rec.attributes["transcript_id"].length() != 0) {
+            if (rec.attributes.count("transcript_id")) {
                 // if rec.attributes["transcript_id"] not in transcript_dict
-                if (gff_data.transcript_dict[rec.attributes["transcript_id"]].chr.length() == 0) {
-                    gff_data.gene_to_transcript[rec.attributes["gene_id"]].push_back(rec.attributes["transcript_id"]);
-                    gff_data.transcript_dict[rec.attributes["transcript_id"]] = {rec.seqid, -1, 1, rec.strand[0], rec.attributes["gene_id"]};
+                if (!gff_data.transcript_dict.count(rec.attributes["transcript_id"])) {
+                    gff_data.gene_to_transcript[gene_id].push_back(rec.attributes["transcript_id"]);
+                    gff_data.transcript_dict[rec.attributes["transcript_id"]] = Pos {rec.seqid, -1, 1, rec.strand[0], rec.attributes["gene_id"]};
                 }
 
-                StartEndPair sep {rec.start - 1, rec.end};
-                gff_data.transcript_to_exon[rec.attributes["transcript_id"]].push_back(sep);
+                gff_data.transcript_to_exon[rec.attributes["transcript_id"]].push_back(StartEndPair {rec.start - 1, rec.end});
             } else {
                 warning("Exon did not have 'transcript_id' attribute: %s", parser.formatGFFRecordAttributes(rec));
             }
@@ -84,52 +103,66 @@ parse_gtf_tree(std::string filename)
 }
 
 
+//testing 
+static std::string printAttributes(std::unordered_map<std::string, std::string> a) {
+	std::stringstream ss;
+	for (auto it : a) {
+		ss << it.first << "=" << it.second << ";";
+	}
+	return ss.str();
+}
+static std::string printRecord(GFFRecord r) {
+	std::string attr = printAttributes(r.attributes);
+
+	std::stringstream ss;
+	ss << "GFFRecord(seqid=" << r.seqid
+		<< ", source=" << r.source 
+		<< ", type=" << r.type
+		<< ", start=" << r.start
+		<< ", end=" << r.end 
+		<< ", score=" << r.score 
+		<< ", strand=" << r.strand
+		<< ", phase=" << r.phase
+		<< ", attributes={" << attr << "}" << "\n";
+	return ss.str();
+}
+
 GFFData
 parse_gff_tree(std::string filename)
 {
-    std::cout << "started parse_gff_tree on " << filename << "\n";
+    Rcpp::Rcout << "started parse_gff_tree on " << filename << "\n";
     // create an object to store chr_to_gene, transcript_dict, 
     // gene_to_transcript, transcript_to_exon 
     GFFData gff_data;
 
-    std::string annotation_source = guess_annotation_source(filename.c_str());
-    std::cout << annotation_source << "\n";
+    std::string annotation_source = guess_annotation_source(filename);
+    Rcpp::Rcout << annotation_source << "\n";
 
     if (annotation_source == "Ensembl") {
         // create the GFF3 parser
-        ParseGFF3 parser (filename.c_str());
-        // for every record in the GFF3 file.
-
+        ParseGFF3 parser (filename);
         GFFRecord rec = parser.nextRecord();
+
         while (!parser.empty()) {
-            if (rec.attributes.count("gene_id") > 0) {
+            if (rec.attributes.count("gene_id")) {
                 gff_data.chr_to_gene[rec.seqid].push_back(rec.attributes["gene_id"]);
             }
-            if (rec.attributes.count("Parent") > 0) {
-                std::string parent_att = rec.attributes["Parent"];
-                int find_colon = parent_att.find(":");
 
-                std::string split0 = parent_att.substr(0, find_colon);
-                std::string gene_id = parent_att.substr(find_colon + 1, parent_att.length());
+			ParseResult pr = parseKeyValue(rec.attributes["Parent"], ':');
+			std::string gene_id = pr.second;
 
-                gff_data.gene_to_transcript[gene_id].push_back(rec.attributes["transcript_id"]);
-                Pos pos = {rec.seqid, rec.start-1, rec.end, rec.strand[0], gene_id};
-                gff_data.transcript_dict[rec.attributes["transcript_id"]] = pos;
-            } else if (rec.type == "exon") {
-                std::cout << "\t\texon\n";
-                std::string parent_att = rec.attributes["Parent"];
-                int find_colon = parent_att.find(":");
-
-                std::string split0 = parent_att.substr(0, find_colon);
-                std::string gene_id = parent_att.substr(find_colon + 1, parent_att.length());
-
-                if (split0 != "transcript") {
+            if (rec.attributes.count("Parent") && pr.first == "gene") {
+				gff_data.gene_to_transcript[gene_id].push_back(rec.attributes["transcript_id"]);
+				gff_data.transcript_dict[rec.attributes["transcript_id"]] = Pos {rec.seqid, rec.start-1, rec.end, rec.strand[0], gene_id};
+				
+			} else if (rec.type == "exon") {
+                if (pr.first != "transcript") {
+					// Rcpp::Rcout << "Format error: " << pr.first << " : " << pr.second << "\n";
                     warning("Format Error.");
                 }
 
-                StartEndPair sep {rec.start-1, rec.end};
-                gff_data.transcript_to_exon[gene_id].push_back(sep);
-                std::cout << "added " << sep.start << "," << sep.end << " to " << gene_id << "\n";
+                gff_data.transcript_to_exon[gene_id].push_back(StartEndPair {rec.start-1, rec.end});
+                // Rcpp::Rcout << "added " << sep.start << "," << sep.end << " to " << gene_id << "\n";
             }
 
             rec = parser.nextRecord();
@@ -138,24 +171,24 @@ parse_gff_tree(std::string filename)
         parser.close();
     } else if (annotation_source == "GENCODE") {
         // create the GFF3 parser
-        ParseGFF3 parser (filename.c_str());
-        // for every record in the GFF3 file.
+        ParseGFF3 parser (filename);
         GFFRecord rec = parser.nextRecord();
 
         while (!parser.empty()) {
-            // std::cout << "rec parent is " << rec.attributes["Parent"] << "\n"; 
-            
             if (rec.type == "gene") {
                 gff_data.chr_to_gene[rec.seqid].push_back(rec.attributes["gene_id"]); // add the gene_id to the chr_to_gene[seqid] map
             } else if (rec.type == "transcript") {
-                std::string gene_id = rec.attributes["gene_id"];
+                std::string gene_id = rec.attributes["Parent"];
 
-                gff_data.gene_to_transcript[rec.seqid].push_back(gene_id);
+				if (!vectorContains(gene_id, gff_data.chr_to_gene[rec.seqid])) {
+					gff_data.chr_to_gene[rec.seqid].push_back(gene_id);
+				}
+
+                gff_data.gene_to_transcript[gene_id].push_back(rec.attributes["transcript_id"]);
                 gff_data.transcript_dict[rec.attributes["transcript_id"]] = {rec.seqid, rec.start-1, rec.end, rec.strand[0], gene_id};
             } else if (rec.type == "exon") {
-                StartEndPair sep {rec.start-1, rec.end};
-                gff_data.transcript_to_exon[rec.attributes["gene_id"]].push_back(sep);
-                std::cout << "added " << sep.start << "," << sep.end << " to " << rec.attributes["gene_id"] << "\n";
+                gff_data.transcript_to_exon[rec.attributes["Parent"]].push_back(StartEndPair {rec.start-1, rec.end});
+                // Rcpp::Rcout << "added " << sep.start << "," << sep.end << " to " << rec.attributes["gene_id"] << "\n";
             }
 
             rec = parser.nextRecord();
@@ -164,82 +197,70 @@ parse_gff_tree(std::string filename)
         parser.close();
     }
 
-    gff_data.remove_transcript_duplicates(true);
+    gff_data.remove_transcript_duplicates(false);
 
-    std::cout << "finished parse_gff_tree\n";
+    Rcpp::Rcout << "finished parse_gff_tree\n";
     return gff_data;
 }
 
-std::unordered_map<std::string, std::vector<StartEndPair>>
-GFFData::remove_transcript_duplicates(bool update_transcript_dict)
-{
-    std::unordered_map<std::string, std::vector<StartEndPair>>
-    transcript_to_exon_new;
 
+static bool StartEndPairCompare(const StartEndPair &a, const StartEndPair &b) {
+    // compare a and b, return true if a is 'less than' b
+    // in this case, 'less than' is defined if a.start is less than b.start
+    return a.start < b.start;
+}
+
+void
+GFFData::remove_transcript_duplicates(bool update_transcript_dict) {
     // Remove duplicates from the transcript_to_exon maps
-    for (auto tr = this->transcript_to_exon.begin(); tr != this->transcript_to_exon.end(); ++tr) {
+    for (auto tr : transcript_to_exon) {
         // it->first is std::string key
         // it->second is std::vector<StartEndPair> list of pairs
-        std::sort(tr->second.begin(), tr->second.end(), StartEndPairCompare);
+        std::sort(tr.second.begin(), tr.second.end(), StartEndPairCompare);
         // if the forward list has at least two elements and start of first element equals start of second
-        if (tr->second.size() >= 2 &&
-            (tr->second.begin()->start) == (++(tr->second.begin()))->start) {
+        if (tr.second.size() >= 2 &&
+            (tr.second.begin()->start) == (tr.second.begin() + 1)->start) {
             
-            std::vector<StartEndPair>
-            pair_vec = {};
-            
-            // iterate over every exon in the map, removing duplicates
-            // for (const auto & pair : pair_list) {
-            //     if (pair.start != (int)(++(pair_list.end()))[0] and pair.end != (int)(++(pair_list.begin()))[0]) {
-            //         transcript_to_exon_new[tr->first].insert(pair);
-            //     }
-            // }
-            
-            for (auto ex = ++(tr->second.begin()); ex != tr->second.end(); ++ex) {
-                if (ex->start != (++(pair_vec.end()))->start and ex->end != (++(pair_vec.begin()))->start) {
-                    transcript_to_exon_new[tr->first].push_back({ex->start, ex->end});
-                }
+            std::vector<StartEndPair> new_ex = {*tr.second.begin()};
+			// remove duplicates from the old list of exons stored in transcript_to_exon[x]
+            for (auto ex : tr.second) {
+				StartEndPair last_ex = *(new_ex.end() - 1);
+				if (ex.start != last_ex.start && ex.end != last_ex.start) {
+					new_ex.push_back(ex);
+				}
             }
 
-            transcript_to_exon_new[tr->first] = pair_vec;
+            transcript_to_exon[tr.first] = new_ex;
+        }
 
-            if (update_transcript_dict) {
+		if (update_transcript_dict) {
                 // update transcript_dict[this transcript] with a new Pos object of
                 // the correct start and end positions of this exon
-                this->transcript_dict[tr->first] = {
-                    this->transcript_dict[tr->first].chr,
-                    pair_vec.begin()->start,
-                    (--(pair_vec.end()))->end,
-                    this->transcript_dict[tr->first].strand,
-                    this->transcript_dict[tr->first].parent_id
+                transcript_dict[tr.first] = Pos {
+                    transcript_dict[tr.first].chr,
+                    tr.second.begin()->start,
+                    (tr.second.end() - 1)->end,
+                    transcript_dict[tr.first].strand,
+                    transcript_dict[tr.first].parent_id
                 };
             }
-        } else {
-            // If there aren't enough elements to remove duplicates (more than 2),
-            // Just simply add them to the new list and update transcript_dict
-
-            std::vector<StartEndPair>
-            pair_vec = {};
-
-            for (auto ex = tr->second.begin(); ex != tr->second.end(); ++ex) {
-                pair_vec.push_back({ex->start, ex->end});
-            }
-
-            transcript_to_exon_new[tr->first] = pair_vec;
-
-            if (update_transcript_dict) {
-                this->transcript_dict[tr->first] = {
-                    this->transcript_dict[tr->first].chr,
-                    this->transcript_to_exon[tr->first].begin()->start,
-                    (--this->transcript_to_exon[tr->first].end())->end,
-                    this->transcript_dict[tr->first].strand,
-                    this->transcript_dict[tr->first].parent_id
-                };
-            }
-        }
     }
 
-    return transcript_to_exon_new;
+	// remove duplicates from gene_to_transcript
+	for (auto ge : gene_to_transcript) {
+		std::unordered_map<std::string, int> set;
+		std::vector<std::string> new_genes;
+
+		for (auto el : ge.second) {
+			set[el] = 1;
+		}
+
+		for (auto unique : set) {
+			new_genes.push_back(unique.first);
+		}
+
+		ge.second = new_genes;
+	}
 }
 
 

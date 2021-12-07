@@ -306,7 +306,7 @@ void Isoforms::filter_TSS_TES(std::ofstream * out_f, Junctions known_site, float
     // create and populate a cumulative_probability variable
     std::vector<int>
     cumulative_probability;
-    int running_total;
+    int running_total = 0;
     for (const auto & it : prob) {
       running_total += it;
       cumulative_probability.push_back(running_total);
@@ -840,7 +840,7 @@ void Isoforms::match_known_annotation
           int closest = take_closest(TSS_TES_site.left, a_site);
 
           if ((abs(closest - a_site) < this->parameters.MAX_TS_DIST) && 
-              (abs(closest < raw_iso_key[i + 1]))) {
+              (closest < raw_iso_key[i + 1])) {
             new_exons[i] = closest;
           } else {
             new_exons[i] = a_site;
@@ -1251,7 +1251,7 @@ void Isoforms::match_known_annotation
 }
 
 std::string
-Isoforms::isoform_to_gtt3(int isoform_pct=-1) {
+Isoforms::isoform_to_gff3(float isoform_pct=-1) {
   std::vector<std::string>
   gff_rec = {};
 

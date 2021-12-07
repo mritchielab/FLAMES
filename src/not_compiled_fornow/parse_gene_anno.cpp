@@ -2,6 +2,12 @@
 
 using namespace Rcpp;
 
+
+// THESE FUNCTIONS SUFFER FROM A FEW ERRORS OF LOGIC (totally my fault - Oliver) 
+// WHICH HAVE BEEN FIXED IN parse_gene_anno_native.cpp
+// Difference is this script yields R objects and _native gives C++ objects
+
+
 // void test_printing(std::unordered_map<String, std::unordered_map<String, bool>> chr_to_gene,
 //     std::unordered_map<String, Pos> transcript_dict,
 //     std::unordered_map<String, std::unordered_map<String, bool>> gene_to_transcript,

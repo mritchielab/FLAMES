@@ -1,4 +1,116 @@
+#include <string>
+#include <sstream>
+#include <fstream>
+#include <iostream>
+#include <filesystem>
+#include <map>
+#include <set>
+#include <vector>
+#include <algorithm>
+#include <functional>
+#include <Rcpp.h>
+
 #include "gtf_to_bed.h"
+
+// lambda function to convert a vector to a comma-separated stringstream
+static std::string vector_to_str(std::vector<int> vector) {
+	std::stringstream stringstream = (std::stringstream)("");
+	for (auto i : vector) {
+		stringstream << i << ',';
+	}
+	return stringstream.str();
+};
+
+// lambda function to write rows to a bed file
+// format described here: https://en.wikipedia.org/wiki/BED_(file_format)
+static void bed_write_row (
+		std::ofstream& file, 
+		std::string chrom,
+		int chromStart,
+		int chromEnd,
+		std::string name,
+		int score,
+		std::string strand,
+		int thickStart,
+		int thickEnd,
+		std::string itemRgb,
+		int blockCount,
+		std::string blockSizes,
+		std::string blockStarts) {
+	file << chrom << "\t"
+		<< chromStart << "\t"
+		<< chromEnd << "\t"
+		<< name << "\t"
+		<< score << "\t"
+		<< strand << "\t"
+		<< thickStart << "\t"
+		<< thickEnd << "\t"
+		<< itemRgb << "\t"
+		<< blockCount << "\t"
+		<< blockSizes << "\t"
+		<< blockStarts << "\n";
+};
+
+// lambda function to write rows to a psl file
+// format described here: http://genome.ucsc.edu/FAQ/FAQformat#format2
+static void psl_write_row(
+		std::ofstream &bed, 
+		int matches,
+		int misMatches,
+		int repMatches,
+		int nCount,
+		int qNumInsert,
+		int qBaseInsert,
+		int tNumInsert,
+		int tBaseInsert,
+		std::string strand,
+		std::string qName,
+		int qSize,
+		int qStart,
+		int qEnd,
+		std::string tName,
+		int tSize,
+		int tStart,
+		int tEnd,
+		int blockCount,
+		std::string blockSizes,
+		std::string qStarts,
+		std::string tStarts) {
+
+	bed << matches << "\t"
+		<< misMatches << "\t"
+		<< repMatches << "\t"
+		<< nCount << "\t"
+		<< qNumInsert << "\t"
+		<< qBaseInsert << "\t"
+		<< tNumInsert << "\t"
+		<< qBaseInsert << "\t"
+		<< tNumInsert << "\t"
+		<< tBaseInsert << "\t"
+		<< strand << "\t"
+		<< qName << "\t"
+		<< qSize << "\t"
+		<< qStart << "\t"
+		<< qEnd << "\t"
+		<< tName << "\t"
+		<< tSize << "\t"
+		<< tStart << "\t"
+		<< tEnd << "\t"
+		<< blockCount << "\t"
+		<< blockSizes << "\t"
+		<< qStarts << "\t"
+		<< tStarts << "\n";
+};
+
+// generic function to write any amount of data to a tab-separated CSV row
+static void csv_write_row (std::ofstream& file, std::vector<std::string> data) {
+	// for (auto entry : std::vector<std::string>(data.begin(), data.end() - 1)) {
+	for (std::vector<std::string>::iterator entry = data.begin(); entry != data.end() -1 ; entry++) {
+		file << *entry << '\t';
+	}
+	file << data.back() << '\n';
+};
+
 
 // [[Rcpp::export]]
 void
@@ -39,112 +151,6 @@ gtf_to_bed_cpp(std::string in_gtf, std::string out_bed, std::string chrom_sizes_
   std::set<std::string>
   missing_chroms;
 
-  // lambda function to convert a vector to a comma-separated stringstream
-  auto vector_to_str = [] (
-    std::vector<int> vector
-  ) 
-  {
-    std::stringstream stringstream = (std::stringstream)("");
-    for (auto i : vector) {
-      stringstream << i << ',';
-    }
-    return stringstream.str();
-  };
-
-  // lambda function to write rows to a bed file
-  // format described here: https://en.wikipedia.org/wiki/BED_(file_format)
-  auto bed_write_row = [] (
-    std::ofstream& file, 
-    std::string chrom,
-    int chromStart,
-    int chromEnd,
-    std::string name,
-    int score,
-    std::string strand,
-    int thickStart,
-    int thickEnd,
-    std::string itemRgb,
-    int blockCount,
-    std::string blockSizes,
-    std::string blockStarts
-  )
-  {
-    file << chrom << "\t"
-        << chromStart << "\t"
-        << chromEnd << "\t"
-        << name << "\t"
-        << score << "\t"
-        << strand << "\t"
-        << thickStart << "\t"
-        << thickEnd << "\t"
-        << itemRgb << "\t"
-        << blockCount << "\t"
-        << blockSizes << "\t"
-        << blockStarts << "\n";
-  };
-
-  // lambda function to write rows to a psl file
-  // format described here: http://genome.ucsc.edu/FAQ/FAQformat#format2
-  auto
-  psl_write_row = [&bed] (
-    int matches,
-    int misMatches,
-    int repMatches,
-    int nCount,
-    int qNumInsert,
-    int qBaseInsert,
-    int tNumInsert,
-    int tBaseInsert,
-    std::string strand,
-    std::string qName,
-    int qSize,
-    int qStart,
-    int qEnd,
-    std::string tName,
-    int tSize,
-    int tStart,
-    int tEnd,
-    int blockCount,
-    std::string blockSizes,
-    std::string qStarts,
-    std::string tStarts
-  ) 
-  {
-    bed << matches << "\t"
-        << misMatches << "\t"
-        << repMatches << "\t"
-        << nCount << "\t"
-        << qNumInsert << "\t"
-        << qBaseInsert << "\t"
-        << tNumInsert << "\t"
-        << qBaseInsert << "\t"
-        << tNumInsert << "\t"
-        << tBaseInsert << "\t"
-        << strand << "\t"
-        << qName << "\t"
-        << qSize << "\t"
-        << qStart << "\t"
-        << qEnd << "\t"
-        << tName << "\t"
-        << tSize << "\t"
-        << tStart << "\t"
-        << tEnd << "\t"
-        << blockCount << "\t"
-        << blockSizes << "\t"
-        << qStarts << "\t"
-        << tStarts << "\n";
-  };
-  
-  // generic function to write any amount of data to a tab-separated CSV row
-  auto
-  csv_write_row = [] (std::ofstream& file, std::vector<std::string> data)
-  {
-    for (auto entry : std::vector<std::string>(data.begin(), data.end() - 1)) {
-      file << entry << '\t';
-    }
-    file << data.back() << '\n';
-  };
-
   std::string prev_transcript = "";
   std::string prev_chrom;
   std::string prev_gene;
@@ -178,11 +184,11 @@ gtf_to_bed_cpp(std::string in_gtf, std::string out_bed, std::string chrom_sizes_
       values.push_back(value);
     }
 
-    auto chrom = values[0];
-    auto ty = values[2];
-    auto start = std::stoi(values[3]) - 1;
-    auto end = std::stoi(values[4]);
-    auto strand = values[6];
+    chrom = values[0];
+    std::string ty = values[2]; // only used in this while statement
+    start = std::stoi(values[3]) - 1;
+    end = std::stoi(values[4]);
+    strand = values[6];
 
     if (ty != "exon") {
       continue;
@@ -255,7 +261,7 @@ gtf_to_bed_cpp(std::string in_gtf, std::string out_bed, std::string chrom_sizes_
             }
           }
 
-          psl_write_row(0, 0, 0, 0, 0, 0, 0, 0, prev_strand, qname, qsize, 0, qsize, prev_chrom, tsize, tstart, tend, (int)blockcount, vector_to_str(blocksizes), vector_to_str(qstarts), vector_to_str(blockstarts));
+          psl_write_row(bed, 0, 0, 0, 0, 0, 0, 0, 0, prev_strand, qname, qsize, 0, qsize, prev_chrom, tsize, tstart, tend, (int)blockcount, vector_to_str(blocksizes), vector_to_str(qstarts), vector_to_str(blockstarts));
         }
       }
 
@@ -276,6 +282,7 @@ gtf_to_bed_cpp(std::string in_gtf, std::string out_bed, std::string chrom_sizes_
     blockstarts.push_back(start);
     blocksizes.push_back(end - start);
   }
+
   // last entry...
   if (blockcount > 1 && blockstarts[0] > blockstarts[1]) { // need to reverse exons
     std::reverse(blocksizes.begin(), blocksizes.end());
@@ -309,7 +316,7 @@ gtf_to_bed_cpp(std::string in_gtf, std::string out_bed, std::string chrom_sizes_
               <<qname<<"\t"
               <<1000<<"\t"
               <<strand<<"\t"
-              <<start<<"\t"
+              <<start<<"\t"	// what start and end values are these supposed to be?
               <<end<<"\t"
               <<0<<"\t"
               <<blockcount<<"\t"
@@ -327,7 +334,7 @@ gtf_to_bed_cpp(std::string in_gtf, std::string out_bed, std::string chrom_sizes_
       }
     }
 
-    psl_write_row(0, 0, 0, 0, 0, 0, 0, 0, prev_strand, qname, qsize, 0, qsize, prev_chrom, tsize, tstart, tend, int(blockcount), vector_to_str(blocksizes), vector_to_str(qstarts), vector_to_str(blockstarts));
+    psl_write_row(bed, 0, 0, 0, 0, 0, 0, 0, 0, prev_strand, qname, qsize, 0, qsize, prev_chrom, tsize, tstart, tend, int(blockcount), vector_to_str(blocksizes), vector_to_str(qstarts), vector_to_str(blockstarts));
   }
 
   if (missing_chroms.size() > 0) {
