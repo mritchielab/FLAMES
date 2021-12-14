@@ -1,18 +1,30 @@
 # TODO:
 #       Better visualisation
 #       add documentation
+#       heatmap
 #
 #' FLAMES Annotated Plottings
 #' 
-#' Description text text text. 
+#' Plot isoform exons alignments for a given gene, along with UMAP showing expression levels.
 #' 
 #' 
 #' @details
-#' This function text text text.
+#' This function takes the short-read data (as \code{SingleCellExperiment} objects) from both the smaller
+#' and the larger libraries to generate a combined UMAP, the expression levels of isoforms (using long read data)
+#' are then overlayed on top of the UMAP. SNN inference based on gene counts were performed to impute isoform expression
+#' for cells in the smaller library.
 #' 
-#' @param sce_20 The \code{SingleCellExperiment} object from text text.
+#' @param sce_80 The \code{SingleCellExperiment} object containing gene counts assay for the larger library.
+#' @param sce_20 The \code{SingleCellExperiment} object containing gene counts assay for the smaller library.
+#' @param sce_all The \code{SingleCellExperiment} object containing gene counts assay for the combined library.
+#' @param path The path to the folder containing outputs of \code{sc_long_pipeline}.
+#' @param gene The gene symbol of interest.
+#' @param n_isoforms The number of expressed isoforms to keep.
+#' @param dup_bc Cell barcodes found both in the larger and smaller library, will be used to filter cells in the long-read
+#' data. (Filtering long-read data will be implemented in the main pipeline soon)
+#' @param return_sce_all Whether to return the processed \code{SingleCellExperiment} object.
 #' 
-#' @return text text text
+#' @return a list containing the combined UMAP, the isoform exon alignments and the UMAP with isoform expression levels.
 #' 
 #' @importFrom dplyr group_by summarise_at top_n
 #' @importFrom tidyr gather pivot_wider
@@ -92,10 +104,9 @@ sc_annotate_umap <- function(sce_20, sce_80, path, gene, n_isoforms = 4, dup_bc=
   isoform_gff <- rtracklayer::import.gff3(file.path(path,"isoform_annotated.filtered.gff3"))
 
   # Debug
-  ## (?) 
-  cat("isoform_gff: ")
-  cat(class(isoform_gff))
-  cat("\n")
+  #cat("isoform_gff: ")
+  #cat(class(isoform_gff))
+  #cat("\n")
  
   transcript_count <- transcript_count[match(isoform_FSM_annotation$transcript_id,transcript_count$transcript_id),]
   transcript_count$FSM_match <- isoform_FSM_annotation$FSM_match
@@ -155,9 +166,9 @@ sc_annotate_umap <- function(sce_20, sce_80, path, gene, n_isoforms = 4, dup_bc=
   names(isoform_sel) <- sel_fsm[match(names(isoform_sel),sel_tr)]
   # Debug
   ## (?) why isoform_sel is not GRangeList object already?
-  cat("isoform_sel: ")
-  cat(class(isoform_sel))
-  cat("\n")
+  #cat("isoform_sel: ")
+  #cat(class(isoform_sel))
+  #cat("\n")
   isoform_sel <- GRangesList(isoform_sel)
   plot_isoforms <- ggbio::autoplot(isoform_sel, label = TRUE) + 
     theme_bw()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
@@ -190,22 +201,24 @@ sc_annotate_umap <- function(sce_20, sce_80, path, gene, n_isoforms = 4, dup_bc=
  
   ### Plot with UMAP from lib_all
   cat("Plotting expression UMAPs")
-  umap <- as.data.frame(sce_all@int_colData$reducedDims$UMAP)
-  rownames(umap) <- colnames(sce_all)
-  colnames(umap) <- c('x', 'y')
-  umap$lib <- sce_all$lib
-  umap$expr <- rep(NA, dim(umap)[1])
+  umap_80 <- as.data.frame(sce_all@int_colData$reducedDims$UMAP)
+  umap_80 <- umap_80[sce_all$lib == "lib80",]
+  colnames(umap_80) <- c("x", "y")
+
+  umap_20 <- as.data.frame(sce_all@int_colData$reducedDims$UMAP)
+  umap_20 <- umap_20[sce_all$lib == "lib20",]
+  colnames(umap_20) <- c("x", "y") 
+  umap_20 <- cbind(t(expr_20), umap_20)
 
   if (n_isoforms > length(tr_na)) {
     n_isoforms <- length(tr_na)
   }
   plot_idx <- function(idx) {
-    umap$expr[match(colnames(expr_20),rownames(umap))] <- expr_20[idx,]
     p <- ggplot()+
-      geom_point(aes(x=umap$x,y=umap$y),alpha=0.2,size=0.2, col='grey', show.legend = F)+
-      geom_point(aes(x=umap$x,y=umap$y, col=umap$expr),alpha=0.8,size=0.7,show.legend = F)+
-      labs(x="Dim1",y="Dim2",col="scaled expression",title = rownames(expr_20)[idx])+
-      scale_colour_gradient2(low = "#313695", mid = "#FFFFBF", high = "#A50026", na.value = NA,midpoint=median(expr_20[idx,]))+
+      geom_point(data = umap_80, aes(x=x,y=y),alpha=0.2,size=0.2, col='grey', show.legend = F)+
+      geom_point(data = umap_20, aes(x=x,y=y,col=umap_20[,idx]),size=0.7)+
+      labs(x="Dim1",y="Dim2",col="scaled expression",title = colnames(umap_20)[idx])+
+      scale_colour_gradient2(low = "#313695", mid = "#FFFFBF", high = "#A50026", na.value = NA, midpoint=median(umap_20[,idx]))+
       theme_bw()+
       theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
             panel.background = element_blank(), panel.border = element_blank(),axis.line = element_line(colour = "black"),
