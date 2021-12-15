@@ -26,7 +26,9 @@ Imports:
     basilisk, reticulate, SingleCellExperiment, 
     SummarizedExperiment, Rsamtools, utils,
     zlibbioc, scater, dplyr, tidyr, magrittr,
-    S4Vectors, scuttle, stats
+    S4Vectors, scuttle, stats, rtracklayer,
+    igraph, ggbio, GenomicRanges, Matrix,
+    BiocGenerics, ggplot2, scran
 Suggests: 
     BiocStyle,
     knitr,
@@ -35,6 +37,6 @@ Suggests:
     BiocFileCache
 LinkingTo: Rcpp, Rhtslib, zlibbioc
 SystemRequirements: GNU make, C++11
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 VignetteBuilder: knitr
 URL: https://github.com/OliverVoogd/FLAMES
