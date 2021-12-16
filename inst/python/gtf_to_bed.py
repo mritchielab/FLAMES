@@ -61,17 +61,17 @@ def gtf_to_bed(in_gtf, out_bed, chrom_sizes_file=None):
 						for b in blocksizes[:-1]:
 							pos += b
 							qstarts += [pos]
-						qstarts = ','.join([str(b) for b in qstarts]) + ',' 
+						qstarts = ','.join([str(b) for b in qstarts])
 
-					blocksizes = ','.join([str(b) for b in blocksizes]) + ','
+					blocksizes = ','.join([str(b) for b in blocksizes])
 
 					if isbed:
 						relblockstarts = [block - tstart for block in blockstarts]
-						relblockstarts = ','.join([str(b) for b in relblockstarts]) + ','
+						relblockstarts = ','.join([str(b) for b in relblockstarts])
 						writer.writerow([prev_chrom, tstart, tend, qname, 1000, prev_strand, tstart, \
-							tend, 0, blockcount, blocksizes, relblockstarts])
+							tend, "255,0,0", blockcount, blocksizes, relblockstarts])
 					else:
-						blockstarts = ','.join([str(b) for b in blockstarts]) + ','
+						blockstarts = ','.join([str(b) for b in blockstarts])
 						if chrom_to_size and prev_chrom in chrom_to_size:
 							writer.writerow([0, 0, 0, 0, 0, 0, 0, 0, prev_strand, qname, qsize, 0, qsize, \
 								prev_chrom, chrom_to_size[prev_chrom], tstart, tend, blockcount, blocksizes, qstarts, blockstarts])
@@ -94,20 +94,21 @@ def gtf_to_bed(in_gtf, out_bed, chrom_sizes_file=None):
 		# last entry...
 		# this_gene = line[8][line[8].find('gene_id')+9:]
 		# this_gene = this_gene[:this_gene.find('"')]
+		blockcount = len(blockstarts) 
 		if blockcount > 1 and blockstarts[0] > blockstarts[1]:  # need to reverse exons
 			blocksizes = blocksizes[::-1]
 			blockstarts = blockstarts[::-1]
 		qsize = sum(blocksizes)  # query (e.g. transcript)
 		tstart, tend = blockstarts[0], blockstarts[-1] + blocksizes[-1]  # target (e.g. chrom)
-		blocksizes = ','.join([str(b) for b in blocksizes]) + ','
+		blocksizes = ','.join([str(b) for b in blocksizes])
 		qname = this_transcript#+'_'+this_gene
 		if isbed:
 			relblockstarts = [block - tstart for block in blockstarts]		
-			relblockstarts = ','.join([str(b) for b in relblockstarts]) + ','
-			writer.writerow([chrom, tstart, tend, qname, 1000, strand, start, end, 0, \
+			relblockstarts = ','.join([str(b) for b in relblockstarts])
+			writer.writerow([chrom, tstart, tend, qname, 1000, strand, start, end, "255,0,0", \
 				blockcount, blocksizes, relblockstarts])
 		else:
-			blockstarts = ','.join([str(b) for b in blockstarts]) + ','
+			blockstarts = ','.join([str(b) for b in blockstarts])
 			if chrom_to_size and prev_chrom in chrom_to_size:
 				writer.writerow([0, 0, 0, 0, 0, 0, 0, 0, strand, qname, qsize, 0, qsize, \
 					chrom, chrom_to_size[chrom], tstart, tend, blockcount, blocksizes, qstarts, blockstarts])
