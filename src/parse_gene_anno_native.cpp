@@ -8,6 +8,7 @@
 #include <Rcpp.h>
 
 #include "ParseGFF3.hpp"
+#include "Parser.h"
 #include "Pos.h"
 #include "StartEndPair.hpp"
 

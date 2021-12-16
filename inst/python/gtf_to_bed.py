@@ -30,6 +30,8 @@ def gtf_to_bed(in_gtf, out_bed, chrom_sizes_file=None):
 		writer = csv.writer(outfile, delimiter='\t', lineterminator=os.linesep)
 
 		prev_transcript = ''
+		blockcount = 0
+		blockstarts, blocksizes = [], []
 		for line in gtf:  # extract all exons from the gtf, keep exons grouped by transcript
 			if line.startswith('#'):
 				continue
@@ -41,6 +43,7 @@ def gtf_to_bed(in_gtf, out_bed, chrom_sizes_file=None):
 			this_transcript = line[8][line[8].find('transcript_id')+15:]
 			this_transcript = this_transcript[:this_transcript.find('"')]
 
+			
 			# once all the exons for a transcript are read, write the psl/bed entry
 			if this_transcript != prev_transcript:
 				if prev_transcript:

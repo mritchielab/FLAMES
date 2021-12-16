@@ -22,6 +22,8 @@ const char * shorten_filename(const char *file_name, int length, int &out_length
     return short_name;
 }
 
+// This has the potential to be parralellized if time allows.
+// create a thread per file, and process to the one out file using a file handler object with mutex lock on file
 //' Merge Bulk Fastq Files
 //' 
 //' @description Merge all fastq files into a single fastq

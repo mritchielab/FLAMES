@@ -1,0 +1,4 @@
+SIRV1	LexogenSIRVData	exon	1001	1484	.	-	0	gene_id "SIRV1"; gene_name "SIRV1"; transcript_id "SIRV101"; exon_assignment "SIRV101_0"; 
+SIRV1	LexogenSIRVData	exon	6338	6473	.	-	0	gene_id "SIRV1"; gene_name "SIRV1"; transcript_id "SIRV101"; exon_assignment "SIRV101_1"; 
+SIRV1	LexogenSIRVData	exon	6561	6813	.	-	0	gene_id "SIRV1"; gene_name "SIRV1"; transcript_id "SIRV101"; exon_assignment "SIRV101_2"; 
+SIRV1	LexogenSIRVData	exon	7553	7814	.	-	0	gene_id "SIRV1"; gene_name "SIRV1"; transcript_id "SIRV101"; exon_assignment "SIRV101_3"; 

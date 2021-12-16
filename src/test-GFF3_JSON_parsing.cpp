@@ -7,19 +7,13 @@
 #include <testthat.h>
 
 #include "ParseGFF3.hpp"
+#include "Parser.h"
 #include "Pos.h"
 #include "StartEndPair.hpp"
 #include "parse_gene_anno_native.h"
 #include "config.h"
 #include "parse_json_config.h"
-
-// R system.file
-// https://stackoverflow.com/questions/52979101/acessing-data-on-inst-extdata-from-rcpp-catch-tests
-std::string get_extdata(std::string file) {
-	Rcpp::Function sys_file("system.file");
-	std::string res = Rcpp::as<std::string> (sys_file("extdata", file, Rcpp::_["package"] = "FLAMES"));
-	return std::string(res);
-}
+#include "test_utilities.h"
 
 template <typename T>
 bool unorderedMatch(std::vector<T> v1, std::vector<T> v2) {
@@ -58,6 +52,9 @@ context("GFF3 File Parsing") {
 		auto p2 = parseColumn(full);
 		expect_true(p2.first == "SIRV5");
 
+		auto p21 = parseColumn("SIRV6\tgene", '\t');
+		expect_true(p21.first == "SIRV6");
+
 		auto p3 = parseKeyValue("one=two");
 		expect_true(p3.first == "one");
 		expect_true(p3.second == "two");
@@ -65,6 +62,18 @@ context("GFF3 File Parsing") {
 		auto p4 = parseAttribute("\tID=gene:SIRV5;gene_id=SIRV5;support_count=129");
 		expect_true(p4.first == "ID=gene:SIRV5");
 		expect_true(p4.second == "gene_id=SIRV5;support_count=129");
+	
+		auto p5 = parseLine("one\ttwo\tthree\tfour");
+		expect_true(p5[0] == "one");
+		expect_true(p5[3] == "four");
+
+		auto p51 = parseLine("one\ntwo\tthree", '\n');
+		expect_true(p51[0] == "one");
+		expect_true(p51[1] == "two\tthree");
+
+		auto p6 = parseUntilChar("awordhere\"rest", '"');
+		expect_true(p6.first == "awordhere");
+		expect_true(p6.second == "rest");
 	}
 
 	test_that("parsed GFF3 files give same result as python script") {
@@ -190,13 +199,4 @@ context("JSON file parsing") {
 		expect_true(t.min_tr_coverage == 0.75);
 		expect_true(t.min_read_coverage == 0.75);
 	}
-}
-
-
-// [[Rcpp::export]]
-void tester(bool f=false) {
-	Rcpp::List c = parse_json_config_cpp(get_extdata("SIRV_config_default.json"));
-	Config config(c);
-	IsoformParameters i = config.isoform_parameters;
-	print_config_cpp(c);
 }

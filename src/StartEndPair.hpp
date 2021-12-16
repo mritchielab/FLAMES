@@ -11,6 +11,10 @@ struct StartEndPair {
     { 
         return (start == other.start && end == other.end);
     }
+	bool operator!=(const StartEndPair &other) const
+	{
+		return (start != other.start || end != other.end);
+	}
 
     bool operator<(const StartEndPair &other) const
     {

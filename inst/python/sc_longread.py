@@ -301,6 +301,8 @@ def blocks_to_junctions(blocks):
         junctions["junctions"] = tuple()
     return junctions
 
+# called on a bamnostic.AlignedSegment object through bam fetch
+# rec is AlignedSegment
 def get_blocks(rec):
     blocks = []
     pos = rec.reference_start

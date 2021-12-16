@@ -1,3 +1,6 @@
+#include <string>
+#include <vector>
+
 #include "GeneBlocks.h"
 
 GeneBlocks::GeneBlocks (int start, int end, std::vector<std::string> transcript_list, std::string a_gene)
