@@ -11,6 +11,7 @@ sc_annotate_umap(
   gene,
   n_isoforms = 4,
   n_pcs = 20,
+  cluster_annotation,
   dup_bc = NULL,
   sce_all = NULL,
   return_sce_all = T
@@ -26,6 +27,10 @@ sc_annotate_umap(
 \item{gene}{The gene symbol of interest.}
 
 \item{n_isoforms}{The number of expressed isoforms to keep.}
+
+\item{n_pcs}{The number of principal components to generate.}
+
+\item{cluster_annotation}{Path to the cluster annotation CSV (required for heatmap, if \code{cluster_annotation.csv} is not in \code{path} and \code{sce_20$cell_type} does not exist)}
 
 \item{dup_bc}{Cell barcodes found both in the larger and smaller library, will be used to filter cells in the long-read
 data. (Filtering long-read data will be implemented in the main pipeline soon)}

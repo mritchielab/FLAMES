@@ -1,7 +1,6 @@
 # TODO:
 #       Better visualisation
 #       add documentation
-#       heatmap
 #
 #' FLAMES Annotated Plottings
 #' 
@@ -20,6 +19,8 @@
 #' @param path The path to the folder containing outputs of \code{sc_long_pipeline}.
 #' @param gene The gene symbol of interest.
 #' @param n_isoforms The number of expressed isoforms to keep.
+#' @param n_pcs The number of principal components to generate.
+#' @param cluster_annotation Path to the cluster annotation CSV (required for heatmap, if \code{cluster_annotation.csv} is not in \code{path} and \code{sce_20$cell_type} does not exist)
 #' @param dup_bc Cell barcodes found both in the larger and smaller library, will be used to filter cells in the long-read
 #' data. (Filtering long-read data will be implemented in the main pipeline soon)
 #' @param return_sce_all Whether to return the processed \code{SingleCellExperiment} object.
@@ -40,12 +41,14 @@
 #' @importFrom GenomicRanges GRanges GRangesList
 #' @importFrom rtracklayer import.gff3
 #' @importFrom BiocGenerics cbind colnames rownames
+#' @importFrom pheatmap pheatmap
 #' @importFrom igraph as_adjacency_matrix
 #' @importFrom rtracklayer import
 #' @importFrom Matrix t colSums
 #' @importFrom cowplot plot_grid get_legend
+#' @importFrom ggplotify as.ggplot
 #' @export
-sc_annotate_umap <- function(sce_20, sce_80, path, gene, n_isoforms = 4, n_pcs = 20, dup_bc=NULL, sce_all = NULL, return_sce_all = T){
+sc_annotate_umap <- function(sce_20, sce_80, path, gene, n_isoforms = 4, n_pcs = 20, cluster_annotation, dup_bc=NULL, sce_all = NULL, return_sce_all = T){
   ## dup_bc: cell barcodes found in both lib_20 and lib_80
   ## the pipeline should filter out these cells (not implemented yet)
   ## this parameter will need to be removed after implementing filtering in the pipeline
@@ -154,32 +157,45 @@ sc_annotate_umap <- function(sce_20, sce_80, path, gene, n_isoforms = 4, n_pcs =
     stop(paste0("Alternative isoform not found for the given gene: ", gene))
   } 
   tr_sce_multi <- tr_sce_multi[rowData(tr_sce_multi)$transcript_id %in% row_meta$transcript_id,] # apply top n to sce
-  tr_na <- row_meta$FSM_match  
+  fsm_ids <- row_meta$FSM_match 
+  if (n_isoforms > length(fsm_ids)) {
+    n_isoforms <- length(fsm_ids)
+  }
   
   isoform_gff$Parent <- as.character(isoform_gff$Parent)
   isoform_gff$transcript_id <- unlist(lapply(strsplit(isoform_gff$Parent, split = ":"),function(x){x[2]}))
-  sel_tr <- rowData(tr_sce_multi)[,"transcript_id"]
-  sel_fsm <- rowData(tr_sce_multi)[,"FSM_match"]
+  tr_ids <- rowData(tr_sce_multi)[,"transcript_id"] 
 
-  isoform_sel <- isoform_gff[isoform_gff$transcript_id %in% sel_tr,] 
+  isoform_sel <- isoform_gff[isoform_gff$transcript_id %in% tr_ids,] 
   isoform_sel <- S4Vectors::split(isoform_sel, isoform_sel$transcript_id) # Split isoforms into a list
-  names(isoform_sel) <- sel_fsm[match(names(isoform_sel),sel_tr)] #Set names to FSM
-  isoform_sel <- isoform_sel[tr_na] # Set order
+  names(isoform_sel) <- fsm_ids[match(names(isoform_sel),tr_ids)] #Set names to FSM
+  isoform_sel <- isoform_sel[fsm_ids] # Order by expression levels
   if (length(isoform_sel) == 2) {
     fill_by_isoform <- c( rep("#A50026", length(isoform_sel[[1]])), rep("#313695", length(isoform_sel[[2]])) )
     plot_isoforms <- ggbio::autoplot(isoform_sel, label = TRUE, fill = fill_by_isoform) + 
+      theme_bw()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+                       panel.background = element_blank(), axis.line = element_line(colour = "black"))
+    plot_isoforms_plain <- ggbio::autoplot(isoform_sel, label = TRUE) + 
       theme_bw()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                        panel.background = element_blank(), axis.line = element_line(colour = "black"))
   } else {
     plot_isoforms <- ggbio::autoplot(isoform_sel, label = TRUE) + 
       theme_bw()+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                        panel.background = element_blank(), axis.line = element_line(colour = "black"))
-    # Autoplot does not follow the order in isoform_sel ...
+    # ggbio::geom_alignment does not follow the order in isoform_sel ...
   }
+
+  # ggbio::geom_alignment orders isoforms by sum of exon lengths
+  tr_len <- rep(0,length(isoform_sel))
+  for (i in 1:length(isoform_sel)) {
+    tr_len[i] <- sum(isoform_sel[[i]]@ranges@width)
+  }
+  tr_order <- names(isoform_sel)[match(sort(tr_len, decreasing = F), tr_len)]
+
  
   ### impute transcript counts for cells in lib_20
   cat("Imputing transcript counts for cells in lib_20 ...\n")
-  expr <- logcounts(tr_sce_multi)[tr_na,]
+  expr <- logcounts(tr_sce_multi)[fsm_ids,]
   expr_20 <- matrix(0,nrow(expr),ncol(sce_20))  #dim: transcripts x cells, initialised to 0
   rownames(expr_20) <- rownames(expr)
   colnames(expr_20) <- colnames(sce_20)
@@ -192,7 +208,6 @@ sc_annotate_umap <- function(sce_20, sce_80, path, gene, n_isoforms = 4, n_pcs =
   
   expr_20 <- t(t(expr_20)/colSums(snn_mat))
   expr_20 <-  scale(expr_20)
-  ## TODO: fix scale when n_isoforms == 2
 
   reduce_quantile <- function(x, q=0.05) {
     x[x<quantile(x, q, na.rm=T)] <- quantile(x, q, na.rm=T)
@@ -211,10 +226,6 @@ sc_annotate_umap <- function(sce_20, sce_80, path, gene, n_isoforms = 4, n_pcs =
   umap_20 <- as.data.frame(sce_all@int_colData$reducedDims$UMAP)
   umap_20 <- umap_20[sce_all$lib == "lib20",]
   colnames(umap_20) <- c("x", "y") 
-
-  if (n_isoforms > length(tr_na)) {
-    n_isoforms <- length(tr_na)
-  }
 
   if (n_isoforms == 2) {
     umap_20 <- cbind(expr=expr_20[names(isoform_sel)[1],], umap_20)
@@ -271,6 +282,35 @@ sc_annotate_umap <- function(sce_20, sce_80, path, gene, n_isoforms = 4, n_pcs =
     combined_isoform_plot <- plot_grid(combined_isoform_plot, legend, rel_widths = c(3, .4)) 
   }
 
+  if (file.exists(file.path(path,"cluster_annotation.csv")) || (!missing(cluster_annotation) && file.exists(cluster_annotation)) || !is.null(sce_20$cell_type)) {
+    cat("Plotting heatmaps ...\n")
+    if (file.exists(file.path(path,"cluster_annotation.csv"))) {
+      cluster_barcode <- read.csv(file.path(outdir,"cluster_annotation.csv"), stringsAsFactors=FALSE)
+      cluster_barcode <- cluster_barcode[,c("barcode_seq", "groups")]
+    } else if (!missing(cluster_annotation) && file.exists(cluster_annotation)) {
+      cluster_barcode <- read.csv(cluster_annotation, stringsAsFactors=FALSE)
+      cluster_barcode <- cluster_barcode[,c("barcode_seq", "groups")]
+    } else {
+      cluster_barcode <- data.frame(barcode_seq = colnames(sce_20), groups = sce_20$cell_type)
+    }
+    rownames(cluster_barcode) <- cluster_barcode[,"barcode_seq"] 
+    cluster_barcode <- cluster_barcode[rownames(umap_20), "groups", drop=FALSE]
+    cell_order <- stats::hclust(stats::dist(t(expr_20)))$order
+    heatmap <- pheatmap(expr_20[tr_order,cell_order],
+                        cluster_rows = F, cluster_cols = F, 
+                        show_colnames = F, show_rownames = T,
+                        annotation_col = cluster_barcode,
+                        width = 4, height = 3)
+    heatmap_nolengend <- pheatmap(expr_20[tr_order,cell_order],
+                        cluster_rows = F, cluster_cols = F, 
+                        show_colnames = F, show_rownames = F,
+                        annotation_col = cluster_barcode,
+                        width = 4, height = 3)
+  } else {
+    cat("Cluster annotation not found, heatmaps skipped.\n")
+    heatmap <- NULL
+  }
+
 
   outputs <- list(plot_umap = plot_umap,
                 plot_isoforms = plot_isoforms, 
@@ -279,6 +319,17 @@ sc_annotate_umap <- function(sce_20, sce_80, path, gene, n_isoforms = 4, n_pcs =
   
   if (return_sce_all) {
     outputs[["sce_all"]] <- sce_all
+  }
+
+  if (!is.null(heatmap)) {
+    outputs[["heatmap"]] <- heatmap
+    if (n_isoforms == 2) {
+      outputs[["combined_heatmap"]] <- plot_grid(plot_isoforms_plain@ggplot, as.ggplot(heatmap_nolengend), 
+                                                 rel_widths = c(1,1.2), align = "hv")
+    } else {
+      outputs[["combined_heatmap"]] <- plot_grid(plot_isoforms@ggplot, as.ggplot(heatmap_nolengend), 
+                                                 rel_widths = c(1,1.2), align = "hv")
+    }
   }
 
   return(outputs)
