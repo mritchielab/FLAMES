@@ -10,7 +10,7 @@ sc_annotate_umap(
   path,
   gene,
   n_isoforms = 4,
-  n_pcs = 20,
+  n_pcs = 40,
   cluster_annotation,
   dup_bc = NULL,
   sce_all = NULL,
@@ -30,7 +30,7 @@ sc_annotate_umap(
 
 \item{n_pcs}{The number of principal components to generate.}
 
-\item{cluster_annotation}{Path to the cluster annotation CSV (required for heatmap, if \code{cluster_annotation.csv} is not in \code{path} and \code{sce_20$cell_type} does not exist)}
+\item{cluster_annotation}{Path to the cluster annotation CSV (required for heatmap, if \code{cluster_annotation.csv} is not in \code{path} and \code{sce_all$cell_type} does not exist)}
 
 \item{dup_bc}{Cell barcodes found both in the larger and smaller library, will be used to filter cells in the long-read
 data. (Filtering long-read data will be implemented in the main pipeline soon)}
@@ -49,5 +49,5 @@ Plot isoform exons alignments for a given gene, along with UMAP showing expressi
 This function takes the short-read data (as \code{SingleCellExperiment} objects) from both the smaller
 and the larger libraries to generate a combined UMAP, the expression levels of isoforms (using long read data)
 are then overlayed on top of the UMAP. SNN inference based on gene counts were performed to impute isoform expression
-for cells in the smaller library.
+for cells in the larger library.
 }
