@@ -294,18 +294,25 @@ sc_annotate_umap <- function(sce_20, sce_80, path, gene, n_isoforms = 4, n_pcs =
       cluster_barcode <- data.frame(barcode_seq = colnames(sce_20), groups = sce_20$cell_type)
     }
     rownames(cluster_barcode) <- cluster_barcode[,"barcode_seq"] 
-    cluster_barcode <- cluster_barcode[rownames(umap_20), "groups", drop=FALSE]
+    cluster_barcode_20 <- cluster_barcode[rownames(umap_20), "groups", drop=FALSE]
+    cluster_barcode_all <- cluster_barcode[colnames(sce_all), "groups", drop=FALSE]
     cell_order <- stats::hclust(stats::dist(t(expr_20)))$order
     heatmap <- pheatmap(expr_20[tr_order,cell_order],
                         cluster_rows = F, cluster_cols = F, 
                         show_colnames = F, show_rownames = T,
-                        annotation_col = cluster_barcode,
+                        annotation_col = cluster_barcode_20,
                         width = 4, height = 3)
     heatmap_nolengend <- pheatmap(expr_20[tr_order,cell_order],
                         cluster_rows = F, cluster_cols = F, 
                         show_colnames = F, show_rownames = F,
-                        annotation_col = cluster_barcode,
+                        annotation_col = cluster_barcode_20,
                         width = 4, height = 3)
+    umap_clusters <- ggplot()+
+      geom_point(aes(x=sce_all@int_colData$reducedDims$UMAP[,1], 
+                     y=sce_all@int_colData$reducedDims$UMAP[,2], 
+                     col=factor(cluster_barcode_all$groups)),
+                     size=0.02)+
+      labs(x="Dim1", y="Dim2", title = 'Lib_all UMAP', color = "Cluster")
   } else {
     cat("Cluster annotation not found, heatmaps skipped.\n")
     heatmap <- NULL
@@ -323,6 +330,7 @@ sc_annotate_umap <- function(sce_20, sce_80, path, gene, n_isoforms = 4, n_pcs =
 
   if (!is.null(heatmap)) {
     outputs[["heatmap"]] <- heatmap
+    outputs[["umap_clusters"]] <- umap_clusters
     if (n_isoforms == 2) {
       outputs[["combined_heatmap"]] <- plot_grid(plot_isoforms_plain@ggplot, as.ggplot(heatmap_nolengend), 
                                                  rel_widths = c(1,1.2), align = "hv")
