@@ -47,6 +47,7 @@ smooth_cigar (std::vector<CigarPair> cigar, int threshold)
     smooths it down,
     returns the smooth cigar as a vector of int pairs
   */
+  std::cout << "started smooth_cigar\n";
 
   std::vector<CigarPair> new_cigar = {cigar[0]};
   
@@ -54,10 +55,10 @@ smooth_cigar (std::vector<CigarPair> cigar, int threshold)
     if (new_cigar.back().op != 0) {
       new_cigar.push_back(cigar[i]);
     } else if (cigar[i].op == 0) { // merge matched reads 
-      new_cigar.back().len = new_cigar.back().len + cigar[i].len;
+      new_cigar.back().len += cigar[i].len;
     } else if (cigar[i].op == 2) {
       if (cigar[i].len <= threshold) {
-        new_cigar.back().len = new_cigar.back().len + cigar[i].len;
+        new_cigar.back().len += cigar[i].len;
       } else {
         new_cigar.push_back(cigar[i]);
       }
@@ -71,5 +72,6 @@ smooth_cigar (std::vector<CigarPair> cigar, int threshold)
       new_cigar.push_back(cigar[i]);
     }
   }
+  
   return new_cigar;
 }

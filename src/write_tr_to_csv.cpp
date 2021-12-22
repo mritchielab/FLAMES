@@ -110,10 +110,29 @@ write_tr_to_csv_cpp
 {
     std::cout << "started write_tr_to_csv_cpp\n";
 
+    std::cout << "bc_tr_count_dict: (size "<< bc_tr_count_dict.size() << ")\n";
+    for (const auto & [bc, tr] : bc_tr_count_dict) {
+        std::cout << bc << ": (size " << tr.size() << ") ";
+        for (const auto & st : tr) {
+            std::cout << st.first << ", ";
+        }
+    }
+
+    std::cout << "transcript_dict: (size " << transcript_dict.size() << ")\n";
+    for (const auto & [tr, pos] : transcript_dict) {
+        std::cout << tr << ":(" << pos.start << "," << pos.end << ")\n";
+    }
+
+    std::cout << "transcript_dict_ref: (size " << transcript_dict_ref.size() << ")\n";
+    for (const auto & [tr, pos] : transcript_dict_ref) {
+        std::cout << tr << ":("<<pos.start<<","<<pos.end<<")\n";
+    }
+
     std::ofstream
     csv (csv_f);
 
-    std::unordered_set<std::string> all_tr = {};
+    std::unordered_set<std::string> 
+    all_tr = {};
 
     for (const auto & [bc, tr_dict] : bc_tr_count_dict) {
         for (const auto & [tr, entries] : tr_dict) {

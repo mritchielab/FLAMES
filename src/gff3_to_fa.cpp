@@ -13,10 +13,11 @@ get_transcript_seq
     std::unordered_map<std::string, Pos>                        * transcript_dict,
     std::unordered_map<std::string, std::vector<std::string>>   * gene_to_transcript,
     std::unordered_map<std::string, std::vector<StartEndPair>>  * transcript_to_exon,
-
     ReferenceDict * ref_dict
 )
 {
+    std::cout << "started get_transcript_seq\n";
+
     std::unordered_map<std::vector<StartEndPair>, std::string>
     global_isoform_dict;
     std::unordered_map<std::string, std::string>
@@ -33,9 +34,12 @@ get_transcript_seq
     raw_dict = get_fa_simple(fa_file);
 
     // then look through all the data we just loaded in
+    std::cout << "iterating raw_dict, size " << raw_dict.size() << "\n";
     for (const auto & [chr, seq] : raw_dict) {
+        std::cout << "current iter:" << chr <<","<<seq<<"\n";
         // first, check that the chr is in chr_to_gene
         if ((*chr_to_gene).find(chr) == (*chr_to_gene).end()) {
+            std::cout << "skipping\n";
             continue;
         }
 
@@ -126,6 +130,7 @@ get_transcript_seq
 
     for (const auto & [transcript_seq, transcript] : global_seq_dict) {
         write_fa(&fa_out, transcript, transcript_seq);
+        std::cout << "written line to fa_out\n";
     }
     fa_out.close();
 }
@@ -134,7 +139,10 @@ get_transcript_seq
     parse it and return a map of chr header names to full sequence strings
 */
 std::unordered_map<std::string, std::string>
-get_fa_simple(std::string filename)
+get_fa_simple
+(
+    std::string filename
+)
 {
     /* a quick lambda function */
     auto first_space = [] (std::string line) {
@@ -172,6 +180,10 @@ get_fa_simple(std::string filename)
             full_seq.append(line);
         }
     }
+    
+    if (output.count(chr) == 0) {
+        output[chr] = full_seq;
+    }
 
     fa_in.close();
     return output;
@@ -184,6 +196,7 @@ void
 write_fa(std::ofstream * fa_out, std::string na, std::string seq, int wrap_len)
 {
     (*fa_out) << ">" << na << "\n";
+
     for (int i = 0; i < seq.length(); ++i) {
         // break the line if we need to
         if ((i > 0) && (i % wrap_len == 0)) {

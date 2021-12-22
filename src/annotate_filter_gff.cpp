@@ -208,11 +208,17 @@ annotate_filter_gff
     */
 
     GFFData isoform_data = parse_gff_or_gtf(isoform_gff);
+    log_gff_data(isoform_data, "before_ann_cpp.gff");
 
     auto chr_to_gene = isoform_data.chr_to_gene;
     auto transcript_dict = isoform_data.transcript_dict;
     auto gene_to_transcript = isoform_data.gene_to_transcript;
     auto transcript_to_exon = isoform_data.transcript_to_exon;
+
+    std::cout << "chr_to_gene.size():" << chr_to_gene.size() << "\n";
+    std::cout << "transcript_dict.size():" << transcript_dict.size() << "\n";
+    std::cout << "gene_to_transcript.size():" << gene_to_transcript.size() << "\n";
+    std::cout << "transcript_to_exon.size():" << transcript_to_exon.size() << "\n";
 
 
     std::cout << "ref_gff:" << ref_gff << " (and we're reading it better)\n";
@@ -222,6 +228,7 @@ annotate_filter_gff
     auto transcript_dict_ref = ref_data.transcript_dict;
     auto gene_to_transcript_ref = ref_data.gene_to_transcript;
     auto transcript_to_exon_ref = ref_data.transcript_to_exon;
+
 
     std::stringstream
     prt;

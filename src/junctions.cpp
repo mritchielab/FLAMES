@@ -3,6 +3,18 @@
 */
 #include "junctions.h"
 
+void
+junctions_print(Junctions junctions)
+{
+    std::cout << "{'right': " << junctions.right.front() << ", 'junctions': (";
+    if (junctions.junctions.size() > 0) {
+        for (auto it = junctions.junctions.begin(); it != junctions.junctions.end() - 1; ++it) {
+            std::cout << *it << ", ";
+        }
+        std::cout << junctions.junctions.back();
+    }
+    std::cout << "), 'left': " << junctions.left.front() << "}\n";
+}
 
 int 
 take_closest
@@ -35,6 +47,14 @@ blocks_to_junctions (std::vector<StartEndPair> blocks)
         converts them into a junctions object
     */
 
+    std::sort(blocks.begin(), blocks.end(), StartEndPairCompare);
+
+    std::cout << "started blocks_to_junctions on (size " << blocks.size() << ") [";
+    for (const auto & block : blocks) {
+        std::cout << "(" << block.start << "," << block.end << "), ";
+    }
+    std::cout << "]\n";
+
     Junctions output;
 
     output.left = {blocks.front().start};
@@ -47,6 +67,8 @@ blocks_to_junctions (std::vector<StartEndPair> blocks)
         }
     }
 
+    std::cout << "finished blocks_to_junctions and produced ";
+    junctions_print(output);
     return output; 
 }
 

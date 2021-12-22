@@ -6,6 +6,9 @@
 */
 void Isoforms::add_isoform(Junctions junctions, bool is_reversed)
 {
+  std::cout << "started add_isoform on ";
+  junctions_print(junctions);
+
   if (junctions.junctions.size() == 0) { // single exon reads 
     if (this->single_block_dict.size() == 0) {
       // this will be the first thing in single_block_dict
@@ -30,6 +33,7 @@ void Isoforms::add_isoform(Junctions junctions, bool is_reversed)
         // check if there's anything very close to the key
         bool found = false;
         for (auto const & [current_key, current_value] : this->single_block_dict) {
+          
           if ((std::abs(current_key.start - target_key.start) < this->parameters.MAX_TS_DIST) &&
               (std::abs(current_key.end - target_key.end) < this->parameters.MAX_TS_DIST)) {
             // we've found one that's very similar
@@ -63,7 +67,7 @@ void Isoforms::add_isoform(Junctions junctions, bool is_reversed)
       } else {
         // the key is not directly present in the dict
         // check for similar keys
-
+        std::cout << "searching for similar keys\n";
         bool found = false;
 
         for (auto & [current_key, current_value] : this->junction_dict) {
@@ -74,6 +78,7 @@ void Isoforms::add_isoform(Junctions junctions, bool is_reversed)
             for (int i = 0; i < current_key.size(); i++) {
               if (std::abs(junctions.junctions[i] - current_key[i]) > this->parameters.MAX_DIST) {
                 // they are too far apart
+                std::cout << "they are too far apart\n";
                 similar = false;
                 break;
               }
@@ -82,7 +87,7 @@ void Isoforms::add_isoform(Junctions junctions, bool is_reversed)
             if (similar) {
               // if they are still similar,
               // then we have found an entry that is close enough
-              
+              std::cout << "found a similar enough one\n";
               this->update_one(junctions, current_key, is_reversed);
               found = true;
               break;
@@ -91,6 +96,7 @@ void Isoforms::add_isoform(Junctions junctions, bool is_reversed)
         }
         
         if (!found) {
+          std::cout << "couldn't find a similar one\n";
           // we went through and found nothing similar enough
           // so just add it to the dict
           this->add_one(junctions, is_reversed);
@@ -106,6 +112,9 @@ void Isoforms::add_isoform(Junctions junctions, bool is_reversed)
  */
 void Isoforms::add_one(Junctions junctions, bool strand)
 {
+  std::cout << "started add_one on (size " << junctions.junctions.size() << ") ";
+  junctions_print(junctions);
+
   std::map<std::vector<int>, std::vector<int>>
   new_strand_counts;
 
@@ -145,6 +154,9 @@ void Isoforms::add_one(Junctions junctions, bool strand)
  */
 void Isoforms::update_one(Junctions junctions, std::vector<int> key, bool strand)
 {
+  std::cout << "started update_one on (size " << junctions.junctions.size() << ") ";
+  junctions_print(junctions);
+
   if (junctions.junctions.size()==0) { // single-exon reads
     std::pair<int, int>
     new_element = {junctions.left[0], junctions.right[0]};
@@ -178,8 +190,10 @@ int Isoforms::len()
 /* go through junction_dict, single_block_dict, strand_counts_dict and lr_pair
  * and update any entries that need updating
  */
-void Isoforms::update_all_splice()
+void
+Isoforms::update_all_splice()
 {
+  std::cout << "started update_all_splice\n";
 
   std::unordered_map<std::vector<int>, int>
   junction_tmp;
@@ -191,13 +205,19 @@ void Isoforms::update_all_splice()
   lr_pair_tmp;
 
   // look through junction_dict
+  std::cout << "started looking through junction_dict, size " << this->junction_dict.size() << "\n";
+  int num = 0;
   for (auto const& [key, val] : this->junction_dict) {
-    if (this->junction_list[val].size() >= this->parameters.STRAND_SPECIFIC) {
+    std::cout << "\tup to entry " << num << ", size " << this->junction_list[val].size() << "\n";
+    num++;
+    if (this->junction_list[val].size() >= this->parameters.MIN_SUP_CNT) {
+      std::cout << "\t\tthis one's being kept\n";
       // variable to store the counts
       std::unordered_map<std::vector<int>, int>
       junction_list_counts;
 
       // populate the counts container
+      // std::cout << "junction_list has " << std::count(this->junction_list.begin(), this->junction_list.end(), val) << "\n";
       std::cout << "junction_list[val] size is " << this->junction_list[val].size() << "\n";
       for (auto i : this->junction_list[val]) {
         junction_list_counts[i]++;
@@ -207,10 +227,10 @@ void Isoforms::update_all_splice()
       // pull out the key for the 
       // most common value in the counts map
       auto new_key = (*std::max_element(
-        junction_list_counts.cbegin(), junction_list_counts.cend()
+        junction_list_counts.begin(), junction_list_counts.end()
       )).first;
 
-      junction_tmp[new_key] = this->junction_dict[key];
+      junction_tmp[new_key] = val;
       
       // the name is a bit silly, but this is to count the occurrences of keys in strand_counts
       std::unordered_map<int, int>
@@ -218,20 +238,22 @@ void Isoforms::update_all_splice()
       for (auto i : this->new_strand_counts[key]) {
         strand_counts_counts[i]++;
       }
+      std::cout << "made strand_counts_counts\n";
       // get the key for the most common
       // value in max_strand_counts
       auto max_strand_counts = (*std::max_element(
-        strand_counts_counts.cbegin(), strand_counts_counts.cend()
+        strand_counts_counts.begin(), strand_counts_counts.end()
       )).first;
 
       strand_counts_tmp[new_key] = max_strand_counts;
       lr_pair_tmp[new_key] = this->lr_pair[key];
     }
   }
-
+  std::cout << "finished the first for\n";
   // look through single_block_dict
   for (auto const & [key, val] : this->single_block_dict) {
-    if (this->single_blocks[val].size() >= this->parameters.STRAND_SPECIFIC) {
+    std::cout << "\tup to entry " << num << ", size " << this->single_blocks[val].size() << "\n";
+    if (this->single_blocks[val].size() >= this->parameters.MIN_SUP_CNT) {
       // make and populate a counter for single_blocks
       std::unordered_map<StartEndPair, int>
       single_blocks_counts;
@@ -240,7 +262,7 @@ void Isoforms::update_all_splice()
       }
 
       auto new_key = (*std::max_element(
-        single_blocks_counts.cbegin(), single_blocks_counts.cend()
+        single_blocks_counts.begin(), single_blocks_counts.end()
       )).first;
 
       single_block_tmp[new_key] = this->single_block_dict[key];
@@ -251,13 +273,14 @@ void Isoforms::update_all_splice()
       }
 
       auto max_strand_counts = (*std::max_element(
-        strand_counts_counts.cbegin(), strand_counts_counts.cend()
+        strand_counts_counts.begin(), strand_counts_counts.end()
       )).first;
 
       strand_counts_tmp[{new_key.start, new_key.end}] = max_strand_counts;
     }
   }
 
+  std::cout << "finished the second for\n";
   this->single_block_dict = single_block_tmp;
   this->junction_dict = junction_tmp;
   this->strand_counts = strand_counts_tmp;
@@ -274,11 +297,16 @@ void Isoforms::filter_TSS_TES(std::ofstream * out_f, Junctions known_site, float
 
   auto filter_site = [fdr_cutoff] (std::unordered_map<int, int> list_counts) {
     // to sort the map, we need it as a vector first
+    std::cout << "started filter_site\n";
+
+    std::cout << "list_counts size is " << list_counts.size() << "\n";
+
     std::vector<std::pair<int, int>>
     mx;
-    for (const auto & i : list_counts) {
-      mx.emplace_back(i);
+    for (auto & i : list_counts) {
+      mx.push_back(i);
     }
+    std::cout << "created mx with size " << mx.size() << "\n";
 
     // sort it
     std::sort(mx.begin(), mx.end(),
@@ -286,28 +314,32 @@ void Isoforms::filter_TSS_TES(std::ofstream * out_f, Junctions known_site, float
         return (p1.second > p2.second);
       }
     );
+    std::cout << "sorted mx\n";
 
     if (mx[0].second == 1 || mx.size() < 5) {
       return mx;
     }
 
     int trun_num = std::max(2, int(floor(0.05 * mx.size())));
+    std::cout << "created trun_num\n";
 
-    float rate = 1/(
-      // the average of the second values in each pair, cutting off at trunc_num
+    // the average of the second values in each pair, cutting off at trunc_num
+    float rate = 1.0/(
       std::accumulate(mx.begin(), mx.end() - trun_num, 0, 
-        [] (const auto & p1, const auto & p2) {
-          return (p1 + p2.second);
+        [] (int i, const auto & p2) {
+          return (i + p2.second);
         }
       ) / mx.size()
     );
+    std::cout << "created rate\n";
 
     std::vector<int> 
     prob;
 
     for (const auto & i : mx) {
-      prob.emplace_back(rate * exp(-rate * i.second));
+      prob.push_back(rate * exp(-rate * i.second));
     }
+    std::cout << "created prob of size " << prob.size() << "\n";
     
     // create and populate a cumulative_probability variable
     std::vector<int>
@@ -317,21 +349,29 @@ void Isoforms::filter_TSS_TES(std::ofstream * out_f, Junctions known_site, float
       running_total += it;
       cumulative_probability.push_back(running_total);
     }
+    std::cout << "created cumulative_prob of size " << cumulative_probability.size() << "\n";
 
     if (cumulative_probability[0] > fdr_cutoff) {
+      std::cout << "greater than cutoff\n";
       return mx;
     } else {
+      std::cout << "less than cutoff\n";
       std::vector<std::pair<int, int>>
       sliced_mx;
 
-      for (const auto & i : cumulative_probability) {
+      int num = 0;
+      for (int i = 0; i < cumulative_probability.size(); ++i) {
         // finish if we've gone past the cutoff
-        if (i > fdr_cutoff) {
+        if (cumulative_probability[i] > fdr_cutoff) {
+          std::cout << "breaking on " << num << "!\n";
           break;
         }
         
-        sliced_mx.emplace_back(mx[i]);
+        sliced_mx.push_back(mx[i]);
+        num++;
       }
+
+      std::cout << "created sliced_mx of size " << sliced_mx.size() << "\n";
       return sliced_mx;
     }
   };
@@ -390,9 +430,11 @@ void Isoforms::filter_TSS_TES(std::ofstream * out_f, Junctions known_site, float
 
   if ((left_counts.size() < this->parameters.STRAND_SPECIFIC) || 
       (right_counts.size() < this->parameters.STRAND_SPECIFIC)) {
+    std::cout << "returning out\n";
     return;
   } else {
     // left
+    std::cout << "inside the else\n";
     std::vector<std::pair<int, int>>
     fs_l = filter_site(left_counts);
 
@@ -414,15 +456,21 @@ void Isoforms::filter_TSS_TES(std::ofstream * out_f, Junctions known_site, float
         fs_l_keys.push_back(i.first);
       }
 
+      std::cout << "about to insert_dist\n";
       cnt_l = insert_dist(fs_l_keys, known_site.left);
+      std::cout << "finished insert_dist\n";
       std::sort(cnt_l.begin(), cnt_l.end());
+      std::cout << "sorted\n";
     }
 
     // right
+    std::cout << "doing right\n";
     std::vector<std::pair<int, int>>
     fs_r = filter_site(right_counts);
+    std::cout << "finished filter_site for right\n";
 
     if (fs_r.size() == 0) {
+      std::cout << "nevermind not doing right\n";
       cnt_r = {-99999999};
     } else {
       // print everything to out_f
@@ -440,11 +488,12 @@ void Isoforms::filter_TSS_TES(std::ofstream * out_f, Junctions known_site, float
         fs_r_keys.push_back(i.first);
       }
 
+      std::cout << "about to insert_dist right\n";
       cnt_r = insert_dist(fs_r_keys, known_site.right);
       std::sort(cnt_r.begin(), cnt_r.end());
+      std::cout << "finished sort right\n";
     }
   }
-
 
   std::cout << "! now iterating over pairs\n";
 
@@ -464,6 +513,19 @@ void Isoforms::filter_TSS_TES(std::ofstream * out_f, Junctions known_site, float
   }
 
   std::cout << "this->lr_pair size is " << this->lr_pair.size() << "\n";
+  for (const auto & p : this->lr_pair) {
+    std::cout << "\t(";
+    for (const auto & i : p.first) {
+      std::cout << i << " ";
+    }
+    std::cout << "):\n";
+    std::cout << "\t\t(";
+    for (const auto & s : p.second) {
+      std::cout << "{" << s.start << ", " << s.end << "} ";
+    }
+    std::cout << ")\n";
+  }
+
 
   for (const auto & pair : this->lr_pair) {
     std::cout << "pair.second size is " << pair.second.size() << "\n";
@@ -661,6 +723,11 @@ void Isoforms::filter_TSS_TES(std::ofstream * out_f, Junctions known_site, float
       tmp_ex.push_back((int)(pair_enrich[0].first.end));
 
       std::cout << "! defined tmp_ex\n";
+      std::cout << "tmp_ex is (size " << tmp_ex.size() << ") [";
+      for (const auto & i : tmp_ex) {
+        std::cout << i << " ";
+      }
+      std::cout << tmp_ex.back() << "]\n";
       this->raw_isoforms[tmp_ex] = pair.second.size();
       this->strand_counts[tmp_ex] = this->strand_counts[pair.first];
     } else {
@@ -708,6 +775,11 @@ void Isoforms::match_known_annotation
   std::unordered_map<std::string, std::string> fa_dict
 )
 {
+  std::cout << "started match_known_annotation on transcript_to_junctions.size() is " << transcript_to_junctions.size() << "\n";
+  std::cout << "\ttranscript_dict.size() is " << transcript_dict.size() << "\n";
+  std::cout << "\tgene_dict.size() is " << gene_dict.size() << "\n";
+  std::cout << "\tone_block.transcript_list.size() is " << one_block.transcript_list.size() << "\n";
+  std::cout << "\tfa_dict.size() is " << fa_dict.size() << "\n";
 
   std::set<int>
   splice_site = get_splice_site(transcript_to_junctions, one_block.transcript_list);
@@ -741,44 +813,52 @@ void Isoforms::match_known_annotation
 
   Junctions
   TSS_TES_site = get_TSS_TES_site(&transcript_to_junctions, &(one_block.transcript_list));
+  junctions_print(TSS_TES_site);
 
   // if this is a single-exon read, we're done
   if (splice_site.size() == 0) {
+    std::cout << "single-exon read, we're done\n";
     return;
   }
 
+  std::cout << "iterating over single_block_dict, size " << this->single_block_dict.size() << "\n";
   for (const auto & [exon_key, exon_val] : this->single_block_dict) {
     for (const auto & i : one_block.transcript_list) {
       int tmp_std;
 
       if (this->parameters.STRAND_SPECIFIC == 0) {
         // we need to convert the pair to a vector for this lookup
-        tmp_std = this->strand_counts[{exon_key.start, exon_key.end}]; // this is where i'm up to
+        tmp_std = this->strand_counts[{exon_key.start, exon_key.end}];
       } else {
-        // little shorthand if else for you there ;)
         transcript_dict[i].strand == '+' ? tmp_std = 1 : tmp_std = 0;
       }
 
       if ((transcript_to_junctions[i].junctions.size() == 0) &&
           (tmp_std == this->strand_counts[{exon_key.start, exon_key.end}])) {
+        std::cout << "inside the first if\n";
         if ((std::abs(exon_key.start - transcript_to_junctions[i].left[0]) < this->parameters.MAX_TS_DIST) &&
             (std::abs(exon_key.end - transcript_to_junctions[i].right[0]) < this->parameters.MAX_TS_DIST)) {
+          std::cout << "inside the second if\n";
           std::pair<int, int>
           known_exons = {transcript_to_junctions[i].left[0], transcript_to_junctions[i].right[0]};
           if (this->known_isoforms.count({known_exons.first, known_exons.second})) { // check if it is already known
             // it's already known, just update the entry
-            this->known_isoforms[std::vector<int>{known_exons.first, known_exons.second}] = {
+            std::cout << "updating in known_isoforms\n";
+            this->known_isoforms[{known_exons.first, known_exons.second}] = {
               long(this->known_isoforms[{known_exons.first, known_exons.second}].support_count + this->single_blocks[this->single_block_dict[exon_key]].size()),
               i,
               transcript_dict[i].parent_id
             };
+            std::cout << "added to known_isoforms\n";
           } else {
+            std::cout << "it's totally knew, adding to known_isoforms\n";
             // it's totally new, create a fresh entry for it
-            this->known_isoforms[{known_exons.first, known_exons.second}] = {
+            this->known_isoforms[std::vector<int>{known_exons.first, known_exons.second}] = {
               long(this->single_blocks[this->single_block_dict[exon_key]].size()),
               i,
               transcript_dict[i].parent_id
             };
+            std::cout << "added to known_isoforms\n";
             if (!this->parameters.STRAND_SPECIFIC) {
               this->strand_counts[{known_exons.first, known_exons.second}] = 1;
               if (transcript_dict[i].strand == '-') {
@@ -791,6 +871,7 @@ void Isoforms::match_known_annotation
     }
   }
 
+  std::cout << "iterating over raw_isoforms, size " << this->raw_isoforms.size() << "\n";
   for (auto const & [raw_iso_key, raw_iso_val] : this->raw_isoforms) {
     // line 730 in sc_longread.py
     int found = 0;
@@ -804,11 +885,13 @@ void Isoforms::match_known_annotation
 
     // ignore raw_iso data that has repeated entries
     if (raw_iso_key.size() > raw_iso_key_set.size()) {
+      std::cout << "skipping, raw_iso_key is size " << raw_iso_key.size() << ", raw_iso_key_set is size " << raw_iso_key_set.size() << "\n";
       continue;
     }
 
     int tmp_std;
 
+    std::cout << "iterating over one_block.transcript_list, size " << one_block.transcript_list.size() << "\n";
     for (const auto & i : one_block.transcript_list) {
       if (!this->parameters.STRAND_SPECIFIC) {
         tmp_std = this->strand_counts[raw_iso_key];
@@ -819,6 +902,8 @@ void Isoforms::match_known_annotation
       // same number of exons, same strand
       if ((raw_iso_key.size() - 2 == transcript_to_junctions[i].junctions.size()) &&
           (tmp_std == this->strand_counts[raw_iso_key])) {
+        std::cout << "same number of exons, same strand\n";
+        
         int iso_is_within_max_dist = 1;
         for (int j = 0; j < std::min(raw_iso_key.size() - 1, transcript_to_junctions[i].junctions.size()); j++) {
           if (std::abs(raw_iso_key[j+1] - transcript_to_junctions[i].junctions[j]) > this->parameters.MAX_DIST) {
@@ -829,8 +914,10 @@ void Isoforms::match_known_annotation
         }
 
         if (iso_is_within_max_dist) {
+          std::cout << "\tiso_is_within_max_dist\n";
           if ((std::abs(raw_iso_key.front() - transcript_to_junctions[i].left[0]) < this->parameters.MAX_DIST) &&
               (std::abs(raw_iso_key.back() - transcript_to_junctions[i].right[0]) < this->parameters.MAX_DIST)) {
+            std::cout << "populating known_exons\n";
             // populate known_exons with transcript_to_junctions
             std::vector<int>
             known_exons = {transcript_to_junctions[i].left[0]};
@@ -841,13 +928,16 @@ void Isoforms::match_known_annotation
 
             if (this->known_isoforms.count(known_exons)) {
               // line 747 sc_longread.py
-              
+              std::cout << "updating\n";
               this->known_isoforms[known_exons] = {
                 long(std::max(this->known_isoforms[known_exons].support_count, long(raw_iso_val))),
                 i,
                 transcript_dict[i].parent_id
               };
+              std::cout << "added to known_isoforms\n";
+
             } else {
+              std::cout << "straight up adding to known_isoforms\n";
               this->known_isoforms[known_exons] = {
                 raw_iso_val,
                 i,
@@ -927,21 +1017,35 @@ void Isoforms::match_known_annotation
         }
       }
 
-
+      std::cout << "considering adding to new_isoforms, is (size " << new_exons.size() << ") ";
+      for (const auto & ex : new_exons) {
+        std::cout << ex << " ";
+      }
+      std::cout << " strictly increasing?\n";
+      
       is_strictly_increasing = 1;
-      for (int i = 0; i < new_exons.size() - 1; i++) {
-        if (!(new_exons[i] < new_exons[i - 1])) {
+      for (int i = 1; i < new_exons.size() - 1; i++) {
+        if (new_exons[i] < new_exons[i - 1]) {
           // then the vector is not strictly increasing
+          std::cout << "(not strictly increasing)\n";
           is_strictly_increasing = 0;
           break;
         }
       }
 
       if (is_strictly_increasing) {
+        std::cout << "it is strictly increasing so we're up to the if on (";
+        for (const auto & ex : new_exons) {
+          std::cout << ex << ", ";
+        }
+        std::cout << ")\n";
+
         if (this->new_isoforms.count(new_exons) == 0) {
+          std::cout << "adding to new_isoforms\n";
           this->new_isoforms[new_exons] = {this->raw_isoforms[raw_iso_key], "", ""};
           this->strand_counts[new_exons] = this->strand_counts[raw_iso_key];
         } else {
+          std::cout << "updating in new_isoforms\n";
           this->new_isoforms[new_exons] = {this->new_isoforms[new_exons].support_count + raw_iso_val, "", ""};
         }
       }
@@ -951,6 +1055,7 @@ void Isoforms::match_known_annotation
   // line 800 of sc_longread.py
 
   // remove incomplete transcript (due to 3' bias)
+  std::cout << "up to removing incomplete transcript\n";
   if (this->parameters.REMOVE_INCOMP_READS) {
     std::vector<std::vector<int>>
     delete_key;
@@ -963,19 +1068,23 @@ void Isoforms::match_known_annotation
       }
 
       for (const auto & [known_isoform_key, known_isoform_val] : this->known_isoforms) {
+        std::cout << "new_isoform_key.size(): " << new_isoform_key.size() << "\n";
         if ((new_isoform_key.size() < known_isoform_key.size()) &&
             (if_exon_contains(known_isoform_key, std::vector<int>(new_isoform_key.begin()+2, new_isoform_key.end()), 1))) {
+
+          std::cout << "inside the if\n";
           std::vector<char>
-          s_l = std::vector<char>( // get a slice of 15 ints just before new_isoform_key[0]
-            fa_dict[this->ch].begin() + (new_isoform_key[0] - 15), 
-            fa_dict[this->ch].begin() + (new_isoform_key[0])
+          s_l = std::vector<char>( // get a slice of 15 ints just before new_isoform_key.back()
+            fa_dict[this->ch].begin() + std::min((int)(fa_dict[this->ch].size() - 1), (new_isoform_key.back() - 15)), 
+            fa_dict[this->ch].begin() + std::min((int)(fa_dict[this->ch].size() - 1), new_isoform_key.back())
           );
 
           std::vector<char>
-          s_r = std::vector<char>( // get a slice of 15 ints just after new_isoform_key[0]
-            fa_dict[this->ch].begin() + new_isoform_key[0],
-            fa_dict[this->ch].begin() + new_isoform_key[0] + 15
+          s_r = std::vector<char>( // get a slice of 15 ints just after new_isoform_key.back()
+            fa_dict[this->ch].begin() + std::min((int)(fa_dict[this->ch].size() - 1), new_isoform_key.back()),
+            fa_dict[this->ch].begin() + std::min((int)(fa_dict[this->ch].size() - 1), (new_isoform_key.back() + 15))
           );
+          std::cout << "slices gotten\n";
 
           if ((std::count(s_l.begin(), s_l.end(), 'T') > 10) ||
               (std::count(s_l.begin(), s_l.end(), 'A') > 10) ||
@@ -988,18 +1097,21 @@ void Isoforms::match_known_annotation
         }
         else if ((new_isoform_key.size() < known_isoform_key.size()) &&
                 (if_exon_contains(known_isoform_key, std::vector<int>(new_isoform_key.begin(), new_isoform_key.end() - 2), 1))) {
+          std::cout << "inside the else if\n";
+          std::cout << "fa_dict[this->ch].size(): " << fa_dict[this->ch].size() << "\n";
+          std::cout << "new_isoform_key.back():" << new_isoform_key.back() << "\n";
           std::vector<char>
           s_l = std::vector<char>( // get a slice of 15 ints just before new_isoform_key.back()
-            fa_dict[this->ch].begin() + (new_isoform_key.back() - 15), 
-            fa_dict[this->ch].begin() + (new_isoform_key.back())
+            fa_dict[this->ch].begin() + std::min((int)(fa_dict[this->ch].size() - 1), (new_isoform_key.back() - 15)), 
+            fa_dict[this->ch].begin() + std::min((int)(fa_dict[this->ch].size() - 1), new_isoform_key.back())
           );
 
           std::vector<char>
           s_r = std::vector<char>( // get a slice of 15 ints just after new_isoform_key.back()
-            fa_dict[this->ch].begin() + new_isoform_key.back(),
-            fa_dict[this->ch].begin() + new_isoform_key.back() + 15
+            fa_dict[this->ch].begin() + std::min((int)(fa_dict[this->ch].size() - 1), new_isoform_key.back()),
+            fa_dict[this->ch].begin() + std::min((int)(fa_dict[this->ch].size() - 1), (new_isoform_key.back() + 15))
           );
-          
+          std::cout <<"slices gotten\n";
           if ((std::count(s_l.begin(), s_l.end(), 'T') > 10) ||
               (std::count(s_l.begin(), s_l.end(), 'A') > 10) ||
               (std::count(s_r.begin(), s_r.end(), 'T') > 10) ||
@@ -1010,6 +1122,7 @@ void Isoforms::match_known_annotation
           }
         }
 
+        std::cout << "outside the if\n";
         if ((new_isoform_key.size() < known_isoform_key.size()) && if_exon_contains(known_isoform_key, new_isoform_key, this->parameters.MAX_TS_DIST)) {
           float sim_pct_sq = pow(get_exon_sim_pct(new_isoform_key, known_isoform_key), 2);
           if (new_isoform_val.support_count < (1 + sim_pct_sq * this->parameters.REMOVE_INCOMP_READS) * this->known_isoforms[known_isoform_key].support_count) {
@@ -1026,7 +1139,7 @@ void Isoforms::match_known_annotation
         }
       }
     }
-
+    std::cout << "nearly up to deletion\n";
     // convert delete_key to a set
     std::set<std::vector<int>>
     delete_key_set;
@@ -1034,10 +1147,14 @@ void Isoforms::match_known_annotation
       delete_key_set.insert(v);
     }
 
+    std::cout << "specifically up to the deletion bit\n";
+
     // entirely remove the keys in delete_key_set from new_isoforms 
     for (const auto & key : delete_key_set) {
       this->new_isoforms.erase(key);
     }
+
+    std::cout << "done some deletion\n";
 
     // reset delete key
     delete_key = {};
@@ -1140,7 +1257,7 @@ void Isoforms::match_known_annotation
     }
   }
 
-
+  std::cout << "match to gene time\n";
   // match to gene
 
   std::vector<std::vector<int>>
@@ -1263,6 +1380,7 @@ void Isoforms::match_known_annotation
       }
     }
 
+    std::cout << "remove all the delete_key entries from new_isoforms\n";
     // line 910
     // remove all the delete_key entries from new_isoforms
     if (delete_key.size() > 0) {
@@ -1304,10 +1422,12 @@ void Isoforms::match_known_annotation
     // then update the value with the new iso_key
     this->ge_dict[this->known_isoforms[iso_key].gene_id].push_back(iso_key);
   }
+  std::cout << "finished match_known_annotation\n";
 }
 
 std::string
-Isoforms::isoform_to_gtt3(int isoform_pct=-1) {
+Isoforms::isoform_to_gff3(int isoform_pct=-1) {
+  std::cout << "$ started isoform_to_gff3\n";
   std::vector<std::string>
   gff_rec = {};
 
@@ -1315,9 +1435,11 @@ Isoforms::isoform_to_gtt3(int isoform_pct=-1) {
   transcript_id_dict;
 
   if (this->new_isoforms.size() + this->known_isoforms.size() == 0) {
+    std::cout << "$ sizes are too small. this->new_isoforms.size() is " << this->new_isoforms.size() << ", this->known_isoforms.size() is " << this->known_isoforms.size() << "\n";
     return "";
   }
 
+  std::cout << "$ up to the for. this->ge_dict.size() is " << this->ge_dict.size() << "\n";
   for (const auto & [g_key, g_val] : this->ge_dict) {
     std::vector<std::string>
     gff_tmp = {};
@@ -1349,7 +1471,7 @@ Isoforms::isoform_to_gtt3(int isoform_pct=-1) {
               << (this->strand_counts[g_val[0]] == 1 ? '+' : '-') << '\t' // _stnd
               << "." << "\t" // _ph
               << "ID=gene:" << g_key << ";gene_id=" << g_key << ";support_count=" << total_cnt; // _attr
-    
+    std::cout << "added " << gff_entry.str() << " to gff_tmp";
     gff_tmp.push_back(gff_entry.str());
 
     for (const auto & exons : g_val) {
@@ -1408,26 +1530,42 @@ Isoforms::isoform_to_gtt3(int isoform_pct=-1) {
                 << "." << "\t" // _ph
                 << "ID=transcript:" << tp_id.str() << ";transcript_id=" << tp_id.str() << ";Parent=gene:" << g_key << ";support_count=" << support_count << ";source=" << source; // _attr
       gff_tmp.push_back(gff_entry.str());
-      exon_idx++;
+      std::cout << "added " << gff_entry.str() << " to gff_tmp\n";
+      for (int ex = 0; ex < exons.size() - 1; ex+=2) {
+        gff_entry = {};
+        gff_entry << this->ch << '\t'
+                  << source << '\t'
+                  << "exon" << '\t'
+                  << exons[ex] + 1 << '\t'
+                  << exons[ex+1] << '\t'
+                  << '.' << '\t'
+                  << (this->strand_counts[exons] == 1 ? '+' : '-') << '\t'
+                  << '.' << '\t'
+                  << "exon_id=exon:" << exons[ex]+1 << "_" << exons[ex+1] << ";Parent=transcript:" << tp_id.str() << ";rank=" << exon_idx;
+        gff_tmp.push_back(gff_entry.str());
+        std::cout << "added an exon to gff_tmp\n";
+        exon_idx++;
+      }
     }
 
-    if (gff_tmp.size() > 2) {
+    std::cout << "gff_tmp.size(): " << gff_tmp.size() << "\n";
+    if (gff_tmp.size() >= 2) {
       for (const auto & gff : gff_tmp) {
         gff_rec.push_back(gff);
       }
     }
   }
 
+  std::cout << "gff_rec.size(): " << gff_rec.size() << "\n";
   if (gff_rec.size() > 0) {
     std::stringstream output;
     for (const auto & gff : gff_rec) {
       output << gff << "\n";
     }
     output << "\n";
+    std::cout << "completed thing is " << output.str() << "\n";
     return output.str();
-  
   }
 
   return "";
 }
-

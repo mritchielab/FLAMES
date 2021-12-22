@@ -32,6 +32,10 @@ def umi_dedup(l, has_UMI):
 
 
 def wrt_tr_to_csv(bc_tr_count_dict, transcript_dict, csv_f, transcript_dict_ref=None, has_UMI=True):
+    print "started wrt_tr_to_csv"
+    print "bc_tr_count_dict: (size {}) {}".format(len(bc_tr_count_dict), bc_tr_count_dict)
+    print "transcript_dict: (size {}) {}".format(len(transcript_dict), transcript_dict)
+
     f = gzip.open(csv_f,"wb")
     all_tr = set()
     for bc in bc_tr_count_dict:
@@ -61,6 +65,7 @@ def wrt_tr_to_csv(bc_tr_count_dict, transcript_dict, csv_f, transcript_dict_ref=
 
 
 def make_bc_dict(bc_anno):
+    print "started make_bc_dict"
     with open(bc_anno) as f:
         # skip header line
         f.readline()
@@ -73,6 +78,7 @@ def make_bc_dict(bc_anno):
             
             bc_dict[bc] = sample
         
+    print "finished make_bc_dict"
     return(bc_dict)
 
 

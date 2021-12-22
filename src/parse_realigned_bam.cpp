@@ -19,6 +19,7 @@ file_to_map(std::string filename)
     std::string line;
     int lines = 0;
     while (std::getline(file, line)) {
+        std::cout << "line:" <<line<<"\n";
         lines++;
         std::stringstream
         linestream (line);
@@ -26,11 +27,14 @@ file_to_map(std::string filename)
         // break each line into words
         std::vector<std::string> words;
         std::string word;
-        while (std::getline(linestream, word, ' ')) {
+        while (std::getline(linestream, word, '\t')) {
             words.push_back(word);
         }
-
-        map[words[0]] = atoi(words[1].c_str());
+        std::cout << "found " << words.size() << " words\n";
+        if (words.size() >= 2) {
+            map[words[0]] = atoi(words[1].c_str());
+            std::cout << "\t(added to map)\n";
+        }
     }
 
     std::cout << "file was " << lines << " lines long\n";
@@ -149,6 +153,12 @@ parse_realigned_bam
     
     std::unordered_map<std::string, int>
     count_stat = {};
+    count_stat["unmapped"] = 0;
+    count_stat["not in annotation"] = 0;
+    count_stat["no good match"] = 0;
+    count_stat["counted_reads"] = 0;
+    count_stat["ambiguous_reads"] = 0;
+    count_stat["not_enough_coverage"] = 0;
 
 
     std::unordered_map<std::string, std::string>
@@ -173,6 +183,7 @@ parse_realigned_bam
         if (b->core.tid == -1) {
             continue;
         }
+        std::cout << "\t\treading one from bam\n";
         BAMRecord rec = read_record(b, header);
         records.push_back(rec);
     }
@@ -393,6 +404,8 @@ make_bc_dict(std::string bc_anno)
         opens a bc file, parses it into a dictionary format
     */
 
+    std::cout << "started make_bc_dict\n";
+
     // open the file
     std::ifstream
     bc_file (bc_anno);
@@ -405,6 +418,7 @@ make_bc_dict(std::string bc_anno)
     std::string line;
     bool header_line = true;
     while (std::getline(bc_file, line)) {
+        std::cout << "line:" << line << "\n";
         // skip the first line
         if (header_line) {
             header_line = false;
@@ -424,5 +438,6 @@ make_bc_dict(std::string bc_anno)
         bc_dict[words[1]] = words[0];
     }
 
+    std::cout << "finished make_bc_dict\n";
     return bc_dict;
 }

@@ -291,6 +291,8 @@ class GeneBlocks(object):
 
 
 def blocks_to_junctions(blocks):
+    print "started blocks_to_junctions on (size {}) {}".format(len(blocks), blocks)
+
     junctions = {"left":blocks[0][0], "right":blocks[-1][1], "junctions":[]}
     if len(blocks)>1:
         for i in range(1,len(blocks)):
@@ -299,6 +301,8 @@ def blocks_to_junctions(blocks):
         junctions["junctions"] = tuple(junctions["junctions"])
     else:
         junctions["junctions"] = tuple()
+    
+    print "finished blocks_to_junctions and produced {}".format(junctions)
     return junctions
 
 def get_blocks(rec):
@@ -446,7 +450,7 @@ class Isoforms(object):
     def add_isoform(self, junctions, is_rev):
         """
         junctions: dict{"left":int, "right":int, "junctions":list}
-        is_rev: true if mapped to reverse strand
+        is_rev: true if mapped to reverse strandR
         """
         if len(junctions["junctions"])==0:  # single exon reads
             if len(self.single_block_dict)==0:
@@ -481,6 +485,8 @@ class Isoforms(object):
                         self.__add_one(junctions,is_rev)
 
     def __add_one(self, junctions, strand):
+        print "started add_one on (size {}) {}".format(len(junctions["junctions"]), junctions)
+
         if len(junctions["junctions"])==0:
             self.single_block_dict[tuple((junctions["left"],junctions["right"]))] = len(self.single_blocks)
             self.single_blocks.append([tuple((junctions["left"],junctions["right"]))])
@@ -491,6 +497,7 @@ class Isoforms(object):
             self.junction_list.append([tuple(junctions["junctions"])])
             self.left.append(junctions["left"])
             self.right.append(junctions["right"])
+            print 'added key {} to this->lr_pair'.format(tuple(junctions["junctions"]))
             self.lr_pair[tuple(junctions["junctions"])] = []
             self.lr_pair[tuple(junctions["junctions"])].append((junctions["left"], junctions["right"]))
             self.strand_cnt[tuple(junctions["junctions"])]=[]
@@ -501,6 +508,8 @@ class Isoforms(object):
         """
         update an existing isoform. st is the key of dict
         """
+        print "started update_one on (size {}) {}".format(len(junctions["junctions"]), junctions)
+
         if len(junctions["junctions"])==0:
             self.single_blocks[self.single_block_dict[st]].append(
                         tuple((junctions["left"],junctions["right"])))
@@ -515,21 +524,36 @@ class Isoforms(object):
         return len(self.junction_dict)+len(self.single_block_dict)
 
     def update_all_splice(self):
+        print "started update_all_splice"
+
         junction_tmp = {}
         single_block_tmp = {}
         strand_cnt_tmp = {}
         lr_pair_tmp = {}
+        
+        print "started looking through junction_dict, size {}".format(len(self.junction_dict)) 
+        num=0
         for j in self.junction_dict:
+            print "\tup to entry {}, size {}".format(num, len(self.junction_list[self.junction_dict[j]]))
+            num=num+1
+
             if len(self.junction_list[self.junction_dict[j]]) >= self.Min_sup_cnt:  # only more than `Min_sup_cnt` reads support this splicing
                 new_j = tuple((Counter(it[i] for it in self.junction_list[self.junction_dict[j]]).most_common(1)[0][0] for i in range(len(j))))
                 junction_tmp[new_j] = self.junction_dict[j]
                 strand_cnt_tmp[new_j] =  Counter(self.strand_cnt[j]).most_common(1)[0][0]
                 lr_pair_tmp[new_j] = self.lr_pair[j]
+        
+        print "finished the first for"
+        num=0
         for j in self.single_block_dict:
+            print "\tup to entry {}, size {}".format(num, len(self.single_blocks[self.single_block_dict[j]]))
+            num=num+1
+            
             if len(self.single_blocks[self.single_block_dict[j]]) >= self.Min_sup_cnt:
                 new_j = tuple((Counter(it[i] for it in self.single_blocks[self.single_block_dict[j]]).most_common(1)[0][0] for i in range(len(j))))
                 single_block_tmp[new_j] = self.single_block_dict[j]
                 strand_cnt_tmp[new_j] =  Counter(self.strand_cnt[j]).most_common(1)[0][0]
+        
         self.single_block_dict = single_block_tmp
         self.junction_dict = junction_tmp
         self.strand_cnt = strand_cnt_tmp
@@ -689,6 +713,7 @@ class Isoforms(object):
                 tmp_ex = list(j)
                 tmp_ex.insert(0,int(pair_enrich[0][0][0]))
                 tmp_ex.append(int(pair_enrich[0][0][1]))
+                print "tmp_ex is (size {}) {}".format(len(tmp_ex), tmp_ex)
                 self.raw_isoforms[tuple(tmp_ex)] = len(self.lr_pair[j])
                 self.strand_cnt[tuple(tmp_ex)] = self.strand_cnt[j]
             else:
@@ -714,6 +739,13 @@ class Isoforms(object):
         [exons_list[ith].insert(0,transcript_to_junctions[tr]["left"]) for ith, tr in enumerate(one_block.transcript_list)]
         exons_dict = dict((tuple(exons_list[ith]), tr) for ith, tr in enumerate(one_block.transcript_list))
         TSS_TES_site = get_TSS_TES_site(transcript_to_junctions, one_block.transcript_list)
+
+        print "this->lr_pair size is {}".format(len(self.lr_pair))
+        for p in self.lr_pair:
+            print "\t{}: ".format(p)
+            print "\t\t{}".format(self.lr_pair[p])
+
+
         if len(splice_site) == 0:
             return 0
         for one_exon in self.single_block_dict: # this dict is empty
@@ -733,10 +765,14 @@ class Isoforms(object):
                                 self.strand_cnt[tuple(known_exons)] = 1 if transcript_dict[tr].strand=="+" else -1
                             else:
                                 self.strand_cnt[tuple(known_exons)] = self.strand_cnt[one_exon]
+        print "doing match_known_annotation"
+        print "len(self.raw_isoforms) is {}".format(len(self.raw_isoforms))
         for raw_iso in self.raw_isoforms:
             found = False
+            print "raw_iso is size {}, raw_iso_set is size {}".format(len(raw_iso), len(set(raw_iso))) 
             if len(raw_iso)>len(set(raw_iso)):
                 #print "REPEAT splice site, skip:", self.raw_isoforms[raw_iso], raw_iso
+                print "skipping, raw_iso_key"
                 continue
             for tr in one_block.transcript_list:
                 if self.strand_specific==0:
@@ -935,6 +971,7 @@ class Isoforms(object):
             self.ge_dict.setdefault(self.known_isoforms[i].gene_id, []).append(i)
                         
     def isoform_to_gff3(self, isoform_pct=-1):
+        print "$ started isoform_to_gff3"
         gff3_fmt = "{_ch}\t{_sr}\t{_ty}\t{_st}\t{_en}\t{_sc}\t{_stnd}\t{_ph}\t{_attr}"
         gff_rec = []
         transcript_id_dict={}
@@ -974,13 +1011,18 @@ class Isoforms(object):
                 gff_tmp.append(gff3_fmt.format(_ch=self.ch,_sr=source,_ty="transcript",_st=exons[0]+1,_en=exons[-1],
                             _sc=".",_stnd="+" if self.strand_cnt[exons]==1 else "-", _ph=".",
                             _attr="ID=transcript:{};transcript_id={};Parent=gene:{};support_count={};source={}".format(tp_id, tp_id, g, sup_cnt, source )))
+                print "added something to gff_tmp"
                 for ex in range(0,len(exons),2):
                     gff_tmp.append(gff3_fmt.format(_ch=self.ch,_sr=source,_ty="exon",_st=exons[ex]+1,_en=exons[ex+1], # `+1` because gff is 1-based
                         _sc=".",_stnd="+" if self.strand_cnt[exons]==1 else "-", _ph=".",
                         _attr="exon_id=exon:{}_{};Parent=transcript:{};rank={}".format(exons[ex]+1, exons[ex+1],tp_id, exon_idx )))
+                    print "added something to gff_tmp"
                     exon_idx += 1
+            print "gff_tmp.size(): {}".format(len(gff_tmp))
             if len(gff_tmp) >2:
                 gff_rec.extend(gff_tmp)
+        
+        print "gff_rec.size(): {}".format(len(gff_rec))
         if len(gff_rec)>0:
             return "\n".join(gff_rec)+"\n"
         else:
@@ -1033,6 +1075,9 @@ def group_bam2isoform(bam_in, out_gff3, out_stat, summary_csv, chr_to_blocks, ge
     #csv_out = open(summary_csv,"w")
     iso_annotated = open(out_gff3,"w")
     iso_annotated.write("##gff-version 3\n")
+    also_out = open("also_out_py.gff", "w")
+    also_out.write("##gff-version 3\n")
+
     if raw_gff3 is not None:
         splice_raw = open(raw_gff3,"w")
         splice_raw.write("##gff-version 3\n")
@@ -1047,9 +1092,9 @@ def group_bam2isoform(bam_in, out_gff3, out_stat, summary_csv, chr_to_blocks, ge
         #    continue
         num = 0
         for ith, bl in enumerate(chr_to_blocks[ch]):
-            printline = "looking at {} block: ({}, {})".format(num, bl.s, bl.e)
+            print "looking at {} block: ({}, {})".format(num, bl.s, bl.e)
+            print "\tblock.transcript_list={}".format(bl.transcript_list)
             num = num+1
-            print printline
 
             it_region = bamfile.fetch(ch, bl.s, bl.e)
             # print 'reading'
@@ -1059,6 +1104,7 @@ def group_bam2isoform(bam_in, out_gff3, out_stat, summary_csv, chr_to_blocks, ge
             # print bl.e
 
             TSS_TES_site = get_TSS_TES_site(transcript_to_junctions, bl.transcript_list)
+            print "TSS_TES_site={}".format(TSS_TES_site)
             tmp_isoform = Isoforms(ch, config)
             recnum = 0
             for rec in it_region:
@@ -1076,10 +1122,14 @@ def group_bam2isoform(bam_in, out_gff3, out_stat, summary_csv, chr_to_blocks, ge
                 #     continue   # downsample analysis
                 # if rec.is_secondary:
                 #     continue
+                print "\t\t\tprior to smoothing, cigar is {}".format(len(rec.cigar))
                 rec.cigar = smooth_cigar(rec.cigar, thr=20)
                 rec.cigartuples = rec.cigar
+                print "\t\t\tlen(cigar) is {}, cigar is {}".format(len(rec.cigartuples), rec.cigartuples)
                 rec.cigarstring = generate_cigar(rec.cigar)
+                print "\t\t\tcigarstring is {}".format(rec.cigarstring)
                 blocks = get_blocks(rec)
+                print "\t\t\ttmp_blocks size is {}".format(len(blocks))
                 junctions = blocks_to_junctions(blocks)
                 print "\t\tadding junctions to isoform:"
                 print junctions
@@ -1091,14 +1141,31 @@ def group_bam2isoform(bam_in, out_gff3, out_stat, summary_csv, chr_to_blocks, ge
                 #tmp_isoform.site_stat(tss_tes_stat)
                 # issue
                 tmp_isoform.match_known_annotation(transcript_to_junctions, transcript_dict, gene_dict, bl, fa_dict)
+                print "\t\t\tstop! isoform check"
+                print "\t\t\t\tlen(junction_dict):{}".format(len(tmp_isoform.junction_dict))
+                print "\t\t\t\tlen(junction_list):{}".format(len(tmp_isoform.junction_list))
+                print "\t\t\t\tlen(lr_pair):{}".format(len(tmp_isoform.lr_pair))
+                print "\t\t\t\tlen(left):{}".format(len(tmp_isoform.left))
+                print "\t\t\t\tlen(right):{}".format(len(tmp_isoform.right))
+                print "\t\t\t\tlen(single_block_dict):{}".format(len(tmp_isoform.single_block_dict))
+                print "\t\t\t\tlen(single_blocks):{}".format(len(tmp_isoform.single_blocks))
+                print "\t\t\t\tlen(strand_cnt):{}".format(len(tmp_isoform.strand_cnt))
+                print "\t\t\t\tlen(known_isoforms):{}".format(len(tmp_isoform.known_isoforms))
+                print "\t\t\t\tlen(new_isoforms):{}".format(len(tmp_isoform.new_isoforms))
+                print "\t\t\t\tlen(raw_isoforms):{}".format(len(tmp_isoform.raw_isoforms))
+                print "\t\t\t\tlen(ge_dict):{}".format(len(tmp_isoform.ge_dict))
+
                 isoform_dict[(ch, bl.s, bl.e)] =tmp_isoform
                 if raw_gff3 is not None:
                     splice_raw.write(tmp_isoform.raw_splice_to_gff3())
                 iso_annotated.write(tmp_isoform.isoform_to_gff3(isoform_pct=config["Min_cnt_pct"]))
+                also_out.write(tmp_isoform.isoform_to_gff3(isoform_pct=config["Min_cnt_pct"]))
     #with open(iso_exact,"w") as out_f:
     #    out_f.write("##gff-version 3\n")
+    print "finished group_bam2isoform, len(isoform_dict) is {}".format(len(isoform_dict))
     tss_tes_stat.close()
     iso_annotated.close()
+    also_out.close()
     bamfile.close()
     if raw_gff3 is not None:
         splice_raw.close()

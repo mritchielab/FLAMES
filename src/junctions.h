@@ -82,3 +82,6 @@ get_gene_blocks
     std::unordered_map<std::string, std::vector<std::string>>   * chr_to_gene,
     std::unordered_map<std::string, std::vector<std::string>>   * gene_to_transcript
 );
+
+void
+junctions_print(Junctions junctions);

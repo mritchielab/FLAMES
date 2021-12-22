@@ -42,11 +42,12 @@ class ParseGFF3 {
         std::ifstream in_stream;
         bool isEmpty = false;
         std::unordered_map<std::string, std::string> parseGTFAttributes(std::string);
+        std::unordered_map<std::string, std::string> parseGFFAttributes(std::string);
     public:
     // ignore gzip files for now
         bool empty();
         ParseGFF3 (const char * filename);
-        GFFRecord nextRecord();
+        GFFRecord nextRecord(bool GFF_style_attributes=false);
         void close();
         std::string formatGFFRecordAttributes(GFFRecord rec);
 };

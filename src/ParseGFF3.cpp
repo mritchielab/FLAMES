@@ -47,6 +47,52 @@ std::unordered_map<std::string, std::string> ParseGFF3::parseGTFAttributes(std::
     return map;
 }
 
+std::unordered_map<std::string, std::string>
+ParseGFF3::parseGFFAttributes
+(
+    std::string attributes
+)
+{
+    /*  
+        some GFF files follow a different attribute convention
+        this parser handles them
+        (the second format on this site: https://m.ensembl.org/info/website/upload/gff.html)
+    */
+
+    std::cout << "started parseGFFAttributes on line:" << attributes << "\n";
+    
+    std::unordered_map<std::string, std::string>
+    map {};
+    std::string
+    key, val;
+    bool found_equals = false;
+    for (auto it = attributes.begin(); it != attributes.end(); ++it) {
+        if (*it == ';') {
+            // add the key and val to the map
+            std::cout << "adding map[" << key << "] = " << val << "\n";
+            map[key] = val;
+            // reset for the next attribute
+            key = "";
+            val = "";
+            found_equals = false;
+        } else if (*it == '=') {
+            // we've found the equals 
+            // (so now we should start appending letters to val)
+            found_equals = true;
+        } else {
+            // add the char to either key or val, 
+            // depending on whether we've reached the equals sign
+            if (!found_equals) {
+                key += *it;
+            } else {
+                val += *it;
+            }
+        }
+    }
+
+    return map;
+}
+
 /// Parse the GFF3 file and generate a GFFRecord struct
 /// containing the required information:
 ///    seqid
@@ -58,7 +104,7 @@ std::unordered_map<std::string, std::string> ParseGFF3::parseGTFAttributes(std::
 ///    strand
 ///    phase
 ///    attributes
-GFFRecord ParseGFF3::nextRecord() {
+GFFRecord ParseGFF3::nextRecord(bool GFF_style_attributes) {
     if (in_stream.is_open()) {
         std::string line;
         std::stringstream token;
@@ -87,6 +133,12 @@ GFFRecord ParseGFF3::nextRecord() {
                 return {};
             }
 
+            
+            // extract the attributes, using the appropriate style
+            auto
+            attributes_map = GFF_style_attributes ?
+                this->parseGFFAttributes(columns[8]) : this->parseGTFAttributes(columns[8]);
+
             return GFFRecord {
                 (columns[0] != ".") ? columns[0] : std::string (), // seqid
                 (columns[1] != ".") ? columns[1] : std::string (), // source
@@ -96,7 +148,7 @@ GFFRecord ParseGFF3::nextRecord() {
                 (columns[5] != ".") ? std::stof(columns[5]) : -1, // score: float
                 (columns[6] != ".") ? columns[6] : std::string (), // strand (+, -, .)
                 (columns[7] != ".") ? columns[7] : std::string (), // phase
-                (columns[8] != ".") ? this->parseGTFAttributes(columns[8]) : std::unordered_map<std::string, std::string> () // atribute unordered_map<string, string>
+                (columns[8] != ".") ? attributes_map : std::unordered_map<std::string, std::string> () // attribute unordered_map<string, string>
             };
         }
 

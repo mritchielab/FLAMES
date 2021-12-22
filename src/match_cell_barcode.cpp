@@ -710,7 +710,8 @@ void match_cell_barcode(String fastq_dir, String stats_file, String out_fastq, S
 
   // free everything when we're done
   free(al);
-  for (const auto & entry : bc_list_ptr) {
+  for (const auto &entry : bc_list_ptr)
+  {
     free(entry);
   }
 

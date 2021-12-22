@@ -52,3 +52,6 @@ parse_gtf_tree(std::string filename);
 
 GFFData
 parse_gff_tree(std::string filename);
+
+void
+log_gff_data(GFFData gff_data, std::string filename);
