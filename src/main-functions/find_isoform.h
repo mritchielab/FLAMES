@@ -6,15 +6,19 @@
 #include <vector>
 #include <Rcpp.h>
 
-#include "classes/Config.h"
-#include "classes/GFFData.h"
-#include "misc.h"
-#include "junctions.h"
-#include "gff3_to_fa.hpp"
+#include "../classes/Config.h"
+#include "../classes/GFFData.h"
+#include "../classes/ReferenceDict.h"
+#include "../classes/GeneAnnoParser/GeneAnnoParser.h"
+#include "../classes/Pos.h"
+
+#include "../utility/misc.h"
+#include "../utility/junctions.h"
+
+#include "../file-handling/gff3_to_fa.h"
+
 #include "group_bam2isoform.h"
-#include "ReferenceDict.hpp"
-#include "GeneAnnoParser/GeneAnnoParser.hpp"
-#include "Pos.h"
+
 
 struct IsoformObjects
 {

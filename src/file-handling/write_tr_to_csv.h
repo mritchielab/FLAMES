@@ -7,7 +7,7 @@
 
 #include <Rcpp.h>
 
-#include "Pos.h"
+#include "../classes/Pos.h"
 
 std::unordered_map<std::string, int>
 write_tr_to_csv_cpp

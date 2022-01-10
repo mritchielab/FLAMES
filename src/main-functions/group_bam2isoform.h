@@ -6,15 +6,16 @@
 #include <stdio.h>
 #include <Rcpp.h>
 
-#include "classes/Config.h"
-#include "GeneBlocks.h"
-#include "junctions.h"
-#include "misc.h"
-#include "classes/Isoforms.h"
-#include "bam.h"
-#include "StartEndPair.h"
-#include "cigars.h"
-#include "BamRecord.h"
+#include "../classes/Config.h"
+#include "../classes/GeneBlocks.h"
+#include "../classes/BamRecord.h"
+#include "../classes/StartEndPair.h"
+#include "../classes/Isoforms.h"
+
+#include "../utility/junctions.h"
+#include "../utility/misc.h"
+#include "../utility/bam.h"
+#include "../utility/cigars.h"
 
 using namespace Rcpp;
 

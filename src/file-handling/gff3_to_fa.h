@@ -3,9 +3,10 @@
 #include <unordered_map>
 #include <fstream>
 #include <sstream>
-#include "Pos.h"
-#include "ReferenceDict.hpp"
-#include "StartEndPair.hpp"
+
+#include "../classes/Pos.h"
+#include "../classes/ReferenceDict.h"
+#include "../classes/StartEndPair.h"
 
 void
 get_transcript_seq

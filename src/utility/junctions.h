@@ -11,8 +11,8 @@
 #include <list>
 #include <algorithm>
 
-#include "GeneBlocks.h"
-#include "StartEndPair.hpp"
+#include "../classes/GeneBlocks.h"
+#include "../classes/StartEndPair.h"
 
 #ifndef JUNCTIONS
 #define JUNCTIONS

@@ -1,7 +1,9 @@
-#include "config.h"
-#include "parse_realigned_bam.hpp"
-#include "write_tr_to_csv.hpp"
-#include "annotate_filter_gff.hpp"
+#include "../classes/Config.h"
+
+#include "../file-handling/parse_realigned_bam.h"
+#include "../file-handling/write_tr_to_csv.h"
+
+#include "annotate_filter_gff.h"
 #include "find_isoform.h"
 
 void

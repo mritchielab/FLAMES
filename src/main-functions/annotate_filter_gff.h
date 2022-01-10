@@ -7,8 +7,7 @@
 #include <limits>
 #include <set>
 
-// #include "parse_gene_anno_native.h"
-#include "classes/GeneAnnoParser/GeneAnnoParser.h"
+#include "../classes/GeneAnnoParser/GeneAnnoParser.h"
 
 void
 annotate_filter_gff

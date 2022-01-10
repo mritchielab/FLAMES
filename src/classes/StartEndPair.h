@@ -2,6 +2,7 @@
 #define START_END_PAIR
 
 #include <vector>
+
 struct StartEndPair {
     int start;
     int end;
@@ -94,8 +95,6 @@ namespace std {
         }
     };
 }
-
-
 
 static bool StartEndPairCompare(const StartEndPair &a, const StartEndPair &b) {
     // compare a and b, return true if a is 'less than' b

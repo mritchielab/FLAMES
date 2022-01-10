@@ -22,7 +22,7 @@ B   BAM_CBACK   9
 */
 
 std::string
-generate_cigar (std::vector<CigarPair> cigar)
+generate_cigar (Cigar cigar)
 {
   /*
     takes a cigar as a vector of pairs of ints,
@@ -39,8 +39,8 @@ generate_cigar (std::vector<CigarPair> cigar)
   return result;
 }
 
-std::vector<CigarPair>
-smooth_cigar (std::vector<CigarPair> cigar, int threshold)
+Cigar
+smooth_cigar (Cigar cigar, int threshold)
 {
   /*
     takes a cigar as a vector of int pairs,
@@ -49,7 +49,7 @@ smooth_cigar (std::vector<CigarPair> cigar, int threshold)
   */
   std::cout << "started smooth_cigar\n";
 
-  std::vector<CigarPair> new_cigar = {cigar[0]};
+  Cigar new_cigar = {cigar[0]};
   
   for (int i = 1; i < cigar.size(); i++) {
     if (new_cigar.back().op != 0) {

@@ -4,7 +4,7 @@
 #include <fstream>
 #include <string>
 
-#include "GFFRecord.hpp"
+#include "GFFRecord.h"
 
 class GFFParser
 {

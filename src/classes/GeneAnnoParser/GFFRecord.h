@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <string>
 #include <vector>
+#include <sstream>
 
 #include "../Parser.h"
 
@@ -35,6 +36,9 @@ class GFFRecord
         AttributesMap
         parseGFFAttributes(std::string attributes);
 
+        std::string
+        printAttributes();
+
     public:
         std::string     seqname;
         std::string     source;
@@ -50,6 +54,9 @@ class GFFRecord
 
         bool
         hasAttribute(std::string attribute);
+
+        std::string
+        print();
 
         GFFRecord(std::string line, std::string attributeStyle="GFF");
         GFFRecord();

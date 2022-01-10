@@ -103,3 +103,37 @@ GFFRecord::hasAttribute(std::string attribute)
 {
     return this->attributes.count(attribute) > 0;
 }
+
+/*
+    prints out the attributes of a record to string format
+*/
+std::string
+GFFRecord::printAttributes()
+{
+	std::stringstream ss;
+	for (auto it : this->attributes) {
+		ss << it.first << "=" << it.second << ";";
+	}
+	return ss.str();
+}
+
+/*
+    prints out the entire record to a string format
+*/
+std::string
+GFFRecord::print()
+{
+	std::string attr = GFFRecord::printAttributes();
+
+	std::stringstream ss;
+	ss << "GFFRecord(seqname=" << this->seqname
+		<< ", source=" << this->source
+		<< ", feature=" << this->feature
+		<< ", start=" << this->start
+		<< ", end=" << this->end 
+		<< ", score=" << this->score 
+		<< ", strand=" << this->strand
+		<< ", frame=" << this->frame
+		<< ", attributes={" << attr << "}";
+	return ss.str();
+}

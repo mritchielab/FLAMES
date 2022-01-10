@@ -1,17 +1,4 @@
-#include <string>
-#include <sstream>
-#include <fstream>
-#include <filesystem>
-#include <map>
-#include <set>
-#include <vector>
-#include <algorithm>
-#include <functional>
-#include <numeric>
-#include <Rcpp.h>
-
 #include "gtf_to_bed.h"
-#include "Parser.hpp"
 
 // inline functions to convert a vector to a comma-separated strings
 static inline std::string vector_to_str(std::vector<int> vector) {

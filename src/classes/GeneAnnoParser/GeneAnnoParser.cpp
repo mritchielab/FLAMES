@@ -155,5 +155,3 @@ GeneAnnoParser::parseGENCODE(GFFRecord * rec)
 {
     std::cout << "running parseGENCODE\n";
 }
-
-/*****************************************************************************/

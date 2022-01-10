@@ -8,8 +8,9 @@
 #include <algorithm>
 #include <fstream>
 #include <sstream>
-#include "Pos.h"
-#include "StartEndPair.hpp"
+
+#include "../classes/Pos.h"
+#include "../classes/StartEndPair.h"
 
 #ifndef ISO
 #define ISO

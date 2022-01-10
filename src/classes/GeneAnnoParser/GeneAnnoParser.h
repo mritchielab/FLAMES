@@ -8,11 +8,12 @@
 #include <iostream>
 #include <Rcpp.h>
 
-#include "GFFRecord.hpp"
-#include "GFFParser.hpp"
-#include "../Parser.hpp"
+#include "GFFRecord.h"
+#include "GFFParser.h"
+
+#include "../Parser.h"
 #include "../Pos.h"
-#include "../StartEndPair.hpp"
+#include "../StartEndPair.h"
 #include "../GFFData.h"
 
 class GeneAnnoParser;

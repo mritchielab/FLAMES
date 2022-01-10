@@ -1,5 +1,3 @@
-#include <Rcpp.h>
-
 #include "Config.h"
 
 Rcpp::List

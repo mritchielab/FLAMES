@@ -1,4 +1,4 @@
-#include "quantification.hpp"
+#include "quantification.h"
 
 // [[Rcpp::export]]
 void
@@ -20,7 +20,7 @@ quantification_cpp
     
     GeneAnnoParser * parser = new GeneAnnoParser(isoform_gff3);
     GFFData tmp = parser->parse();
-    log_gff_data(tmp, "before_quant_cpp.gff");
+    tmp.log("before_quant_cpp.gff");
 
     parser = new GeneAnnoParser(annot);
     GFFData gene_anno = parser->parse();

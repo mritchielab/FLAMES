@@ -5,7 +5,8 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
-#include "fastq_utils.hpp"
+
+#include "../utility/fastq_utils.h"
 
 using namespace Rcpp;
 

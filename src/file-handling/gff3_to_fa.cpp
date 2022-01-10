@@ -1,4 +1,4 @@
-#include "gff3_to_fa.hpp"
+#include "gff3_to_fa.h"
 
 /*  read data from fa_file,
     check for duplicates,

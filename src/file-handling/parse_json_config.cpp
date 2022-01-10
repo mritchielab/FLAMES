@@ -1,13 +1,3 @@
-#include <string>
-#include <iostream>
-#include <Rcpp.h>
-#include <fstream>
-#include <array>
-#include <stdexcept>
-#include <assert.h>
-
-#include "json/json.h"
-#include "config.h"
 #include "parse_json_config.h"
 
 // [[Rcpp::export]]

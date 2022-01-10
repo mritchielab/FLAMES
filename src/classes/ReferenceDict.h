@@ -5,7 +5,7 @@
 #include <vector>
 #include <unordered_map>
 #include "Pos.h"
-#include "StartEndPair.hpp"
+#include "StartEndPair.h"
 
 // a quick struct for a reference dictionary
 struct ReferenceDict {

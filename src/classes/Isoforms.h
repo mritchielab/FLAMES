@@ -8,16 +8,16 @@
 #include <cmath>
 #include <numeric>
 #include <sstream>
-
 #include <iostream>
 #include <fstream>
 
 #include "StartEndPair.h"
 #include "Pos.h"
-#include "../junctions.h"
-#include "../utilities/misc.h"
 #include "GeneBlocks.h"
 #include "Config.h"
+
+#include "../utility/junctions.h"
+#include "../utility/misc.h"
 
 class Isoforms
 {

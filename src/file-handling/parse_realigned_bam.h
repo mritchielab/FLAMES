@@ -5,9 +5,11 @@
 #include <sstream>
 #include <iostream>
 
-#include "bam.h"
-#include "BamRecord.h"
-#include "group_bam2isoform.h"
+#include "../classes/BamRecord.h"
+
+#include "../utility/bam.h"
+
+#include "../main-functions/group_bam2isoform.h"
 
 #ifndef REALIGNED_BAM_DATA
 #define REALIGNED_BAM_DATA

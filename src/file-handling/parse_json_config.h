@@ -3,9 +3,17 @@
 
 #include <string>
 #include <Rcpp.h>
+#include <string>
+#include <iostream>
+#include <Rcpp.h>
+#include <fstream>
+#include <array>
+#include <stdexcept>
+#include <assert.h>
+
+#include "../classes/Config.h"
 
 #include "json/json.h"
-#include "config.h"
 
 Rcpp::List
 parse_json_config_cpp (std::string);

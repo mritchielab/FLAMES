@@ -6,11 +6,11 @@
 #include <codecvt>
 #include <Rcpp.h>
 
-#include "../utilities/bam.h"
-#include "../cigars.h"
-// #include "group_bam2isoform.h"
+#include "../utility/bam.h"
+#include "../utility/cigars.h"
 
-/* holds all of the flags in a bam record
+/* 
+    holds all of the flags in a bam record
 */
 struct Flag {
     bool
@@ -39,7 +39,8 @@ struct Flag {
     supplementary_alignment;
 };
 
-/*  a struct for handling each record in a bam file
+/* 
+    a struct for handling each record in a bam file
 */
 struct BAMRecord {
     std::vector<CigarPair>
