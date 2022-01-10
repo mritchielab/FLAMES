@@ -209,7 +209,7 @@ annotate_filter_gff
 
     GeneAnnoParser * geneAnnoParser = new GeneAnnoParser(isoform_gff);
     GFFData isoform_data = geneAnnoParser->parse();
-    log_gff_data(isoform_data, "before_ann_cpp.gff");
+    isoform_data.log("before_ann_cpp.gff");
 
     auto chr_to_gene = isoform_data.chr_to_gene;
     auto transcript_dict = isoform_data.transcript_dict;

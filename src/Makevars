@@ -7,18 +7,15 @@ CXX_STD = CXX17
 ## The subdirectory paths which contain C files
 CFILES = $(wildcard \
     *.c \
-    classes/*.c \
-    ssw/*.c \
-    utilities/*.c \
+    **/*.c \
+    **/*/*.c \
 )
 
 ## The subdirectory paths which contain C++ files
 CPPFILES = $(wildcard \
     *.cpp \
-    classes/*.cpp \
-    classes/GeneAnnoParser/*.cpp \
-    utilities/*.cpp \
-    ssw/*.cpp \
+    **/*.cpp \
+    **/*/*.cpp \
 )
 
 ## Combine the two sets of files

@@ -1,4 +1,4 @@
-#include "parse_gene_anno_complete.hpp"
+#include "parse_gene_anno_complete.h"
 
 bool
 get_is_GTF(std::string filename)

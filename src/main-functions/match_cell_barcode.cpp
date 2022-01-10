@@ -8,11 +8,11 @@
 #include <string>
 #include <cassert>
 
-#include "edit_dist.h"
-#include "ssw/ssw_cpp.h"
-#include "fastq_utils.hpp"
-using namespace Rcpp;
+#include "../utility/edit_dist.h"
+#include "../utility/ssw/ssw_cpp.h"
+#include "../utility/fastq_utils.h"
 
+using namespace Rcpp;
 
 //static const int MAX_DIST = 2;
 static const int BC_LEN = 16;

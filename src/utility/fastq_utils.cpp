@@ -1,4 +1,4 @@
-#include "fastq_utils.hpp"
+#include "fastq_utils.h"
 
 
 #ifndef INIT_KSEQ

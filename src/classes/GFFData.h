@@ -1,3 +1,6 @@
+#ifndef GFFDATA_H
+#define GFFDATA_H
+
 #include <unordered_map>
 #include <vector>
 #include <string>
@@ -33,3 +36,5 @@ class GFFData
         void
         log(std::string filename);
 };
+
+#endif

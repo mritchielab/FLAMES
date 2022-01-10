@@ -1,4 +1,4 @@
-#include "parse_realigned_bam.hpp"
+#include "parse_realigned_bam.h"
 
 std::unordered_map<std::string, int>
 file_to_map(std::string filename)

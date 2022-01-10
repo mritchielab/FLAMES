@@ -13,10 +13,10 @@
 
 #include "../classes/Config.h"
 
-#include "json/json.h"
+#include "../utility/json/json.h"
 
 Rcpp::List
-parse_json_config_cpp (std::string);
+parse_json_config_cpp(std::string);
 
 int
 verify_json_config(Json::Value);

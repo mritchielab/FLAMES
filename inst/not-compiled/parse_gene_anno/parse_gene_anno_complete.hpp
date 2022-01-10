@@ -14,7 +14,7 @@
 
 
 #include "Pos.h"
-#include "StartEndPair.hpp"
+#include "StartEndPair.h"
 
 class GFFData
 {

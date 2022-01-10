@@ -992,4 +992,3 @@ int32_t mark_mismatch (int32_t ref_begin1,
 	(*cigar) = new_cigar;
 	return mismatch_length;
 }
-
