@@ -1,4 +1,4 @@
-#include "annotate_filter_gff.hpp"
+#include "annotate_filter_gff.h"
 
 void
 annotate_full_splice_match
@@ -207,7 +207,8 @@ annotate_filter_gff
         and filter out transcript by realignment result
     */
 
-    GFFData isoform_data = parse_gff_or_gtf(isoform_gff);
+    GeneAnnoParser * geneAnnoParser = new GeneAnnoParser(isoform_gff);
+    GFFData isoform_data = geneAnnoParser->parse();
     log_gff_data(isoform_data, "before_ann_cpp.gff");
 
     auto chr_to_gene = isoform_data.chr_to_gene;
@@ -222,7 +223,8 @@ annotate_filter_gff
 
 
     std::cout << "ref_gff:" << ref_gff << " (and we're reading it better)\n";
-    GFFData ref_data = parse_gff_or_gtf(ref_gff);
+    geneAnnoParser = new GeneAnnoParser(ref_gff);
+    GFFData ref_data = geneAnnoParser->parse();
 
     auto chr_to_gene_ref = ref_data.chr_to_gene;
     auto transcript_dict_ref = ref_data.transcript_dict;
@@ -265,15 +267,15 @@ annotate_filter_gff
             
             int
             total_cnt = 0,
-            min = 99999999999,
-            max = -1;
+            min = INT_MAX,
+            max = INT_MIN;
             std::stringstream
             gff_line;
 
             if (gene_to_transcript.count(gene) > 0) {
                 for (const auto & tr : gene_to_transcript[gene]) {
                     if (tr_count.count(tr) > 0 && tr_count[tr] >= min_sup_reads) {
-                        gff_line = {};
+                        gff_line = std::stringstream {};
                         gff_line << chr << "\t"
                                 << "FLAMES" << "\t"
                                 << "transcript" << "\t"
@@ -327,7 +329,7 @@ annotate_filter_gff
                 for (const auto & tr : gene_to_transcript_ref[gene]) {
                     if (transcript_dict.count(tr) == 0 && tr_count.count(tr) > 0 && tr_count[tr] >= min_sup_reads) {
                         // then it is not in FLAMES output but it is in tr_count
-                        gff_line = {};
+                        gff_line = std::stringstream {};
                         gff_line << chr << "\t"
                                 << "reference" << "\t"
                                 << "transcript" << "\t"
@@ -349,7 +351,7 @@ annotate_filter_gff
                         max = std::max(max, transcript_to_exon_ref[tr].back().end);
                         int exon_idx = 1;
                         for (const auto & exon : transcript_to_exon_ref[tr]) {
-                            gff_line = std::stringstream{};
+                            gff_line = std::stringstream {};
                             gff_line << chr << "\t"
                                     << "reference" << "\t"
                                     << "exon" << "\t"
@@ -373,7 +375,7 @@ annotate_filter_gff
 
             if (gff_tmp.size() > 0) {
                 if (gene_to_transcript.count(gene) > 0) {
-                    gff_line = std::stringstream{};
+                    gff_line = std::stringstream {};
                     gff_line << chr << "\t"
                             << "FLAMES" << "\t"
                             << "gene" << "\t"
@@ -388,7 +390,7 @@ annotate_filter_gff
                             << "support_count=" << total_cnt;
                     gff_tmp.insert(gff_tmp.begin(), gff_line.str());
                 } else {
-                    gff_line = std::stringstream{};
+                    gff_line = std::stringstream {};
                     gff_line << chr << "\t"
                             << "FLAMES" << "\t"
                             << "gene" << "\t"
@@ -420,7 +422,7 @@ annotate_filter_gff
     }
     iso_annotated.close();
 
-    prt = {};
+    prt = std::stringstream {};
     prt << "\tAfter filtering: "
         << "kept " << iso_kp << " isoforms. "
         << "removed " << iso_rm << " isoforms.\n";

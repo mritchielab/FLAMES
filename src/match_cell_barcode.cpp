@@ -9,9 +9,10 @@
 #include <cassert>
 
 #include "edit_dist.h"
-#include "ssw_cpp.h"
+#include "ssw/ssw_cpp.h"
 #include "fastq_utils.hpp"
 using namespace Rcpp;
+
 
 //static const int MAX_DIST = 2;
 static const int BC_LEN = 16;

@@ -311,7 +311,7 @@ generic_long_pipeline <-
                 transcript_fa,
                 downsample_ratio,
                 config,
-                raw
+                raw_splice_isoform
             )
         
         # realign to transcript

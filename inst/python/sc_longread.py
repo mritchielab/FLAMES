@@ -305,6 +305,8 @@ def blocks_to_junctions(blocks):
     print "finished blocks_to_junctions and produced {}".format(junctions)
     return junctions
 
+# called on a bamnostic.AlignedSegment object through bam fetch
+# rec is AlignedSegment
 def get_blocks(rec):
     blocks = []
     pos = rec.reference_start

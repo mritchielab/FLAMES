@@ -27,9 +27,12 @@ Suggests:
     knitr,
     rmarkdown,
     markdown,
-    BiocFileCache
-LinkingTo: Rcpp, Rhtslib
+    BiocFileCache,
+    testthat (>= 3.0.0),
+	xml2
+LinkingTo: Rcpp, Rhtslib, testthat
 SystemRequirements: GNU make, C++11
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr
 URL: https://github.com/OliverVoogd/FLAMES
+Config/testthat/edition: 3

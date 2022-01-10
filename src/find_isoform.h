@@ -1,18 +1,20 @@
-#include <string>
-#include <iostream>
+#ifndef FIND_ISOFORMS_H
+#define FIND_ISOFORMS_H
+
 #include <unordered_map>
+#include <string>
 #include <vector>
 #include <Rcpp.h>
-#include "config.h"
+
+#include "classes/Config.h"
+#include "classes/GFFData.h"
 #include "misc.h"
-#include "parse_gene_anno_native.h"
 #include "junctions.h"
 #include "gff3_to_fa.hpp"
 #include "group_bam2isoform.h"
 #include "ReferenceDict.hpp"
-
-#ifndef ISOFORM_OBJECTS
-#define ISOFORM_OBJECTS
+#include "GeneAnnoParser/GeneAnnoParser.hpp"
+#include "Pos.h"
 
 struct IsoformObjects
 {
@@ -23,7 +25,6 @@ struct IsoformObjects
     transcript_dict_iso;
 };
 
-#endif
 
 Rcpp::List
 isoform_objects_to_R(IsoformObjects * isoform_objects);
@@ -44,3 +45,6 @@ find_isoform_cpp
     Rcpp::List  config_list,
     std::string raw_splice_isoform
 );
+
+
+#endif // FIND_ISOFORMS_H

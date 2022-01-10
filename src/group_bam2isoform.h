@@ -6,14 +6,15 @@
 #include <stdio.h>
 #include <Rcpp.h>
 
+#include "classes/Config.h"
 #include "GeneBlocks.h"
 #include "junctions.h"
 #include "misc.h"
-#include "Isoforms.h"
+#include "classes/Isoforms.h"
 #include "bam.h"
-#include "StartEndPair.hpp"
+#include "StartEndPair.h"
 #include "cigars.h"
-#include "BamRecord.hpp"
+#include "BamRecord.h"
 
 using namespace Rcpp;
 
@@ -79,8 +80,9 @@ struct DataStruct {
 
 #endif
 
-static int
-fetch_function(const bam1_t *b, void *data);
+// don't need to declare static function inside header
+// static int
+// fetch_function(const bam1_t *b, void *data);
 
 void
 bam_read (std::string bam_in, std::string chr, int s, int e);

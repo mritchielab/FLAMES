@@ -9,9 +9,9 @@
 #include <any>
 #include <set>
 #include <list>
+#include <algorithm>
 
 #include "GeneBlocks.h"
-#include "ParseGFF3.hpp"
 #include "StartEndPair.hpp"
 
 #ifndef JUNCTIONS
