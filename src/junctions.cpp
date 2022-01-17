@@ -181,7 +181,6 @@ remove_similar_tr
     int threshold
 )
 {
-    std::cout << "started remove_similar_tr\n";
     int
     dup_count = 0, t1, t2;
     
@@ -213,15 +212,13 @@ remove_similar_tr
             }
         }
     }
-    std::cout << "\tRemoved " << dup_count << " similar transcripts in gene annotation\n";
-    std::cout << "finished remove_similar_tr\n";
 }
 
 bool
 is_exon_similar
 (
-    std::vector<StartEndPair> &exon1, 
-    std::vector<StartEndPair> &exon2, 
+    const std::vector<StartEndPair> &exon1, 
+    const std::vector<StartEndPair> &exon2, 
     int threshold
 )
 {

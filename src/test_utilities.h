@@ -5,6 +5,7 @@
 #include <map>
 #include <unordered_map>
 #include <vector>
+#include <set>
 
 #include <Rcpp.h>
 
@@ -34,18 +35,34 @@ inline bool compare_vector(const std::vector<T> a, const std::vector<T> b) {
 	return true;
 }
 
+// requires values in each stream to be in the same order
 template <class Iter>
 inline bool compare_stream(const Iter a, const Iter b) {
 	if (a.size() != b.size()) return false;
 
 	for (auto i = a.begin(), j = b.begin(); i != a.end(); i++, j++) {
-		if (i != j) {
+		if (*i != *j) {
 			return false;
 		}
 	}
 
 	return true;
 }
+
+// doesn't expect set values to be in the same orders
+// template <typename T>
+// inline bool compare_set(const std::set<T> a, const std::set<T> b) {
+// 	std::unordered_map<T, int> b_map;
+// 	for (auto j = b.begin(); j != b.end(); j++) {
+// 		b_map[*j] = 1;
+// 	}
+
+// 	for (auto i = a.begin(); i != a.end(); i++) {
+// 		if (b_map[*i] != 1) return false;
+// 	}
+
+// 	return true;
+// }
 
 template <typename T, typename U>
 inline bool compare_map(const std::map<T, std::vector<U>> a, const std::map<T, std::vector<U>> b) {

@@ -180,6 +180,15 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// what
+void what();
+RcppExport SEXP _FLAMES_what() {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    what();
+    return R_NilValue;
+END_RCPP
+}
 // xx
 void xx();
 RcppExport SEXP _FLAMES_xx() {
@@ -206,6 +215,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_FLAMES_print_config_cpp", (DL_FUNC) &_FLAMES_print_config_cpp, 1},
     {"_FLAMES_read_entire_bam", (DL_FUNC) &_FLAMES_read_entire_bam, 2},
     {"_FLAMES_quantification_cpp", (DL_FUNC) &_FLAMES_quantification_cpp, 10},
+    {"_FLAMES_what", (DL_FUNC) &_FLAMES_what, 0},
     {"_FLAMES_xx", (DL_FUNC) &_FLAMES_xx, 0},
     {"run_testthat_tests", (DL_FUNC) &run_testthat_tests, 1},
     {NULL, NULL, 0}

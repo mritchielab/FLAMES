@@ -2,6 +2,7 @@
 #define START_END_PAIR
 
 #include <vector>
+
 struct StartEndPair {
     int start;
     int end;
