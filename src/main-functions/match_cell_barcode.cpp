@@ -1,3 +1,5 @@
+#include "match_cell_barcode.h"
+
 #include <sys/types.h>
 #include <dirent.h>
 #include <errno.h>
@@ -11,6 +13,7 @@
 #include "edit_dist.h"
 #include "ssw_cpp.h"
 #include "fastq_utils.hpp"
+
 using namespace Rcpp;
 
 //static const int MAX_DIST = 2;
