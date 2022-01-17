@@ -11,8 +11,13 @@ GFFRecord::GFFRecord
 )
 {
     auto
-    // columns = parseLine(line, '\t');
     columns = parseLine(line, '\t');
+
+    // if the line is not spaced correctly, the record is considered broken
+    if (columns.size() != 9) {
+        this->broken = true;
+        return;
+    }
     
     this->seqname   = (columns[0] != ".") ? columns[0] : "";
     this->source    = (columns[1] != ".") ? columns[1] : "";
