@@ -6,11 +6,12 @@
 #include <Rcpp.h>
 #include <testthat.h>
 
-#include "ParseGFF3.hpp"
-#include "Parser.h"
+// #include "ParseGFF3.hpp"
+#include "Parser.hpp"
 #include "Pos.h"
 #include "StartEndPair.hpp"
-#include "parse_gene_anno_native.h"
+// #include "parse_gene_anno_native.h"
+#include "GeneAnnoParser/GeneAnnoParser.hpp"
 #include "config.h"
 #include "parse_json_config.h"
 #include "test_utilities.h"
@@ -105,7 +106,8 @@ context("GFF3 File Parsing") {
 	}
 
 	test_that("full gff file parsing yeilds correct results") {
-		GFFData x = parse_gff_or_gtf(get_extdata("isoform_annotated.gff3"));
+		GeneAnnoParser * geneAnnoParser = new GeneAnnoParser(get_extdata("isoform_annotated.gff3"));
+		GFFData x = geneAnnoParser->parse();
 
 		// test if sizes of maps are correct
 		expect_true(x.chr_to_gene.size() == 7);

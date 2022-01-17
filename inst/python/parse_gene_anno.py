@@ -98,10 +98,15 @@ def _parse_gff_tree(gff_f):
     a_s = guess_annotation_source(gff_f)
     
     if a_s == "Ensembl":
+        print "Ensembl"
         for rec in parseGFF3(gff_f):
             #if rec.seqid != "1":  # for test
             #    break
+<<<<<<< HEAD
+            print "\tparsing record"
+=======
             #print rec
+>>>>>>> 3cdda3a84709dbffe8a699761ff941bcfde6cab8
             if "gene_id" in rec.attributes:
                 chr_to_gene.setdefault(rec.seqid,[]).append(rec.attributes["gene_id"])
             if "Parent" in rec.attributes and (rec.attributes["Parent"].split(':')[0] == "gene"):  # transcript

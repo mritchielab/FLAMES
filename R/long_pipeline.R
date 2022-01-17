@@ -140,12 +140,14 @@ generic_long_pipeline_cpp <-
                 config,
                 raw
             )
+        Rsamtools::indexFa(transcript_fa) # index the output fa file
 
         # realign to transcript
         # if (!using_bam && do_read_realign) {
         if (do_read_realign) {
             cat("#### Realign to transcript using minimap2\n")
             minimap2_tr_align_cpp(minimap2_dir, transcript_fa, fastq, tmp_sam)
+            cat('realign done')
             samtools_as_bam(tmp_sam, tmp_bam)
             samtools_sort_index(tmp_bam, realign_bam)
             file.remove(tmp_sam)

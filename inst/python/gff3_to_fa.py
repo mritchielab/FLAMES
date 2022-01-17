@@ -40,13 +40,16 @@ def write_fa(fn, na, seq, warp_len=50):
 
 def get_transcript_seq(fa_file, fa_out_f, chr_to_gene, transcript_dict,
                        gene_to_transcript, transcript_to_exon, ref_dict = None):
+    print "stated get_transcript_seq"
     global_isoform_dict = {}
     global_seq_dict = {}
     fa_dict = {}
     fa_out = open(fa_out_f, "w")
     for ch, seq in get_fa(fa_file):
+        print "\titerating {}".format(ch)
         #print(ch)
         if ch not in chr_to_gene:
+            print "not in chr_to_gene, skipping"
             continue
         # print("start to process chromosome", ch)
         if (not isinstance(chr_to_gene[ch], list)):
@@ -125,6 +128,7 @@ def get_transcript_seq(fa_file, fa_out_f, chr_to_gene, transcript_dict,
 
     for tr_seq in global_seq_dict:
         write_fa(fa_out, global_seq_dict[tr_seq], tr_seq)
+        print "written an fa line"
     fa_out.close()
     #indexing is now handled with Rsamtools back in find_isoform.R
     #print subprocess.check_output(["samtools faidx {}".format(fa_out_f)], shell=True, stderr=subprocess.STDOUT)

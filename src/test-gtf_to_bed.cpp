@@ -6,7 +6,7 @@
 #include "test_utilities.h"
 #include "gtf_to_bed.h"
 #include "ParseGFF3.hpp"
-#include "Parser.h"
+#include "Parser.hpp"
 
 
 context("GTF To Bed file conversion") {
@@ -66,3 +66,12 @@ context("GTF To Bed file conversion") {
 
 }
 
+// [[Rcpp::export]]
+void tester() {
+	std::string input = get_extdata("SIRV_anno.gtf");
+	std::string out = get_tempfile(".bed");
+
+	gtf_to_bed_cpp(input, out, std::string());
+
+	std::cout << out << "\n";
+}

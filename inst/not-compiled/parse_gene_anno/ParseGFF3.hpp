@@ -1,11 +1,15 @@
 #ifndef PARSEGFF3_H
 #define PARSEGFF3_H
 
-
 #include <unordered_map>
 #include <string>
 #include <fstream>
+#include <sstream>
+#include <cstring>
+#include <utility>
+#include <cctype>
 #include <Rcpp.h>
+#include <iostream>
 
 #include "Pos.h"
 
@@ -35,12 +39,13 @@ class ParseGFF3 {
         std::ifstream in_stream;
         bool isEmpty = false;
         std::unordered_map<std::string, std::string> parseGTFAttributes(std::string);
+        std::unordered_map<std::string, std::string> parseGFFAttributes(std::string);
     public:
     // ignore gzip files for now
         bool empty();
         ParseGFF3 (std::string filename);
 		~ParseGFF3();
-        GFFRecord nextRecord();
+        GFFRecord nextRecord(bool GFF_style_attributes=false);
         void close();
         std::string formatGFFRecordAttributes(GFFRecord rec);
 };
