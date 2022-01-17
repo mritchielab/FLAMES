@@ -1,3 +1,10 @@
+#include <vector>
+#include <string>
+#include <codecvt>
+#include <Rcpp.h>
+
+#include "bam.h"
+#include "cigars.h"
 #include "BamRecord.hpp"
 
 /*  take a bam entry,

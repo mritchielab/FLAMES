@@ -1,11 +1,9 @@
-#include <fstream>
-#include <unordered_set>
+#ifndef WRITE_TR_TO_CSV_H
+#define WRITE_TR_TO_CSV_H
+
 #include <unordered_map>
-#include <map>
 #include <vector>
 #include <string>
-
-#include <Rcpp.h>
 
 #include "Pos.h"
 
@@ -27,3 +25,11 @@ write_tr_to_csv_cpp
     bool
     has_UMI=true
 );
+
+int
+umi_dedup (std::vector<std::string>, bool);
+
+int
+edit_distance(std::string, std::string);
+
+#endif // WRITE_TR_TO_CSV_H

@@ -1,5 +1,23 @@
 #include "group_bam2isoform.h"
 
+#include <string>
+#include <map>
+#include <vector>
+#include <fstream>
+#include <iostream>
+#include <stdio.h>
+#include <Rcpp.h>
+
+#include "config.h"
+#include "GeneBlocks.h"
+#include "junctions.h"
+#include "misc.h"
+#include "Isoforms.h"
+#include "bam.h"
+#include "StartEndPair.hpp"
+#include "cigars.h"
+#include "BamRecord.hpp"
+
 static int
 fetch_function(const bam1_t *b, void *data)
 {
@@ -191,21 +209,22 @@ group_bam2isoform (
             for (const auto & rec : records) {
                 Rcpp::Rcout << "\tlooking at rec " << recnum << "\n";
                 recnum++;
-                auto
+				
+                std::vector<CigarPair>
                 cigar_smooth = smooth_cigar(rec.cigar, 20);
-                auto
+                std::string
                 cigar_string = generate_cigar(rec.cigar);
-                auto
+                std::vector<StartEndPair>
                 tmp_blocks = get_blocks(rec);
-                auto
+                Junctions
                 junctions = blocks_to_junctions(tmp_blocks);
                 
-                Rcpp::Rcout << "\t\tadding junctions to isoform:\n{'right':" << junctions.right[0]; 
+                Rcpp::Rcout << "\t\tadding junctions to isoform:\n{'right':" << junctions.right; 
                 Rcpp::Rcout << ", 'junctions': (";
                 for (const auto & j : junctions.junctions) {
                     Rcpp::Rcout << j << ", ";
                 }
-                Rcpp::Rcout << "), 'left': " << junctions.left[0] << "}\n";
+                Rcpp::Rcout << "), 'left': " << junctions.left << "}\n";
                 tmp_isoform->add_isoform(junctions, rec.flag.read_reverse_strand);
             }
 

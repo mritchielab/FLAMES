@@ -9,7 +9,7 @@ find_isoform <- function(gff3,
                          downsample_ratio,
                          config,
                          raw) {
-    ret <- callBasilisk(flames_nopysam_env, function(gff3,
+    ret <- callBasilisk(flames_env, function(gff3,
                                                      genome,
                                                      iso,
                                                      tss,

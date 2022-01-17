@@ -1,25 +1,11 @@
-#include <string>
-#include <map>
-#include <vector>
-#include <fstream>
-#include <iostream>
-#include <stdio.h>
-#include <Rcpp.h>
-
-#include "config.h"
-#include "GeneBlocks.h"
-#include "junctions.h"
-#include "misc.h"
-#include "Isoforms.h"
-#include "bam.h"
-#include "StartEndPair.hpp"
-#include "cigars.h"
-#include "BamRecord.hpp"
-
-using namespace Rcpp;
-
 #ifndef ISOKEY
 #define ISOKEY
+
+#include <string>
+#include <vector>
+
+#include "BamRecord.hpp"
+#include "bam.h"
 
 /*  struct that we can use as a key in a map
 */
@@ -78,8 +64,30 @@ struct DataStruct {
 #define BAM_CEQUAL      7
 #define BAM_CDIFF       8
 
-#endif
+#endif // ISOKEY
 
+#ifndef GROUPBAM2ISOFORM
+#define GROUPBAM2ISOFORM
+
+#include <vector>
+#include <string>
+#include <unordered_map>
+
+#include "BamRecord.hpp"
+#include <string>
+#include <map>
+#include <vector>
+#include <fstream>
+#include <iostream>
+#include <stdio.h>
+#include <Rcpp.h>
+
+#include "config.h"
+#include "GeneBlocks.h"
+#include "junctions.h"
+#include "Isoforms.h"
+#include "StartEndPair.hpp"
+#include "Pos.h"
 // don't need to declare static function inside header
 // static int
 // fetch_function(const bam1_t *b, void *data);
@@ -116,3 +124,5 @@ group_bam2isoform (
     IsoformParameters isoform_parameters,
     std::string raw_gff3
 );
+
+#endif // GROUPBAM2ISOFORM

@@ -124,7 +124,7 @@ find_isoform_cpp
     // }
     
     // remove transcripts that are too similar
-    remove_similar_tr(&gene_to_transcript, &transcript_to_exon, 10); // junctions.h
+    remove_similar_tr(gene_to_transcript, transcript_to_exon, 10); // junctions.h
     
     Rcpp::Rcout << "finished remove_rimilar_tr\n";
     std::unordered_map<std::string, std::vector<StartEndPair>>

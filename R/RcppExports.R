@@ -79,7 +79,7 @@ quantification_cpp <- function(config_list, realign_bam, transcript_fa_idx, isof
     invisible(.Call(`_FLAMES_quantification_cpp`, config_list, realign_bam, transcript_fa_idx, isoform_objects_list, tr_cnt_csv, tr_badcov_cnt_csv, isoform_gff3, annot, isoform_gff3_f, FSM_anno_out))
 }
 
-tester <- function() {
-    invisible(.Call(`_FLAMES_tester`))
+xx <- function() {
+    invisible(.Call(`_FLAMES_xx`))
 }
 

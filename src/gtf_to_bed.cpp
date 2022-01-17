@@ -24,15 +24,15 @@ static inline std::string vector_to_str(std::vector<int> vector) {
 	);
 }
 
-static inline std::string vector_to_str(std::vector<std::string> vector) {
-	return std::accumulate(
-					std::next(vector.begin()), vector.end(), 
-					vector[0], 
-					[](std::string a, std::string b){
-						return a + "," + b;
-					}
-	);
-}
+// static inline std::string vector_to_str(std::vector<std::string> vector) {
+// 	return std::accumulate(
+// 					std::next(vector.begin()), vector.end(), 
+// 					vector[0], 
+// 					[](std::string a, std::string b){
+// 						return a + "," + b;
+// 					}
+// 	);
+// }
 
 static inline std::string set_to_str(std::set<std::string> set) {
 	return std::accumulate(

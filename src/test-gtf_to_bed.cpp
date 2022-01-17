@@ -66,12 +66,3 @@ context("GTF To Bed file conversion") {
 
 }
 
-// [[Rcpp::export]]
-void tester() {
-	std::string input = get_extdata("SIRV_anno.gtf");
-	std::string out = get_tempfile(".bed");
-
-	gtf_to_bed_cpp(input, out, std::string());
-
-	Rcpp::Rcout << out << "\n";
-}

@@ -1,9 +1,8 @@
-#ifndef RECORD
-#define RECORD
+#ifndef BAM_RECORD
+#define BAM_RECORD
 
 #include <vector>
 #include <string>
-#include <codecvt>
 #include <Rcpp.h>
 
 #include "bam.h"
@@ -67,7 +66,16 @@ struct BAMRecord {
     flag;
 };
 
-#endif
+#endif // BAM_RECORD
+
+#ifndef BAM_RECORD_UTILITY
+#define BAM_RECORD_UTILITY
+
+#include <vector>
+#include <Rcpp.h>
+
+#include "bam.h"
+#include "cigars.h"
 
 std::vector<CigarPair>
 generate_cigar_pairs(const bam1_t*);
@@ -77,3 +85,5 @@ read_flag(int);
 
 BAMRecord
 read_record(const bam1_t*, const bam_header_t*);
+
+#endif // BAM_RECORD_UTILITY

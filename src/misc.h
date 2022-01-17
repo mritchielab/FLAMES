@@ -11,22 +11,6 @@
 #include "Pos.h"
 #include "StartEndPair.hpp"
 
-#ifndef ISO
-#define ISO
-
-struct Iso
-{
-  /*
-    a data container used in Isoforms,
-    specifically for known_isoforms and match_known_annotation
-  */
-
-  long support_count;
-  std::string transcript_id; 
-  std::string gene_id;
-};
-
-#endif
 
 std::vector<StartEndPair>
 pairwise (std::vector<int> input);

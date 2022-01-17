@@ -4,17 +4,7 @@
 
 #include "StartEndPair.hpp"
 #include "GeneBlocks.h"
-
-template <typename T>
-bool vecEqual(std::vector<T> a, std::vector<T> b) {
-	if (a.size() != b.size()) return false;
-	for (int i = 0; i < a.size(); i++) {
-		if (a[i] != b[i]) {
-			return false;
-		}
-	}
-	return true;
-}
+#include "test_utilities.h"
 
 context("Data Structure tests") {
 	// add more tests for any auxillirary DS note tested elsewhere
@@ -44,7 +34,7 @@ context("Data Structure tests") {
 			{7, 8},
 			{9, 10}
 		};
-		expect_true(vecEqual<StartEndPair>(v, sorted));
+		expect_true(compare_vector<StartEndPair>(v, sorted));
 	}
 
 	test_that("GeneBlocks builds and adds genes correctly") {

@@ -109,29 +109,29 @@ parse_gtf_tree(std::string filename)
 }
 
 
-//testing 
-static std::string printAttributes(std::unordered_map<std::string, std::string> a) {
-	std::stringstream ss;
-	for (auto it : a) {
-		ss << it.first << "=" << it.second << ";";
-	}
-	return ss.str();
-}
-static std::string printRecord(GFFRecord r) {
-	std::string attr = printAttributes(r.attributes);
+// testing 
+// static std::string printAttributes(std::unordered_map<std::string, std::string> a) {
+// 	std::stringstream ss;
+// 	for (auto it : a) {
+// 		ss << it.first << "=" << it.second << ";";
+// 	}
+// 	return ss.str();
+// }
+// static std::string printRecord(GFFRecord r) {
+// 	std::string attr = printAttributes(r.attributes);
 
-	std::stringstream ss;
-	ss << "GFFRecord(seqid=" << r.seqid
-		<< ", source=" << r.source 
-		<< ", type=" << r.type
-		<< ", start=" << r.start
-		<< ", end=" << r.end 
-		<< ", score=" << r.score 
-		<< ", strand=" << r.strand
-		<< ", phase=" << r.phase
-		<< ", attributes={" << attr << "}" << "\n";
-	return ss.str();
-}
+// 	std::stringstream ss;
+// 	ss << "GFFRecord(seqid=" << r.seqid
+// 		<< ", source=" << r.source 
+// 		<< ", type=" << r.type
+// 		<< ", start=" << r.start
+// 		<< ", end=" << r.end 
+// 		<< ", score=" << r.score 
+// 		<< ", strand=" << r.strand
+// 		<< ", phase=" << r.phase
+// 		<< ", attributes={" << attr << "}" << "\n";
+// 	return ss.str();
+// }
 
 GFFData
 parse_gff_tree(std::string filename)

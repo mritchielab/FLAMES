@@ -94,7 +94,9 @@ def get_args():
     args = parser.parse_args()
     return args
 
-
+# from argparse import Namespace
+# args = Namespace(gff3="/Users/voogd.o/Documents/FLAMESData/data/SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf", infq="/Users/voogd.o/Documents/FLAMESData/data/sc_align2genome.sample.fastq.gz", inbam="", outdir="/Users/voogd.o/Documents/FlamesNew/FLAMES_output/testoutput20-21", genomefa="/Users/voogd.o/Documents/FLAMESData/data/SIRV_isoforms_multi-fasta_170612a.fasta", minimap2_dir="/Users/voogd.o/Documents/GitHub/minimap2", config_file="/Volumes/voogd.o/FLAMES/inst/extdata/SIRV_config_default.json",downsample_ratio=1)
+# tr_cnt = sc_long_pipeline(args)
 def sc_long_pipeline(args):
     # parse configuration file
 
@@ -201,10 +203,13 @@ def sc_long_pipeline(args):
     if config_dict["pipeline_parameters"]["do_transcript_quantification"]:
         print "### generate transcript count matrix", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         bc_tr_count_dict, bc_tr_badcov_count_dict, tr_kept = parse_realigned_bam(realign_bam, transcript_fa_idx, config_dict["isoform_parameters"]["Min_sup_cnt"], config_dict["transcript_counting"]["min_tr_coverage"], config_dict["transcript_counting"]["min_read_coverage"])
-        #realigned_bam_coverage(realign_bam, transcript_fa_idx, args.outdir)
-        tr_cnt = wrt_tr_to_csv(bc_tr_count_dict, transcript_dict_i, tr_cnt_csv, transcript_dict, config_dict["global_parameters"]["has_UMI"])
-        wrt_tr_to_csv(bc_tr_badcov_count_dict, transcript_dict_i, tr_badcov_cnt_csv, transcript_dict, config_dict["global_parameters"]["has_UMI"])
-        annotate_filter_gff(isoform_gff3,args.gff3,isoform_gff3_f,FSM_anno_out,tr_cnt,config_dict["isoform_parameters"]["Min_sup_cnt"])
+        realigned_bam_coverage(realign_bam, transcript_fa_idx, args.outdir)
+        return bc_tr_count_dict, transcript_dict_i, transcript_dict
+		#tr_cnt = wrt_tr_to_csv(bc_tr_count_dict, transcript_dict_i, tr_cnt_csv, transcript_dict, config_dict["global_parameters"]["has_UMI"])
+        
+		
+		# wrt_tr_to_csv(bc_tr_badcov_count_dict, transcript_dict_i, tr_badcov_cnt_csv, transcript_dict, config_dict["global_parameters"]["has_UMI"])
+        # annotate_filter_gff(isoform_gff3,args.gff3,isoform_gff3_f,FSM_anno_out,tr_cnt,config_dict["isoform_parameters"]["Min_sup_cnt"])
     else:
         print "### skip transcript quantification", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 

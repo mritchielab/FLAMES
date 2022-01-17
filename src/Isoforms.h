@@ -4,20 +4,25 @@
 #include <map>
 #include <unordered_map>
 #include <vector>
-#include <algorithm>
-#include <cmath>
-#include <numeric>
-#include <sstream>
-
-#include <iostream>
-#include <fstream>
 
 #include "StartEndPair.hpp"
 #include "Pos.h"
 #include "junctions.h"
-#include "misc.h"
 #include "GeneBlocks.h"
 #include "config.h"
+
+struct Iso
+{
+  /*
+    a data container used in Isoforms,
+    specifically for known_isoforms and match_known_annotation
+  */
+
+  long support_count;
+  std::string transcript_id; 
+  std::string gene_id;
+};
+
 
 class Isoforms
 {
@@ -77,7 +82,7 @@ class Isoforms
     int len();
     void update_all_splice();
 
-    void filter_TSS_TES(std::ofstream * out_f, Junctions known_site={}, float fdr_cutoff=0.01); 
+    void filter_TSS_TES(std::ofstream * out_f, DoubleJunctions known_site={}, float fdr_cutoff=0.01); 
 
     //unused
     std::pair<std::vector<int>, std::unordered_map<int, int>>
@@ -94,4 +99,4 @@ class Isoforms
     std::string isoform_to_gff3(float isoform_pct);
 };
 
-#endif
+#endif // ISOFORMS
