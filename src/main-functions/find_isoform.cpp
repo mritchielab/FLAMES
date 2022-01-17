@@ -109,7 +109,7 @@ log_params
 
 // [[Rcpp::export]]
 Rcpp::List
-find_isoform_cpp
+find_isoform
 (
     std::string gff3, 
     std::string genome_bam, 

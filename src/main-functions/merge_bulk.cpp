@@ -1,12 +1,4 @@
-#include <Rcpp.h>
-#include <R.h>
-#include "zlib.h"
-#include "htslib/kseq.h"
-#include <iostream>
-#include <sstream>
-#include <fstream>
-
-#include "../utility/fastq_utils.h"
+#include "merge_bulk.h"
 
 using namespace Rcpp;
 
@@ -36,7 +28,7 @@ const char * shorten_filename(const char *file_name, int length, int &out_length
 //' @useDynLib FLAMES, .registration=TRUE
 //' @import zlibbioc
 // [[Rcpp::export]]
-void merge_bulk_fastq_cpp(StringVector fastq_files, String out_fastq) {
+void merge_bulk_fastq(StringVector fastq_files, String out_fastq) {
     gzFile fp;
     kseq_t *seq;
     int l;

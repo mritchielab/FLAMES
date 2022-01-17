@@ -1,3 +1,6 @@
+#ifndef QUANTIFICATION_H
+#define QUANTIFICATION_H
+
 #include "../classes/Config.h"
 
 #include "../file-handling/parse_realigned_bam.h"
@@ -7,7 +10,7 @@
 #include "find_isoform.h"
 
 void
-quantification_cpp
+quantification
 (
     Rcpp::List  config_list,
     std::string realign_bam,
@@ -20,3 +23,5 @@ quantification_cpp
     std::string isoform_gff3_f,
     std::string FSM_anno_out
 );
+
+#endif

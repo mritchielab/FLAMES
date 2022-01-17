@@ -2,7 +2,7 @@
 
 // [[Rcpp::export]]
 Rcpp::List
-parse_json_config_cpp(std::string json_file) {
+parse_json_config(std::string json_file) {
     std::ifstream file(json_file);
 
     Json::Value json;
@@ -18,7 +18,7 @@ parse_json_config_cpp(std::string json_file) {
 }
 
 // [[Rcpp::export]]
-void print_config_cpp(Rcpp::List list) {
+void print_config(Rcpp::List list) {
     Config config(list);
     std::cout << "\tParameters in configuration file:\n";
     config.print();
@@ -121,7 +121,8 @@ int verify_json_config(Json::Value json) {
     return 1;
 }
 
-Config load_json_config(Json::Value json) {
+Config 
+load_json_config(Json::Value json) {
     /*
         takes a root json value object,
         reads all the values and populates a config object

@@ -140,8 +140,7 @@ generic_long_pipeline_cpp <-
                 config,
                 raw
             )
-            Rsamtools::indexFa(transcript_fa) # index the output fa file
-
+        Rsamtools::indexFa(transcript_fa) # index the output fa file
 
         # realign to transcript
         # if (!using_bam && do_read_realign) {

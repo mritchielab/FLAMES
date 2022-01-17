@@ -1,3 +1,6 @@
+#ifndef REALIGNED_BAM_DATA
+#define REALIGNED_BAM_DATA
+
 #include <unordered_map>
 #include <string>
 #include <fstream>
@@ -10,9 +13,6 @@
 #include "../utility/bam.h"
 
 #include "../main-functions/group_bam2isoform.h"
-
-#ifndef REALIGNED_BAM_DATA
-#define REALIGNED_BAM_DATA
 
 /*  a struct to package up the output of parse_realigned_bam
 */
@@ -35,8 +35,6 @@ struct ReadDictEntry {
     int         quality;
 };
 
-#endif
-
 std::unordered_map<std::string, int>
 file_to_map(std::string filename);
 
@@ -44,12 +42,11 @@ file_to_map(std::string filename);
 void
 read_entire_bam
 (
-    std::string bam_in, std::string log_out
+    std::string bam_in, 
+    std::string log_out
 );
 
 
-int
-query_len(std::string cigar_string, bool hard_clipping);
 
 
 RealignedBamData
@@ -64,7 +61,13 @@ parse_realigned_bam
 );
 
 int
-query_len(std::string cigar_string, bool hard_clipping=false);
+query_len
+(
+    std::string cigar_string, 
+    bool hard_clipping=false
+);
 
 std::unordered_map<std::string, std::string>
 make_bc_dict(std::string bc_anno);
+
+#endif

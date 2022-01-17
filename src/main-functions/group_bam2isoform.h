@@ -1,3 +1,6 @@
+#ifndef GROUP_BAM2ISOFORM_H
+#define GROUP_BAM2ISOFORM_H
+
 #include <string>
 #include <map>
 #include <vector>
@@ -117,3 +120,5 @@ group_bam2isoform (
     IsoformParameters isoform_parameters,
     std::string raw_gff3
 );
+
+#endif

@@ -2,7 +2,7 @@
 
 // [[Rcpp::export]]
 void
-quantification_cpp
+quantification
 (
     Rcpp::List  config_list,
     std::string realign_bam,
