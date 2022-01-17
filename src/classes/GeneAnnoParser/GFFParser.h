@@ -23,6 +23,8 @@ class GFFParser
         parseNextRecord();
         bool
         isEmpty();
+        std::string
+        guessAnnotationSource();
 
         GFFParser(std::string filename, std::string attributeStyle="GFF");
 };

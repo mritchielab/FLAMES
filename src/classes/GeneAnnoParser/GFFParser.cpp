@@ -50,3 +50,31 @@ GFFParser::isEmpty()
 {
     return this->empty;
 }
+
+/*
+    parses the file and checks for "GENCODE" or "Ensembl"
+    surely there's a better way to do this
+*/
+std::string 
+GFFParser::guessAnnotationSource()
+{
+    int idx = 0;
+    std::string line;
+    while (getline(file, line)) {
+        if (line.find("GENCODE") != std::string::npos) {
+            std::cout << "Parse GENCODE annotation\n";
+			file.close();
+            return "GENCODE";
+        } else if (line.find("1\tEnsembl") != std::string::npos) {
+            std::cout << "Parse Ensembl annotation\n";
+			file.close();
+            return "Ensembl";
+        }
+
+        if (idx++ > 1000) {
+            break;
+        }
+    }
+	file.close();
+    return "Ensembl";
+}

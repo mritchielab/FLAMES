@@ -10,11 +10,15 @@
 
 /*****************************************************************************/
 
+/*
+    initialises the GeneAnnoParser
+*/
 GeneAnnoParser::GeneAnnoParser(std::string filename)
 {
     this->filename = filename;
     this->isGTF = true;
     this->annotationSource = "Ensembl";
+    this->gffParser = new GFFParser(this->filename, "GTF");
 }
 
 /*
@@ -24,20 +28,17 @@ GFFData
 GeneAnnoParser::parse()
 {
     std::cout << "started parse()\n";
-    // set up the file parser
-    GFFParser * fileParser = new GFFParser(filename, "GTF");
-
     // work out which parsing function should be used
     void (GeneAnnoParser::*parseFunction)(GFFRecord*) =
         this->selectParseFunction();
 
     // start parsing through
-    GFFRecord rec = fileParser->parseNextRecord();
-    while (!(fileParser->isEmpty())) {
+    GFFRecord rec = gffParser->parseNextRecord();
+    while (!(gffParser->isEmpty())) {
         if (!rec.broken) {
             (this->*parseFunction)(&rec);
         }
-        rec = fileParser->parseNextRecord();
+        rec = gffParser->parseNextRecord();
     }
 
     this->gffData.removeTranscriptDuplicates();
@@ -55,6 +56,7 @@ GeneAnnoParser::selectParseFunction()
     if (this->isGTF) {
         parseFunction = &GeneAnnoParser::parseGTF;
     } else {
+        this->annotationSource = gffParser->guessAnnotationSource();
         if (this->annotationSource == "Ensembl") {
             parseFunction = &GeneAnnoParser::parseEnsembl;
         } else {

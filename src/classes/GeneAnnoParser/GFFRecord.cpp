@@ -10,6 +10,12 @@ GFFRecord::GFFRecord
     std::string attributeStyle
 )
 {
+    // if the line is a comment, the record is considered broken
+    if (line.size() >= 1 && line[0] == '#') {
+        this->broken = true;
+        return;
+    }
+     
     auto
     columns = parseLine(line, '\t');
 

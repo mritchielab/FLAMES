@@ -30,6 +30,7 @@ class GeneAnnoParser
         GFFData     gffData;
         bool        isGTF;
         std::string annotationSource;
+        GFFParser * gffParser;
 
     public:
         GFFData
