@@ -63,11 +63,14 @@ log_params
     transcript_to_junctions,
 
     std::unordered_map<std::string, Pos> *
-    transcript_dict
+    transcript_dict,
+
+    std::string
+    filename
 )
 {
     std::ofstream
-    outfile ("outfile.txt");
+    outfile (filename);
 
     outfile << "chr_to_blocks:\n";
     for (const auto & [chr, blocks] : *chr_to_blocks) {
@@ -125,9 +128,8 @@ find_isoform
     std::cout << "#### Reading Gene Annotations\n";
 
     // first, extract from the gff file
-    GeneAnnoParser * geneAnnoParser = new GeneAnnoParser(gff3);
-    GFFData gene_anno = geneAnnoParser->parse();
-    delete(geneAnnoParser);
+    GFFData gene_anno = parseGeneAnno(gff3);
+    gene_anno.log("outfile.txt");
 
     gene_anno.log("initial_gff_log_cpp_new.txt");
 
@@ -217,8 +219,7 @@ find_isoform
     system(command.c_str());
 
     std::cout << "started parsing isoform_gff3\n";
-    geneAnnoParser = new GeneAnnoParser(isoform_gff3);
-    GFFData isoform_gff = geneAnnoParser->parse();
+    GFFData isoform_gff = parseGeneAnno(isoform_gff3);
     isoform_gff.log("final_gff_log_cpp.txt");
 
     auto chr_to_gene_iso        = isoform_gff.chr_to_gene;

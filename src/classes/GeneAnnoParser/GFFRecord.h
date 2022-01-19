@@ -28,7 +28,7 @@ class GFFRecord
 
     private:
         AttributesMap
-        parseAttributes(std::string attributes, std::string attributeStyle);
+        parseAttributes(std::string attributes, bool isGTF);
 
         AttributesMap
         parseGTFAttributes(std::string attributes);
@@ -58,7 +58,7 @@ class GFFRecord
         std::string
         print();
 
-        GFFRecord(std::string line, std::string attributeStyle="GFF");
+        GFFRecord(std::string line, bool isGTF=false);
         GFFRecord();
 };
 

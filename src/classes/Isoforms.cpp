@@ -1401,6 +1401,7 @@ void Isoforms::match_known_annotation
       }
     
       // and then update the entry with iso_key
+      std::cout << "updating ge_dict key\n";
       this->ge_dict[iso_val.gene_id].push_back(iso_key);
 
       if (!this->parameters.STRAND_SPECIFIC) {
@@ -1414,6 +1415,7 @@ void Isoforms::match_known_annotation
     }
   }
 
+  std::cout << "going through this->known_isoforms (size " << this->known_isoforms.size() << ")\n";
   for (const auto & [iso_key, iso_val] : this->known_isoforms) {
     // add the iso_val's gene_id to ge_dict if it's not already there
     if (this->ge_dict.count(iso_val.gene_id) == 0) {

@@ -18,12 +18,10 @@ quantification
 {
     std::cout << "#### Generating transcript count matrix\n";
     
-    GeneAnnoParser * parser = new GeneAnnoParser(isoform_gff3);
-    GFFData tmp = parser->parse();
+    GFFData tmp = parseGeneAnno(isoform_gff3);
     tmp.log("before_quant_cpp.gff");
 
-    parser = new GeneAnnoParser(annot);
-    GFFData gene_anno = parser->parse();
+    GFFData gene_anno = parseGeneAnno(annot);
     auto transcript_to_exon = gene_anno.transcript_to_exon;
     std::cout << "transcript_to_exon is currently " << transcript_to_exon.size() << " isoforms long\n";
 

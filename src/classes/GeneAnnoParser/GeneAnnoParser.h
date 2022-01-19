@@ -52,13 +52,13 @@ class GeneAnnoParser
         parseGENCODE(GFFRecord * rec);
 
         GeneAnnoParser(std::string filename);
+        ~GeneAnnoParser();
 };
 
-void
-log_gff_data
-(
-    GFFData gff_data, 
-    std::string filename
-);
+GFFData
+parseGeneAnno(std::string filename);
 
-#endif
+bool
+isFileGTF(std::string filename);
+
+#endif // GENEANNOPARSER_H

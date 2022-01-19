@@ -32,6 +32,7 @@ get_transcript_seq
     // load in data from the FASTA input
     std::unordered_map<std::string, std::string>
     raw_dict = get_fa_simple(fa_file);
+    
 
     // then look through all the data we just loaded in
     std::cout << "iterating raw_dict, size " << raw_dict.size() << "\n";

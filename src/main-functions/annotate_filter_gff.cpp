@@ -207,8 +207,7 @@ annotate_filter_gff
         and filter out transcript by realignment result
     */
 
-    GeneAnnoParser * geneAnnoParser = new GeneAnnoParser(isoform_gff);
-    GFFData isoform_data = geneAnnoParser->parse();
+    GFFData isoform_data = parseGeneAnno(isoform_gff);
     isoform_data.log("before_ann_cpp.gff");
 
     auto chr_to_gene = isoform_data.chr_to_gene;
@@ -223,8 +222,7 @@ annotate_filter_gff
 
 
     std::cout << "ref_gff:" << ref_gff << " (and we're reading it better)\n";
-    geneAnnoParser = new GeneAnnoParser(ref_gff);
-    GFFData ref_data = geneAnnoParser->parse();
+    GFFData ref_data = parseGeneAnno(ref_gff);
 
     auto chr_to_gene_ref = ref_data.chr_to_gene;
     auto transcript_dict_ref = ref_data.transcript_dict;

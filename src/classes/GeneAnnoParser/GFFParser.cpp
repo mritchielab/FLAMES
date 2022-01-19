@@ -3,12 +3,12 @@
 /*
     initialises the GFFParser, opening the file
 */
-GFFParser::GFFParser(std::string filename, std::string attributeStyle)
+GFFParser::GFFParser(std::string filename, bool isGTF)
 {
     // open the file
-    this->file = std::ifstream(filename);
+    this->file  = std::ifstream(filename);
     this->empty = false;
-    this->attributeStyle = attributeStyle;
+    this->isGTF = isGTF;
 }
 
 /*
@@ -26,7 +26,7 @@ GFFParser::parseNextRecord()
                 return GFFRecord();
             }
             // turn each line into a record
-            GFFRecord * rec = new GFFRecord(line, this->attributeStyle);
+            GFFRecord * rec = new GFFRecord(line, this->isGTF);
             return *rec;
         }
         // if we are out of lines, return nothing

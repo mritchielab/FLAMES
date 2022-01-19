@@ -6,9 +6,19 @@
 GeneAnnoParser::GeneAnnoParser(std::string filename)
 {
     this->filename = filename;
-    this->isGTF = true;
+    // work out if the file is a GTF or not
+    this->isGTF = isFileGTF(filename);
     this->annotationSource = "Ensembl";
-    this->gffParser = new GFFParser(this->filename, "GTF");
+    this->gffParser = new GFFParser(this->filename, isGTF);
+}
+
+/*
+    destroys the GeneAnnoParser
+*/
+GeneAnnoParser::~GeneAnnoParser()
+{
+    // destroy the associated GFFParser
+    delete(this->gffParser);
 }
 
 /*
@@ -139,4 +149,27 @@ void
 GeneAnnoParser::parseGENCODE(GFFRecord * rec)
 {
     std::cout << "running parseGENCODE, todo\n";
+}
+
+/*
+    wrapper for parsing a GFF or a GTF into a GFFData object
+*/
+GFFData
+parseGeneAnno(std::string filename)
+{
+    GeneAnnoParser * geneAnnoParser = new GeneAnnoParser(filename);
+    GFFData gffData = geneAnnoParser->parse();
+    delete(geneAnnoParser);
+    return gffData;
+}
+
+/*
+    checks whether a filename contains "gtf"
+    I guess it could be fooled if your GFF has ".gtf" somewhere in its name...
+    but otherwise it'll do
+*/
+bool
+isFileGTF(std::string filename)
+{
+    return filename.find(".gtf") != std::string::npos;
 }

@@ -15,7 +15,7 @@ class GFFParser
     private:
         std::ifstream   file;
         bool            empty;
-        std::string     attributeStyle;
+        bool            isGTF;
         std::string     annotationSource;
 
     public:
@@ -26,7 +26,7 @@ class GFFParser
         std::string
         guessAnnotationSource();
 
-        GFFParser(std::string filename, std::string attributeStyle="GFF");
+        GFFParser(std::string filename, bool isGTF);
 };
 
 #endif

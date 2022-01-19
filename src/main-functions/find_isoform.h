@@ -50,5 +50,23 @@ find_isoform
     std::string raw_splice_isoform
 );
 
+void
+log_params
+(
+    std::unordered_map<std::string, std::vector<GeneBlocks>> *
+    chr_to_blocks,
+
+    std::unordered_map<std::string, std::vector<StartEndPair>> *
+    gene_dict,
+
+    std::unordered_map<std::string, Junctions> *
+    transcript_to_junctions,
+
+    std::unordered_map<std::string, Pos> *
+    transcript_dict,
+
+    std::string
+    filename="group_bam2isoform_param_cpp.txt"
+);
 
 #endif // FIND_ISOFORMS_H
