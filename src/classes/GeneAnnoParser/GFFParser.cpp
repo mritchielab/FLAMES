@@ -18,15 +18,11 @@ GFFParser::GFFParser(std::string filename, std::string attributeStyle)
 GFFRecord
 GFFParser::parseNextRecord()
 {
-    std::cout << "started parseNextRecord\n";
     if (file.is_open()) {
-        std::cout << "file is open\n";
         std::string line;
         if (getline(file, line)) {
-            std::cout << "gotline successfully, and it was:\n";
             std::cout << line << "\n";
             if (line[0] == '#') {
-                std::cout << "skipping commment\n";
                 return GFFRecord();
             }
             // turn each line into a record
@@ -35,10 +31,8 @@ GFFParser::parseNextRecord()
         }
         // if we are out of lines, return nothing
         this->empty = true;
-        std::cout << "couldn't getline, file isEmpty\n";
         return GFFRecord();
     }
-    std::cout << "file is not open\n";
     return GFFRecord();
 }
 
@@ -62,11 +56,9 @@ GFFParser::guessAnnotationSource()
     std::string line;
     while (getline(file, line)) {
         if (line.find("GENCODE") != std::string::npos) {
-            std::cout << "Parse GENCODE annotation\n";
 			file.close();
             return "GENCODE";
         } else if (line.find("1\tEnsembl") != std::string::npos) {
-            std::cout << "Parse Ensembl annotation\n";
 			file.close();
             return "Ensembl";
         }

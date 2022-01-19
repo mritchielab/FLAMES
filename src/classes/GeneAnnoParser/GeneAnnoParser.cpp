@@ -1,15 +1,5 @@
 #include "GeneAnnoParser.h"
 
-// int
-// main()
-// {
-//     GeneAnnoParser * 
-//     geneAnnoParser = new GeneAnnoParser("data/isoform_annotated.gff3");
-//     geneAnnoParser->parse();
-// }
-
-/*****************************************************************************/
-
 /*
     initialises the GeneAnnoParser
 */
@@ -27,7 +17,6 @@ GeneAnnoParser::GeneAnnoParser(std::string filename)
 GFFData
 GeneAnnoParser::parse()
 {
-    std::cout << "started parse()\n";
     // work out which parsing function should be used
     void (GeneAnnoParser::*parseFunction)(GFFRecord*) =
         this->selectParseFunction();
@@ -72,11 +61,9 @@ GeneAnnoParser::selectParseFunction()
 void
 GeneAnnoParser::parseGTF(GFFRecord * rec)
 {
-    std::cout << "running parseGTF on " << rec->feature << "\n";
     // first check that the record has a gene_id
     if (!rec->hasAttribute("gene_id")) {
-            std::cout << "no gene_id on a " << rec->feature << "\n";
-            // Rcpp::warning("Record did not have 'gene_id' attribute: %s", rec->format_attributes());
+            std::cout << "Record did not have 'gene_id' attribute: " << rec->printAttributes() << "\n";
             return;
     }
     auto gene_id = rec->attributes["gene_id"];
@@ -100,7 +87,6 @@ GeneAnnoParser::parseGTF(GFFRecord * rec)
     StartEndPair startEnd = rec->feature == "transcript" ? 
         (StartEndPair){rec->start-1, rec->end} : 
         (StartEndPair){-1, 1};
-    std::cout << "added to transcript_dict\n";
     this->gffData.transcript_dict[transcript_id] = {
         rec->seqname,
         startEnd.start,
@@ -116,7 +102,6 @@ GeneAnnoParser::parseGTF(GFFRecord * rec)
     }
 
     // found an exon
-    std::cout << "added to transcript_to_exon\n";
     this->gffData.transcript_to_exon[transcript_id].push_back({
         rec->start - 1,
         rec->end
@@ -129,8 +114,6 @@ GeneAnnoParser::parseGTF(GFFRecord * rec)
 void
 GeneAnnoParser::parseEnsembl(GFFRecord * rec)
 {
-    std::cout << "running parseEnsembl on " << rec->feature << "\n";
-
     if (rec->feature == "gene") {
         // found a gene
         this->gffData.chr_to_gene[rec->seqname].push_back(rec->attributes["gene_id"]);
@@ -155,5 +138,5 @@ GeneAnnoParser::parseEnsembl(GFFRecord * rec)
 void
 GeneAnnoParser::parseGENCODE(GFFRecord * rec)
 {
-    std::cout << "running parseGENCODE\n";
+    std::cout << "running parseGENCODE, todo\n";
 }

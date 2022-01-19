@@ -121,4 +121,4 @@ group_bam2isoform (
     std::string raw_gff3
 );
 
-#endif
+#endif // GROUP_BAM2ISOFORM_H

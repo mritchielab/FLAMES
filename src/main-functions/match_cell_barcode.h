@@ -95,4 +95,4 @@ match_cell_barcode
     int UMI_LEN = 10
 );
 
-#endif
+#endif // MATCH_CELL_BARCODE_H
