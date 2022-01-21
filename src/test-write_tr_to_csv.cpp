@@ -7,9 +7,9 @@
 #include <testthat.h>
 #include <Rcpp.h>
 
-#include "Pos.h"
+#include "classes/Pos.h"
 #include "test_utilities.h"
-#include "write_tr_to_csv.hpp"
+#include "file-handling/write_tr_to_csv.h"
 
 context("Transcript writing and utility functions") {
 	test_that("edit_distance calculates correctly") {

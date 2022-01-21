@@ -1,7 +1,15 @@
 #include "GFFParser.h"
 
+#include <fstream>
+#include <string>
+
+#include <Rcpp.h>
+
+#include "GFFRecord.h"
+
 /*
     initialises the GFFParser, opening the file
+	attributeStyle can be either GFF or GTF (this should really be a bool flag)
 */
 GFFParser::GFFParser(std::string filename, std::string attributeStyle)
 {
@@ -18,27 +26,22 @@ GFFParser::GFFParser(std::string filename, std::string attributeStyle)
 GFFRecord
 GFFParser::parseNextRecord()
 {
-    std::cout << "started parseNextRecord\n";
     if (file.is_open()) {
-        std::cout << "file is open\n";
         std::string line;
         if (getline(file, line)) {
-            std::cout << "gotline successfully, and it was:\n";
-            std::cout << line << "\n";
-            if (line[0] == '#') {
-                std::cout << "skipping commment\n";
-                return GFFRecord();
-            }
+			while (line[0] == '#')	 {
+				getline(file, line);
+			}
             // turn each line into a record
-            GFFRecord * rec = new GFFRecord(line, this->attributeStyle);
-            return *rec;
-        }
-        // if we are out of lines, return nothing
-        this->empty = true;
-        std::cout << "couldn't getline, file isEmpty\n";
-        return GFFRecord();
+            GFFRecord rec(line, this->attributeStyle);
+            return rec;
+        } else {
+			// if we are out of lines, return nothing
+			this->empty = true;
+			return GFFRecord();
+		}
     }
-    std::cout << "file is not open\n";
+    Rcpp::Rcout << "file is not open\n";
     return GFFRecord();
 }
 
@@ -49,4 +52,12 @@ bool
 GFFParser::isEmpty()
 {
     return this->empty;
+}
+
+GFFParser::~GFFParser() {
+	this->close();
+}
+
+void GFFParser::close() {
+	file.close();
 }

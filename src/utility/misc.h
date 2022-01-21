@@ -5,11 +5,9 @@
 */
 #include <vector>
 #include <string>
-#include <algorithm>
-#include <fstream>
-#include <sstream>
-#include "Pos.h"
-#include "StartEndPair.hpp"
+#include <utility>
+
+#include "../classes/StartEndPair.h"
 
 
 std::vector<StartEndPair>

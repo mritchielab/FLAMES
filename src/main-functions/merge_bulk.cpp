@@ -1,13 +1,15 @@
+#include "merge_bulk.h"
+
+#include <iostream>
+#include <sstream>
+#include <fstream>
+
 #include <Rcpp.h>
 #include <R.h>
 #include "zlib.h"
 #include "htslib/kseq.h"
-#include <iostream>
-#include <sstream>
-#include <fstream>
-#include "fastq_utils.hpp"
 
-using namespace Rcpp;
+#include "../utility/fastq_utils.h"
 
 const char * shorten_filename(const char *file_name, int length, int &out_length) {
     int slash = -1;
@@ -35,7 +37,7 @@ const char * shorten_filename(const char *file_name, int length, int &out_length
 //' @useDynLib FLAMES, .registration=TRUE
 //' @import zlibbioc
 // [[Rcpp::export]]
-void merge_bulk_fastq_cpp(StringVector fastq_files, String out_fastq) {
+void merge_bulk_fastq(Rcpp::StringVector fastq_files, Rcpp::String out_fastq) {
     gzFile fp;
     kseq_t *seq;
     int l;
@@ -55,7 +57,7 @@ void merge_bulk_fastq_cpp(StringVector fastq_files, String out_fastq) {
 
         read_counts[i] = 0;
 
-        String file_name = fastq_files(i);
+        Rcpp::String file_name = fastq_files(i);
         const char *c_file_name = file_name.get_cstring();
         int file_name_length = fastq_files(i).size();
         //shorten the file name to only include local name (not full path name)
@@ -81,7 +83,7 @@ void merge_bulk_fastq_cpp(StringVector fastq_files, String out_fastq) {
         kseq_destroy(seq);
         gzclose(fp);
 
-        Rcout << c_file_name << ": " << read_counts[i] << "\n";
+        Rcpp::Rcout << c_file_name << ": " << read_counts[i] << "\n";
     }
 
     free(read_counts);

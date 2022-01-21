@@ -10,12 +10,12 @@
 #include <iostream>
 #include <fstream>
 
-#include "StartEndPair.hpp"
+#include "StartEndPair.h"
 #include "Pos.h"
-#include "junctions.h"
-#include "misc.h"
+#include "../utility/junctions.h"
+#include "../utility/misc.h"
 #include "GeneBlocks.h"
-#include "config.h"
+#include "Config.h"
 
 
 /* 

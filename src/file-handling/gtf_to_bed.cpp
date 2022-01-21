@@ -11,7 +11,7 @@
 #include <Rcpp.h>
 
 #include "gtf_to_bed.h"
-#include "Parser.h"
+#include "../classes/Parser.h"
 
 // inline functions to convert a vector to a comma-separated strings
 static inline std::string vector_to_str(std::vector<int> vector) {
@@ -138,7 +138,7 @@ static void csv_write_row (std::ofstream& file, std::vector<std::string> data) {
 
 // [[Rcpp::export]]
 void
-gtf_to_bed_cpp(std::string in_gtf, std::string out_bed, std::string chrom_sizes_file)
+gtf_to_bed(std::string in_gtf, std::string out_bed, std::string chrom_sizes_file)
 {
 	std::ifstream gtf (in_gtf);
 	std::ofstream bed (out_bed);

@@ -11,9 +11,9 @@
 #include <set>
 #include <list>
 
-#include "GeneBlocks.h"
-#include "ParseGFF3.hpp"
-#include "StartEndPair.hpp"
+#include "../classes/GeneBlocks.h"
+// #include "ParseGFF3.hpp"
+#include "../classes/StartEndPair.h"
 
 
 int 

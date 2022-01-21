@@ -7,8 +7,8 @@
 #include <Rcpp.h>
 
 #include "test_utilities.h"
-#include "StartEndPair.hpp"
-#include "junctions.h"
+#include "classes/StartEndPair.h"
+#include "utility/junctions.h"
 
 context("Junctions functions") {
 	test_that("take_closest takes the closest") {
@@ -30,7 +30,7 @@ context("Junctions functions") {
 		Junctions juncs = blocks_to_junctions(blocks);
 		expect_true(juncs.left == 1);
 		expect_true(juncs.right == 23488);
-		expect_true(compare_vector<int>(juncs.junctions, {20, 30, 100, 190, 3938, 3999}));
+		expect_true(compare_unordered<int>(juncs.junctions, {20, 30, 100, 190, 3938, 3999}));
 	}
 
 	test_that("get_gene_blocks produces correct blocks") {
@@ -69,14 +69,17 @@ context("Junctions functions") {
 			s3 = chr_to_blocks["SIRV3"][0],
 			s6 = chr_to_blocks["SIRV6"][0];
 		// test the contents of transcript_list
-		expect_true(compare_vector(s5.transcript_list, std::vector<std::string> {"SIRV508", "SIRV509", "SIRV502", "SIRV503", "SIRV501", "SIRV506", "SIRV507", "SIRV504", "SIRV505", "SIRV512", "SIRV510"}));
-		expect_true(compare_vector(s3.transcript_list, std::vector<std::string> {"SIRV310", "SIRV311", "SIRV308", "SIRV309", "SIRV304", "SIRV305", "SIRV306", "SIRV307", "SIRV301", "SIRV302", "SIRV303"}));
-		expect_true(compare_vector(s6.transcript_list, std::vector<std::string> {"SIRV618", "SIRV617", "SIRV601", "SIRV616", "SIRV603", "SIRV602", "SIRV605", "SIRV604", "SIRV607", "SIRV606", "SIRV609", "SIRV608", "SIRV614", "SIRV615", "SIRV612", "SIRV613", "SIRV610", "SIRV611"}));
+		expect_true(compare_unordered<std::string>(s5.transcript_list, std::vector<std::string> {"SIRV508", "SIRV509", "SIRV502", "SIRV503", "SIRV501", "SIRV506", "SIRV507", "SIRV504", "SIRV505", "SIRV512", "SIRV510"}));
+		expect_true(compare_unordered<std::string>(s3.transcript_list, std::vector<std::string> {"SIRV310", "SIRV311", "SIRV308", "SIRV309", "SIRV304", "SIRV305", "SIRV306", "SIRV307", "SIRV301", "SIRV302", "SIRV303"}));
+		expect_true(compare_unordered<std::string>(s6.transcript_list, std::vector<std::string> {"SIRV618", "SIRV617", "SIRV601", "SIRV616", "SIRV603", "SIRV602", "SIRV605", "SIRV604", "SIRV607", "SIRV606", "SIRV609", "SIRV608", "SIRV614", "SIRV615", "SIRV612", "SIRV613", "SIRV610", "SIRV611"}));
 
 		// test the contents of gene_to_transcript
-		expect_true(compare_map(s5.gene_to_transcript, { {"SIRV5", {"SIRV508", "SIRV509", "SIRV502", "SIRV503", "SIRV501", "SIRV506", "SIRV507", "SIRV504", "SIRV505", "SIRV512", "SIRV510"}} } ));
-		expect_true(compare_map(s3.gene_to_transcript, { {"SIRV3", {"SIRV310", "SIRV311", "SIRV308", "SIRV309", "SIRV304", "SIRV305", "SIRV306", "SIRV307", "SIRV301", "SIRV302", "SIRV303"}} } ));
-		expect_true(compare_map(s6.gene_to_transcript, { {"SIRV6", {"SIRV618", "SIRV617", "SIRV601", "SIRV616", "SIRV603", "SIRV602", "SIRV605", "SIRV604", "SIRV607", "SIRV606", "SIRV609", "SIRV608", "SIRV614", "SIRV615", "SIRV612", "SIRV613", "SIRV610", "SIRV611"}} }));
+		std::map<std::string, std::vector<std::string>> t4 { {"SIRV5", {"SIRV508", "SIRV509", "SIRV502", "SIRV503", "SIRV501", "SIRV506", "SIRV507", "SIRV504", "SIRV505", "SIRV512", "SIRV510"}} };
+		std::map<std::string, std::vector<std::string>> t5 { {"SIRV3", {"SIRV310", "SIRV311", "SIRV308", "SIRV309", "SIRV304", "SIRV305", "SIRV306", "SIRV307", "SIRV301", "SIRV302", "SIRV303"}} };
+		std::map<std::string, std::vector<std::string>> t6 { {"SIRV6", {"SIRV618", "SIRV617", "SIRV601", "SIRV616", "SIRV603", "SIRV602", "SIRV605", "SIRV604", "SIRV607", "SIRV606", "SIRV609", "SIRV608", "SIRV614", "SIRV615", "SIRV612", "SIRV613", "SIRV610", "SIRV611"}} };
+		expect_true(compare_map(s5.gene_to_transcript, t4));
+		expect_true(compare_map(s3.gene_to_transcript, t5));
+		expect_true(compare_map(s6.gene_to_transcript, t6));
 
 		// test the start and end positions
 		expect_true(s5.start == 1000);

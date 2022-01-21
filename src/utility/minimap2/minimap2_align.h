@@ -5,7 +5,7 @@
 #include <Rcpp.h>
 
 void
-minimap2_align_cpp(
+minimap2_align(
     std::string mm2_prog_path,
     std::string fa_file,
     std::string fq_in,

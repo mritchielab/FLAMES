@@ -27,3 +27,7 @@ write_tr_to_csv_cpp
     bool
     has_UMI=true
 );
+
+int edit_distance(std::string, std::string);
+
+int umi_dedup (std::vector<std::string>, bool);

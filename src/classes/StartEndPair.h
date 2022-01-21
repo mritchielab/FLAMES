@@ -96,7 +96,7 @@ namespace std {
     };
 }
 
-static bool StartEndPairCompare(const StartEndPair &a, const StartEndPair &b) {
+inline bool StartEndPairCompare(const StartEndPair &a, const StartEndPair &b) {
     // compare a and b, return true if a is 'less than' b
     // in this case, 'less than' is defined if a.start is less than b.start
     return a.start < b.start;

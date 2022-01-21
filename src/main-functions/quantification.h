@@ -1,13 +1,9 @@
 #ifndef QUANTIFICATION_H
 #define QUANTIFICATION_H
 
-#include "../classes/Config.h"
+#include <string>
 
-#include "../file-handling/parse_realigned_bam.h"
-#include "../file-handling/write_tr_to_csv.h"
-
-#include "annotate_filter_gff.h"
-#include "find_isoform.h"
+#include <Rcpp.h>
 
 void
 quantification

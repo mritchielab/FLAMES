@@ -1,6 +1,6 @@
-#include <Rcpp.h>
-
 #include "Config.h"
+
+#include <Rcpp.h>
 
 Rcpp::List
 PipelineParameters::to_R()

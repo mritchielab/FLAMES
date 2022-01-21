@@ -6,13 +6,13 @@
 #include <stdexcept>
 #include <assert.h>
 
-#include "json/json.h"
-#include "config.h"
+#include "../utility/json/json.h"
+#include "../classes/Config.h"
 #include "parse_json_config.h"
 
 // [[Rcpp::export]]
 Rcpp::List
-parse_json_config_cpp(std::string json_file) {
+parse_json_config(std::string json_file) {
     std::ifstream file(json_file);
 
     Json::Value json;
@@ -28,7 +28,7 @@ parse_json_config_cpp(std::string json_file) {
 }
 
 // [[Rcpp::export]]
-void print_config_cpp(Rcpp::List list) {
+void print_config(Rcpp::List list) {
     Config config(list);
     Rcpp::Rcout << "\tParameters in configuration file:\n";
     config.print();

@@ -1,4 +1,4 @@
-#include "parse_realigned_bam.hpp"
+#include "parse_realigned_bam.h"
 
 std::unordered_map<std::string, int>
 file_to_map(std::string filename)
@@ -51,7 +51,7 @@ read_entire_bam
 
     // read a bamfile
     bamFile bam = bam_open(bam_in.c_str(), "r"); // bam.h
-    bam_index_t *bam_index = bam_index_load(bam_in.c_str());
+    // bam_index_t *bam_index = bam_index_load(bam_in.c_str());
     bam_header_t *header = bam_header_read(bam); // bam.h
 
     bam1_t *b = bam_init1();
@@ -161,7 +161,7 @@ parse_realigned_bam
     
     // read a bamfile
     bamFile bam = bam_open(bam_in.c_str(), "r"); // bam.h
-    bam_index_t *bam_index = bam_index_load(bam_in.c_str());
+    //bam_index_t *bam_index = bam_index_load(bam_in.c_str());
     bam_header_t *header = bam_header_read(bam); // bam.h
 
     // produce and populate a records file

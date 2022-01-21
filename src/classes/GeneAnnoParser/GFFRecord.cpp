@@ -1,5 +1,12 @@
 #include "GFFRecord.h"
 
+#include <unordered_map>
+#include <string>
+#include <vector>
+#include <sstream>
+
+#include "../Parser.h"
+
 /*
     takes a line of GFF or GTF,
     parses it into Record format

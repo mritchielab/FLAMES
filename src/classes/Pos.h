@@ -32,6 +32,14 @@ struct Pos
     std::string parent_id;
 };
 
+inline bool comparePos(const Pos &a, const Pos &b) {
+	return a.chr == b.chr 
+		&& a.start == b.start
+		&& a.end == b.end
+		&& a.strand == b.strand
+		&& a.parent_id == b.parent_id;
+}
+
 inline Rcpp::List pos_to_R(Pos * pos) {
 	/*
         wraps up the Pos struct into an Rcpp list

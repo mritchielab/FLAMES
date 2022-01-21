@@ -5,9 +5,9 @@
 #include <string>
 #include <vector>
 
-#include "ParseGFF3.hpp"
+// #include "ParseGFF3.h"
 #include "Pos.h"
-#include "StartEndPair.hpp"
+#include "StartEndPair.h"
 
 class GFFData
 {
@@ -28,5 +28,7 @@ class GFFData
 
         void from_R(Rcpp::List list);
 
-        void remove_transcript_duplicates(bool update_transcript_dict);
+        void removeTranscriptDuplicates(bool update_transcript_dict);
 };
+
+#endif // GFF_DATA

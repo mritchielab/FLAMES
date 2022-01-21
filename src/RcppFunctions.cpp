@@ -1,4 +1,14 @@
+#include <string>
+#include <vector>
+#include <unordered_map>
+
 #include <Rcpp.h>
+
+#include "classes/GeneBlocks.h"
+#include "classes/StartEndPair.h"
+#include "classes/Pos.h"
+#include "classes/Config.h"
+#include "utility/junctions.h"
 
 // a file for holding a bunch of wrapper functions
 // until we figure out how to get Rcpp looking in subdirectories
@@ -100,18 +110,62 @@ bam_read_cpp
     return bam_read(bam_in, chr, s, e);
 }
 
+// // [[Rcpp::export]]
+void
+group_bam2isoform_cpp (
+    std::string bam_in, 
+    std::string out_gff3, 
+    std::string out_stat, 
+    std::unordered_map<std::string, std::vector<GeneBlocks>>    * chr_to_blocks, 
+    std::unordered_map<std::string, std::vector<StartEndPair>>  * gene_dict, 
+    std::unordered_map<std::string, Junctions>                  * transcript_to_junctions,
+    std::unordered_map<std::string, Pos>                        * transcript_dict,
+    std::string fa_f,
+    IsoformParameters isoform_parameters,
+    std::string raw_gff3
+) {
+	return group_bam2isoform (
+		bam_in, 
+		out_gff3, 
+		out_stat, 
+		chr_to_blocks, 
+		gene_dict, 
+		transcript_to_junctions,
+		transcript_dict,
+		fa_f,
+		isoform_parameters,
+		raw_gff3
+	);
+}
+
 /*****************************************************************************/
 
 #include "main-functions/match_cell_barcode.h"
 
+//' Match Cell Barcodes
+//'
+//' @description Match cell barcodes in the given fastq directory with the reference csv, \code{ref_csv}. Matches are returned
+//' in the output file \code{out_fastq}
+//'
+//' @param fastq_dir directory containing fastq files to match
+//' @param stats_file NEEDED
+//' @param out_fastq output filename for matched barcodes
+//' @param ref_csv NEEDED
+//' @param MAX_DIST int; maximum edit distance
+//' @param UMI_LEN int; length of UMI sequences
+//'
+//' @return returns NULL
+//' @import zlibbioc
+//' @useDynLib FLAMES, .registration=TRUE
+//' @export
 // [[Rcpp::export]]
 void
 match_cell_barcode_cpp
 (
-    String fastq_dir, 
-    String stats_file, 
-    String out_fastq, 
-    String ref_csv, 
+    Rcpp::String fastq_dir, 
+    Rcpp::String stats_file, 
+    Rcpp::String out_fastq, 
+    Rcpp::String ref_csv, 
     int MAX_DIST, 
     int UMI_LEN = 10
 )
@@ -132,7 +186,7 @@ match_cell_barcode_cpp
 
 // [[Rcpp::export]]
 void 
-merge_bulk_fastq_cpp(StringVector fastq_files, String out_fastq) 
+merge_bulk_fastq_cpp(Rcpp::StringVector fastq_files, Rcpp::String out_fastq) 
 {
     return merge_bulk_fastq(fastq_files, out_fastq);
 }

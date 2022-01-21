@@ -6,12 +6,18 @@
 #include <map>
 #include <utility>
 #include <vector>
+#include <iostream>
+#include <unordered_map>
+#include <cctype>
 
 typedef std::pair<std::string, std::string> ParseResult;
 
-// parse any leading spaces from the start of a token
+// parse any leading spaces (any whitespace character) from the start of a token
 // returns a ParseResult of {leading spaces, rest of string}
 ParseResult parseSpaces(std::string);
+ParseResult parseLeadingChar(std::string, char);
+// overload for passing a conditional function to determine which characters to parse away
+ParseResult parseLeadingChar(std::string, std::function<int(int)>);
 
 // Parse a GFF3 column, each separated by spaces
 // returns a ParseResult of {Column, rest of string}
@@ -21,6 +27,7 @@ ParseResult parseColumn(std::string, char);
 std::vector<std::string> parseLine(std::string);
 std::vector<std::string> parseLine(std::string, char);
 
+// is this just the same as parseLeadingChar?
 inline ParseResult parseUntilChar(std::string full, char tok) {
 	int tok_pos = full.find(tok);
 	if (tok_pos != std::string::npos) {
@@ -36,9 +43,11 @@ std::map<std::string, int> parsePairsToMap(std::ifstream &);
 // returns a ParseResult of {key, value}
 ParseResult parseKeyValue(std::string);
 ParseResult parseKeyValue(std::string, char);
+ParseResult parseGTFKeyValue(std::string);
 
 // parse an attribute from a colon separated list
 // returns a ParseResult of {attribute, rest of string}
 ParseResult parseAttribute(std::string);
-
+std::unordered_map<std::string, std::string>
+parseGTFAttributes(std::string);
 #endif // PARSER_H

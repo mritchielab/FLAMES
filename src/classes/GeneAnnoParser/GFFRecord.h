@@ -8,15 +8,6 @@
 
 #include "../Parser.h"
 
-static bool vectorContains(std::string a, std::vector<std::string> v) {
-	for (auto it : v) {
-		if (a == it) {
-			return true;
-		}
-	}
-	return false;
-}
-
 typedef std::unordered_map<std::string, std::string> AttributesMap;
 
 class GFFRecord

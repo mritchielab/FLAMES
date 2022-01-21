@@ -1,5 +1,21 @@
 #include "GeneAnnoParser.h"
 
+#include <algorithm>
+#include <functional>
+#include <string>
+#include <unordered_map>
+#include <vector>
+#include <fstream>
+#include <iostream>
+#include <Rcpp.h>
+
+#include "GFFRecord.h"
+#include "GFFParser.h"
+
+#include "../Parser.h"
+#include "../Pos.h"
+#include "../StartEndPair.h"
+#include "../GFFData.h"
 // int
 // main()
 // {
@@ -10,11 +26,11 @@
 
 /*****************************************************************************/
 
-GeneAnnoParser::GeneAnnoParser(std::string filename)
+GeneAnnoParser::GeneAnnoParser(std::string filename, bool isGTF)
 {
     this->filename = filename;
-    this->isGTF = true;
-    this->annotationSource = "Ensembl";
+    this->isGTF = isGTF;
+    this->annotationSource = "Ensembl"; // this should not be a default, but needs to be decided based on old guess_annotation_source function
 }
 
 /*
@@ -23,24 +39,26 @@ GeneAnnoParser::GeneAnnoParser(std::string filename)
 GFFData
 GeneAnnoParser::parse()
 {
-    std::cout << "started parse()\n";
     // set up the file parser
-    GFFParser * fileParser = new GFFParser(filename, "GTF");
+    GFFParser fileParser(filename, isGTF ? "GTF" : "GFF");
 
     // work out which parsing function should be used
-    void (GeneAnnoParser::*parseFunction)(GFFRecord*) =
-        this->selectParseFunction();
+    // void (GeneAnnoParser::*parseFunction)(GFFRecord*) =
+   	ParseFunction parseFunction = selectParseFunction();
 
     // start parsing through
-    GFFRecord rec = fileParser->parseNextRecord();
-    while (!(fileParser->isEmpty())) {
+    GFFRecord rec = fileParser.parseNextRecord();
+    while (!fileParser.isEmpty()) {
         if (!rec.broken) {
-            (this->*parseFunction)(&rec);
-        }
-        rec = fileParser->parseNextRecord();
+            // (this->*parseFunction)(&rec);
+			parseFunction(&rec);
+		}
+        rec = fileParser.parseNextRecord();
     }
 
-    this->gffData.removeTranscriptDuplicates();
+    this->gffData.removeTranscriptDuplicates(this->isGTF);
+
+	fileParser.close();
     return this->gffData;
 }
 
@@ -48,17 +66,22 @@ GeneAnnoParser::parse()
     selects the appropriate function to point to for parsing,
     based on whether the file is a GTF and what its annotation source is
 */
+// ParseFunction
 ParseFunction
 GeneAnnoParser::selectParseFunction()
 {
+    // ParseFunction parseFunction;
     ParseFunction parseFunction;
-    if (this->isGTF) {
-        parseFunction = &GeneAnnoParser::parseGTF;
+	if (this->isGTF) {
+        parseFunction = [this](GFFRecord *rec){this->parseGTF(rec);};
+		// parseFunction = &GeneAnnoParser::parseGTF;
     } else {
         if (this->annotationSource == "Ensembl") {
-            parseFunction = &GeneAnnoParser::parseEnsembl;
+            parseFunction = [this](GFFRecord *rec){this->parseEnsembl(rec);};
+			// parseFunction = &GeneAnnoParser::parseEnsembl;
         } else {
-            parseFunction = &GeneAnnoParser::parseGENCODE;
+			parseFunction = [this](GFFRecord *rec){this->parseGENCODE(rec);};
+            // parseFunction = &GeneAnnoParser::parseGENCODE;
         }
     }
     return parseFunction;
@@ -73,12 +96,14 @@ GeneAnnoParser::parseGTF(GFFRecord * rec)
     std::cout << "running parseGTF on " << rec->feature << "\n";
     // first check that the record has a gene_id
     if (!rec->hasAttribute("gene_id")) {
-            std::cout << "no gene_id on a " << rec->feature << "\n";
+            Rcpp::Rcout << "no gene_id on a " << rec->feature << "\n";
             // Rcpp::warning("Record did not have 'gene_id' attribute: %s", rec->format_attributes());
             return;
     }
-    auto gene_id = rec->attributes["gene_id"];
-    if (!vectorContains(gene_id, this->gffData.chr_to_gene[rec->seqname])) {
+    std::string gene_id = rec->attributes["gene_id"];
+
+	std::vector<std::string> chr_vec = this->gffData.chr_to_gene[rec->seqname];
+    if (std::find(chr_vec.begin(), chr_vec.end(), gene_id) == chr_vec.end()) {
         this->gffData.chr_to_gene[rec->seqname].push_back(gene_id);
     }
 
@@ -93,8 +118,11 @@ GeneAnnoParser::parseGTF(GFFRecord * rec)
         // Rcpp::warning("Feature did not have 'transcript_id' attribute: %s", rec->format_attributes());
         return;
     }
+
     auto transcript_id = rec->attributes["transcript_id"];
+
     gffData.gene_to_transcript[gene_id].push_back(transcript_id);
+
     StartEndPair startEnd = rec->feature == "transcript" ? 
         (StartEndPair){rec->start-1, rec->end} : 
         (StartEndPair){-1, 1};
@@ -127,24 +155,43 @@ GeneAnnoParser::parseGTF(GFFRecord * rec)
 void
 GeneAnnoParser::parseEnsembl(GFFRecord * rec)
 {
-    std::cout << "running parseEnsembl on " << rec->feature << "\n";
+	if (rec->hasAttribute("gene_id")) {
+		gffData.chr_to_gene[rec->seqname].push_back(rec->attributes["gene_id"]);
+	}
 
-    if (rec->feature == "gene") {
-        // found a gene
-        this->gffData.chr_to_gene[rec->seqname].push_back(rec->attributes["gene_id"]);
-    } else if (rec->feature == "transcript") {
-        // found a transcript
-    } else if (rec->feature == "exon") {
-        // found an exon
-    }
-    auto gene_id = rec->attributes["gene_id"];
-    auto transcript_id = rec->attributes["transcript_id"];
+	ParseResult pr = parseKeyValue(rec->attributes["Parent"], ':');
+	std::string parent_type 	= pr.first;
+	std::string parent_gene_id 	= pr.second;
+	std::string transcript_id 	= rec->attributes["transcript_id"];
 
-    if (rec->feature == "transcript") {
-        auto parent = rec->attributes["Parent"];
+	if (rec->hasAttribute("Parent") && parent_type == "gene") {
+		gffData.gene_to_transcript[parent_gene_id].push_back(transcript_id);
+		gffData.transcript_dict[transcript_id] =  Pos {rec->seqname, rec->start-1, rec->end, rec->strand, parent_gene_id};
+	} else if (rec->feature == "exon") {
+		if (parent_type != "transcript") {
+			Rcpp::Rcout << "Format Error. What to do?\n";
+			return;
+		}
+		gffData.transcript_to_exon[parent_gene_id].push_back(StartEndPair {rec->start-1, rec->end});
+	}
 
-        this->gffData.gene_to_transcript[gene_id].push_back(transcript_id);
-    }
+	// old, untested
+    // if (rec->feature == "gene") {
+    //     // found a gene
+    //     this->gffData.chr_to_gene[rec->seqname].push_back(rec->attributes["gene_id"]);
+    // } else if (rec->feature == "transcript") {
+    //     // found a transcript
+    // } else if (rec->feature == "exon") {
+    //     // found an exon
+    // }
+    // auto gene_id = rec->attributes["gene_id"];
+    // auto transcript_id = rec->attributes["transcript_id"];
+
+    // if (rec->feature == "transcript") {
+    //     auto parent = rec->attributes["Parent"];
+
+    //     this->gffData.gene_to_transcript[gene_id].push_back(transcript_id);
+    // }
 }
 
 /*

@@ -1,12 +1,11 @@
 #include <string>
 #include <fstream>
-
+#include <unordered_map>
 #include <testthat.h>
 
 #include "test_utilities.h"
-#include "gtf_to_bed.h"
-#include "ParseGFF3.hpp"
-#include "Parser.hpp"
+#include "file-handling/gtf_to_bed.h"
+#include "classes/Parser.h"
 
 
 context("GTF To Bed file conversion") {
@@ -14,7 +13,7 @@ context("GTF To Bed file conversion") {
 		std::string input = get_extdata("SIRV_anno_test.gtf");
 		std::string out = get_tempfile(".bed");
 
-		gtf_to_bed_cpp(input, out, std::string());
+		gtf_to_bed(input, out, std::string());
 
 		std::ifstream res;
 		std::string line;
@@ -45,7 +44,7 @@ context("GTF To Bed file conversion") {
 		std::string input = get_extdata("SIRV_anno.gtf");
 		std::string out = get_tempfile(".bed");
 
-		gtf_to_bed_cpp(input, out, std::string());
+		gtf_to_bed(input, out, std::string());
 
 		std::ifstream res;
 		res.open(out);
@@ -64,14 +63,4 @@ context("GTF To Bed file conversion") {
 		expect_true(m["SIRV2\t1035\t5911\tSIRV202\t1000\t-\t1035\t5911\t255,0,0\t11\t626,112,91,128,129,220,160,128,141,113,123\t0,706,938,1639,1846,2070,2630,2931,3303,3652,4753"]);
 	}
 
-}
-
-// [[Rcpp::export]]
-void tester() {
-	std::string input = get_extdata("SIRV_anno.gtf");
-	std::string out = get_tempfile(".bed");
-
-	gtf_to_bed_cpp(input, out, std::string());
-
-	std::cout << out << "\n";
 }

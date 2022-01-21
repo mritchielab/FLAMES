@@ -1,8 +1,16 @@
-#include "quantification.hpp"
+#include "quantification.h"
+
+#include "../classes/Config.h"
+#include "../classes/GFFData.h"
+#include "../file-handling/parse_realigned_bam.h"
+#include "../file-handling/write_tr_to_csv.h"
+
+#include "annotate_filter_gff.h"
+#include "find_isoform.h"
 
 // [[Rcpp::export]]
 void
-quantification_cpp
+quantification
 (
     Rcpp::List  config_list,
     std::string realign_bam,
@@ -18,7 +26,8 @@ quantification_cpp
 {
     std::cout << "#### Generating transcript count matrix\n";
     
-    GFFData gene_anno = parse_gff_or_gtf(annot);
+	GFFData gene_anno; // temp
+    // GFFData gene_anno = parse_gff_or_gtf(annot);
     auto transcript_to_exon = gene_anno.transcript_to_exon;
     std::cout << "transcript_to_exon is currently " << transcript_to_exon.size() << " isoforms long\n";
 

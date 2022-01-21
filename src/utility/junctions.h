@@ -9,8 +9,8 @@
 #include <set>
 #include <unordered_map>
 
-#include "GeneBlocks.h"
-#include "StartEndPair.hpp"
+#include "../classes/GeneBlocks.h"
+#include "../classes/StartEndPair.h"
 
 struct DoubleJunctions {
   /*

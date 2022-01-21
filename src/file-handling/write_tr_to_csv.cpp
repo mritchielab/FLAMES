@@ -8,8 +8,8 @@
 #include <algorithm>
 #include <Rcpp.h>
 
-#include "Pos.h"
-#include "write_tr_to_csv.hpp"
+#include "../classes/Pos.h"
+#include "write_tr_to_csv.h"
 
 
 int

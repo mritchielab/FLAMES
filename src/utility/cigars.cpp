@@ -4,6 +4,9 @@
 
 #include "cigars.h"
 
+#include <string>
+#include <vector>
+
 /*
 cigar specification:
 (lifted from the original sc_longread.py)

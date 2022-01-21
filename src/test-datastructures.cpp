@@ -2,8 +2,8 @@
 #include <vector>
 #include <algorithm>
 
-#include "StartEndPair.hpp"
-#include "GeneBlocks.h"
+#include "classes/StartEndPair.h"
+#include "classes/GeneBlocks.h"
 
 template <typename T>
 bool vecEqual(std::vector<T> a, std::vector<T> b) {

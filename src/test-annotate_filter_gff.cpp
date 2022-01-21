@@ -1,7 +1,7 @@
 #include <testthat.h>
 
 #include "test_utilities.h"
-#include "annotate_filter_gff.hpp"
+#include "main-functions/annotate_filter_gff.h"
 
 context("Test that filter annotation works") {
 	// test_that("") {

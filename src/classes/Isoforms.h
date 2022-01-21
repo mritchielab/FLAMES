@@ -5,11 +5,11 @@
 #include <unordered_map>
 #include <vector>
 
-#include "StartEndPair.hpp"
+#include "StartEndPair.h"
 #include "Pos.h"
-#include "junctions.h"
+#include "../utility/junctions.h"
 #include "GeneBlocks.h"
-#include "config.h"
+#include "Config.h"
 
 struct Iso
 {

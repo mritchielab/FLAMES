@@ -13,10 +13,10 @@ struct CigarPair
     int len;    // length of operation
 };
 
-#endif
-
 std::string
 generate_cigar (std::vector<CigarPair> cigar);
 
 std::vector<CigarPair>
 smooth_cigar (std::vector<CigarPair> cigar, int threshold);
+
+#endif

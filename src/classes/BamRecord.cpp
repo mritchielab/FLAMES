@@ -3,9 +3,9 @@
 #include <codecvt>
 #include <Rcpp.h>
 
-#include "bam.h"
-#include "cigars.h"
-#include "BamRecord.hpp"
+#include "../utility/bam.h"
+#include "../utility/cigars.h"
+#include "BamRecord.h"
 
 /*  take a bam entry,
     populate a vector with all of its CIGAR operations

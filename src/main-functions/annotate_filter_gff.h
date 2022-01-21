@@ -1,13 +1,7 @@
+#ifndef ANNOTATE_FILTER_GFF_H
+#define ANNOTATE_FILTER_GFF_H
 #include <string>
-#include <vector>
 #include <unordered_map>
-#include <iostream>
-#include <sstream>
-#include <algorithm>
-#include <limits>
-#include <set>
-
-#include "../classes/GeneAnnoParser/GeneAnnoParser.h"
 
 void
 annotate_filter_gff
@@ -20,3 +14,5 @@ annotate_filter_gff
     int min_sup_reads,
     bool verbose=true
 );
+
+#endif // ANNOTATE_FILTER_GFF_H

@@ -1,22 +1,39 @@
+#include "Parser.h"
+
 #include <string>
 #include <fstream>
 #include <functional>
 #include <map>
 #include <vector>
 #include <utility>
-
-#include "Parser.h"
+#include <cctype>
 
 // parse any leading spaces from the start of a token
 // returns a ParseResult of {leading spaces, rest of string}
 ParseResult parseSpaces(std::string full) {
+	return parseLeadingChar(full, isspace);
+}
+
+// parse any leading char away from the start of a token
+// returns a ParseResult of {leading chars, rest of string}
+ParseResult parseLeadingChar(std::string full, char c) {
 	for (int i = 0; i < full.size(); i++) {
-		if (!isspace(full[i])) {
+		// if we've encountered a character not of the given char, return the remaining strin
+		if (full[i] != c) {
 			return ParseResult (full.substr(0, i), full.substr(i, std::string::npos));
 		}
 	}
 
-	return ParseResult (std::string(), full);
+	return ParseResult (full, std::string());
+}
+ParseResult parseLeadingChar(std::string full, std::function<int(int)> condition) {
+	for (int i = 0; i < full.size(); i++) {
+		if (!condition(full[i])) {
+			return ParseResult(full.substr(0, i), full.substr(i, std::string::npos));
+		}
+	}
+
+	return ParseResult(full, std::string());
 }
 
 // Parse a GFF3 column, each separated by spaces
@@ -33,6 +50,7 @@ ParseResult parseColumn(std::string full) {
 
 	return ParseResult (full, std::string());
 }
+
 ParseResult parseColumn(std::string full, char sep) {
 	// parse away any leading spaces
 	full = parseSpaces(full).second;
@@ -83,11 +101,30 @@ ParseResult parseKeyValue(std::string full, char seperator) {
 	return ParseResult ();
 }
 
-// parse an attribute from a colon separated list
+// GTF attributes follow a specific convention:
+// key "val"; key "val"; another key "different value"
+ParseResult parseGTFKeyValue(std::string full) {
+	// parse away leading spaces
+	ParseResult res = parseSpaces(full);
+	// just get the key, it should be followed by a space
+	res = parseUntilChar(res.second, ' ');
+	auto key = res.first;
+	// parse away next space
+	res = parseSpaces(res.second);
+	// then parse away the first quote
+	res = parseLeadingChar(res.second, '\"');
+	// then parse until the second quote
+	res = parseUntilChar(res.second, '\"');
+	auto val = res.first;
+	return {key, val};
+}
+
+// parse an attribute from a semicolon separated list
 // returns a ParseResult of {attribute, rest of string}
 ParseResult parseAttribute(std::string full) {
 	// parse away any leading spaces
 	full = parseSpaces(full).second;
+
 	int colonPos = full.find(';');
 
 	if (colonPos != std::string::npos) {

@@ -8,15 +8,17 @@
 #include <stdio.h>
 #include <Rcpp.h>
 
-#include "config.h"
-#include "GeneBlocks.h"
-#include "junctions.h"
-#include "misc.h"
-#include "Isoforms.h"
-#include "bam.h"
-#include "StartEndPair.hpp"
-#include "cigars.h"
-#include "BamRecord.hpp"
+#include "../classes/Config.h"
+#include "../classes/GeneBlocks.h"
+#include "../classes/Isoforms.h"
+#include "../classes/StartEndPair.h"
+#include "../classes/BamRecord.h"
+#include "../utility/junctions.h"
+#include "../utility/misc.h"
+#include "../utility/bam.h"
+#include "../utility/cigars.h"
+#include "../classes/IsoKey.h"
+
 
 static int
 fetch_function(const bam1_t *b, void *data)
@@ -31,7 +33,6 @@ fetch_function(const bam1_t *b, void *data)
 	return 0;
 }
 
-// [[Rcpp::export]]
 void
 bam_read (std::string bam_in, std::string chr, int s, int e)
 {
@@ -49,8 +50,8 @@ bam_read (std::string bam_in, std::string chr, int s, int e)
     std::vector<BAMRecord>
     records;
     DataStruct data = {header, &records};
-    auto it_region = bam_fetch(bam, bam_index, tid, s, e, &data, fetch_function);
-
+    // auto it_region = bam_fetch(bam, bam_index, tid, s, e, &data, fetch_function);
+	bam_fetch(bam, bam_index, tid, s , e, &data, fetch_function);
     bam_close(bam);
 }
 
@@ -124,8 +125,9 @@ minimal_group_bam2isoform
 
             Rcpp::Rcout << "\tabout to bamfetch\n";
 
-            auto it = bam_fetch(bam, bam_index, tid, block.start, block.end, &data, &fetch_function);
-            Rcpp::Rcout << "bam_fetch done\n";
+            // auto it = bam_fetch(bam, bam_index, tid, block.start, block.end, &data, &fetch_function);
+            bam_fetch(bam, bam_index, tid, block.start, block.end, &data, &fetch_function);
+			Rcpp::Rcout << "bam_fetch done\n";
         }
     }
 
@@ -200,8 +202,9 @@ group_bam2isoform (
             records = {};
             // extract this from the bam file
 
-            auto it = bam_fetch(bam, bam_index, tid, block.start, block.end, &data, &fetch_function);
-            auto TSS_TES_site = get_TSS_TES_site(transcript_to_junctions, &(block.transcript_list));
+            // auto it = bam_fetch(bam, bam_index, tid, block.start, block.end, &data, &fetch_function);
+            bam_fetch(bam, bam_index, tid, block.start, block.end, &data, &fetch_function);
+			auto TSS_TES_site = get_TSS_TES_site(transcript_to_junctions, &(block.transcript_list));
             auto tmp_isoform = new Isoforms (chr, isoform_parameters);
             
             // add all the records in the bamfile to the Isoform object

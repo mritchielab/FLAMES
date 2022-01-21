@@ -1,5 +1,16 @@
-#include "annotate_filter_gff.hpp"
+#include "annotate_filter_gff.h"
+
+#include <string>
+#include <vector>
+#include <unordered_map>
+#include <iostream>
+#include <sstream>
+#include <algorithm>
 #include <limits>
+#include <set>
+
+#include "../classes/GeneAnnoParser/GeneAnnoParser.h"
+
 
 void
 annotate_full_splice_match
@@ -207,8 +218,8 @@ annotate_filter_gff
         combine FLAMES output with reference, 
         and filter out transcript by realignment result
     */
-
-    GFFData isoform_data = parse_gff_or_gtf(isoform_gff);
+	GFFData isoform_data; // temp
+    // GFFData isoform_data = parse_gff_or_gtf(isoform_gff);
 
     auto chr_to_gene = isoform_data.chr_to_gene;
     auto transcript_dict = isoform_data.transcript_dict;
@@ -217,7 +228,8 @@ annotate_filter_gff
 
 
     std::cout << "ref_gff:" << ref_gff << " (and we're reading it better)\n";
-    GFFData ref_data = parse_gff_or_gtf(ref_gff);
+    GFFData ref_data;
+	// GFFData ref_data = parse_gff_or_gtf(ref_gff);
 
     auto chr_to_gene_ref = ref_data.chr_to_gene;
     auto transcript_dict_ref = ref_data.transcript_dict;

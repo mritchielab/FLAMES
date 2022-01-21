@@ -1,17 +1,19 @@
+#include "find_isoform.h"
+
 #include <string>
 #include <unordered_map>
 #include <vector>
 #include <Rcpp.h>
 
-#include "config.h"
-#include "misc.h"
-#include "parse_gene_anno_native.h"
-#include "junctions.h"
-#include "gff3_to_fa.hpp"
-#include "group_bam2isoform.h"
-#include "ReferenceDict.hpp"
-
-#include "find_isoform.h"
+#include "../classes/Config.h"
+#include "../utility/misc.h"
+//#include "../parse_gene_anno_native.h"
+#include "../classes/GeneAnnoParser/GeneAnnoParser.h"
+#include "../classes/GFFData.h"
+#include "../utility/junctions.h"
+#include "../file-handling/gff3_to_fa.h"
+#include "../main-functions/group_bam2isoform.h"
+#include "../classes/ReferenceDict.h"
 
 
 Rcpp::List
@@ -63,9 +65,8 @@ isoform_objects_from_R(Rcpp::List list)
     return isoform_objects;
 }
 
-// [[Rcpp::export]]
 Rcpp::List
-find_isoform_cpp
+find_isoform
 (
     std::string gff3, 
     std::string genome_bam, 
@@ -81,7 +82,8 @@ find_isoform_cpp
     Rcpp::Rcout << "#### Reading Gene Annotations\n";
 
     // first, extract from the gff file
-    GFFData gene_anno = parse_gff_or_gtf(gff3); // parse_gene_anno_native.h
+	GFFData gene_anno; // temp
+    // GFFData gene_anno = parse_gff_or_gtf(gff3); // parse_gene_anno_native.h
 
     std::unordered_map<std::string, std::vector<std::string>> chr_to_gene        = gene_anno.chr_to_gene;
     Rcpp::Rcout << "chr_to_gene is size " << chr_to_gene.size() << "\n";
@@ -164,7 +166,8 @@ find_isoform_cpp
     Rcpp::Rcout << "group_bam2isoform finished\n";
 
     // get fasta
-    GFFData isoform_gff = parse_gff_or_gtf(isoform_gff3);
+	GFFData isoform_gff; // temp
+    // GFFData isoform_gff = parse_gff_or_gtf(isoform_gff3);
 
     auto chr_to_gene_iso        = isoform_gff.chr_to_gene;
     auto transcript_dict_iso    = isoform_gff.transcript_dict;

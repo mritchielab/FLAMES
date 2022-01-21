@@ -1,0 +1,8 @@
+getw()
+getwd()
+setwd("/Volumes/voogd.o/FLAMES")
+library(devtools)
+load_all()
+> ParseGFF3.cpp:10:10: fatal error: 'Pos.h' file not found'
+load_all()
+load_all()

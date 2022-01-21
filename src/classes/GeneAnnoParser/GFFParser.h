@@ -25,6 +25,8 @@ class GFFParser
         isEmpty();
 
         GFFParser(std::string filename, std::string attributeStyle="GFF");
+		~GFFParser();
+		void close();
 };
 
 #endif

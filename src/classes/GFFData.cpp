@@ -1,7 +1,16 @@
 #include "GFFData.h"
 
+#include <string>
+#include <vector>
+#include <unordered_map>
+
+#include <Rcpp.h>
+
+#include "StartEndPair.h"
+#include "Pos.h"
+
 void
-GFFData::remove_transcript_duplicates(bool update_transcript_dict) {
+GFFData::removeTranscriptDuplicates(bool update_transcript_dict) {
     // Remove duplicates from the transcript_to_exon maps
     for (auto tr : transcript_to_exon) {
         // it->first is std::string key
@@ -54,7 +63,7 @@ GFFData::remove_transcript_duplicates(bool update_transcript_dict) {
 }
 
 
-List
+Rcpp::List
 GFFData::to_R()
 {
     // /// Create a Rcpp::List from an unordered_map.
@@ -124,11 +133,11 @@ GFFData::to_R()
     //     _["gene_to_transcript"] = create_list_map_to_map(this->gene_to_transcript),
     //     _["transcript_to_exon"] = create_list_map_to_startendpair(this->transcript_to_exon)
     // );
-    return List::create();
+    return Rcpp::List::create();
 }
 
 void
-GFFData::from_R(List list)
+GFFData::from_R(Rcpp::List list)
 {
     /* import an R list */
 }

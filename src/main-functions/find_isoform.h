@@ -5,7 +5,7 @@
 #include <string>
 #include <Rcpp.h>
 
-#include "Pos.h"
+#include "../classes/Pos.h"
 
 struct IsoformObjects
 {
@@ -24,7 +24,7 @@ IsoformObjects
 isoform_objects_from_R(Rcpp::List list);
 
 Rcpp::List
-find_isoform_cpp
+find_isoform
 (
     std::string gff3,
     std::string genome_bam,
