@@ -31,6 +31,7 @@ GeneAnnoParser::GeneAnnoParser(std::string filename, bool isGTF)
     this->filename = filename;
     this->isGTF = isGTF;
     this->annotationSource = "Ensembl"; // this should not be a default, but needs to be decided based on old guess_annotation_source function
+
 }
 
 /*
@@ -76,6 +77,7 @@ GeneAnnoParser::selectParseFunction()
         parseFunction = [this](GFFRecord *rec){this->parseGTF(rec);};
 		// parseFunction = &GeneAnnoParser::parseGTF;
     } else {
+        this->annotationSource = gffParser->guessAnnotationSource();
         if (this->annotationSource == "Ensembl") {
             parseFunction = [this](GFFRecord *rec){this->parseEnsembl(rec);};
 			// parseFunction = &GeneAnnoParser::parseEnsembl;
@@ -93,11 +95,9 @@ GeneAnnoParser::selectParseFunction()
 void
 GeneAnnoParser::parseGTF(GFFRecord * rec)
 {
-    std::cout << "running parseGTF on " << rec->feature << "\n";
     // first check that the record has a gene_id
     if (!rec->hasAttribute("gene_id")) {
-            Rcpp::Rcout << "no gene_id on a " << rec->feature << "\n";
-            // Rcpp::warning("Record did not have 'gene_id' attribute: %s", rec->format_attributes());
+            Rcpp::Rcout << "Record did not have 'gene_id' attribute: " << rec->printAttributes() << "\n";
             return;
     }
     std::string gene_id = rec->attributes["gene_id"];
@@ -126,7 +126,6 @@ GeneAnnoParser::parseGTF(GFFRecord * rec)
     StartEndPair startEnd = rec->feature == "transcript" ? 
         (StartEndPair){rec->start-1, rec->end} : 
         (StartEndPair){-1, 1};
-    std::cout << "added to transcript_dict\n";
     this->gffData.transcript_dict[transcript_id] = {
         rec->seqname,
         startEnd.start,
@@ -142,7 +141,6 @@ GeneAnnoParser::parseGTF(GFFRecord * rec)
     }
 
     // found an exon
-    std::cout << "added to transcript_to_exon\n";
     this->gffData.transcript_to_exon[transcript_id].push_back({
         rec->start - 1,
         rec->end
@@ -200,5 +198,5 @@ GeneAnnoParser::parseEnsembl(GFFRecord * rec)
 void
 GeneAnnoParser::parseGENCODE(GFFRecord * rec)
 {
-    std::cout << "running parseGENCODE\n";
+    std::cout << "running parseGENCODE, todo\n";
 }

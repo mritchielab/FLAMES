@@ -12,7 +12,7 @@
 void
 GFFData::removeTranscriptDuplicates(bool update_transcript_dict) {
     // Remove duplicates from the transcript_to_exon maps
-    for (auto tr : transcript_to_exon) {
+    for (auto tr : this->transcript_to_exon) {
         // it->first is std::string key
         // it->second is std::vector<StartEndPair> list of pairs
         std::sort(tr.second.begin(), tr.second.end(), StartEndPairCompare);
@@ -29,13 +29,13 @@ GFFData::removeTranscriptDuplicates(bool update_transcript_dict) {
 				}
             }
 
-            transcript_to_exon[tr.first] = new_ex;
+            this->transcript_to_exon[tr.first] = new_ex;
         }
 
 		if (update_transcript_dict) {
                 // update transcript_dict[this transcript] with a new Pos object of
                 // the correct start and end positions of this exon
-                transcript_dict[tr.first] = Pos {
+                this->transcript_dict[tr.first] = Pos {
                     transcript_dict[tr.first].chr,
                     tr.second.begin()->start,
                     (tr.second.end() - 1)->end,
@@ -46,10 +46,9 @@ GFFData::removeTranscriptDuplicates(bool update_transcript_dict) {
     }
 
 	// remove duplicates from gene_to_transcript
-	for (auto ge : gene_to_transcript) {
+    for (auto ge : this->gene_to_transcript) {
 		std::unordered_map<std::string, int> set;
 		std::vector<std::string> new_genes;
-
 		for (auto el : ge.second) {
 			set[el] = 1;
 		}
@@ -57,8 +56,7 @@ GFFData::removeTranscriptDuplicates(bool update_transcript_dict) {
 		for (auto unique : set) {
 			new_genes.push_back(unique.first);
 		}
-
-		ge.second = new_genes;
+		this->gene_to_transcript[ge.first] = new_genes;
 	}
 }
 

@@ -1,5 +1,5 @@
-#ifndef GROUPBAM2ISOFORM
-#define GROUPBAM2ISOFORM
+#ifndef GROUP_BAM2ISOFORM_H
+#define GROUP_BAM2ISOFORM_H
 
 #include <vector>
 #include <string>
@@ -55,4 +55,4 @@ group_bam2isoform (
     std::string raw_gff3
 );
 
-#endif // GROUPBAM2ISOFORM
+#endif // GROUP_BAM2ISOFORM_H

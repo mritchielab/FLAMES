@@ -1,5 +1,5 @@
-#ifndef CONFIG
-#define CONFIG
+#ifndef CONFIG_H
+#define CONFIG_H
 
 #include <Rcpp.h>
 
@@ -104,11 +104,18 @@ class Config
         TranscriptCounting
         transcript_counting;
 
-        Rcpp::List to_R();
-        void from_R(Rcpp::List list); 
+        Rcpp::List 
+        to_R();
+
+        void
+        from_R(Rcpp::List list);
+
 		Config();
-		Config(Rcpp::List list);
-        void print();
+		
+        Config(Rcpp::List list);
+        
+        void
+        print();
 };
 
-#endif
+#endif // CONFIG_H
