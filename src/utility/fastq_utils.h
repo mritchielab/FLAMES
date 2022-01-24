@@ -1,13 +1,12 @@
 #ifndef FASTQ_UTILS_H
 #define FASTQ_UTILS_H
 
+#include <string>
+
 #include <Rcpp.h>
 #include <R.h>
 #include "zlib.h"
 #include "htslib/kseq.h"
-#include <iostream>
-#include <sstream>
-#include <fstream>
 
 using namespace Rcpp;
 

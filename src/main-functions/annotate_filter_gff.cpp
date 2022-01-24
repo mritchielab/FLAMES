@@ -1,5 +1,17 @@
 #include "annotate_filter_gff.h"
 
+#include <string>
+#include <vector>
+#include <unordered_map>
+#include <iostream>
+#include <sstream>
+#include <algorithm>
+#include <limits>
+#include <set>
+
+#include "../classes/GeneAnnoParser/GeneAnnoParser.h"
+
+
 void
 annotate_full_splice_match
 (
@@ -215,11 +227,6 @@ annotate_filter_gff
     auto gene_to_transcript = isoform_data.gene_to_transcript;
     auto transcript_to_exon = isoform_data.transcript_to_exon;
 
-    std::cout << "chr_to_gene.size():" << chr_to_gene.size() << "\n";
-    std::cout << "transcript_dict.size():" << transcript_dict.size() << "\n";
-    std::cout << "gene_to_transcript.size():" << gene_to_transcript.size() << "\n";
-    std::cout << "transcript_to_exon.size():" << transcript_to_exon.size() << "\n";
-
 
     std::cout << "ref_gff:" << ref_gff << " (and we're reading it better)\n";
     GFFData ref_data = parseGeneAnno(ref_gff);
@@ -228,7 +235,6 @@ annotate_filter_gff
     auto transcript_dict_ref = ref_data.transcript_dict;
     auto gene_to_transcript_ref = ref_data.gene_to_transcript;
     auto transcript_to_exon_ref = ref_data.transcript_to_exon;
-
 
     std::stringstream
     prt;

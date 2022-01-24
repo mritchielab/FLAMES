@@ -4,6 +4,9 @@
 
 #include "cigars.h"
 
+#include <string>
+#include <vector>
+
 /*
 cigar specification:
 (lifted from the original sc_longread.py)
@@ -22,7 +25,7 @@ B   BAM_CBACK   9
 */
 
 std::string
-generate_cigar (Cigar cigar)
+generate_cigar (std::vector<CigarPair> cigar)
 {
   /*
     takes a cigar as a vector of pairs of ints,
@@ -39,26 +42,25 @@ generate_cigar (Cigar cigar)
   return result;
 }
 
-Cigar
-smooth_cigar (Cigar cigar, int threshold)
+std::vector<CigarPair>
+smooth_cigar (std::vector<CigarPair> cigar, int threshold)
 {
   /*
     takes a cigar as a vector of int pairs,
     smooths it down,
     returns the smooth cigar as a vector of int pairs
   */
-  std::cout << "started smooth_cigar\n";
 
-  Cigar new_cigar = {cigar[0]};
+  std::vector<CigarPair> new_cigar = {cigar[0]};
   
   for (int i = 1; i < cigar.size(); i++) {
     if (new_cigar.back().op != 0) {
       new_cigar.push_back(cigar[i]);
     } else if (cigar[i].op == 0) { // merge matched reads 
-      new_cigar.back().len += cigar[i].len;
+      new_cigar.back().len = new_cigar.back().len + cigar[i].len;
     } else if (cigar[i].op == 2) {
       if (cigar[i].len <= threshold) {
-        new_cigar.back().len += cigar[i].len;
+        new_cigar.back().len = new_cigar.back().len + cigar[i].len;
       } else {
         new_cigar.push_back(cigar[i]);
       }
@@ -72,6 +74,5 @@ smooth_cigar (Cigar cigar, int threshold)
       new_cigar.push_back(cigar[i]);
     }
   }
-  
   return new_cigar;
 }

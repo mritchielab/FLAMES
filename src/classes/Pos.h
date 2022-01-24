@@ -4,6 +4,25 @@
 #include <string>
 #include <Rcpp.h>
 
+// class Pos 
+// {
+//     public:
+//         Pos (std::string chr, int start, int end, char strand, std::string parent_id);
+
+//         std::string chr;
+//         int start;
+//         int end;
+//         char strand;
+//         std::string parent_id;
+
+//         Rcpp::List
+//         to_R();
+//         void
+//         from_R(Rcpp::List list);
+//         void
+//         print();
+// };
+
 struct Pos 
 {
     std::string chr;
@@ -12,6 +31,14 @@ struct Pos
     char strand;
     std::string parent_id;
 };
+
+inline bool comparePos(const Pos &a, const Pos &b) {
+	return a.chr == b.chr 
+		&& a.start == b.start
+		&& a.end == b.end
+		&& a.strand == b.strand
+		&& a.parent_id == b.parent_id;
+}
 
 inline Rcpp::List pos_to_R(Pos * pos) {
 	/*
@@ -41,7 +68,7 @@ inline Pos pos_from_R(Rcpp::List list)
 // inline void pos_from_R_test(Rcpp::List list)
 // {
 //     Pos pos = pos_from_R(list);
-//     std::cout << "created a pos\n"
+//     Rcpp::Rcout << "created a pos\n"
 //         << "\tchr:" << pos.chr << "\n"
 //         << "\tstart:" << pos.start << "\n"
 //         << "\tend:" << pos.end << "\n"
@@ -53,7 +80,7 @@ inline Pos pos_from_R(Rcpp::List list)
 // inline Rcpp::List pos_to_R_test()
 // {
 //     Pos pos = {"chr21", 124, 128, '-', "dan"};
-//     std::cout << "created pos on " << pos.chr << "\n";
+//     Rcpp::Rcout << "created pos on " << pos.chr << "\n";
 //     return pos_to_R(&pos);
 // }
 #endif // POS

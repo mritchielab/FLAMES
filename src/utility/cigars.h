@@ -1,6 +1,6 @@
-#include <iostream>
 #include <string>
 #include <vector>
+
 
 #ifndef CIG_PAIR
 #define CIG_PAIR
@@ -13,12 +13,10 @@ struct CigarPair
     int len;    // length of operation
 };
 
-typedef std::vector<CigarPair> Cigar; 
+std::string
+generate_cigar (std::vector<CigarPair> cigar);
+
+std::vector<CigarPair>
+smooth_cigar (std::vector<CigarPair> cigar, int threshold);
 
 #endif
-
-std::string
-generate_cigar (Cigar cigar);
-
-Cigar
-smooth_cigar (Cigar cigar, int threshold);

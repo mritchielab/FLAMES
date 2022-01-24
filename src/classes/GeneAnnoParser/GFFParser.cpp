@@ -1,7 +1,15 @@
 #include "GFFParser.h"
 
+#include <fstream>
+#include <string>
+
+#include <Rcpp.h>
+
+#include "GFFRecord.h"
+
 /*
     initialises the GFFParser, opening the file
+	attributeStyle can be either GFF or GTF (this should really be a bool flag)
 */
 GFFParser::GFFParser(std::string filename, bool isGTF)
 {
@@ -21,18 +29,19 @@ GFFParser::parseNextRecord()
     if (file.is_open()) {
         std::string line;
         if (getline(file, line)) {
-            std::cout << line << "\n";
-            if (line[0] == '#') {
-                return GFFRecord();
-            }
+			while (line[0] == '#')	 {
+				getline(file, line);
+			}
             // turn each line into a record
-            GFFRecord * rec = new GFFRecord(line, this->isGTF);
-            return *rec;
-        }
-        // if we are out of lines, return nothing
-        this->empty = true;
-        return GFFRecord();
+            GFFRecord rec(line, this->isGTF);
+            return rec;
+        } else {
+			// if we are out of lines, return nothing
+			this->empty = true;
+			return GFFRecord();
+		}
     }
+    Rcpp::Rcout << "file is not open\n";
     return GFFRecord();
 }
 
@@ -45,6 +54,13 @@ GFFParser::isEmpty()
     return this->empty;
 }
 
+GFFParser::~GFFParser() {
+	this->close();
+}
+
+void GFFParser::close() {
+	file.close();
+}
 /*
     parses the file and checks for "GENCODE" or "Ensembl"
     surely there's a better way to do this
@@ -67,6 +83,6 @@ GFFParser::guessAnnotationSource()
             break;
         }
     }
-	file.close();
+	file.clear();
     return "Ensembl";
 }

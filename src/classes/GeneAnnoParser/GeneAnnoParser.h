@@ -7,6 +7,7 @@
 #include <fstream>
 #include <iostream>
 #include <Rcpp.h>
+#include <functional>
 
 #include "GFFRecord.h"
 #include "GFFParser.h"
@@ -17,7 +18,7 @@
 #include "../GFFData.h"
 
 class GeneAnnoParser;
-typedef void (GeneAnnoParser::*ParseFunction)(GFFRecord*);
+typedef std::function<void(GFFRecord *)> ParseFunction;
 
 class GeneAnnoParser
 {
@@ -36,8 +37,9 @@ class GeneAnnoParser
         GFFData
         parse();
 
+        // ParseFunction
         ParseFunction
-        selectParseFunction();
+		selectParseFunction();
 
         void
         parseGTF(GFFRecord * rec);

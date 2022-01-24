@@ -1,5 +1,13 @@
 #include "utility.h"
 
+#include <string>
+#include <unordered_map>
+#include <vector>
+#include <sstream>
+
+#include "../classes/GeneAnnoParser/GFFRecord.h"
+#include "../classes/Pos.h"
+
 template <typename T>
 void printMap(std::unordered_map<std::string, T> &m, std::function<std::string (T)> f) {
 	std::stringstream ss;

@@ -17,7 +17,7 @@
 #' @export
 gff3_to_bed12 <- function(gff3_file, bed12_file) {
     python_path <- system.file("python", package = "FLAMES")
-    callBasilisk(flames_nopysam_env, function(gff3, bed12) {
+    callBasilisk(flames_env, function(gff3, bed12) {
         convert <- reticulate::import_from_path("gtf_to_bed", python_path)
 
         convert$gtf_to_bed(gff3, bed12)
@@ -48,7 +48,7 @@ minimap2_align <-
              sam_out,
              no_flank = FALSE,
              bed12_junc = NULL) {
-        callBasilisk(flames_nopysam_env, function(mm2_path,
+        callBasilisk(flames_env, function(mm2_path,
                                                   fa,
                                                   fq,
                                                   sam,
@@ -125,7 +125,7 @@ samtools_as_bam <- function(sam_in, bam_out) {
 #' @importFrom reticulate import_from_path
 minimap2_tr_align <-
     function(mm2_prog_path, fa_file, fq_in, sam_out) {
-        callBasilisk(flames_nopysam_env, function(mm2, fa, fq, sam) {
+        callBasilisk(flames_env, function(mm2, fa, fq, sam) {
             python_path <- system.file("python", package = "FLAMES")
 
             align <-
@@ -147,7 +147,7 @@ minimap2_tr_align <-
 #' @importFrom reticulate import_from_path
 minimap2_check_callable <- 
     function(mm2_prog_path) {
-        available <- callBasilisk(flames_nopysam_env, function(mm2) {
+        available <- callBasilisk(flames_env, function(mm2) {
             python_path <- system.file("python", package="FLAMES")
 
             check <- reticulate::import_from_path("minimap2_align", python_path)

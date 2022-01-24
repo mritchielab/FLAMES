@@ -48,6 +48,14 @@ def minimap2_tr_align(mm2_prog_path, fa_file, fq_in, sam_out):
     # print align_cmd
     print subprocess.check_output([align_cmd], shell=True, stderr=subprocess.STDOUT)
 
+def samtools_sort_index(bam_in, bam_out):
+    cmd = "samtools sort -@ 12 -o {_sorted_bam} {_in}".format(
+        _sorted_bam=bam_out,
+        _in=bam_in)
+    print subprocess.check_output([cmd], shell=True, stderr=subprocess.STDOUT)
+    cmd = "samtools index {_sorted_bam}".format(_sorted_bam=bam_out)
+    print subprocess.check_output([cmd], shell=True, stderr=subprocess.STDOUT)
+
 def check_minimap2_available(mm2_prog_path):
     check_cmd = "{_prog} --help".format(\
         _prog=os.path.join(mm2_prog_path, "minimap2"))
@@ -56,9 +64,3 @@ def check_minimap2_available(mm2_prog_path):
         return True
     except(subprocess.CalledProcessError):
         return False
-
-if __name__=="__main__":
-    mm2_path = "/Users/voogd.o/Documents/GitHub/minimap2"
-    print "\tminimap2 available at real location? ", check_minimap2_available(mm2_path)
-
-    print "\tminimap2 available at bad location? ", check_minimap2_available("/Users/voogd.o/Documents/GitHub")

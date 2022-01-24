@@ -25,6 +25,22 @@ bam_read_cpp <- function(bam_in, chr, s, e) {
     invisible(.Call(`_FLAMES_bam_read_cpp`, bam_in, chr, s, e))
 }
 
+#' Match Cell Barcodes
+#'
+#' @description Match cell barcodes in the given fastq directory with the reference csv, \code{ref_csv}. Matches are returned
+#' in the output file \code{out_fastq}
+#'
+#' @param fastq_dir directory containing fastq files to match
+#' @param stats_file NEEDED
+#' @param out_fastq output filename for matched barcodes
+#' @param ref_csv NEEDED
+#' @param MAX_DIST int; maximum edit distance
+#' @param UMI_LEN int; length of UMI sequences
+#'
+#' @return returns NULL
+#' @import zlibbioc
+#' @useDynLib FLAMES, .registration=TRUE
+#' @export
 match_cell_barcode_cpp <- function(fastq_dir, stats_file, out_fastq, ref_csv, MAX_DIST, UMI_LEN = 10L) {
     invisible(.Call(`_FLAMES_match_cell_barcode_cpp`, fastq_dir, stats_file, out_fastq, ref_csv, MAX_DIST, UMI_LEN))
 }
@@ -39,5 +55,13 @@ quantification_cpp <- function(config_list, realign_bam, transcript_fa_idx, isof
 
 minimap2_align_cpp <- function(mm2_prog_path, fa_file, fq_in, sam_out, no_flank, bed12_junc) {
     invisible(.Call(`_FLAMES_minimap2_align_cpp`, mm2_prog_path, fa_file, fq_in, sam_out, no_flank, bed12_junc))
+}
+
+what2 <- function() {
+    invisible(.Call(`_FLAMES_what2`))
+}
+
+what <- function() {
+    invisible(.Call(`_FLAMES_what`))
 }
 

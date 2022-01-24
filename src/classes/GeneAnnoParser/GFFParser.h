@@ -27,6 +27,8 @@ class GFFParser
         guessAnnotationSource();
 
         GFFParser(std::string filename, bool isGTF);
+		~GFFParser();
+		void close();
 };
 
 #endif

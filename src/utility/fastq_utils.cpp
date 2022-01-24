@@ -1,5 +1,14 @@
 #include "fastq_utils.h"
 
+#include <iostream>
+#include <sstream>
+#include <fstream>
+#include <string>
+
+#include <Rcpp.h>
+#include <R.h>
+#include "zlib.h"
+#include "htslib/kseq.h"
 
 #ifndef INIT_KSEQ
 #define INIT_KSEQ

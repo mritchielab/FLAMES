@@ -1,4 +1,17 @@
+#include <string>
+#include <sstream>
+#include <fstream>
+#include <filesystem>
+#include <map>
+#include <set>
+#include <vector>
+#include <algorithm>
+#include <functional>
+#include <numeric>
+#include <Rcpp.h>
+
 #include "gtf_to_bed.h"
+#include "../classes/Parser.h"
 
 // inline functions to convert a vector to a comma-separated strings
 static inline std::string vector_to_str(std::vector<int> vector) {
@@ -11,15 +24,15 @@ static inline std::string vector_to_str(std::vector<int> vector) {
 	);
 }
 
-static inline std::string vector_to_str(std::vector<std::string> vector) {
-	return std::accumulate(
-					std::next(vector.begin()), vector.end(), 
-					vector[0], 
-					[](std::string a, std::string b){
-						return a + "," + b;
-					}
-	);
-}
+// static inline std::string vector_to_str(std::vector<std::string> vector) {
+// 	return std::accumulate(
+// 					std::next(vector.begin()), vector.end(), 
+// 					vector[0], 
+// 					[](std::string a, std::string b){
+// 						return a + "," + b;
+// 					}
+// 	);
+// }
 
 static inline std::string set_to_str(std::set<std::string> set) {
 	return std::accumulate(
@@ -291,9 +304,9 @@ gtf_to_bed(std::string in_gtf, std::string out_bed, std::string chrom_sizes_file
 	}
 
 	if (missing_chroms.size()) {
-		std::cout << "chromosomes found in gtf but not in chrom_sizes file: " << set_to_str(missing_chroms) << "\n";
+		Rcpp::Rcout << "chromosomes found in gtf but not in chrom_sizes file: " << set_to_str(missing_chroms) << "\n";
 	}
-	std::cout << "finished gtf_to_bed_cpp\n";
+	Rcpp::Rcout << "finished gtf_to_bed_cpp\n";
 
 	gtf.close();
 	bed.close();

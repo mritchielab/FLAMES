@@ -6,7 +6,7 @@ annotate_filter_gff <-
              anno_out,
              tr_cnt,
              min_sup_reads) {
-        callBasilisk(flames_nopysam_env, function(isoform_gff,
+        callBasilisk(flames_env, function(isoform_gff,
                                                   ref_gff,
                                                   isoform_out,
                                                   anno_out,

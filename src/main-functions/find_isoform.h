@@ -8,17 +8,11 @@
 
 #include "../classes/Config.h"
 #include "../classes/GFFData.h"
-#include "../classes/ReferenceDict.h"
-#include "../classes/GeneAnnoParser/GeneAnnoParser.h"
-#include "../classes/Pos.h"
-
-#include "../utility/misc.h"
 #include "../utility/junctions.h"
-
 #include "../file-handling/gff3_to_fa.h"
-
-#include "group_bam2isoform.h"
-
+#include "../main-functions/group_bam2isoform.h"
+#include "../classes/ReferenceDict.h"
+#include "../classes/Pos.h"
 
 struct IsoformObjects
 {

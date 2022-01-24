@@ -1,28 +1,39 @@
+#include "Parser.h"
+
 #include <string>
 #include <fstream>
 #include <functional>
 #include <map>
 #include <vector>
 #include <utility>
-
-#include "Parser.h"
+#include <cctype>
 
 // parse any leading spaces from the start of a token
 // returns a ParseResult of {leading spaces, rest of string}
 ParseResult parseSpaces(std::string full) {
-	return parseLeadingChar(full, ' ');
+	return parseLeadingChar(full, isspace);
 }
 
 // parse any leading char away from the start of a token
 // returns a ParseResult of {leading chars, rest of string}
 ParseResult parseLeadingChar(std::string full, char c) {
 	for (int i = 0; i < full.size(); i++) {
+		// if we've encountered a character not of the given char, return the remaining strin
 		if (full[i] != c) {
 			return ParseResult (full.substr(0, i), full.substr(i, std::string::npos));
 		}
 	}
 
-	return ParseResult (std::string(), full);
+	return ParseResult (full, std::string());
+}
+ParseResult parseLeadingChar(std::string full, std::function<int(int)> condition) {
+	for (int i = 0; i < full.size(); i++) {
+		if (!condition(full[i])) {
+			return ParseResult(full.substr(0, i), full.substr(i, std::string::npos));
+		}
+	}
+
+	return ParseResult(full, std::string());
 }
 
 // Parse a GFF3 column, each separated by spaces
@@ -111,11 +122,8 @@ ParseResult parseGTFKeyValue(std::string full) {
 // parse an attribute from a semicolon separated list
 // returns a ParseResult of {attribute, rest of string}
 ParseResult parseAttribute(std::string full) {
-	std::cout << "parseAttribute on:" << full << "\n";
-
 	// parse away any leading spaces
 	full = parseSpaces(full).second;
-	std::cout << "removed spaces on:" << full << "\n";
 
 	int colonPos = full.find(';');
 
@@ -125,10 +133,3 @@ ParseResult parseAttribute(std::string full) {
 
 	return ParseResult (full, std::string());
 }
-// int 
-// main()
-// {
-//     std::string h = "hello \"beans\"; pasta \"cat\"; another \"one\"";
-//     auto res = parseGTFAttributes(h);
-// 	std::cout << res["hello"] << " and " << res["pasta"] << "\n";
-// }

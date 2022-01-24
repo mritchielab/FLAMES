@@ -2,7 +2,7 @@
 #import pysam
 import bamnostic as bs
 import os
-from collections import Counter
+from collections import Counter, namedtuple
 import gzip
 import numpy as np
 import editdistance
@@ -11,8 +11,8 @@ from itertools import groupby
 
 
 def umi_dedup(l, has_UMI):
-    print "umi_dedup"
-    print l
+    # print "umi_dedup"
+    # print l
 
     if has_UMI:
         l_cnt = Counter(l).most_common()
@@ -32,10 +32,6 @@ def umi_dedup(l, has_UMI):
 
 
 def wrt_tr_to_csv(bc_tr_count_dict, transcript_dict, csv_f, transcript_dict_ref=None, has_UMI=True):
-    print "started wrt_tr_to_csv"
-    print "bc_tr_count_dict: (size {}) {}".format(len(bc_tr_count_dict), bc_tr_count_dict)
-    print "transcript_dict: (size {}) {}".format(len(transcript_dict), transcript_dict)
-
     f = gzip.open(csv_f,"wb")
     all_tr = set()
     for bc in bc_tr_count_dict:
@@ -45,7 +41,7 @@ def wrt_tr_to_csv(bc_tr_count_dict, transcript_dict, csv_f, transcript_dict_ref=
     print "len(all_tr):"
     print len(all_tr)
 
-    f.write("transcript_id,gene_id,"+",".join([x for x in bc_tr_count_dict])+"\n" )
+    f.write("transcript_id,gene_id," + ",".join([x for x in bc_tr_count_dict])+"\n" )
     tr_cnt = {}
     for tr in all_tr:
         cnt_l = [umi_dedup(bc_tr_count_dict[x][tr], has_UMI) if tr in bc_tr_count_dict[x] else 0 for x in bc_tr_count_dict ]
@@ -63,9 +59,7 @@ def wrt_tr_to_csv(bc_tr_count_dict, transcript_dict, csv_f, transcript_dict_ref=
     print len(tr_cnt)
     return tr_cnt
 
-
 def make_bc_dict(bc_anno):
-    print "started make_bc_dict"
     with open(bc_anno) as f:
         # skip header line
         f.readline()
@@ -78,7 +72,6 @@ def make_bc_dict(bc_anno):
             
             bc_dict[bc] = sample
         
-    print "finished make_bc_dict"
     return(bc_dict)
 
 
@@ -110,7 +103,7 @@ def query_len(cigar_string, hard_clipping=False):
                 result += this_len
     return result
     
-def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_read_coverage, kwargs):
+def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_read_coverage, **kwargs):
     """
     """
     print "parsing realigned bam"
@@ -144,7 +137,7 @@ def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_re
         tr_cov_dict.setdefault(tr,[]).append(tr_cov)
 
         inferred_read_length = query_len(rec.cigarstring)
-        print(rec.query_name)
+        #print(rec.query_name)
         if rec.query_name not in read_dict:
             read_dict.setdefault(rec.query_name,[]).append((tr, rec.get_tag("AS"), tr_cov, float(rec.query_alignment_length)/inferred_read_length, rec.mapping_quality))
         else:
@@ -157,7 +150,7 @@ def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_re
                 read_dict[rec.query_name].append((tr, rec.get_tag("AS"), tr_cov, float(rec.query_alignment_length)/inferred_read_length, rec.mapping_quality))
         if tr not in fa_idx:
             cnt_stat["not_in_annotation"] += 1
-            print "\t" +str(tr), "not in annotation ???"
+            #print "\t" +str(tr), "not in annotation ???"
     tr_kept = dict((tr,tr) for tr in tr_cov_dict if len([it for it in tr_cov_dict[tr] if it > 0.9])>min_sup_reads)
     unique_tr_count = Counter(read_dict[r][0][0] for r in read_dict if read_dict[r][0][2]>0.9)
     for r in read_dict:
@@ -330,38 +323,38 @@ def realigned_bam_coverage(bam_in, fa_idx_f, coverage_dir):
 
 
 
-if __name__ == '__main__':
-    realign_bam = "/Users/voogd.o/Documents/FlamesNew/FLAMES_output/realign2transcript.bam"
-    transcript_fa_idx = "/Users/voogd.o/Documents/FlamesNew/FLAMES_output/transcript_assembly.fa.fai"
-    output = "/Users/voogd.o/Documents/FlamesNew/FLAMES_output/realigntester"
-    print("\t\tSTART OF NEW RUN")
-    parse_realigned_bam(realign_bam, transcript_fa_idx, 10, 0.75, 0.75, dict())
-    # parse_realigned_bam is totally fine now
-    if False:
-        #gff_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoforms/isoform_annotated.sample.nofilter.gff3"
-        #csv_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoforms/transcript_count.sample.csv"
-        #bam_in="/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/LT03_PromethION_10P.sample.realign.bam"
-        """
-        gff_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_test/isoform_annotated.gff3"
-        csv_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_test/transcript_count.csv"
-        bam_in = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_test/realign2transcript.bam"
-        fa_idx_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_test/transcript_assembly.fa.fai"
-        coverage_csv = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_test/per_cell_coverage.csv"
-        tr_csv = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_test/per_tr_coverage.csv"
+# if __name__ == '__main__':
+#     realign_bam = "/Users/voogd.o/Documents/FlamesNew/FLAMES_output/realign2transcript.bam"
+#     transcript_fa_idx = "/Users/voogd.o/Documents/FlamesNew/FLAMES_output/transcript_assembly.fa.fai"
+#     output = "/Users/voogd.o/Documents/FlamesNew/FLAMES_output/realigntester"
+#     print("\t\tSTART OF NEW RUN")
+#     parse_realigned_bam(realign_bam, transcript_fa_idx, 10, 0.75, 0.75, dict())
+#     # parse_realigned_bam is totally fine now
+#     if False:
+#         #gff_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoforms/isoform_annotated.sample.nofilter.gff3"
+#         #csv_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoforms/transcript_count.sample.csv"
+#         #bam_in="/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/LT03_PromethION_10P.sample.realign.bam"
+#         """
+#         gff_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_test/isoform_annotated.gff3"
+#         csv_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_test/transcript_count.csv"
+#         bam_in = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_test/realign2transcript.bam"
+#         fa_idx_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_test/transcript_assembly.fa.fai"
+#         coverage_csv = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_test/per_cell_coverage.csv"
+#         tr_csv = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_test/per_tr_coverage.csv"
         
-        gff_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_all/isoform_annotated.gff3"
-        csv_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_all/transcript_count.csv"
-        bam_in = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_all/realign2transcript.bam"
-        fa_idx_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_all/transcript_assembly.fa.fai"
-        coverage_csv = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_all/per_cell_coverage.csv"
-        tr_csv = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_all/per_tr_coverage.csv"
-        """
-        data_dir = "/stornext/General/data/user_managed/grpu_mritchie_1/RachelThijssen/sclr_data/Rachel_scRNA_Aug19/isoform_out"
-        bam_in = os.path.join(data_dir, "tmp_checkread.bam")
-        fa_idx_f = os.path.join(data_dir,"transcript_assembly.fa.fai")
-        bc_tr_count_dict, bc_tr_badcov_count_dict, tr_kept = parse_realigned_bam(bam_in, fa_idx_f, 3, 0.4, 0.4)
-        print [len(bc_tr_count_dict[i]["ENSG00000277734.8_22493926_22552156_1"]) for i in bc_tr_count_dict if "ENSG00000277734.8_22493926_22552156_1" in bc_tr_count_dict[i]]
-        print sum([len(bc_tr_count_dict[i]["ENSG00000277734.8_22493926_22552156_1"]) for i in bc_tr_count_dict if "ENSG00000277734.8_22493926_22552156_1" in bc_tr_count_dict[i]])
+#         gff_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_all/isoform_annotated.gff3"
+#         csv_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_all/transcript_count.csv"
+#         bam_in = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_all/realign2transcript.bam"
+#         fa_idx_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_all/transcript_assembly.fa.fai"
+#         coverage_csv = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_all/per_cell_coverage.csv"
+#         tr_csv = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_all/per_tr_coverage.csv"
+#         """
+#         data_dir = "/stornext/General/data/user_managed/grpu_mritchie_1/RachelThijssen/sclr_data/Rachel_scRNA_Aug19/isoform_out"
+#         bam_in = os.path.join(data_dir, "tmp_checkread.bam")
+#         fa_idx_f = os.path.join(data_dir,"transcript_assembly.fa.fai")
+#         bc_tr_count_dict, bc_tr_badcov_count_dict, tr_kept = parse_realigned_bam(bam_in, fa_idx_f, 3, 0.4, 0.4)
+#         print [len(bc_tr_count_dict[i]["ENSG00000277734.8_22493926_22552156_1"]) for i in bc_tr_count_dict if "ENSG00000277734.8_22493926_22552156_1" in bc_tr_count_dict[i]]
+#         print sum([len(bc_tr_count_dict[i]["ENSG00000277734.8_22493926_22552156_1"]) for i in bc_tr_count_dict if "ENSG00000277734.8_22493926_22552156_1" in bc_tr_count_dict[i]])
 
 
 

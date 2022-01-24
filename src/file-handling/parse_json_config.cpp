@@ -1,3 +1,13 @@
+#include <string>
+#include <iostream>
+#include <Rcpp.h>
+#include <fstream>
+#include <array>
+#include <stdexcept>
+#include <assert.h>
+
+#include "../utility/json/json.h"
+#include "../classes/Config.h"
 #include "parse_json_config.h"
 
 // [[Rcpp::export]]
@@ -9,9 +19,9 @@ parse_json_config(std::string json_file) {
 
     file >> json;
 
-    // std::cout << json["windowed"] << "\n" << json["res"][0] << "\n";
+    // Rcpp::Rcout << json["windowed"] << "\n" << json["res"][0] << "\n";
     if (!verify_json_config(json)) {
-        std::cout << "problem with config; expect errors!!\n";
+        Rcpp::Rcout << "problem with config; expect errors!!\n";
     }
 
     return load_json_config(json).to_R();
@@ -20,7 +30,7 @@ parse_json_config(std::string json_file) {
 // [[Rcpp::export]]
 void print_config(Rcpp::List list) {
     Config config(list);
-    std::cout << "\tParameters in configuration file:\n";
+    Rcpp::Rcout << "\tParameters in configuration file:\n";
     config.print();
 }
 
@@ -121,8 +131,7 @@ int verify_json_config(Json::Value json) {
     return 1;
 }
 
-Config 
-load_json_config(Json::Value json) {
+Config load_json_config(Json::Value json) {
     /*
         takes a root json value object,
         reads all the values and populates a config object

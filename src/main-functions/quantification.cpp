@@ -1,5 +1,13 @@
 #include "quantification.h"
 
+#include "../classes/Config.h"
+#include "../classes/GFFData.h"
+#include "../file-handling/parse_realigned_bam.h"
+#include "../file-handling/write_tr_to_csv.h"
+
+#include "annotate_filter_gff.h"
+#include "find_isoform.h"
+
 // [[Rcpp::export]]
 void
 quantification
@@ -31,6 +39,12 @@ quantification
     IsoformObjects isoform_objects = isoform_objects_from_R(isoform_objects_list);
     std::cout << "isoform_objects.transcript_dict is " << isoform_objects.transcript_dict.size() << " long\n";
     std::cout << "isoform_objects.transcript_dict_iso is " << isoform_objects.transcript_dict_iso.size() << " long\n";
+    
+    // std::cout << "isoform_objects.transcript_dict:\n";
+    // for (const auto & [key, val] : isoform_objects.transcript_dict) {
+    //     std::cout << "\t" << key << ":" << val.chr << "," << val.start << "," << val.end << "\n";
+    // }
+    // return;
 
     auto
     parse_realign = parse_realigned_bam(

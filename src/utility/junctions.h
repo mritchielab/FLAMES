@@ -1,32 +1,28 @@
 /*
   Anything related to junctions are goes in here
 */
+#ifndef JUNCTIONS
+#define JUNCTIONS
 
-#include <stdio.h>
-#include <iostream>
-#include <map>
 #include <vector>
-#include <any>
+#include <string>
 #include <set>
-#include <list>
-#include <algorithm>
+#include <unordered_map>
 
 #include "../classes/GeneBlocks.h"
 #include "../classes/StartEndPair.h"
 
-#ifndef JUNCTIONS
-#define JUNCTIONS
-
-struct Junctions {
+struct DoubleJunctions {
   /*
     a struct used for holding the junctions information
   */
   std::vector<int> left;
-  std::vector<int> junctions;
+//   std::vector<int> junctions;
   std::vector<int> right;
 };
 
-struct SingleJunction {
+//struct SingleJunction {
+struct Junctions {
   /*
     a struct for junctions with just one value in left and right
   */
@@ -35,15 +31,13 @@ struct SingleJunction {
   int right;
 };
 
-#endif
-
 int 
 take_closest (std::vector<int> list, int num);
 
 Junctions 
 blocks_to_junctions (std::vector<StartEndPair> blocks);
 
-Junctions 
+DoubleJunctions 
 get_TSS_TES_site
 (
     std::unordered_map<std::string, Junctions> * transcript_to_junctions,
@@ -53,11 +47,11 @@ get_TSS_TES_site
 std::set<int> 
 get_splice_site (std::unordered_map<std::string, Junctions> transcript_to_junctions, std::vector<std::string> tr_list);
 
-int
+bool
 is_exon_similar
 (
-    std::vector<StartEndPair> * exon1, 
-    std::vector<StartEndPair> * exon2, 
+    const std::vector<StartEndPair> &exon1, 
+    const std::vector<StartEndPair> &exon2, 
     int threshold
 );
 
@@ -70,8 +64,8 @@ get_gene_flat(
 void
 remove_similar_tr
 (
-    std::unordered_map<std::string, std::vector<std::string>>   * gene_to_transcript,
-    std::unordered_map<std::string, std::vector<StartEndPair>>  * transcript_to_exon,
+    std::unordered_map<std::string, std::vector<std::string>>   &gene_to_transcript,
+    const std::unordered_map<std::string, std::vector<StartEndPair>>  &transcript_to_exon,
     int threshold
 );
 
@@ -83,5 +77,4 @@ get_gene_blocks
     std::unordered_map<std::string, std::vector<std::string>>   * gene_to_transcript
 );
 
-void
-junctions_print(Junctions junctions);
+#endif

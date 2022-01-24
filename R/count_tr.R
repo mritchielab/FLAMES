@@ -8,7 +8,7 @@ parse_realigned_bam <-
              ...) {
         kwargs <- reticulate::dict(...)
         ret <-
-            callBasilisk(flames_nopysam_env, function(bam_in,
+            callBasilisk(flames_env, function(bam_in,
                                                       fa_idx_f,
                                                       min_sup_reads,
                                                       min_tr_coverage,
@@ -50,7 +50,7 @@ wrt_tr_to_csv <-
              csv_f,
              transcript_dict_ref = NULL,
              has_UMI = TRUE) {
-        callBasilisk(flames_nopysam_env, function(bc_tr_count_dict,
+        callBasilisk(flames_env, function(bc_tr_count_dict,
                                                   transcript_dict,
                                                   csv_f,
                                                   transcript_dict_ref,

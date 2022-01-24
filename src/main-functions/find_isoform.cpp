@@ -1,5 +1,7 @@
 #include "find_isoform.h"
 
+#include "../utility/misc.h"
+#include "../classes/GeneAnnoParser/GeneAnnoParser.h"
 
 Rcpp::List
 isoform_objects_to_R(IsoformObjects * isoform_objects)
@@ -94,14 +96,14 @@ log_params
 
     outfile << "\ntranscript_to_junctions:\n";
     for (auto & [tr, junctions] : *transcript_to_junctions) {
-        outfile << "\t" << tr << ":{'right': " << junctions.right.front() << ", 'junctions': (";
+        outfile << "\t" << tr << ":{'right': " << junctions.right << ", 'junctions': (";
         if (junctions.junctions.size() > 0) {
             for (auto it = junctions.junctions.begin(); it != junctions.junctions.end() - 1; ++it) {
                 outfile << *it << ", ";
             }
             outfile << junctions.junctions.back();
         }
-        outfile << "), 'left': " << junctions.left.front() << "}\n";
+        outfile << "), 'left': " << junctions.left << "}\n";
     }
 
     outfile << "\ntranscript_dict:\n";
@@ -125,7 +127,7 @@ find_isoform
     std::string raw_splice_isoform
 )
 {
-    std::cout << "#### Reading Gene Annotations\n";
+    Rcpp::Rcout << "#### Reading Gene Annotations\n";
 
     // first, extract from the gff file
     GFFData gene_anno = parseGeneAnno(gff3);
@@ -134,71 +136,71 @@ find_isoform
     gene_anno.log("initial_gff_log_cpp_new.txt");
 
     std::unordered_map<std::string, std::vector<std::string>> chr_to_gene        = gene_anno.chr_to_gene;
-    std::cout << "chr_to_gene is size " << chr_to_gene.size() << "\n";
+    Rcpp::Rcout << "chr_to_gene is size " << chr_to_gene.size() << "\n";
     for (const auto & [chr, gene] : chr_to_gene) {
-        std::cout << "\t" << chr << ":" << gene.size() << "\n";
+        Rcpp::Rcout << "\t" << chr << ":" << gene.size() << "\n";
     }
-    std::cout << "chr_to_gene is currently " << chr_to_gene.size() << " long\n";
+    Rcpp::Rcout << "chr_to_gene is currently " << chr_to_gene.size() << " long\n";
 
     std::unordered_map<std::string, Pos> transcript_dict    = gene_anno.transcript_dict;
-    std::cout << "transcript_dict is currently " << transcript_dict.size() << " long\n";
+    Rcpp::Rcout << "transcript_dict is currently " << transcript_dict.size() << " long\n";
 
     std::unordered_map<std::string, std::vector<std::string>> gene_to_transcript = gene_anno.gene_to_transcript;
-    std::cout << "gene_to_transcript is currently " << gene_to_transcript.size() << " long\n";
+    Rcpp::Rcout << "gene_to_transcript is currently " << gene_to_transcript.size() << " long\n";
     for (const auto & [gene, transcript] : gene_to_transcript) {
-        std::cout << "\t" << gene << ":" << transcript.size() << "\n";
+        Rcpp::Rcout << "\t" << gene << ":" << transcript.size() << "\n";
     }
     std::unordered_map<std::string, std::vector<StartEndPair>> transcript_to_exon = gene_anno.transcript_to_exon;
-    std::cout << "transcript_to_exon is currently " << transcript_to_exon.size() << " long\n";
+    Rcpp::Rcout << "transcript_to_exon is currently " << transcript_to_exon.size() << " long\n";
 
     // get the junctions using transcript_to_exon
     std::unordered_map<std::string, Junctions> transcript_to_junctions;
     for (const auto & [transcript, exon] : transcript_to_exon) {
         transcript_to_junctions[transcript] = blocks_to_junctions(exon); // junctions.h
     }
-    std::cout << "transcript_to_junctions is currently " << transcript_to_junctions.size() << " long\n";
-    for (const auto & [transcript, junctions] : transcript_to_junctions) {
-        std::cout << "\t" << transcript << ": {'right': [";
-        for (const auto & junc : junctions.right) {
-            std::cout << junc << ", ";
-        }
-        std::cout << "], 'junctions': [";
-        for (const auto & junc : junctions.junctions) { 
-            std::cout << junc << ", ";
-        }
-        std::cout << "], 'left': [";
-        for (const auto & junc : junctions.left) {
-            std::cout << junc << ", ";
-        }
-        std::cout << "]}\n";
-    }
+    Rcpp::Rcout << "transcript_to_junctions is currently " << transcript_to_junctions.size() << " long\n";
+
+
+    // Rcpp::Rcout << "gene_to_transcript:\n";
+    // for (const auto & [gene, transcript] : gene_to_transcript) {
+    //     Rcpp::Rcout << "gene:" << gene << "\ntranscript:";
+    //     for (const auto & tr : transcript) {
+    //         Rcpp::Rcout << tr << ",";
+    //     }
+    // }
+
+    // Rcpp::Rcout << "transcript_to_junctions:\n";
+    // for (const auto & [transcript, junctions] : transcript_to_junctions) {
+    //     Rcpp::Rcout << "transcript:" << transcript << "\n";
+    //     Rcpp::Rcout << "junctions:" << junctions.left[0] << "," << junctions.right[0] << "\n";
+    // }
     
     // remove transcripts that are too similar
-    remove_similar_tr(&gene_to_transcript, &transcript_to_exon, 10); // junctions.h
+    remove_similar_tr(gene_to_transcript, transcript_to_exon, 10); // junctions.h
     
-    std::cout << "finished remove_rimilar_tr\n";
+    Rcpp::Rcout << "finished remove_rimilar_tr\n";
     std::unordered_map<std::string, std::vector<StartEndPair>>
     gene_dict = get_gene_flat(&gene_to_transcript, &transcript_to_exon); // junctions.h
-    std::cout << "gene_dict is currently " << gene_dict.size() << " long\n";
+    Rcpp::Rcout << "gene_dict is currently " << gene_dict.size() << " long\n";
     
-    std::cout << "finished get_gene_flat\n";
+    Rcpp::Rcout << "finished get_gene_flat\n";
     std::unordered_map<std::string, std::vector<GeneBlocks>>
     chr_to_blocks = get_gene_blocks(&gene_dict, &chr_to_gene, &gene_to_transcript); // junctions.h
-    std::cout << "chr_to_blocks is currently " << chr_to_blocks.size() << " long\n";
+    Rcpp::Rcout << "chr_to_blocks is currently " << chr_to_blocks.size() << " long\n";
     for (const auto & [chr, block] : chr_to_blocks) {
-        std::cout << "\t" << chr << ":" << block.size() << "\n";
+        Rcpp::Rcout << "\t" << chr << ":" << block.size() << "\n";
     }
 
-    std::cout << "finished get_gene_blocks\n";
+    Rcpp::Rcout << "finished get_gene_blocks\n";
 
     Config config;
     config.from_R(config_list);
     
-    std::cout << "extracted config\n";
+    Rcpp::Rcout << "extracted config\n";
     // next we find isoforms
-    std::cout << "#### Finding Isoforms\n";
-    log_params(&chr_to_blocks, &gene_dict, &transcript_to_junctions, &transcript_dict);
+    Rcpp::Rcout << "#### Finding Isoforms\n";
     group_bam2isoform(
+    // minimal_group_bam2isoform(
         genome_bam,
         isoform_gff3,
         tss_tes_stat,
@@ -210,13 +212,6 @@ find_isoform
         config.isoform_parameters,
         ""
     );
-    std::cout << "group_bam2isoform finished\n";
-    
-    // get fasta
-    std::cout << "doing a system command\n";
-    std::string
-    command = "cat " + isoform_gff3 + " > file2.gff3";
-    system(command.c_str());
 
     std::cout << "started parsing isoform_gff3\n";
     GFFData isoform_gff = parseGeneAnno(isoform_gff3);
@@ -227,7 +222,7 @@ find_isoform
     auto gene_to_transcript_iso = isoform_gff.gene_to_transcript;
     auto transcript_to_exon_iso = isoform_gff.transcript_to_exon;
 
-    std::cout << "assigned everything from isoform_gff\n";
+    Rcpp::Rcout << "assigned everything from isoform_gff\n";
 
     ReferenceDict
     ref_dict = {
@@ -237,13 +232,13 @@ find_isoform
         transcript_to_exon
     };
 
-    std::cout << "wrapped them in a ReferenceDict\n";
+    Rcpp::Rcout << "wrapped them in a ReferenceDict\n";
 
     if (!config.realign_parameters.use_annotation) {
         ref_dict = {};
     }
 
-    std::cout << "up to get_transcript_seq\n";
+    Rcpp::Rcout << "up to get_transcript_seq\n";
     get_transcript_seq(
         genomefa,
         transcript_fa,
@@ -253,7 +248,7 @@ find_isoform
         &transcript_to_exon_iso,
         &ref_dict
     );
-    std::cout << "finished get_transcript_seq\n";
+    Rcpp::Rcout << "finished get_transcript_seq\n";
 
     IsoformObjects isoform_objects = {transcript_dict, transcript_dict_iso};
     
@@ -266,10 +261,16 @@ find_isoform
     }
 
     out_test << "transcript_dict_iso:\n";
-    for (const auto & [key, val] : isoform_objects.transcript_dict_iso) {
-        out_test << "\t" << key << ":" << val.chr << "," << val.start << "," << val.end << "\n";
-    }
+    
 
     Rcpp::List isoform_objects_list = isoform_objects_to_R(&isoform_objects);
+    // std::ofstream
+    // out_test2 ("isoform_objects_r.txt");
+    // for (const auto & [key, val] : isoform_objects_list["transcript_dict"]) {
+    //     out_test << "\t" << key << ":" << val.chr << "," << val.start << "," << val.end << "\n";
+    // }
+
+
+
     return isoform_objects_to_R(&isoform_objects);
 }

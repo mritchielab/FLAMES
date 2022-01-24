@@ -92,7 +92,7 @@ match_cell_barcode
     String out_fastq, 
     String ref_csv, 
     int MAX_DIST, 
-    int UMI_LEN = 10
+    int UMI_LEN
 );
 
 #endif // MATCH_CELL_BARCODE_H

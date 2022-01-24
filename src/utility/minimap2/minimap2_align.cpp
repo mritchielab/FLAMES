@@ -45,7 +45,7 @@ minimap2_align
 
 // [[Rcpp::export]]
 void
-minimap2_tr_align
+minimap2_tr_align_cpp
 (
     std::string mm2_prog_path,
     std::string fa_file,
@@ -56,10 +56,10 @@ minimap2_tr_align
     /* calls minimap2 to align to transcript */
 
     std::stringstream align_cmd;
-    align_cmd << mm2_prog_path << "minimap2"
-            << " -ax map-ont -p 0.9 --end-bonus 10 -N 3 -t 12 "
-            << fa_file << " "
-            << fq_in << " -o "
+    align_cmd << mm2_prog_path << "minimap2" 
+            << " -ax map-ont -p 0.9 --end-bonus 10 -N 3 -t 12 " 
+            << fa_file << " " 
+            << fq_in << " -o " 
             << sam_out;
     // call it
     system(align_cmd.str().c_str());

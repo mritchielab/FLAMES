@@ -1,12 +1,12 @@
-#include <Rcpp.h>
-#include <R.h>
 #include <iostream>
 #include <sstream>
 #include <fstream>
 #include <string>
 #include <vector>
-
 #include <unordered_map>
+
+#include <Rcpp.h>
+#include <R.h>
 
 using namespace Rcpp;
 

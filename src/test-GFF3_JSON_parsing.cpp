@@ -7,13 +7,14 @@
 #include <testthat.h>
 
 // #include "ParseGFF3.hpp"
-#include "Parser.hpp"
-#include "Pos.h"
-#include "StartEndPair.hpp"
+#include "classes/Parser.h"
+#include "classes/Pos.h"
+#include "classes/StartEndPair.h"
 // #include "parse_gene_anno_native.h"
-#include "GeneAnnoParser/GeneAnnoParser.hpp"
-#include "config.h"
-#include "parse_json_config.h"
+#include "classes/GeneAnnoParser/GeneAnnoParser.h"
+#include "classes/Config.h"
+#include "classes/GeneAnnoParser/GFFRecord.h"
+#include "file-handling/parse_json_config.h"
 #include "test_utilities.h"
 
 template <typename T>
@@ -33,14 +34,14 @@ bool unorderedMatch(std::vector<T> v1, std::vector<T> v2) {
 
 bool compareRecord(GFFRecord &r1, GFFRecord r2) {
 	return 
-		r1.seqid == r2.seqid && 
+		r1.seqname == r2.seqname && 
 		r1.source == r2.source && 
-		r1.type == r2.type &&
+		r1.feature == r2.feature &&
 		r1.start == r2.start &&
 		r1.end == r2.end &&
 		r1.score == r2.score &&
 		r1.strand == r2.strand &&
-		r1.phase == r2.phase;
+		r1.frame == r2.frame;
 }
 
 context("GFF3 File Parsing") {
@@ -82,21 +83,21 @@ context("GFF3 File Parsing") {
 		// line1 = SIRV5	.	gene	1009	11866	.	+	.	ID=gene:SIRV5;gene_id=SIRV5;support_count=129
 		// x = parseGFF3(file)
 		// x.next()
-		// >>> GFFRecord(seqid='SIRV5', source=None, type='gene', start=1009, end=11866, score=None, strand='+', phase=None, attributes={'support_count': '129', 'ID': 'gene:SIRV5', 'gene_id': 'SIRV5'})
-		// R >>> GFFRecord(seqid=SIRV5, source=, type=gene, start=1009, end=11866, score=-1, strand=+, phase=, attributes={ID: gene:SIRV5,gene_id: SIRV5,support_count: 129,}
+		// >>> GFFRecord(seqid='SIRV5', source=None, type='gene', 1009, 11866, score=None, '+', phase=None, attributes={'support_count': '129', 'ID': 'gene:SIRV5', 'gene_id': 'SIRV5'})
+		// R >>> GFFRecord(seqid=SIRV5, source=, type=gene, 1009, 11866, score=-1, +, phase=, attributes={ID: gene:SIRV5,gene_id: SIRV5,support_count: 129,}
 
-		ParseGFF3 p (get_extdata("isoform_annotated.gff3"));
+		GFFParser p (get_extdata("isoform_annotated.gff3"), "GFF");
 		// we know that the file is not empty
-		expect_true(!p.empty());
+		expect_true(!p.isEmpty());
 
-		GFFRecord r1 = p.nextRecord();
-		expect_true(compareRecord(r1, GFFRecord {"SIRV5", "", "gene", 1001, 11866, -1, "+", ""})); 
+		GFFRecord r1 = p.parseNextRecord();
+		expect_true(compareRecord(r1, GFFRecord("SIRV5\t.\tgene\t1001\t11866\t-1\t+\t.\t."))); 
 		expect_true(r1.attributes["ID"] == "gene:SIRV5"); 
 		expect_true(r1.attributes["support_count"] == "173"); 
 		expect_true(r1.attributes["gene_id"] == "SIRV5");
 
-		GFFRecord r2 = p.nextRecord();
-		expect_true(compareRecord(r2, GFFRecord {"SIRV5", "new", "transcript", 8316, 10991, -1, "+", ""}));
+		GFFRecord r2 = p.parseNextRecord();
+		expect_true(compareRecord(r2, GFFRecord("SIRV5\tnew\ttranscript\t8316\t10991\t-1\t+\t.\t.")));
 		expect_true(r2.attributes["support_count"] == "12");
 		expect_true(r2.attributes["source"] == "new"); 
 		expect_true(r2.attributes["transcript_id"] == "SIRV5_8316_10991_1"); 
@@ -104,9 +105,9 @@ context("GFF3 File Parsing") {
 		expect_true(r2.attributes["Parent"] == "gene:SIRV5");
 		p.close();
 	}
-
+	
 	test_that("full gff file parsing yeilds correct results") {
-		GeneAnnoParser * geneAnnoParser = new GeneAnnoParser(get_extdata("isoform_annotated.gff3"));
+		GeneAnnoParser * geneAnnoParser = new GeneAnnoParser(get_extdata("isoform_annotated.gff3"), false);
 		GFFData x = geneAnnoParser->parse();
 
 		// test if sizes of maps are correct
@@ -126,7 +127,9 @@ context("GFF3 File Parsing") {
 		expect_true(unorderedMatch<std::string>(x.chr_to_gene["SIRV2"], std::vector<std::string> {"SIRV2"}));
 		// 
 		// test if some elements of transcript_dict are correct
-
+		expect_true(comparePos(x.transcript_dict["SIRV410"], Pos {"SIRV4", 1455, 2771, '+', "SIRV4"}));
+		expect_true(comparePos(x.transcript_dict["SIRV606"], Pos {"SIRV6", 2285, 10788, '+', "SIRV6"}));
+		expect_true(comparePos(x.transcript_dict["SIR203"], Pos {"SIRV2", 3665, 5895, '-', "SIRV2"}));
 		// test if some elements of gene_to_transcript are correct
 		expect_true(
 			unorderedMatch<std::string>(
@@ -161,11 +164,23 @@ context("GFF3 File Parsing") {
 			)
 		);
 	}
+
+	test_that("full gtf file parses correctly") {
+		GeneAnnoParser parser ("/Volumes/voogd.o/FLAMES/inst/extdata/SIRV_anno.gtf", true);
+		GFFData x = parser.parse();
+
+		expect_true(x.chr_to_gene.size() == 7);
+		expect_true(x.gene_to_transcript.size() == 7);
+		expect_true(x.transcript_dict.size() == 69);
+		expect_true(x.transcript_to_exon.size() == 69);
+
+		// nned to finish the test cases for this
+	}
 }
 
 context("JSON file parsing") {
 	test_that("JSON Config parsing builds correct Rcpp::List object and Config object") {
-		Rcpp::List c = parse_json_config_cpp(get_extdata("SIRV_config_default.json"));
+		Rcpp::List c = parse_json_config(get_extdata("SIRV_config_default.json"));
 		Config config(c);
 		
 		PipelineParameters p = config.pipeline_parameters;
@@ -201,4 +216,24 @@ context("JSON file parsing") {
 		expect_true(t.min_tr_coverage == 0.75);
 		expect_true(t.min_read_coverage == 0.75);
 	}
+}
+
+
+// [[Rcpp::export]]
+void what2() {
+		
+	GeneAnnoParser parser ("/Volumes/voogd.o/FLAMES/inst/extdata/SIRV_anno.gtf", true);
+	GFFData x = parser.parse();
+
+	Rcpp::Rcout << x.chr_to_gene.size() << "\t"
+				<< x.gene_to_transcript.size() << "\t"
+				<< x.transcript_dict.size() << "\t"
+				<< x.transcript_to_exon.size() << "\n";
+
+
+		// test if sizes of maps are correct
+		// expect_true(x.chr_to_gene.size() == 7);
+		// expect_true(x.gene_to_transcript.size() == 7);
+		// expect_true(x.transcript_dict.size() == 47);
+		// expect_true(x.transcript_to_exon.size() == 47);
 }

@@ -29,7 +29,7 @@
 #' @importFrom reticulate import_from_path
 #' @export
 merge_bulk_fastq <- function(fastq_dir, out_fastq) {
-    # callBasilisk(flames_nopysam_env, function(fq_dir, out_fq) {
+    # callBasilisk(flames_env, function(fq_dir, out_fq) {
     #     python_path <- system.file("python", package = "FLAMES")
 
     #     merge_bulk <-
@@ -78,7 +78,7 @@ merge_bulk_fastq <- function(fastq_dir, out_fastq) {
 merge_bulk_fastq_python <- function(fastq_dir, out_fastq) {
     cat("WARNING: This function has depreciated. Use FLAMES::merge_bulk_fastq instead.\n")
 
-    callBasilisk(flames_nopysam_env, function(fq_dir, out_fq) {
+    callBasilisk(flames_env, function(fq_dir, out_fq) {
         python_path <- system.file("python", package = "FLAMES")
 
         merge_bulk <-

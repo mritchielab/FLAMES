@@ -11,7 +11,7 @@
 #' in the given `outdir` directory. These files are loaded into R in either
 #' a SummarizedExperiment or SingleCellExperiment object by the callers to this
 #' function, `sc_long_pipeline()` and `bulk_long_pipeline()` respectively.
-
+#' useDynLib(FLAMES, .registration = TRUE)
 generic_long_pipeline_cpp <-
     function(annot,
              fastq,
@@ -190,6 +190,7 @@ generic_long_pipeline_cpp <-
         )
 }
 
+#' useDynLib(FLAMES, .registration = TRUE)
 generic_long_pipeline <-
     function(annot,
              fastq,

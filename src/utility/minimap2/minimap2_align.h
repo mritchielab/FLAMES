@@ -1,6 +1,3 @@
-#ifndef MINIMAP2_ALIGN_H
-#define MINIMAP2_ALIGN_H
-
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -18,11 +15,9 @@ minimap2_align(
 );
 
 void
-minimap2_tr_align(
+minimap2_tr_align_cpp(
     std::string mm2_prog_path,
     std::string fa_file,
     std::string fq_in,
     std::string sam_out
 );
-
-#endif

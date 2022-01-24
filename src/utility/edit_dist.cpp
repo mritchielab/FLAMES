@@ -1,5 +1,12 @@
 #include "edit_dist.h"
 
+#include <string>
+#include <vector>
+#include <map>
+#include <bitset>
+#include <algorithm>
+#include <stdlib.h>
+
 int scutil::hamming_distance(const std::string &A, const std::string &B)
 {
     int dist = 0;
