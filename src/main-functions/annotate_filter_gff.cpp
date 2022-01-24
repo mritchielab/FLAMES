@@ -9,6 +9,7 @@
 #include <limits>
 #include <set>
 
+#include "../classes/GFFData.h"
 #include "../classes/GeneAnnoParser/GeneAnnoParser.h"
 
 
@@ -218,8 +219,8 @@ annotate_filter_gff
         combine FLAMES output with reference, 
         and filter out transcript by realignment result
     */
-	GFFData isoform_data; // temp
-    // GFFData isoform_data = parse_gff_or_gtf(isoform_gff);
+	GeneAnnoParser isoform_parser(isoform_gff, GeneAnnoParser::guessGFF(isoform_gff));
+	GFFData isoform_data = isoform_parser.parse();
 
     auto chr_to_gene = isoform_data.chr_to_gene;
     auto transcript_dict = isoform_data.transcript_dict;
@@ -228,8 +229,8 @@ annotate_filter_gff
 
 
     std::cout << "ref_gff:" << ref_gff << " (and we're reading it better)\n";
-    GFFData ref_data;
-	// GFFData ref_data = parse_gff_or_gtf(ref_gff);
+	GeneAnnoParser ref_parser (ref_gff, GeneAnnoParser::guessGFF(ref_gff));
+	GFFData ref_data = ref_parser.parse();
 
     auto chr_to_gene_ref = ref_data.chr_to_gene;
     auto transcript_dict_ref = ref_data.transcript_dict;

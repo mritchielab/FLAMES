@@ -62,7 +62,7 @@ read_record(const bam1_t * b, const bam_header_t * header)
     rec.reference_name = header->target_name[b->core.tid];
     rec.AS_tag = bam_aux2i(bam_aux_get(b, "AS"));
     rec.query_alignment_length = b->core.l_qseq;
-    rec.read_name = bam_get_qname(b);
+    rec.read_name = bam1_qname(b);
     rec.mapping_quality = (int)(b->core.qual);
 
     // rec.reference_name = std::string(sam_hdr_tid2name(header, b->core.tid));
