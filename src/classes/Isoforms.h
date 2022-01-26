@@ -76,19 +76,26 @@ class Isoforms
     std::unordered_map<std::string, std::vector<std::vector<int>>> 
     ge_dict;
 
-    void add_isoform(Junctions junctions, bool is_reversed);
-    void add_one(Junctions junctions, bool strand);
-    void update_one(Junctions junctions, std::vector<int> key, bool strand);
-    int len();
-    void update_all_splice();
+    void 
+    add_isoform(Junctions junctions, bool is_reversed);
+    void 
+    add_one(Junctions junctions, bool strand);
+    void 
+    update_one(Junctions junctions, std::vector<int> key, bool strand);
+    int 
+    len();
+    void 
+    update_all_splice();
 
-    void filter_TSS_TES(std::ofstream * out_f, DoubleJunctions known_site={}, float fdr_cutoff=0.01); 
+    void 
+    filter_TSS_TES(std::ofstream * out_f, DoubleJunctions known_site={}, float fdr_cutoff=0.01); 
 
     //unused
     std::pair<std::vector<int>, std::unordered_map<int, int>>
     group_sites(std::vector<int> l, int smooth_window, int min_threshold);
 
-    void match_known_annotation (
+    void 
+    match_known_annotation (
       std::unordered_map<std::string, Junctions> transcript_to_junctions,
       std::unordered_map<std::string, Pos> transcript_dict,
       std::unordered_map<std::string, std::vector<StartEndPair>> gene_dict,
@@ -96,7 +103,11 @@ class Isoforms
       std::unordered_map<std::string, std::string> fa_dict
     );
 
-    std::string isoform_to_gff3(float isoform_pct);
+    std::string 
+    isoform_to_gff3(float isoform_pct);
+
+    void
+    log();
 };
 
 #endif // ISOFORMS

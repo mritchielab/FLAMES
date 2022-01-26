@@ -209,16 +209,21 @@ group_bam2isoform (
             
             // add all the records in the bamfile to the Isoform object
             int recnum = 0;
-            for (const auto & rec : records) {
+            for (auto & rec : records) {
                 Rcpp::Rcout << "\tlooking at rec " << recnum << "\n";
                 recnum++;
 				
-                std::vector<CigarPair>
-                cigar_smooth = smooth_cigar(rec.cigar, 20);
+                std::cout << "\t\t\tprior to smoothing, cigar is " << rec.cigar.size() << "\n";
+                auto cigar = smooth_cigar(rec.cigar, 20);
+                rec.cigar = cigar;
+                std::cout << "\t\t\tlen(cigar) is " << rec.cigar.size() <<"\n";
+
                 std::string
-                cigar_string = generate_cigar(rec.cigar);
+                cigar_string = generate_cigar(cigar);
+                std::cout << "cigar_string is " << cigar_string << "\n";
                 std::vector<StartEndPair>
                 tmp_blocks = get_blocks(rec);
+                std::cout << "\t\t\ttmp_blocks is size " << tmp_blocks.size() << "\n";
                 Junctions
                 junctions = blocks_to_junctions(tmp_blocks);
                 
@@ -254,6 +259,7 @@ group_bam2isoform (
                     // splice_raw.write(tmp_isoform()); 
                 }
                 Rcpp::Rcout << "made it to isoform_annotated adding\n";
+                tmp_isoform->log();
                 iso_annotated << tmp_isoform->isoform_to_gff3(isoform_parameters.MIN_CNT_PCT);
             }
             Rcpp::Rcout << "made it to deletion\n";
