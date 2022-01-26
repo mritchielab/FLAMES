@@ -257,9 +257,10 @@ group_bam2isoform (
                 iso_annotated << tmp_isoform->isoform_to_gff3(isoform_parameters.MIN_CNT_PCT);
             }
             Rcpp::Rcout << "made it to deletion\n";
-            delete tmp_isoform;
         }
     }
+
+    std::cout << "finished group_bam2isoform. isoform_dict is " << isoform_dict.size() << "\n";
 
     // finally, close all the files
     bam_close(bam);
@@ -267,5 +268,10 @@ group_bam2isoform (
     iso_annotated.close();
     if (raw_gff3 != "") {
         splice_raw.close();
+    }
+
+    // delete everything from isoform_dict that's still in memory
+    for (const auto & [key, isoform] : isoform_dict) {
+        delete isoform;
     }
 }

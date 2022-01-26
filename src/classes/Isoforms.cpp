@@ -198,7 +198,6 @@ int Isoforms::len()
  */
 void Isoforms::update_all_splice()
 {
-
   std::unordered_map<std::vector<int>, int>
   junction_tmp;
   std::unordered_map<StartEndPair, int>
@@ -285,17 +284,23 @@ void Isoforms::update_all_splice()
 
 /* take a known site, write it to an output file and include it in raw_isoforms and strand_count
  */
-void Isoforms::filter_TSS_TES(std::ofstream * out_f, DoubleJunctions known_site, float fdr_cutoff)
+void 
+Isoforms::filter_TSS_TES(std::ofstream * out_f, DoubleJunctions known_site, float fdr_cutoff)
 {
   std::cout << "! started filter_TSS_TES\n";
   std::string bedgraph_fmt = "{_ch}\t{_st}\t{_en}\t{_sc}\n";
 
   auto filter_site = [fdr_cutoff] (std::unordered_map<int, int> list_counts) {
+    std::cout << "!! filter site started\n";
     // to sort the map, we need it as a vector first
     std::vector<std::pair<int, int>>
     mx;
     for (const auto & i : list_counts) {
       mx.emplace_back(i);
+    }
+    std::cout << "mx.size is " << mx.size() << "\n";
+    if (mx.size() == 0) {
+      std::cout << "warning: filter_site failed\n";
     }
 
     // sort it
@@ -311,14 +316,17 @@ void Isoforms::filter_TSS_TES(std::ofstream * out_f, DoubleJunctions known_site,
 
     int trun_num = std::max(2, int(floor(0.05 * mx.size())));
 
-    float rate = 1/(
+    float rate = 1.0/(
       // the average of the second values in each pair, cutting off at trunc_num
+      (float)
       std::accumulate(mx.begin(), mx.end() - trun_num, 0, 
         [] (const auto & p1, const auto & p2) {
           return (p1 + p2.second);
         }
-      ) / mx.size()
+      ) / (float)(mx.size())
     );
+
+    std::cout << "calculated rate " << rate << "\n";
 
     std::vector<int> 
     prob;
@@ -356,6 +364,7 @@ void Isoforms::filter_TSS_TES(std::ofstream * out_f, DoubleJunctions known_site,
 
   auto insert_dist = [this] (std::vector<int> fs, std::vector<int> known_site) 
   {
+    std::cout << "!! insert_dist started\n";
     std::vector<int>
     tmp = {fs[0]};
 
@@ -402,13 +411,15 @@ void Isoforms::filter_TSS_TES(std::ofstream * out_f, DoubleJunctions known_site,
   std::cout << "! line 384\n";
 
 	// is STRAND_SPECIFIC supposed to be Min_sup_cnt???
-  if ((left_counts.size() < this->parameters.STRAND_SPECIFIC) || 
-      (right_counts.size() < this->parameters.STRAND_SPECIFIC)) {
+  if ((left_counts.size() < this->parameters.MIN_SUP_CNT) || 
+      (right_counts.size() < this->parameters.MIN_SUP_CNT)) {
     return;
   } else {
     // left
+    std::cout << "left_counts is size " << left_counts.size() << "\n";
     std::vector<std::pair<int, int>>
     fs_l = filter_site(left_counts);
+    std::cout << "finished filter_site\n";
 
     if (fs_l.size() == 0) {
       cnt_l = {-99999999};
@@ -433,8 +444,10 @@ void Isoforms::filter_TSS_TES(std::ofstream * out_f, DoubleJunctions known_site,
     }
 
     // right
+    std::cout << "right_counts is size " << right_counts.size() << "\n";
     std::vector<std::pair<int, int>>
     fs_r = filter_site(right_counts);
+    std::cout << "finished filter_site\n";
 
     if (fs_r.size() == 0) {
       cnt_r = {-99999999};
@@ -458,7 +471,6 @@ void Isoforms::filter_TSS_TES(std::ofstream * out_f, DoubleJunctions known_site,
       std::sort(cnt_r.begin(), cnt_r.end());
     }
   }
-
 
   std::cout << "! now iterating over pairs\n";
 
