@@ -107,7 +107,7 @@ context("GFF3 File Parsing") {
 	}
 	
 	test_that("full gff file parsing yeilds correct results") {
-		GeneAnnoParser geneAnnoParser (get_extdata("isoform_annotated.gff3"), true);
+		GeneAnnoParser geneAnnoParser (get_extdata("isoform_annotated.gff3"));
 		GFFData x = geneAnnoParser.parse();
 
 		// test if sizes of maps are correct

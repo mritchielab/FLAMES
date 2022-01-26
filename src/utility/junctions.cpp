@@ -10,6 +10,7 @@
 #include <any>
 #include <set>
 #include <list>
+#include <algorithm>
 
 #include "../classes/GeneBlocks.h"
 // #include "ParseGFF3.hpp"

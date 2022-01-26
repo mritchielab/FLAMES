@@ -17,7 +17,6 @@
 #include "../StartEndPair.h"
 #include "../GFFData.h"
 
-class GeneAnnoParser;
 typedef std::function<void(GFFRecord *)> ParseFunction;
 
 class GeneAnnoParser

@@ -1,7 +1,6 @@
 #include <string>
 #include <vector>
 
-
 #ifndef CIG_PAIR
 #define CIG_PAIR
 
