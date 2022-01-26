@@ -2,6 +2,8 @@
 
 #include "../classes/Config.h"
 #include "../classes/GFFData.h"
+#include "../classes/GeneAnnoParser/GeneAnnoParser.h"
+
 #include "../file-handling/parse_realigned_bam.h"
 #include "../file-handling/write_tr_to_csv.h"
 

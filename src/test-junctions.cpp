@@ -1,3 +1,7 @@
+#define TEST_JUNCTIONS
+#ifndef TEST_JUNCTIONS
+
+
 #include <vector>
 #include <string>
 #include <unordered_map>
@@ -483,3 +487,5 @@ void what() {
 		Rcpp::Rcout << *i << "\t:\t" << *j << "\n";
 	}
 }
+
+#endif

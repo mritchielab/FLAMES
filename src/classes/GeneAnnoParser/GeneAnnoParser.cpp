@@ -29,7 +29,7 @@
 GeneAnnoParser::GeneAnnoParser(std::string filename)
 {
     this->filename = filename;
-    this->isGTF = isFileGTF(filename);
+    this->isGFF = this->guessGFF(filename);
     this->annotationSource = "Ensembl"; // this should not be a default, but needs to be decided based on old guess_annotation_source function
 }
 
@@ -40,25 +40,26 @@ GFFData
 GeneAnnoParser::parse()
 {
     // set up the file parser
-    GFFParser fileParser(this->filename, this->isGTF);
-
+    GFFParser parser (this->filename, isGFF);
+	if (isGFF) {
+		this->annotationSource = parser.guessAnnotationSource();
+	}
     // work out which parsing function should be used
     // void (GeneAnnoParser::*parseFunction)(GFFRecord*) =
    	ParseFunction parseFunction = selectParseFunction();
 
     // start parsing through
-    GFFRecord rec = fileParser.parseNextRecord();
-    while (!fileParser.isEmpty()) {
+    GFFRecord rec = parser.parseNextRecord();
+    while (!parser.isEmpty()) {
         if (!rec.broken) {
             // (this->*parseFunction)(&rec);
 			parseFunction(&rec);
-		}
-        rec = fileParser.parseNextRecord();
+		} 
+        rec = parser.parseNextRecord();
     }
 
-    this->gffData.removeTranscriptDuplicates(this->isGTF);
-
-	fileParser.close();
+    this->gffData.removeTranscriptDuplicates(!this->isGFF);
+	parser.close();
     return this->gffData;
 }
 
@@ -72,16 +73,16 @@ GeneAnnoParser::selectParseFunction()
 {
     // ParseFunction parseFunction;
     ParseFunction parseFunction;
-	if (this->isGTF) {
-        parseFunction = [this](GFFRecord *rec){this->parseGTF(rec);};
+	if (!isGFF) {
+        parseFunction = [this](GFFRecord *rec){ this->parseGTF(rec); };
 		// parseFunction = &GeneAnnoParser::parseGTF;
     } else {
-        this->annotationSource = gffParser->guessAnnotationSource();
+        // this->annotationSource = gffParser.guessAnnotationSource();
         if (this->annotationSource == "Ensembl") {
-            parseFunction = [this](GFFRecord *rec){this->parseEnsembl(rec);};
+            parseFunction = [this](GFFRecord *rec){ this->parseEnsembl(rec); };
 			// parseFunction = &GeneAnnoParser::parseEnsembl;
         } else {
-			parseFunction = [this](GFFRecord *rec){this->parseGENCODE(rec);};
+			parseFunction = [this](GFFRecord *rec){ this->parseGENCODE(rec); };
             // parseFunction = &GeneAnnoParser::parseGENCODE;
         }
     }
@@ -206,19 +207,15 @@ GeneAnnoParser::parseGENCODE(GFFRecord * rec)
 GFFData
 parseGeneAnno(std::string filename)
 {
-    GeneAnnoParser * geneAnnoParser = new GeneAnnoParser(filename);
-    GFFData gffData = geneAnnoParser->parse();
-    delete(geneAnnoParser);
+    GeneAnnoParser geneAnnoParser (filename);
+    GFFData gffData = geneAnnoParser.parse();
     return gffData;
 }
 
 /*
     checks whether a filename contains "gtf"
-    I guess it could be fooled if your GFF has ".gtf" somewhere in its name...
-    but otherwise it'll do
 */
-bool
-isFileGTF(std::string filename)
-{
-    return filename.find(".gtf") != std::string::npos;
+bool GeneAnnoParser::guessGFF(std::string filename) {
+	return filename.find(".gff") != std::string::npos
+		|| filename.find(".GFF") != std::string::npos;
 }

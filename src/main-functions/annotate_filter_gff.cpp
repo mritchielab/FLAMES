@@ -9,6 +9,7 @@
 #include <limits>
 #include <set>
 
+#include "../classes/GFFData.h"
 #include "../classes/GeneAnnoParser/GeneAnnoParser.h"
 
 

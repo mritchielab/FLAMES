@@ -86,18 +86,18 @@ context("GFF3 File Parsing") {
 		// >>> GFFRecord(seqid='SIRV5', source=None, type='gene', 1009, 11866, score=None, '+', phase=None, attributes={'support_count': '129', 'ID': 'gene:SIRV5', 'gene_id': 'SIRV5'})
 		// R >>> GFFRecord(seqid=SIRV5, source=, type=gene, 1009, 11866, score=-1, +, phase=, attributes={ID: gene:SIRV5,gene_id: SIRV5,support_count: 129,}
 
-		GFFParser p (get_extdata("isoform_annotated.gff3"), "GFF");
+		GFFParser p (get_extdata("isoform_annotated.gff3"), true);
 		// we know that the file is not empty
 		expect_true(!p.isEmpty());
 
 		GFFRecord r1 = p.parseNextRecord();
-		expect_true(compareRecord(r1, GFFRecord("SIRV5\t.\tgene\t1001\t11866\t-1\t+\t.\t."))); 
+		expect_true(compareRecord(r1, GFFRecord("SIRV5\t.\tgene\t1001\t11866\t-1\t+\t.\t.", true))); 
 		expect_true(r1.attributes["ID"] == "gene:SIRV5"); 
 		expect_true(r1.attributes["support_count"] == "173"); 
 		expect_true(r1.attributes["gene_id"] == "SIRV5");
 
 		GFFRecord r2 = p.parseNextRecord();
-		expect_true(compareRecord(r2, GFFRecord("SIRV5\tnew\ttranscript\t8316\t10991\t-1\t+\t.\t.")));
+		expect_true(compareRecord(r2, GFFRecord("SIRV5\tnew\ttranscript\t8316\t10991\t-1\t+\t.\t.", true)));
 		expect_true(r2.attributes["support_count"] == "12");
 		expect_true(r2.attributes["source"] == "new"); 
 		expect_true(r2.attributes["transcript_id"] == "SIRV5_8316_10991_1"); 
@@ -107,8 +107,8 @@ context("GFF3 File Parsing") {
 	}
 	
 	test_that("full gff file parsing yeilds correct results") {
-		GeneAnnoParser * geneAnnoParser = new GeneAnnoParser(get_extdata("isoform_annotated.gff3"), false);
-		GFFData x = geneAnnoParser->parse();
+		GeneAnnoParser geneAnnoParser (get_extdata("isoform_annotated.gff3"), true);
+		GFFData x = geneAnnoParser.parse();
 
 		// test if sizes of maps are correct
 		expect_true(x.chr_to_gene.size() == 7);
@@ -129,7 +129,7 @@ context("GFF3 File Parsing") {
 		// test if some elements of transcript_dict are correct
 		expect_true(comparePos(x.transcript_dict["SIRV410"], Pos {"SIRV4", 1455, 2771, '+', "SIRV4"}));
 		expect_true(comparePos(x.transcript_dict["SIRV606"], Pos {"SIRV6", 2285, 10788, '+', "SIRV6"}));
-		expect_true(comparePos(x.transcript_dict["SIR203"], Pos {"SIRV2", 3665, 5895, '-', "SIRV2"}));
+		expect_true(comparePos(x.transcript_dict["SIRV203"], Pos {"SIRV2", 3665, 5895, '-', "SIRV2"}));
 		// test if some elements of gene_to_transcript are correct
 		expect_true(
 			unorderedMatch<std::string>(
@@ -165,17 +165,17 @@ context("GFF3 File Parsing") {
 		);
 	}
 
-	test_that("full gtf file parses correctly") {
-		GeneAnnoParser parser ("/Volumes/voogd.o/FLAMES/inst/extdata/SIRV_anno.gtf", true);
-		GFFData x = parser.parse();
+	// test_that("full gtf file parses correctly") {
+	// 	GeneAnnoParser parser ("/Volumes/voogd.o/FLAMES/inst/extdata/SIRV_anno.gtf", false);
+	// 	GFFData x = parser.parse();
 
-		expect_true(x.chr_to_gene.size() == 7);
-		expect_true(x.gene_to_transcript.size() == 7);
-		expect_true(x.transcript_dict.size() == 69);
-		expect_true(x.transcript_to_exon.size() == 69);
+	// 	expect_true(x.chr_to_gene.size() == 7);
+	// 	expect_true(x.gene_to_transcript.size() == 7);
+	// 	expect_true(x.transcript_dict.size() == 69);
+	// 	expect_true(x.transcript_to_exon.size() == 69);
 
-		// nned to finish the test cases for this
-	}
+	// 	// nned to finish the test cases for this
+	// }
 }
 
 context("JSON file parsing") {
@@ -216,24 +216,4 @@ context("JSON file parsing") {
 		expect_true(t.min_tr_coverage == 0.75);
 		expect_true(t.min_read_coverage == 0.75);
 	}
-}
-
-
-// [[Rcpp::export]]
-void what2() {
-		
-	GeneAnnoParser parser ("/Volumes/voogd.o/FLAMES/inst/extdata/SIRV_anno.gtf", true);
-	GFFData x = parser.parse();
-
-	Rcpp::Rcout << x.chr_to_gene.size() << "\t"
-				<< x.gene_to_transcript.size() << "\t"
-				<< x.transcript_dict.size() << "\t"
-				<< x.transcript_to_exon.size() << "\n";
-
-
-		// test if sizes of maps are correct
-		// expect_true(x.chr_to_gene.size() == 7);
-		// expect_true(x.gene_to_transcript.size() == 7);
-		// expect_true(x.transcript_dict.size() == 47);
-		// expect_true(x.transcript_to_exon.size() == 47);
 }

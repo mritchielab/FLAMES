@@ -11,12 +11,12 @@
     initialises the GFFParser, opening the file
 	attributeStyle can be either GFF or GTF (this should really be a bool flag)
 */
-GFFParser::GFFParser(std::string filename, bool isGTF)
+GFFParser::GFFParser(std::string filename, bool isGFF)
 {
     // open the file
     this->file  = std::ifstream(filename);
     this->empty = false;
-    this->isGTF = isGTF;
+    this->isGFF = isGFF; 
 }
 
 /*
@@ -33,7 +33,7 @@ GFFParser::parseNextRecord()
 				getline(file, line);
 			}
             // turn each line into a record
-            GFFRecord rec(line, this->isGTF);
+            GFFRecord rec(line, isGFF);
             return rec;
         } else {
 			// if we are out of lines, return nothing
@@ -84,5 +84,6 @@ GFFParser::guessAnnotationSource()
         }
     }
 	file.clear();
+	file.seekg(0);
     return "Ensembl";
 }

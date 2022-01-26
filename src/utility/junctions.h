@@ -1,8 +1,9 @@
+#ifndef JUNCTIONS_H
+#define JUNCTIONS_H
+
 /*
-  Anything related to junctions are goes in here
+    Anything related to junctions are goes in here
 */
-#ifndef JUNCTIONS
-#define JUNCTIONS
 
 #include <vector>
 #include <string>
@@ -13,22 +14,31 @@
 #include "../classes/StartEndPair.h"
 
 struct DoubleJunctions {
-  /*
-    a struct used for holding the junctions information
-  */
-  std::vector<int> left;
-//   std::vector<int> junctions;
-  std::vector<int> right;
+    /*
+        a struct used for holding the junctions information
+    */
+    std::vector<int> left;
+    // std::vector<int> junctions;
+    std::vector<int> right;
 };
 
 //struct SingleJunction {
 struct Junctions {
-  /*
-    a struct for junctions with just one value in left and right
-  */
-  int left;
-  std::vector<int> junctions;
-  int right;
+    /*
+        a struct for junctions with just one value in left and right
+    */
+    int left;
+    std::vector<int> junctions;
+    int right;
+};
+
+struct InvJunctions {
+    /*
+        a struct for junctions with just one value in left and right
+    */
+    int right;
+    std::vector<int> junctions;
+    int left;
 };
 
 int 
@@ -77,4 +87,4 @@ get_gene_blocks
     std::unordered_map<std::string, std::vector<std::string>>   * gene_to_transcript
 );
 
-#endif
+#endif // JUNCTIONS_H

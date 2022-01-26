@@ -29,9 +29,8 @@ class GeneAnnoParser
     private:
         std::string filename;
         GFFData     gffData;
-        bool        isGTF;
+        bool        isGFF;
         std::string annotationSource;
-        GFFParser * gffParser;
 
     public:
         GFFData
@@ -53,8 +52,10 @@ class GeneAnnoParser
         void
         parseGENCODE(GFFRecord * rec);
 
+		static bool 
+        guessGFF(std::string filename);
+
         GeneAnnoParser(std::string filename);
-        ~GeneAnnoParser();
 };
 
 GFFData

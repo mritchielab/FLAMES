@@ -14,7 +14,7 @@
 GFFRecord::GFFRecord
 (
     std::string line, 
-    bool        isGTF
+    bool isGFF
 )
 {
     // if the line is a comment, the record is considered broken
@@ -40,7 +40,7 @@ GFFRecord::GFFRecord
     this->score     = (columns[5] != ".") ? std::stof(columns[5]) : -1;
     this->strand    = (columns[6] != ".") ? columns[6][0] : '+';
     this->frame     = (columns[7] != ".") ? std::stoi(columns[7]) : -1;
-    this->attributes= (columns[8] != ".") ? GFFRecord::parseAttributes(columns[8], isGTF) : AttributesMap();
+    this->attributes= (columns[8] != ".") ? GFFRecord::parseAttributes(columns[8], isGFF) : AttributesMap();
 
     this->broken = false;
 }
@@ -59,10 +59,10 @@ GFFRecord::GFFRecord()
     selects the right parsing method and parses it
 */
 AttributesMap
-GFFRecord::parseAttributes(std::string attributes, bool isGTF)
+GFFRecord::parseAttributes(std::string attributes, bool isGFF)
 {
-    return isGTF ? 
-        parseGTFAttributes(attributes) : parseGFFAttributes(attributes);
+    return isGFF ? 
+        parseGFFAttributes(attributes) : parseGTFAttributes(attributes);
 }
 
 /*  
