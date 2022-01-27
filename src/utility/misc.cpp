@@ -260,3 +260,37 @@ get_fa(std::string filename)
 
   return output;
 }
+
+
+/*
+    checks whether an int vector is strictly increasing
+*/
+bool
+isStrictlyIncreasing(std::vector<int> vec)
+{
+    bool strictlyIncreasing = 1;
+    for (int i = 1; i < vec.size(); i++) {
+        if (vec[i] < vec[i - 1]) {
+            // then the vector is not strictly increasing
+            strictlyIncreasing = 0;
+            break;
+        }
+    }
+    return strictlyIncreasing;
+}
+
+/*
+    checks whether a string vector contains a particular string
+*/
+bool
+vectorContains(std::vector<std::string> vec, std::string i)
+{
+    bool contains = false;
+    for (const auto & v : vec) {
+        if (v == i) {
+            contains = true;
+            break;
+        }
+    }
+    return contains;
+}

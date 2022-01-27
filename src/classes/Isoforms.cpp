@@ -789,10 +789,13 @@ void Isoforms::match_known_annotation
         // we need to convert the pair to a vector for this lookup
         tmp_std = this->strand_counts[{exon_key.start, exon_key.end}]; // this is where i'm up to
       } else {
-        transcript_dict[i].strand == '+' ? tmp_std = 1 : tmp_std = 0;
+        tmp_std = transcript_dict[i].strand == '+' ? 1 : -1;
       }
 
       std::cout << "in the place1 where we add to known_isoforms\n";
+      std::cout << "transcript_to_junctions[i].size(): " << transcript_to_junctions[i].junctions.size() << "\n";
+      std::cout << "tmp_std = " << tmp_std << ", this->strand_counts[{exon_key.start, exon_key.end}] = " << this->strand_counts[{exon_key.start, exon_key.end}] << "\n";
+      
       if ((transcript_to_junctions[i].junctions.size() == 0) &&
           (tmp_std == this->strand_counts[{exon_key.start, exon_key.end}])) {
         if ((std::abs(exon_key.start - transcript_to_junctions[i].left) < this->parameters.MAX_TS_DIST) &&
@@ -913,17 +916,8 @@ void Isoforms::match_known_annotation
     if (!found) {
       std::vector<int>
       new_exons = find_best_splice_chain(raw_iso_key, junction_list, this->parameters.MAX_SPLICE_MATCH_DIST);
-
-      int is_strictly_increasing = 1;
-      for (int i = 0; i < new_exons.size() - 1; i++) {
-        if (!(new_exons[i] < new_exons[i + 1])) {
-          // then the function is not strictly increasing
-          is_strictly_increasing = 0;
-          break;
-        }
-      }
-
-      if (!is_strictly_increasing) {
+      
+      if (!isStrictlyIncreasing(new_exons)) {
         new_exons = raw_iso_key;
       }
 
@@ -965,17 +959,7 @@ void Isoforms::match_known_annotation
         }
       }
 
-
-      is_strictly_increasing = 1;
-      for (int i = 0; i < new_exons.size() - 1; i++) {
-        if (!(new_exons[i] < new_exons[i - 1])) {
-          // then the vector is not strictly increasing
-          is_strictly_increasing = 0;
-          break;
-        }
-      }
-
-      if (is_strictly_increasing) {
+      if (isStrictlyIncreasing(new_exons)) {
         std::cout << "adding to new_isoforms\n";
         if (this->new_isoforms.count(new_exons) == 0) {
           this->new_isoforms[new_exons] = {this->raw_isoforms[raw_iso_key], "", ""};
