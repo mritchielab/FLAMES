@@ -60,7 +60,6 @@ get_blocks(BAMRecord record)
 {
     std::vector<StartEndPair>
     blocks = {};
-
     int pos = record.reference_start;
 
     for (const auto & [op, len] : record.cigar) {
@@ -69,12 +68,12 @@ get_blocks(BAMRecord record)
             (op == BAM_CDIFF)) {
             // add it to the blocks and move on
             blocks.push_back({pos, pos + len});
-            pos += 1;
+            pos += len;
         } else if (
             (op == BAM_CDEL) ||
             (op == BAM_CREF_SKIP)) {
             // just skip over this position
-            pos += 1;
+            pos += len;
         }
     }
 
@@ -165,6 +164,8 @@ group_bam2isoform (
     iso_annotated.open(out_gff3);
     iso_annotated << "##gff-version 3\n";
 
+    std::ofstream also_out ("also_out_cpp.gff");
+    also_out << "##gff-version 3\n";
     // add to splice_raw if we are planning on outputting raw_gff3
     std::ofstream splice_raw;
     if (raw_gff3 != "") {
@@ -223,7 +224,12 @@ group_bam2isoform (
                 std::cout << "cigar_string is " << cigar_string << "\n";
                 std::vector<StartEndPair>
                 tmp_blocks = get_blocks(rec);
-                std::cout << "\t\t\ttmp_blocks is size " << tmp_blocks.size() << "\n";
+                std::cout << "\t\t\ttmp_blocks is (size " << tmp_blocks.size() << ") [";
+                for (const auto & block : tmp_blocks) {
+                    std::cout << "(" << block.start << ", " << block.end << ") ";
+                }
+                std::cout << "]\n";
+
                 Junctions
                 junctions = blocks_to_junctions(tmp_blocks);
                 
@@ -233,6 +239,7 @@ group_bam2isoform (
                     Rcpp::Rcout << j << ", ";
                 }
                 Rcpp::Rcout << "), 'left': " << junctions.left << "}\n";
+                
                 tmp_isoform->add_isoform(junctions, rec.flag.read_reverse_strand);
             }
 
@@ -261,6 +268,7 @@ group_bam2isoform (
                 Rcpp::Rcout << "made it to isoform_annotated adding\n";
                 tmp_isoform->log();
                 iso_annotated << tmp_isoform->isoform_to_gff3(isoform_parameters.MIN_CNT_PCT);
+                also_out << tmp_isoform->isoform_to_gff3(isoform_parameters.MIN_CNT_PCT);
             }
             Rcpp::Rcout << "made it to deletion\n";
         }
@@ -272,6 +280,7 @@ group_bam2isoform (
     bam_close(bam);
     tss_tes_stat.close();
     iso_annotated.close();
+    also_out.close();
     if (raw_gff3 != "") {
         splice_raw.close();
     }

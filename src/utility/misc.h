@@ -37,3 +37,6 @@ isStrictlyIncreasing(std::vector<int> vec);
 
 bool
 vectorContains(std::vector<std::string> vec, std::string i);
+
+void
+vectorPrint(std::vector<int> vec);

@@ -1,3 +1,6 @@
+#ifndef GFF3_TO_FA_H
+#define GFF3_TO_FA_H
+
 #include <string>
 #include <vector>
 #include <unordered_map>
@@ -26,7 +29,9 @@ std::unordered_map<std::string, std::string>
 get_fa_simple(std::string filename);
 
 void
-write_fa(std::ofstream * fa_out, std::string na, std::string seq, int wrap_len = 50);
+write_fa(std::ofstream* fa_out, std::string na, std::string seq, int wrap_len=50);
 
 std::string
-r_c(std::string * seq);
+r_c(const std::string * seq);
+
+#endif // GFF3_TO_FA_H

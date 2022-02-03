@@ -6,6 +6,7 @@ CP = {"A": "T", "T": "A", "C": "G", "G": "C", "N": "N","a":"t","t":"a","c":"g","
 
 
 def r_c(seq):
+    print "about to r_c on seq size ", len(seq)
     new_seq = []
     for c in seq[::-1]:
         new_seq.append(CP[c])
@@ -40,7 +41,7 @@ def write_fa(fn, na, seq, warp_len=50):
 
 def get_transcript_seq(fa_file, fa_out_f, chr_to_gene, transcript_dict,
                        gene_to_transcript, transcript_to_exon, ref_dict = None):
-    print "stated get_transcript_seq"
+    print "started get_transcript_seq"
     global_isoform_dict = {}
     global_seq_dict = {}
     fa_dict = {}

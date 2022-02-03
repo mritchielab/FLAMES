@@ -17,6 +17,7 @@ get_transcript_seq
     ReferenceDict * ref_dict
 )
 {
+    std::cout << "actually started get_transcript_seq\n";
     std::unordered_map<std::vector<StartEndPair>, std::string>
     global_isoform_dict;
     std::unordered_map<std::string, std::string>
@@ -29,18 +30,23 @@ get_transcript_seq
     fa_out(fa_out_f);
     
     // load in data from the FASTA input
+    std::cout << "about to start get_fa_simple\n";
     std::unordered_map<std::string, std::string>
     raw_dict = get_fa_simple(fa_file);
-    
+    std::cout << "raw_dict is size " << raw_dict.size() << "\n";
 
     // then look through all the data we just loaded in
     for (const auto & [chr, seq] : raw_dict) {
+        std::cout << "iterating " << chr << "\n";
         // first, check that the chr is in chr_to_gene
         if ((*chr_to_gene).find(chr) == (*chr_to_gene).end()) {
+            std::cout << "skipping because not in gene\n";
             continue;
         }
 
+        std::cout << "about to iterate chr_to_gene, size " << chr_to_gene->size() << "\n";
         for (const auto & gene : (*chr_to_gene)[chr]) {
+            std::cout << "about to iterate gene_to_transcript, size " << gene_to_transcript->size() << "\n";
             for (const auto & transcript : (*gene_to_transcript)[gene]) {
                 // make a list of every StartEndPair in this transcript
                 std::vector<StartEndPair>
@@ -75,10 +81,11 @@ get_transcript_seq
                     }
                 }
             }
-
+            std::cout << "up to the ref_dict!=nullptr bit\n";
             if (ref_dict != nullptr) {
                 // if the reference dictionary contains the chr
                 if (ref_dict->chr_to_gene.find(chr) != ref_dict->chr_to_gene.end()) {
+                    std::cout << "about to iterate ref_dict.gene_to_transcript[gene], size " << (*ref_dict).gene_to_transcript[gene].size() << "\n";
                     for (const auto & transcript : (*ref_dict).gene_to_transcript[gene]) {
                         // first check that the transcript isn't in transcript_to_exon
                         if ((*transcript_to_exon).find(transcript) != (*transcript_to_exon).end()) {
@@ -93,16 +100,20 @@ get_transcript_seq
                         }
 
                         // check to see if the transcript is in global_isoform_dict
+                        std::cout << "check to see if the transcript is in global_isoform_dict\n";
                         if (global_isoform_dict.find(iso_list) != global_isoform_dict.end()) {
+                            std::cout << "it was!\n";
                             if (ref_dict->transcript_to_exon.find(global_isoform_dict[iso_list]) != ref_dict->transcript_to_exon.end()) {
                                 std::cout << "Transcript with the same coordination: " << global_isoform_dict[iso_list] << ", " << transcript << "\n";
                                 global_seq_dict[fa_dict[global_isoform_dict[iso_list]]] = transcript;
                             }
                         } else {
+                            std::cout << "it wasn't.\n";
                             global_isoform_dict[iso_list] = transcript;
                             
                             std::string
                             transcript_seq;
+                            std::cout << "about to iterate ref_dict->transcript_to_exon[transcript], size " << ref_dict->transcript_to_exon[transcript].size() << "\n";
                             for (const auto & exon : ref_dict->transcript_to_exon[transcript]) {
                                 transcript_seq.append(seq.substr(exon.start, exon.end));
                             }
@@ -125,6 +136,7 @@ get_transcript_seq
         }
     }
 
+    std::cout << "global_seq_dict is size " << global_seq_dict.size() << "\n"; 
     for (const auto & [transcript_seq, transcript] : global_seq_dict) {
         write_fa(&fa_out, transcript, transcript_seq);
     }
@@ -137,6 +149,7 @@ get_transcript_seq
 std::unordered_map<std::string, std::string>
 get_fa_simple(std::string filename)
 {
+    std::cout << "started get_fa_simple\n";
     /* a quick lambda function */
     auto first_space = [] (std::string line) {
         for (int i = 0; i < line.length(); ++i) {
@@ -159,7 +172,6 @@ get_fa_simple(std::string filename)
 
     std::string line;
     while (std::getline(fa_in, line)) {
-
         if (line[0] == '>') { // a new sequence has started
             // so push the old one
             if (chr != "") {
@@ -173,6 +185,10 @@ get_fa_simple(std::string filename)
             full_seq.append(line);
         }
     }
+    // push the last one
+    if (chr != "") {
+        output[chr] = full_seq;
+    }
 
     fa_in.close();
     return output;
@@ -182,7 +198,7 @@ get_fa_simple(std::string filename)
     wrapping after each wrap_len characters
 */
 void
-write_fa(std::ofstream * fa_out, std::string na, std::string seq, int wrap_len)
+write_fa(std::ofstream* fa_out, std::string na, std::string seq, int wrap_len)
 {
     (*fa_out) << ">" << na << "\n";
     for (int i = 0; i < seq.length(); ++i) {
@@ -201,8 +217,9 @@ write_fa(std::ofstream * fa_out, std::string na, std::string seq, int wrap_len)
     reverses it and swaps all of the characters using CP
 */
 std::string
-r_c(std::string * seq)
+r_c(const std::string * seq)
 {
+    std::cout << "starting r_c on seq size " << seq->size() << "\n";
     std::unordered_map<char, char>
     CP = {
         {'A', 'T'},
@@ -222,5 +239,7 @@ r_c(std::string * seq)
     for (int i = (int)(*seq).length() - 1; i >= 0; --i) {
         new_seq.push_back(CP[(*seq)[i]]);
     }
+
+    std::cout << "finished r_c\n";
     return new_seq;
 }

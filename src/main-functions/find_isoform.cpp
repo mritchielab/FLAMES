@@ -2,6 +2,7 @@
 
 #include "../utility/misc.h"
 #include "../classes/GeneAnnoParser/GeneAnnoParser.h"
+#include "../file-handling/gff3_to_fa.h"
 
 Rcpp::List
 isoform_objects_to_R(IsoformObjects * isoform_objects)

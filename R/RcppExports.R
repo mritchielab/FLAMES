@@ -57,6 +57,10 @@ minimap2_align_cpp <- function(mm2_prog_path, fa_file, fq_in, sam_out, no_flank,
     invisible(.Call(`_FLAMES_minimap2_align_cpp`, mm2_prog_path, fa_file, fq_in, sam_out, no_flank, bed12_junc))
 }
 
+minimap2_tr_align_cpp <- function(mm2_prog_path, fa_file, fq_in, sam_out) {
+    invisible(.Call(`_FLAMES_minimap2_tr_align_cpp`, mm2_prog_path, fa_file, fq_in, sam_out))
+}
+
 what2 <- function() {
     invisible(.Call(`_FLAMES_what2`))
 }

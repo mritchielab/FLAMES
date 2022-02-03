@@ -296,10 +296,12 @@ void
 Isoforms::filter_TSS_TES(std::ofstream * out_f, DoubleJunctions known_site, float fdr_cutoff)
 {
   std::cout << "! started filter_TSS_TES\n";
+  std::cout << "\tthis->lr_pair.size():" << this->lr_pair.size() << "\n";
   std::string bedgraph_fmt = "{_ch}\t{_st}\t{_en}\t{_sc}\n";
 
   auto filter_site = [fdr_cutoff] (std::unordered_map<int, int> list_counts) {
     std::cout << "!! filter site started\n";
+     
     // to sort the map, we need it as a vector first
     std::vector<std::pair<int, int>>
     mx;
@@ -656,7 +658,7 @@ Isoforms::filter_TSS_TES(std::ofstream * out_f, DoubleJunctions known_site, floa
       }
     }
 
-    if ((float(support_count_total) / this->lr_pair.size()) <= this->parameters.MIN_SUP_PCT) {
+    if (((float)(support_count_total) / pair.second.size()) <= this->parameters.MIN_SUP_PCT) {
       std::cout << "! first part of the if\n";
       // not enough support counts - this often happens in the case when the TSS/TES is strongly degraded
 
@@ -693,7 +695,8 @@ Isoforms::filter_TSS_TES(std::ofstream * out_f, DoubleJunctions known_site, floa
         tmp_ex.push_back(i);
       }
       tmp_ex.push_back((int)(pair_enrich[0].first.end));
-
+      std::cout << "tmp_ex is (size " << tmp_ex.size() << ") ";
+      vectorPrint(tmp_ex);
       std::cout << "! defined tmp_ex\n";
       this->raw_isoforms[tmp_ex] = pair.second.size();
       this->strand_counts[tmp_ex] = this->strand_counts[pair.first];
@@ -742,6 +745,7 @@ void Isoforms::match_known_annotation
   std::unordered_map<std::string, std::string> fa_dict
 )
 {
+  std::cout << "started match_known_annotation\n";
 
   std::set<int>
   splice_site = get_splice_site(transcript_to_junctions, one_block.transcript_list);
@@ -772,6 +776,9 @@ void Isoforms::match_known_annotation
 
     exons_dict[exons_list.back()] = i;
   }
+
+  std::cout << "exons_list is size " << exons_list.size() << "\n";
+  std::cout << "exons_dict is size " << exons_dict.size() << "\n";
 
   DoubleJunctions
   TSS_TES_site = get_TSS_TES_site(&transcript_to_junctions, &(one_block.transcript_list));
@@ -831,6 +838,9 @@ void Isoforms::match_known_annotation
   }
 
   for (auto const & [raw_iso_key, raw_iso_val] : this->raw_isoforms) {
+    std::cout << "this iso is ";
+    vectorPrint(raw_iso_key);
+
     // line 730 in sc_longread.py
     int found = 0;
 
@@ -913,15 +923,24 @@ void Isoforms::match_known_annotation
       }
     }
 
+    // line 800 of sc_longread.py
+
     if (!found) {
+      std::cout << "in the not found block\n";
+      
       std::vector<int>
       new_exons = find_best_splice_chain(raw_iso_key, junction_list, this->parameters.MAX_SPLICE_MATCH_DIST);
       
+      std::cout << "new_exons is size " << new_exons.size() << "\n";
+      std::cout << "new_exons is ";
+      vectorPrint(new_exons);
+
       if (!isStrictlyIncreasing(new_exons)) {
         new_exons = raw_iso_key;
+        std::cout << "was not strictlyIncreasing\n";
       }
 
-      for (int i = 0; i < new_exons.size(); i++) {
+      for (int i = 0; i < new_exons.size(); ++i) {
         int a_site = new_exons[i];
 
         if (i == 0) { // the left-most site
@@ -959,6 +978,9 @@ void Isoforms::match_known_annotation
         }
       }
 
+      std::cout << "new_exons is now ";
+      vectorPrint(new_exons);
+
       if (isStrictlyIncreasing(new_exons)) {
         std::cout << "adding to new_isoforms\n";
         if (this->new_isoforms.count(new_exons) == 0) {
@@ -971,7 +993,6 @@ void Isoforms::match_known_annotation
     }
   }
 
-  // line 800 of sc_longread.py
 
   // remove incomplete transcript (due to 3' bias)
   if (this->parameters.REMOVE_INCOMP_READS) {
@@ -1435,6 +1456,19 @@ Isoforms::isoform_to_gff3(float isoform_pct=-1) {
                 << "." << "\t" // _ph
                 << "ID=transcript:" << tp_id.str() << ";transcript_id=" << tp_id.str() << ";Parent=gene:" << g_key << ";support_count=" << support_count << ";source=" << source; // _attr
       gff_tmp.push_back(gff_entry.str());
+      for (int i = 0; i < exons.size(); i+=2) {
+        std::stringstream gff_entry;
+        gff_entry << this->ch << '\t' // _ch // chromosome
+                  << source << '\t' // _sr // source
+                  << "exon" << '\t' // _ty // 
+                  << exons[i] + 1 << '\t' // _st // start
+                  << exons[i+1] << '\t' // _en // end
+                  << "." << '\t' // _sc 
+                  << (this->strand_counts[exons] == 1 ? '+' : '-') << '\t' // _stnd // strand
+                  << "." << "\t" // _ph
+                  << "ID=exon:" << exons[i]+1 << "_" << exons[i+1] << ";transcript_id=" << tp_id.str() << ";Parent=transcript:" << tp_id.str() << ";rank=" << exon_idx; // _attr
+        gff_tmp.push_back(gff_entry.str());
+      }
       exon_idx++;
     }
 
@@ -1451,9 +1485,7 @@ Isoforms::isoform_to_gff3(float isoform_pct=-1) {
       std::cout << "written line: " << gff << "\n";
       output << gff << "\n";
     }
-    output << "\n";
     return output.str();
-  
   }
 
   return "";

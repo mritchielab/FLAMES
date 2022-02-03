@@ -16,20 +16,21 @@
 #include "../classes/StartEndPair.h"
 
 std::vector<int>
-find_best_splice_chain(std::vector<int> raw_iso, std::vector<std::vector<int>> junction_list, int MAX_DIST)
+find_best_splice_chain(std::vector<int> raw_iso, std::vector<std::vector<int>> junction_list, int max_dist)
 {
+  // index, length-1, starting position
   int best_match[3] = {-1, 0, 0};
   for (int i = 0; i < junction_list.size(); i++) {
     // hold onto this
     std::vector<int>
     junction = junction_list[i];
-    
+
     // populate vector i_st with the indices of junction_list[i] entries
     // that match certain criteria
     std::vector<int> iter_start;
     for (int j = 0; j < junction_list[i].size(); j++) {
 
-      if (abs(junction[j] - raw_iso[1]) < MAX_DIST) {
+      if (abs(junction[j] - raw_iso[1]) < max_dist) {
         iter_start.push_back(j);
       }
     }
@@ -39,7 +40,7 @@ find_best_splice_chain(std::vector<int> raw_iso, std::vector<std::vector<int>> j
       int iter = iter_start_int + 1;
       int iter_end = iter_start_int;
       while (iter < junction.size() && iter - iter_start_int + 1 < raw_iso.size()) {
-        if (abs(junction[iter] - raw_iso[iter - iter_start_int + 1]) < MAX_DIST) {
+        if (abs(junction[iter] - raw_iso[iter - iter_start_int + 1]) < max_dist) {
           iter_end = iter;
           iter += 1;
         } else {
@@ -293,4 +294,17 @@ vectorContains(std::vector<std::string> vec, std::string i)
         }
     }
     return contains;
+}
+
+/*
+    prints a vector for debugging purposes
+*/
+void
+vectorPrint(std::vector<int> vec)
+{
+    std::cout << "[";
+    for (const auto & i : vec) {
+      std::cout << i << " ";
+    }
+    std::cout << "]\n";
 }
