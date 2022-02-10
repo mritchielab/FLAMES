@@ -155,6 +155,7 @@ generic_long_pipeline_cpp <-
         } else {
             cat("#### Skip read realignment\n")
         }
+        cat("out of that if")
 
 
         # quantification
@@ -170,7 +171,7 @@ generic_long_pipeline_cpp <-
                 annot,
                 isoform_gff3_f,
                 FSM_anno_out
-            );
+            )
         } else {
             cat("#### Skip transcript quantification\n")
         }

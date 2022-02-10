@@ -32,6 +32,6 @@ void
 write_fa(std::ofstream* fa_out, std::string na, std::string seq, int wrap_len=50);
 
 std::string
-r_c(const std::string * seq);
+r_c(const std::string* seq);
 
 #endif // GFF3_TO_FA_H

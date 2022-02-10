@@ -18,7 +18,7 @@ get_transcript_seq
 )
 {
     std::cout << "actually started get_transcript_seq\n";
-    std::unordered_map<std::vector<StartEndPair>, std::string>
+    std::unordered_map<std::vector<int>, std::string>
     global_isoform_dict;
     std::unordered_map<std::string, std::string>
     global_seq_dict = {};
@@ -49,10 +49,11 @@ get_transcript_seq
             std::cout << "about to iterate gene_to_transcript, size " << gene_to_transcript->size() << "\n";
             for (const auto & transcript : (*gene_to_transcript)[gene]) {
                 // make a list of every StartEndPair in this transcript
-                std::vector<StartEndPair>
+                std::vector<int>
                 iso_list = {};
                 for (const auto & exon : (*transcript_to_exon)[transcript]) {
-                    iso_list.push_back(exon);
+                    iso_list.push_back(exon.start);
+                    iso_list.push_back(exon.end);
                 }
 
                 // check that this exact StartEndPair list isn't already in global_isoform_dict
@@ -64,8 +65,9 @@ get_transcript_seq
                     // now, build a string that is the full sequence of the given transcript
                     std::string
                     transcript_seq = "";
+                    std::cout << "about to build a transcript_seq out of (*transcript_to_exon)[transcript] size " << (*transcript_to_exon)[transcript].size() << "\n";
                     for (const auto & exon : (*transcript_to_exon)[transcript]) {
-                        transcript_seq.append(seq.substr(exon.start, exon.end));
+                        transcript_seq.append(seq.substr(exon.start, exon.end - exon.start));
                     }
 
                     // check if we need to reverse and swap the strand
@@ -92,12 +94,14 @@ get_transcript_seq
                             continue;
                         }
 
-                        std::vector<StartEndPair>
+                        std::vector<int>
                         iso_list = {};
 
                         for (const auto & exon : ref_dict->transcript_to_exon[transcript]) {
-                            iso_list.push_back(exon);
+                            iso_list.push_back(exon.start);
+                            iso_list.push_back(exon.end);
                         }
+                        std::cout << "\n";
 
                         // check to see if the transcript is in global_isoform_dict
                         std::cout << "check to see if the transcript is in global_isoform_dict\n";
@@ -115,8 +119,10 @@ get_transcript_seq
                             transcript_seq;
                             std::cout << "about to iterate ref_dict->transcript_to_exon[transcript], size " << ref_dict->transcript_to_exon[transcript].size() << "\n";
                             for (const auto & exon : ref_dict->transcript_to_exon[transcript]) {
-                                transcript_seq.append(seq.substr(exon.start, exon.end));
+                                std::cout << "\ta region of length " << exon.end - exon.start << "\n";
+                                transcript_seq.append(seq.substr(exon.start, exon.end - exon.start));
                             }
+                            std::cout << "transcript_seq size is " << transcript_seq.size() << "\n";
 
                             // reverse and switch strands if we need to
                             if (ref_dict->transcript_dict[transcript].strand != '+') {
@@ -217,7 +223,7 @@ write_fa(std::ofstream* fa_out, std::string na, std::string seq, int wrap_len)
     reverses it and swaps all of the characters using CP
 */
 std::string
-r_c(const std::string * seq)
+r_c(const std::string* seq)
 {
     std::cout << "starting r_c on seq size " << seq->size() << "\n";
     std::unordered_map<char, char>

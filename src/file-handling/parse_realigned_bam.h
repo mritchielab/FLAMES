@@ -14,7 +14,8 @@
 
 #include "../main-functions/group_bam2isoform.h"
 
-/*  a struct to package up the output of parse_realigned_bam
+/*
+    a struct to package up the output of parse_realigned_bam
 */
 struct RealignedBamData {
     std::unordered_map<std::string, std::unordered_map<std::string, std::vector<std::string>>>
@@ -46,9 +47,6 @@ read_entire_bam
     std::string log_out
 );
 
-
-
-
 RealignedBamData
 parse_realigned_bam
 (
@@ -69,5 +67,8 @@ query_len
 
 std::unordered_map<std::string, std::string>
 make_bc_dict(std::string bc_anno);
+
+void
+log_realigned(RealignedBamData realignedBamData);
 
 #endif

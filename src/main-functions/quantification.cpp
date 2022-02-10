@@ -1,3 +1,7 @@
+#include <iostream>
+#include <string>
+#include <Rcpp.h>
+
 #include "quantification.h"
 
 #include "../classes/Config.h"
@@ -10,7 +14,6 @@
 #include "annotate_filter_gff.h"
 #include "find_isoform.h"
 
-// [[Rcpp::export]]
 void
 quantification
 (
@@ -48,6 +51,8 @@ quantification
     // }
     // return;
 
+    AttributesMap kwargs = {};
+
     auto
     parse_realign = parse_realigned_bam(
         realign_bam,
@@ -55,8 +60,10 @@ quantification
         config.isoform_parameters.MIN_SUP_CNT,
         config.transcript_counting.min_tr_coverage,
         config.transcript_counting.min_read_coverage,
-        {}
+        kwargs
     );
+
+    log_realigned(parse_realign);
 
     auto
     tr_count = write_tr_to_csv_cpp(

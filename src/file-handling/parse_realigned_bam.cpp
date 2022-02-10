@@ -30,6 +30,11 @@ file_to_map(std::string filename)
             words.push_back(word);
         }
 
+        if (words.size() < 2) {
+            std::cout << "skipped line\n";
+            continue;
+        } 
+
         map[words[0]] = atoi(words[1].c_str());
     }
 
@@ -197,7 +202,7 @@ parse_realigned_bam
         
         
         float
-        tr_cov = (float)((map_end - map_start)/fa_idx[tr]);
+        tr_cov = (float)(map_end - map_start)/fa_idx[tr];
         // if there is no dictionary entry for this tr_cov, create one
         if (tr_cov_dict.count(tr) == 0) {
             tr_cov_dict[tr] = {};
@@ -384,6 +389,32 @@ parse_realigned_bam
     return RealignedBamData {bc_tr_count_dict, bc_tr_badcov_count_dict, tr_kept};
 }
 
+void
+log_realigned(RealignedBamData realignedBamData)
+{
+    std::cout << "started log_realigned\n";
+
+    std::cout << "bc_tr_badcov_count_dict (size " << realignedBamData.bc_tr_badcov_count_dict.size() << "):\n";
+    for (const auto & [key, val] : realignedBamData.bc_tr_badcov_count_dict) {
+        std::cout << "\t" << key << ": (size " << val.size() << ") [";
+        for (const auto & v : val) {
+            std::cout << "(" << v.first << "," << v.second.size() << ") ";
+        }
+        std::cout << "]\n";
+    }
+    std::cout << "\nbc_tr_count_dict (size " << realignedBamData.bc_tr_count_dict.size() << "):\n";
+    for (const auto & [key, val] : realignedBamData.bc_tr_count_dict) {
+        std::cout << "\t" << key << ": (size " << val.size() << ") [";
+        for (const auto & v : val) {
+            std::cout << "(" << v.first << "," << v.second.size() << ") ";
+        }
+        std::cout << "]\n";
+    }
+    std::cout << "\ntr_kept (size " << realignedBamData.tr_kept.size() << "):\n";
+    for (const auto & k : realignedBamData.tr_kept) {
+        std::cout << "\t" << k << "\n";
+    }
+}
 
 
 std::unordered_map<std::string, std::string>

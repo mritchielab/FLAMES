@@ -96,7 +96,9 @@ def get_transcript_seq(fa_file, fa_out_f, chr_to_gene, transcript_dict,
                         else:
                             global_isoform_dict[tuple(iso_l)] = tr
                             tr_seq = []
+                            print "about to iterate ref_dict[\"transcript_to_exon\"][tr] size ", len(ref_dict["transcript_to_exon"][tr])
                             for e in ref_dict["transcript_to_exon"][tr]:
+                                print "\ta region of length ", e[1] - e[0]
                                 tr_seq.append(seq[e[0]:e[1]])
                             tr_seq = "".join(tr_seq)
                             if ref_dict["transcript_dict"][tr].strand != "+":
