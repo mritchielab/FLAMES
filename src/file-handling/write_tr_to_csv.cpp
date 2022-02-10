@@ -136,8 +136,6 @@ write_tr_to_csv_cpp
     has_UMI
 )
 {
-    Rcpp::Rcout << "started write_tr_to_csv_cpp\n";
-
     std::ofstream csv (csv_f);
 
     std::unordered_set<std::string> all_tr = {};
@@ -147,8 +145,6 @@ write_tr_to_csv_cpp
 			all_tr.insert(tr);
         }
     }
-
-    Rcpp::Rcout << "all_tr is " << all_tr.size() << " long\n";
 
     // write the header to the csv
     csv << "transcript_id,gene_id";
@@ -175,7 +171,6 @@ write_tr_to_csv_cpp
         } else if (transcript_dict_ref.size() && transcript_dict_ref.count(tr)) {
             csv << tr << "," << transcript_dict_ref[tr].parent_id << ",";
         } else {
-            Rcpp::Rcout << "Cannot find transcript in transcript_dict: " << tr << "\n";
             return {};
         }
 
@@ -187,8 +182,6 @@ write_tr_to_csv_cpp
 		csv << "\n";
     }
 
-    Rcpp::Rcout << "tr_count is " << tr_count.size() << " long\n";
-    
     csv << "\n";
 	csv.close();
     return tr_count;

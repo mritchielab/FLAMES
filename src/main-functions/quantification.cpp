@@ -36,14 +36,13 @@ quantification
 
     GFFData gene_anno = parseGeneAnno(annot);
     auto transcript_to_exon = gene_anno.transcript_to_exon;
-    std::cout << "transcript_to_exon is currently " << transcript_to_exon.size() << " isoforms long\n";
-
+    
     // unwrap things from R
     Config config;
     config.from_R(config_list);
     IsoformObjects isoform_objects = isoform_objects_from_R(isoform_objects_list);
-    std::cout << "isoform_objects.transcript_dict is " << isoform_objects.transcript_dict.size() << " long\n";
-    std::cout << "isoform_objects.transcript_dict_iso is " << isoform_objects.transcript_dict_iso.size() << " long\n";
+    // std::cout << "isoform_objects.transcript_dict is " << isoform_objects.transcript_dict.size() << " long\n";
+    // std::cout << "isoform_objects.transcript_dict_iso is " << isoform_objects.transcript_dict_iso.size() << " long\n";
     
     // std::cout << "isoform_objects.transcript_dict:\n";
     // for (const auto & [key, val] : isoform_objects.transcript_dict) {
@@ -62,8 +61,6 @@ quantification
         config.transcript_counting.min_read_coverage,
         kwargs
     );
-
-    log_realigned(parse_realign);
 
     auto
     tr_count = write_tr_to_csv_cpp(

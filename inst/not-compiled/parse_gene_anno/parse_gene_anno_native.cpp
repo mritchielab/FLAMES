@@ -46,7 +46,6 @@ parse_gff_or_gtf(std::string filename)
 GFFData
 parse_gtf_tree(std::string filename)
 {
-    std::cout << "started parse_gtf_tree\n";
     // create an object to store chr_to_gene, transcript_dict, 
     // gene_to_transcript, transcript_to_exon 
     GFFData gff_data;
@@ -113,7 +112,6 @@ parse_gtf_tree(std::string filename)
     }
     parser.close();
     
-    std::cout << "finished parse_gtf_tree\n";
     return gff_data;
 }
 

@@ -228,8 +228,6 @@ annotate_filter_gff
     auto gene_to_transcript = isoform_data.gene_to_transcript;
     auto transcript_to_exon = isoform_data.transcript_to_exon;
 
-
-    std::cout << "ref_gff:" << ref_gff << " (and we're reading it better)\n";
     GFFData ref_data = parseGeneAnno(ref_gff);
 
     auto chr_to_gene_ref = ref_data.chr_to_gene;

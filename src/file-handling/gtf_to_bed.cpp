@@ -306,7 +306,6 @@ gtf_to_bed(std::string in_gtf, std::string out_bed, std::string chrom_sizes_file
 	if (missing_chroms.size()) {
 		Rcpp::Rcout << "chromosomes found in gtf but not in chrom_sizes file: " << set_to_str(missing_chroms) << "\n";
 	}
-	Rcpp::Rcout << "finished gtf_to_bed_cpp\n";
 
 	gtf.close();
 	bed.close();
