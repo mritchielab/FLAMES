@@ -383,6 +383,7 @@ context("Junctions functions") {
 		};
 		expect_true(is_exon_similar(exon3, exon4, 10));
 	}
+
 	test_that("splice sites can be aquired") {
 		std::vector<std::string> tr_list {
 			"SIRV508", "SIRV509", "SIRV502", "SIRV503", "SIRV501", "SIRV506", "SIRV507", "SIRV504", "SIRV505", "SIRV512", "SIRV510"
@@ -396,7 +397,6 @@ context("Junctions functions") {
 
 		expect_true(compare_stream(real_site, out_site));
 	}
-
 	test_that("TSS_TES Sites can be acquired") {
 		// // python :
 		// // from sc_longread import blocks_to_junctions, get_TSS_TES_site
@@ -439,3 +439,7 @@ context("Junctions functions") {
 	}
 }
 
+// [[Rcpp::export]]
+void what() {
+  return;
+}

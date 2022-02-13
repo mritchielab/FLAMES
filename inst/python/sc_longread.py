@@ -751,6 +751,8 @@ class Isoforms(object):
         [exons_list[ith].insert(0,transcript_to_junctions[tr]["left"]) for ith, tr in enumerate(one_block.transcript_list)]
         exons_dict = dict((tuple(exons_list[ith]), tr) for ith, tr in enumerate(one_block.transcript_list))
         TSS_TES_site = get_TSS_TES_site(transcript_to_junctions, one_block.transcript_list)
+        print "exons_list is size ", len(exons_list)
+        print "exons_dict is size ", len(exons_dict)
 
         print "this->lr_pair size is {}".format(len(self.lr_pair))
         for p in self.lr_pair:
@@ -782,6 +784,7 @@ class Isoforms(object):
         for raw_iso in self.raw_isoforms:
             found = False
             print "raw_iso is size {}, raw_iso_set is size {}".format(len(raw_iso), len(set(raw_iso))) 
+            print "raw_iso is ", raw_iso
             if len(raw_iso)>len(set(raw_iso)):
                 #print "REPEAT splice site, skip:", self.raw_isoforms[raw_iso], raw_iso
                 print "skipping, raw_iso_key"
@@ -809,9 +812,14 @@ class Isoforms(object):
                             found = True
                             break
             if not found:
+                print "in the not found block"
                 new_exons = find_best_splice_chain(raw_iso, junc_list, self.MAX_SPLICE_MATCH_DIST)
+                print "new_exons is size", len(new_exons)
+                print "new_exons is ", new_exons
+
                 if not all(new_exons[ix]<new_exons[ix+1] for ix in range(len(new_exons)-1)):
                     new_exons = list(raw_iso)
+                    print "was not strictlyIncreasing"
                 for ix, a_site in enumerate(new_exons):
                     if ix==0:  # left
                         clo = take_closest(TSS_TES_site["left"],a_site)
@@ -831,6 +839,8 @@ class Isoforms(object):
                             new_exons[ix] = clo
                         else:
                             new_exons[ix] = a_site
+                
+                print "new_exons is now ", new_exons
                 if all(new_exons[ix]<new_exons[ix+1] for ix in range(len(new_exons)-1)):
                     #if tuple(new_exons[1:-1]) in junc_dict and abs(new_exons[0]-transcript_to_junctions[junc_dict[tuple(new_exons[1:-1])]]["left"])<self.MAX_TS_DIST and abs(new_exons[-1]-transcript_to_junctions[junc_dict[tuple(new_exons[1:-1])]]["right"])<self.MAX_TS_DIST:
                     #    known_exons = list(transcript_to_junctions[ junc_dict[tuple(new_exons[1:-1])] ]["junctions"])

@@ -23,7 +23,6 @@ struct Iso
 	std::string gene_id;
 };
 
-
 class Isoforms {
 	private:
 		// these values will all be extracted from config

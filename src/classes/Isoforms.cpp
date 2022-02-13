@@ -145,7 +145,6 @@ void Isoforms::update_one(Junctions junctions, StartEndPair key, bool strand) {
     // this->single_blocks[this->single_block_dict[key]].push_back(key);
 	single_block_dict.at(key).push_back({junctions.left, junctions.right});
 
-
 	int multiplier = this->parameters.STRAND_SPECIFIC ? -1 : 1;
   	this->strand_counts[{key.start, key.end}].push_back(multiplier * this->parameters.STRAND_SPECIFIC);
 }
@@ -159,6 +158,7 @@ void Isoforms::update_one(Junctions junctions, std::vector<int> key, bool strand
 	this->junction_dict[key].push_back(junctions.junctions);
     this->left.push_back(junctions.left);
     this->right.push_back(junctions.right);
+
     this->lr_pair[key].push_back({junctions.left, junctions.right});
 
 	int multiplier = this->parameters.STRAND_SPECIFIC ? -1 : 1;
@@ -638,6 +638,7 @@ void Isoforms::match_known_annotation
             // it's totally new, create a fresh entry for it
             this->known_isoforms[{known_exons.first, known_exons.second}] = {
               long(this->single_block_dict[exon_key].size()),
+
               i,
               transcript_dict.at(i).parent_id
             };

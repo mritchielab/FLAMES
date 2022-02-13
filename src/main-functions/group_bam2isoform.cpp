@@ -190,7 +190,6 @@ group_bam2isoform (
     for (const auto & [chr, blocks] : chr_to_blocks) {
         int tid = bam_get_tid(header, chr.c_str());
 
-
         int ith = 0;
         for (const auto & block : blocks) {
             ith++;
@@ -204,8 +203,8 @@ group_bam2isoform (
             
             // add all the records in the bamfile to the Isoform object
             int recnum = 0;
-
             for (BAMRecord & rec : records) {
+
                 recnum++;
 				
                 auto cigar = smooth_cigar(rec.cigar, 20);
