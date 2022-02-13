@@ -33,3 +33,4 @@ std::string PosToStr(Pos p) {
 	ss << ")";
 	return ss.str();
 }
+

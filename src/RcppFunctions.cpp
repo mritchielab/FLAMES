@@ -95,31 +95,16 @@ find_isoform_cpp
 
 /*****************************************************************************/
 
-#include "main-functions/group_bam2isoform.h"
-
-// [[Rcpp::export]]
-void
-bam_read_cpp
-(
-    std::string bam_in, 
-    std::string chr, 
-    int s, 
-    int e
-)
-{
-    return bam_read(bam_in, chr, s, e);
-}
-
 // // [[Rcpp::export]]
 void
 group_bam2isoform_cpp (
     std::string bam_in, 
     std::string out_gff3, 
     std::string out_stat, 
-    std::unordered_map<std::string, std::vector<GeneBlocks>>    * chr_to_blocks, 
-    std::unordered_map<std::string, std::vector<StartEndPair>>  * gene_dict, 
-    std::unordered_map<std::string, Junctions>                  * transcript_to_junctions,
-    std::unordered_map<std::string, Pos>                        * transcript_dict,
+    const std::unordered_map<std::string, std::vector<GeneBlocks>>		& chr_to_blocks, 
+    const std::unordered_map<std::string, std::vector<StartEndPair>>  	& gene_dict, 
+    const std::unordered_map<std::string, Junctions>                  	& transcript_to_junctions,
+    const std::unordered_map<std::string, Pos>                        	& transcript_dict,
     std::string fa_f,
     IsoformParameters isoform_parameters,
     std::string raw_gff3

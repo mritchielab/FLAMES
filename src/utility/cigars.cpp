@@ -1,11 +1,30 @@
-/*
-  All the code relating to cigars is in here
-*/
-
 #include "cigars.h"
 
 #include <string>
 #include <vector>
+
+#include "bam.h"
+
+/*  take a bam entry,
+    populate a vector with all of its CIGAR operations
+    this is to mimic the output of bamnostic's default cigar from bamfile.fetch
+*/
+std::vector<CigarPair>
+generate_cigar_pairs(const bam1_t *b)
+{
+    std::vector<CigarPair>
+    cigar_pairs;
+
+    // iterate over the cigar
+    const uint32_t *cigar = bam1_cigar(b);
+    for (int k = 0; k < (int)bam1_cigar_len(b); k++) {
+        cigar_pairs.push_back((CigarPair){
+            (int)bam_cigar_op(cigar[k]),
+            (int)bam_cigar_oplen(cigar[k])
+        });
+    }
+    return cigar_pairs;
+}
 
 /*
 cigar specification:

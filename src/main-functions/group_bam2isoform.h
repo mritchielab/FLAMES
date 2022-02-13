@@ -22,11 +22,11 @@
 // static int
 // fetch_function(const bam1_t *b, void *data);
 
-void
-bam_read (std::string bam_in, std::string chr, int s, int e);
+// void
+// bam_read (std::string bam_in, std::string chr, int s, int e);
 
 std::vector<StartEndPair>
-get_blocks(BAMRecord record);
+get_blocks(const BAMRecord &record);
 
 void
 minimal_group_bam2isoform (
@@ -46,10 +46,10 @@ group_bam2isoform (
     std::string bam_in, 
     std::string out_gff3, 
     std::string out_stat, 
-    std::unordered_map<std::string, std::vector<GeneBlocks>>    * chr_to_blocks, 
-    std::unordered_map<std::string, std::vector<StartEndPair>>  * gene_dict, 
-    std::unordered_map<std::string, Junctions>                  * transcript_to_junctions,
-    std::unordered_map<std::string, Pos>                        * transcript_dict,
+    const std::unordered_map<std::string, std::vector<GeneBlocks>>    	& chr_to_blocks, 
+    const std::unordered_map<std::string, std::vector<StartEndPair>>  	& gene_dict, 
+    const std::unordered_map<std::string, Junctions>           	 		& transcript_to_junctions,
+    const std::unordered_map<std::string, Pos>                        	& transcript_dict,
     std::string fa_f,
     IsoformParameters isoform_parameters,
     std::string raw_gff3
