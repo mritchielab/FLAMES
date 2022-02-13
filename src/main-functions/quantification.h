@@ -2,7 +2,6 @@
 #define QUANTIFICATION_H
 
 #include <string>
-
 #include <Rcpp.h>
 
 void
@@ -20,4 +19,4 @@ quantification
     std::string FSM_anno_out
 );
 
-#endif
+#endif // QUANTIFICATION_H

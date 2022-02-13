@@ -1,14 +1,19 @@
+#include <iostream>
+#include <string>
+#include <Rcpp.h>
+
 #include "quantification.h"
 
 #include "../classes/Config.h"
 #include "../classes/GFFData.h"
+#include "../classes/GeneAnnoParser/GeneAnnoParser.h"
+
 #include "../file-handling/parse_realigned_bam.h"
 #include "../file-handling/write_tr_to_csv.h"
 
 #include "annotate_filter_gff.h"
 #include "find_isoform.h"
 
-// [[Rcpp::export]]
 void
 quantification
 (
@@ -26,23 +31,26 @@ quantification
 {
     std::cout << "#### Generating transcript count matrix\n";
     
-	GFFData gene_anno; // temp
-    // GFFData gene_anno = parse_gff_or_gtf(annot);
-    auto transcript_to_exon = gene_anno.transcript_to_exon;
-    std::cout << "transcript_to_exon is currently " << transcript_to_exon.size() << " isoforms long\n";
+    GFFData tmp = parseGeneAnno(isoform_gff3);
+    tmp.log("before_quant_cpp.gff");
 
+    GFFData gene_anno = parseGeneAnno(annot);
+    auto transcript_to_exon = gene_anno.transcript_to_exon;
+    
     // unwrap things from R
     Config config;
     config.from_R(config_list);
     IsoformObjects isoform_objects = isoform_objects_from_R(isoform_objects_list);
-    std::cout << "isoform_objects.transcript_dict is " << isoform_objects.transcript_dict.size() << " long\n";
-    std::cout << "isoform_objects.transcript_dict_iso is " << isoform_objects.transcript_dict_iso.size() << " long\n";
+    // std::cout << "isoform_objects.transcript_dict is " << isoform_objects.transcript_dict.size() << " long\n";
+    // std::cout << "isoform_objects.transcript_dict_iso is " << isoform_objects.transcript_dict_iso.size() << " long\n";
     
     // std::cout << "isoform_objects.transcript_dict:\n";
     // for (const auto & [key, val] : isoform_objects.transcript_dict) {
     //     std::cout << "\t" << key << ":" << val.chr << "," << val.start << "," << val.end << "\n";
     // }
     // return;
+
+    AttributesMap kwargs = {};
 
     auto
     parse_realign = parse_realigned_bam(
@@ -51,7 +59,7 @@ quantification
         config.isoform_parameters.MIN_SUP_CNT,
         config.transcript_counting.min_tr_coverage,
         config.transcript_counting.min_read_coverage,
-        {}
+        kwargs
     );
 
     auto

@@ -45,7 +45,7 @@ minimap2_align
 
 // [[Rcpp::export]]
 void
-minimap2_tr_align_cpp
+minimap2_tr_align
 (
     std::string mm2_prog_path,
     std::string fa_file,

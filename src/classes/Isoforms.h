@@ -24,8 +24,7 @@ struct Iso
 };
 
 
-class Isoforms
-{
+class Isoforms {
 	private:
 		// these values will all be extracted from config
 		IsoformParameters parameters;

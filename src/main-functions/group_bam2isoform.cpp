@@ -57,7 +57,6 @@ get_blocks(const BAMRecord &record)
 {
     std::vector<StartEndPair>
     blocks = {};
-
     int pos = record.reference_start;
 
     for (const auto & [op, len] : record.cigar) {
@@ -162,6 +161,8 @@ group_bam2isoform (
     iso_annotated.open(out_gff3);
     iso_annotated << "##gff-version 3\n";
 
+    std::ofstream also_out ("also_out_cpp.gff");
+    also_out << "##gff-version 3\n";
     // add to splice_raw if we are planning on outputting raw_gff3
     std::ofstream splice_raw;
     if (raw_gff3 != "") {
@@ -189,10 +190,10 @@ group_bam2isoform (
     for (const auto & [chr, blocks] : chr_to_blocks) {
         int tid = bam_get_tid(header, chr.c_str());
 
+
         int ith = 0;
         for (const auto & block : blocks) {
             ith++;
-
             records = {};
             // extract this from the bam file
 
@@ -203,13 +204,14 @@ group_bam2isoform (
             
             // add all the records in the bamfile to the Isoform object
             int recnum = 0;
-            for (const auto & rec : records) {
+
+            for (BAMRecord & rec : records) {
                 recnum++;
 				
-                std::vector<CigarPair>
-                cigar_smooth = smooth_cigar(rec.cigar, 20);
+                auto cigar = smooth_cigar(rec.cigar, 20);
+                rec.cigar = cigar;
                 std::string
-                cigar_string = generate_cigar(rec.cigar);
+                cigar_string = generate_cigar(cigar);
                 std::vector<StartEndPair>
                 tmp_blocks = get_blocks(rec);
                 Junctions
@@ -245,6 +247,7 @@ group_bam2isoform (
     bam_close(bam);
     tss_tes_stat.close();
     iso_annotated.close();
+    also_out.close();
     if (raw_gff3 != "") {
         splice_raw.close();
     }

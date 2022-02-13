@@ -219,18 +219,16 @@ annotate_filter_gff
         combine FLAMES output with reference, 
         and filter out transcript by realignment result
     */
-	GeneAnnoParser isoform_parser(isoform_gff, GeneAnnoParser::guessGFF(isoform_gff));
-	GFFData isoform_data = isoform_parser.parse();
+
+    GFFData isoform_data = parseGeneAnno(isoform_gff);
+    isoform_data.log("before_ann_cpp.gff");
 
     auto chr_to_gene = isoform_data.chr_to_gene;
     auto transcript_dict = isoform_data.transcript_dict;
     auto gene_to_transcript = isoform_data.gene_to_transcript;
     auto transcript_to_exon = isoform_data.transcript_to_exon;
 
-
-    std::cout << "ref_gff:" << ref_gff << " (and we're reading it better)\n";
-	GeneAnnoParser ref_parser (ref_gff, GeneAnnoParser::guessGFF(ref_gff));
-	GFFData ref_data = ref_parser.parse();
+    GFFData ref_data = parseGeneAnno(ref_gff);
 
     auto chr_to_gene_ref = ref_data.chr_to_gene;
     auto transcript_dict_ref = ref_data.transcript_dict;

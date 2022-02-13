@@ -26,12 +26,11 @@
 
 /*****************************************************************************/
 
-GeneAnnoParser::GeneAnnoParser(std::string filename, bool isGFF)
+GeneAnnoParser::GeneAnnoParser(std::string filename)
 {
     this->filename = filename;
-    this->isGFF = isGFF;
-    // this->annotationSource = "Ensembl"; // this should not be a default, but needs to be decided based on old guess_annotation_source function
-
+    this->isGFF = this->guessGFF(filename);
+    this->annotationSource = "Ensembl"; // this should not be a default, but needs to be decided based on old guess_annotation_source function
 }
 
 /*
@@ -41,7 +40,7 @@ GFFData
 GeneAnnoParser::parse()
 {
     // set up the file parser
-    GFFParser parser (filename, isGFF);
+    GFFParser parser (this->filename, isGFF);
 	if (isGFF) {
 		this->annotationSource = parser.guessAnnotationSource();
 	}
@@ -202,6 +201,20 @@ GeneAnnoParser::parseGENCODE(GFFRecord * rec)
     std::cout << "running parseGENCODE, todo\n";
 }
 
+/*
+    wrapper for parsing a GFF or a GTF into a GFFData object
+*/
+GFFData
+parseGeneAnno(std::string filename)
+{
+    GeneAnnoParser geneAnnoParser (filename);
+    GFFData gffData = geneAnnoParser.parse();
+    return gffData;
+}
+
+/*
+    checks whether a filename contains "gtf"
+*/
 bool GeneAnnoParser::guessGFF(std::string filename) {
 	return filename.find(".gff") != std::string::npos
 		|| filename.find(".GFF") != std::string::npos;

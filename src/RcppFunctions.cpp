@@ -234,3 +234,20 @@ minimap2_align_cpp
         no_flank,
         bed12_junc);
 }
+
+// [[Rcpp::export]]
+void
+minimap2_tr_align_cpp(
+    std::string mm2_prog_path,
+    std::string fa_file,
+    std::string fq_in,
+    std::string sam_out
+)
+{
+    return minimap2_tr_align(
+        mm2_prog_path,
+        fa_file,
+        fq_in,
+        sam_out
+    );
+}

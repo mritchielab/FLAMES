@@ -133,6 +133,19 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// minimap2_tr_align_cpp
+void minimap2_tr_align_cpp(std::string mm2_prog_path, std::string fa_file, std::string fq_in, std::string sam_out);
+RcppExport SEXP _FLAMES_minimap2_tr_align_cpp(SEXP mm2_prog_pathSEXP, SEXP fa_fileSEXP, SEXP fq_inSEXP, SEXP sam_outSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type mm2_prog_path(mm2_prog_pathSEXP);
+    Rcpp::traits::input_parameter< std::string >::type fa_file(fa_fileSEXP);
+    Rcpp::traits::input_parameter< std::string >::type fq_in(fq_inSEXP);
+    Rcpp::traits::input_parameter< std::string >::type sam_out(sam_outSEXP);
+    minimap2_tr_align_cpp(mm2_prog_path, fa_file, fq_in, sam_out);
+    return R_NilValue;
+END_RCPP
+}
 // what2
 void what2();
 RcppExport SEXP _FLAMES_what2() {
@@ -164,6 +177,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_FLAMES_merge_bulk_fastq_cpp", (DL_FUNC) &_FLAMES_merge_bulk_fastq_cpp, 2},
     {"_FLAMES_quantification_cpp", (DL_FUNC) &_FLAMES_quantification_cpp, 10},
     {"_FLAMES_minimap2_align_cpp", (DL_FUNC) &_FLAMES_minimap2_align_cpp, 6},
+    {"_FLAMES_minimap2_tr_align_cpp", (DL_FUNC) &_FLAMES_minimap2_tr_align_cpp, 4},
     {"_FLAMES_what2", (DL_FUNC) &_FLAMES_what2, 0},
     {"_FLAMES_what", (DL_FUNC) &_FLAMES_what, 0},
     {"run_testthat_tests", (DL_FUNC) &run_testthat_tests, 1},

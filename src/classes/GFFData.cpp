@@ -1,16 +1,11 @@
 #include "GFFData.h"
 
-#include <string>
-#include <vector>
-#include <unordered_map>
-
-#include <Rcpp.h>
-
-#include "StartEndPair.h"
-#include "Pos.h"
-
+/*
+    iterates through GFFData and removes 
+    any duplicate transcripts that may have been added
+*/
 void
-GFFData::removeTranscriptDuplicates(bool update_transcript_dict) {
+GFFData::removeTranscriptDuplicates(bool updateTranscriptDict) {
     // Remove duplicates from the transcript_to_exon maps
     for (auto tr : this->transcript_to_exon) {
         // it->first is std::string key
@@ -32,7 +27,7 @@ GFFData::removeTranscriptDuplicates(bool update_transcript_dict) {
             this->transcript_to_exon[tr.first] = new_ex;
         }
 
-		if (update_transcript_dict) {
+		if (updateTranscriptDict) {
                 // update transcript_dict[this transcript] with a new Pos object of
                 // the correct start and end positions of this exon
                 this->transcript_dict[tr.first] = Pos {
@@ -61,81 +56,52 @@ GFFData::removeTranscriptDuplicates(bool update_transcript_dict) {
 }
 
 
-Rcpp::List
-GFFData::to_R()
-{
-    // /// Create a Rcpp::List from an unordered_map.
-    // /// Specificially used for chr_to_gene and gene_to_transcript in order to export each object
-    // /// to the R session for later use.
-    // /// Maintains order of data
-    // auto create_list_map_to_map = [] (std::unordered_map<std::string, std::unordered_map<std::string, bool>> map)
-    // {
-    //     List result = List::create();
-
-    //     for (auto it = map.begin; it != map.end(); ++it) {
-    //         // iterating over every string to unordered_map in map
-    //         CharacterVector inner_list = CharacterVector::create();
-
-    //         // iterating over every string in the internal unordered_map
-    //         for (auto in = it->second.begin(); in != it->second.end(); ++in) {
-    //             inner_list.push_back(in->first);
-    //         }
-
-    //         result.push_back(inner_list, it->first);
-    //     }
-
-    //     return result;
-    // };
-
-    // auto create_list_map_to_pos = [] (std::unordered_map<std::string, Pos> map)
-    // {
-    //     List result = List::create();
-
-    //     // result should look like: "transcript" = ["pos"=[]]
-    //     for (auto it = map.begin(); it != map.end(); ++it) {
-    //         Pos pos = it->second;
-
-    //         result.push_back(pos_to_R(&pos), it->first);
-    //     }
-
-    //     return result;
-    // };
-
-    // auto create_list_map_to_startendpair = [] (std::unordered_map<std::string, std::list<StartEndPair>> map)
-    // {
-    //     List transcript_to_exon_list = List::create();
-
-    //     for (auto tr = map.begin(); tr !=map.end(); ++tr) {
-    //         // it->first is std::string key
-    //         // it->second is std::list<StartEndPair> list of pairs
-    //         List pair_list = List::create();
-
-    //         for (auto ex = tr->second.begin(); ex != tr->second.end(); ++ex) {
-    //             pair_list.push_back(
-    //                 IntegerVector::create(
-    //                     ex->start,
-    //                     ex->end
-    //                 )
-    //             );
-    //         }
-
-    //         transcript_to_exon_list.push_back(pair_list, tr->first);
-    //     }
-
-    //     return transcript_to_exon_list;
-    // };
-
-    // return List::create(
-    //     _["chr_to_gene"] = create_list_map_to_map(this->chr_to_gene),
-    //     _["transcript_dict"] = create_list_map_to_pos(this->transcript_dict),
-    //     _["gene_to_transcript"] = create_list_map_to_map(this->gene_to_transcript),
-    //     _["transcript_to_exon"] = create_list_map_to_startendpair(this->transcript_to_exon)
-    // );
-    return Rcpp::List::create();
-}
-
+/*
+    records all the details of GFFData in a file
+*/
 void
-GFFData::from_R(Rcpp::List list)
+GFFData::log
+( 
+    std::string filename
+)
 {
-    /* import an R list */
+    std::ofstream
+    file (filename);
+
+    file << "chr_to_gene: (size " << this->chr_to_gene.size() << ")\n";
+    for (const auto & [chr, gene] : this->chr_to_gene) {
+        file << "\t" << chr << ": (size " << gene.size() << ") [";
+        for (const auto & g : gene) {
+            file << g << ", ";
+        }
+        file << "]\n";
+    }
+
+    file << "\ntranscript_dict: (size " << this->transcript_dict.size() << ")\n";
+    for (const auto & [tr, pos] : this->transcript_dict) {
+        file << "\t" << tr << ":(" 
+            << pos.chr << "," 
+            << pos.start << "," 
+            << pos.end << "," 
+            << pos.parent_id << "," 
+            << pos.strand << ")\n";
+    }
+
+    file << "\ngene_to_transcript: (size " << this->gene_to_transcript.size() << ")\n";
+    for (const auto & [gene, transcript] : this->gene_to_transcript) {
+        file << "\t" << gene << ": (size " << transcript.size() << ") [";
+        for (const auto & tr : transcript) {
+            file << tr << ", ";
+        }
+        file << "]\n";
+    }
+
+    file << "\ntranscript_to_exon: (size " << this->transcript_to_exon.size() << ")\n";
+    for (const auto & [transcript, exon] : this->transcript_to_exon) {
+        file << "\t" << transcript << ": (size " << exon.size() << ") [";
+        for (const auto & ex : exon) {
+            file << "(" << ex.start << "," << ex.end << "), ";
+        }
+        file << "]\n";
+    }
 }

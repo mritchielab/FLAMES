@@ -147,7 +147,6 @@ generic_long_pipeline_cpp <-
         if (do_read_realign) {
             cat("#### Realign to transcript using minimap2\n")
             minimap2_tr_align_cpp(minimap2_dir, transcript_fa, fastq, tmp_sam)
-            cat('realign done')
             samtools_as_bam(tmp_sam, tmp_bam)
             samtools_sort_index(tmp_bam, realign_bam)
             file.remove(tmp_sam)
@@ -170,7 +169,7 @@ generic_long_pipeline_cpp <-
                 annot,
                 isoform_gff3_f,
                 FSM_anno_out
-            );
+            )
         } else {
             cat("#### Skip transcript quantification\n")
         }

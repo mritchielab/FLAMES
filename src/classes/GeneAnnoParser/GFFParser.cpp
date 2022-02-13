@@ -14,7 +14,7 @@
 GFFParser::GFFParser(std::string filename, bool isGFF)
 {
     // open the file
-    this->file = std::ifstream(filename);
+    this->file  = std::ifstream(filename);
     this->empty = false;
     this->isGFF = isGFF; 
 }

@@ -17,7 +17,7 @@ get_transcript_seq
     ReferenceDict * ref_dict
 )
 {
-    std::unordered_map<std::vector<StartEndPair>, std::string>
+    std::unordered_map<std::vector<int>, std::string>
     global_isoform_dict;
     std::unordered_map<std::string, std::string>
     global_seq_dict = {};
@@ -31,7 +31,7 @@ get_transcript_seq
     // load in data from the FASTA input
     std::unordered_map<std::string, std::string>
     raw_dict = get_fa_simple(fa_file);
-
+    
     // then look through all the data we just loaded in
     for (const auto & [chr, seq] : raw_dict) {
         // first, check that the chr is in chr_to_gene
@@ -42,10 +42,11 @@ get_transcript_seq
         for (const auto & gene : (*chr_to_gene)[chr]) {
             for (const auto & transcript : (*gene_to_transcript)[gene]) {
                 // make a list of every StartEndPair in this transcript
-                std::vector<StartEndPair>
+                std::vector<int>
                 iso_list = {};
                 for (const auto & exon : (*transcript_to_exon)[transcript]) {
-                    iso_list.push_back(exon);
+                    iso_list.push_back(exon.start);
+                    iso_list.push_back(exon.end);
                 }
 
                 // check that this exact StartEndPair list isn't already in global_isoform_dict
@@ -58,7 +59,7 @@ get_transcript_seq
                     std::string
                     transcript_seq = "";
                     for (const auto & exon : (*transcript_to_exon)[transcript]) {
-                        transcript_seq.append(seq.substr(exon.start, exon.end));
+                        transcript_seq.append(seq.substr(exon.start, exon.end - exon.start));
                     }
 
                     // check if we need to reverse and swap the strand
@@ -74,7 +75,6 @@ get_transcript_seq
                     }
                 }
             }
-
             if (ref_dict != nullptr) {
                 // if the reference dictionary contains the chr
                 if (ref_dict->chr_to_gene.find(chr) != ref_dict->chr_to_gene.end()) {
@@ -84,13 +84,14 @@ get_transcript_seq
                             continue;
                         }
 
-                        std::vector<StartEndPair>
+                        std::vector<int>
                         iso_list = {};
 
                         for (const auto & exon : ref_dict->transcript_to_exon[transcript]) {
-                            iso_list.push_back(exon);
+                            iso_list.push_back(exon.start);
+                            iso_list.push_back(exon.end);
                         }
-
+    
                         // check to see if the transcript is in global_isoform_dict
                         if (global_isoform_dict.find(iso_list) != global_isoform_dict.end()) {
                             if (ref_dict->transcript_to_exon.find(global_isoform_dict[iso_list]) != ref_dict->transcript_to_exon.end()) {
@@ -103,9 +104,9 @@ get_transcript_seq
                             std::string
                             transcript_seq;
                             for (const auto & exon : ref_dict->transcript_to_exon[transcript]) {
-                                transcript_seq.append(seq.substr(exon.start, exon.end));
+                                transcript_seq.append(seq.substr(exon.start, exon.end - exon.start));
                             }
-
+                            
                             // reverse and switch strands if we need to
                             if (ref_dict->transcript_dict[transcript].strand != '+') {
                                 transcript_seq = r_c(&transcript_seq);
@@ -136,7 +137,7 @@ get_transcript_seq
 std::unordered_map<std::string, std::string>
 get_fa_simple(std::string filename)
 {
-    /* a quick lambda function */
+    /* a quick lambda function to find the position of the first space in a line */
     auto first_space = [] (std::string line) {
         for (int i = 0; i < line.length(); ++i) {
             if (line[i] == ' ') {
@@ -158,7 +159,6 @@ get_fa_simple(std::string filename)
 
     std::string line;
     while (std::getline(fa_in, line)) {
-
         if (line[0] == '>') { // a new sequence has started
             // so push the old one
             if (chr != "") {
@@ -172,6 +172,10 @@ get_fa_simple(std::string filename)
             full_seq.append(line);
         }
     }
+    // push the last one
+    if (chr != "") {
+        output[chr] = full_seq;
+    }
 
     fa_in.close();
     return output;
@@ -181,7 +185,7 @@ get_fa_simple(std::string filename)
     wrapping after each wrap_len characters
 */
 void
-write_fa(std::ofstream * fa_out, std::string na, std::string seq, int wrap_len)
+write_fa(std::ofstream* fa_out, std::string na, std::string seq, int wrap_len)
 {
     (*fa_out) << ">" << na << "\n";
     for (int i = 0; i < seq.length(); ++i) {
@@ -200,7 +204,7 @@ write_fa(std::ofstream * fa_out, std::string na, std::string seq, int wrap_len)
     reverses it and swaps all of the characters using CP
 */
 std::string
-r_c(std::string * seq)
+r_c(const std::string* seq)
 {
     std::unordered_map<char, char>
     CP = {
@@ -221,5 +225,6 @@ r_c(std::string * seq)
     for (int i = (int)(*seq).length() - 1; i >= 0; --i) {
         new_seq.push_back(CP[(*seq)[i]]);
     }
+
     return new_seq;
 }

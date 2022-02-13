@@ -30,3 +30,13 @@ exon_overlap (std::vector<int> exons1, std::vector<StartEndPair> exons2);
 
 std::vector<std::pair<std::string, std::string>>
 get_fa(std::string filename);
+
+
+bool
+isStrictlyIncreasing(std::vector<int> vec);
+
+bool
+vectorContains(std::vector<std::string> vec, std::string i);
+
+void
+vectorPrint(std::vector<int> vec);

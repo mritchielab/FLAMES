@@ -1,11 +1,12 @@
-#ifndef GFF_DATA
-#define GFF_DATA
+#ifndef GFFDATA_H
+#define GFFDATA_H
 
 #include <unordered_map>
-#include <string>
 #include <vector>
+#include <string>
+#include <Rcpp.h>
+#include <fstream>
 
-// #include "ParseGFF3.h"
 #include "Pos.h"
 #include "StartEndPair.h"
 
@@ -26,9 +27,14 @@ class GFFData
 
         Rcpp::List to_R();
 
-        void from_R(Rcpp::List list);
+        void
+        from_R(Rcpp::List list);
 
-        void removeTranscriptDuplicates(bool update_transcript_dict);
+        void
+        removeTranscriptDuplicates(bool updateTranscriptDict=true);
+
+        void
+        log(std::string filename);
 };
 
-#endif // GFF_DATA
+#endif

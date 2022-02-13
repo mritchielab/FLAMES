@@ -1,5 +1,6 @@
 #ifndef ANNOTATE_FILTER_GFF_H
 #define ANNOTATE_FILTER_GFF_H
+
 #include <string>
 #include <unordered_map>
 
