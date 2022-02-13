@@ -50,8 +50,8 @@ blocks_to_junctions (std::vector<StartEndPair> blocks);
 DoubleJunctions 
 get_TSS_TES_site
 (
-    std::unordered_map<std::string, Junctions> * transcript_to_junctions,
-    const std::vector<std::string> * tr_list
+    const std::unordered_map<std::string, Junctions> &transcript_to_junctions,
+    const std::vector<std::string> &tr_list
 );
 
 std::set<int> 

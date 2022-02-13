@@ -37,6 +37,22 @@ struct Flag {
     read_is_PCR_or_optical_duplicate;
     bool
     supplementary_alignment;
+
+	inline bool operator==(const Flag &o) const{
+		return
+			read_paired == o.read_paired &&
+			read_mapped_in_proper_pair == o.read_mapped_in_proper_pair &&
+			read_unmapped == o.read_unmapped &&
+			mate_unmapped == o.mate_unmapped &&
+			read_reverse_strand == o.read_reverse_strand &&
+			mate_reverse_strand == o.mate_reverse_strand  &&
+			first_in_pair == o.first_in_pair &&
+			second_in_pair == o.second_in_pair &&
+			not_primary_alignment == o.not_primary_alignment &&
+			read_fails_platform_vendor_quality_checks == o.read_fails_platform_vendor_quality_checks &&
+			read_is_PCR_or_optical_duplicate == o.read_is_PCR_or_optical_duplicate &&
+			supplementary_alignment == o.supplementary_alignment;
+	}
 };
 
 /* 
@@ -69,9 +85,6 @@ struct BAMRecord {
 };
 
 #endif
-
-std::vector<CigarPair>
-generate_cigar_pairs(const bam1_t*);
 
 Flag
 read_flag(int);

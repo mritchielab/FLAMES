@@ -5,6 +5,29 @@ Used with samtools
 #ifndef BAM_UTIL_FUNCS_H
 #define BAM_UTIL_FUNCS_H
 
+#include <htslib/sam.h>
+
+// Retrive the Cigar operation code
+// using the base function in htslib/sam.h
+// returns an int.
+// the lower 4 bits of the uint8_t used to represent each cigar operation
+#define bam1_cigar_op(c) bam_cigar_op((c))
+
+// Retrive the Cigar operation length
+// using htslib/sam.h
+// returns an int
+// of the upper 28 bits of the uint8_t used to represent each cigar operation
+#define bam1_cigar_oplen(c) bam_cigar_oplen((c))
+
+/*! @function
+Get the number of cigar operations performed
+@param b const bam1_t * 
+@return uint32)t number of cigar operations
+Useful for iterating over cigar array acquired through
+bam1_cigar
+*/
+#define bam1_cigar_len(b) (b->core.n_cigar)
+
 // seqment->data is qname-cigar-seq-qual-aux
 // qname is at bam1_qname(seqment) (which is (char*)seqment->data)
 			
@@ -23,6 +46,12 @@ Get the 0-based leftmost coordinate of an alignment
 #define bam_alignment_start(b) (b->core.pos)
 
 /*
+Get the rightmost coordinate of an alignment 
+@param b bam1_t pointer to an alignment
+@return int32_t pos
+*/
+#define bam_alignment_end(b) ((b->core.pos) + (b->core.l_qseq))
+/*
 Convert the uint8_t aux value to a string
 Shorter version of htslib/sam.h bam_aux2Z
 Removed return of 0 (null terminator) for bad input,
@@ -31,7 +60,7 @@ Now, valid input can be checked by the returning string's length
 @param s uint8_t * pointer to tag data returned by bam_aux_get()
 @return std::string of tag data, or empty string if tag type is not Z
 */
-#define bam_aux2string(s) ( (s != NULL) ? std::string((*s++ == 'Z') ? (char *)s : "") : "")
+#define bam_aux2string(s) ( (s != NULL) ? std::string((*s+1 == 'Z') ? (char *)s : "") : "")
 
 #endif
 
@@ -161,7 +190,7 @@ typedef hts_itr_t *bam_iter_t;
 /*! @function
  @abstract  Get the CIGAR array
  @param  b  pointer to an alignment
- @return    pointer to the CIGAR array
+ @return    pointer to the CIGAR array (uint32_t *)
 
  @discussion In the CIGAR array, each element is a 32-bit integer. The
  lower 4 bits gives a CIGAR operation and the higher 28 bits keep the

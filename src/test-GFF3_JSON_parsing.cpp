@@ -178,7 +178,7 @@ context("GFF3 File Parsing") {
 	// }
 }
 
-context("JSON file parsing") {
+context("JSON File Parsing") {
 	test_that("JSON Config parsing builds correct Rcpp::List object and Config object") {
 		Rcpp::List c = parse_json_config(get_extdata("SIRV_config_default.json"));
 		Config config(c);

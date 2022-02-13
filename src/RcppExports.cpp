@@ -73,19 +73,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// bam_read_cpp
-void bam_read_cpp(std::string bam_in, std::string chr, int s, int e);
-RcppExport SEXP _FLAMES_bam_read_cpp(SEXP bam_inSEXP, SEXP chrSEXP, SEXP sSEXP, SEXP eSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::string >::type bam_in(bam_inSEXP);
-    Rcpp::traits::input_parameter< std::string >::type chr(chrSEXP);
-    Rcpp::traits::input_parameter< int >::type s(sSEXP);
-    Rcpp::traits::input_parameter< int >::type e(eSEXP);
-    bam_read_cpp(bam_in, chr, s, e);
-    return R_NilValue;
-END_RCPP
-}
 // match_cell_barcode_cpp
 void match_cell_barcode_cpp(Rcpp::String fastq_dir, Rcpp::String stats_file, Rcpp::String out_fastq, Rcpp::String ref_csv, int MAX_DIST, int UMI_LEN);
 RcppExport SEXP _FLAMES_match_cell_barcode_cpp(SEXP fastq_dirSEXP, SEXP stats_fileSEXP, SEXP out_fastqSEXP, SEXP ref_csvSEXP, SEXP MAX_DISTSEXP, SEXP UMI_LENSEXP) {
@@ -186,7 +173,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_FLAMES_gtf_to_bed_cpp", (DL_FUNC) &_FLAMES_gtf_to_bed_cpp, 3},
     {"_FLAMES_read_entire_bam_cpp", (DL_FUNC) &_FLAMES_read_entire_bam_cpp, 2},
     {"_FLAMES_find_isoform_cpp", (DL_FUNC) &_FLAMES_find_isoform_cpp, 9},
-    {"_FLAMES_bam_read_cpp", (DL_FUNC) &_FLAMES_bam_read_cpp, 4},
     {"_FLAMES_match_cell_barcode_cpp", (DL_FUNC) &_FLAMES_match_cell_barcode_cpp, 6},
     {"_FLAMES_merge_bulk_fastq_cpp", (DL_FUNC) &_FLAMES_merge_bulk_fastq_cpp, 2},
     {"_FLAMES_quantification_cpp", (DL_FUNC) &_FLAMES_quantification_cpp, 10},

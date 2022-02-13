@@ -306,7 +306,7 @@ def blocks_to_junctions(blocks):
     return junctions
 
 # called on a bamnostic.AlignedSegment object through bam fetch
-# rec is AlignedSegment
+# rec is AlignedSegmentF
 def get_blocks(rec):
     blocks = []
     pos = rec.reference_start
@@ -487,7 +487,7 @@ class Isoforms(object):
                         self.__add_one(junctions,is_rev)
 
     def __add_one(self, junctions, strand):
-        print "started add_one on (size {}) {}".format(len(junctions["junctions"]), junctions)
+        # print "started add_one on (size {}) {}".format(len(junctions["junctions"]), junctions)
 
         if len(junctions["junctions"])==0:
             self.single_block_dict[tuple((junctions["left"],junctions["right"]))] = len(self.single_blocks)
@@ -499,7 +499,7 @@ class Isoforms(object):
             self.junction_list.append([tuple(junctions["junctions"])])
             self.left.append(junctions["left"])
             self.right.append(junctions["right"])
-            print 'added key {} to this->lr_pair'.format(tuple(junctions["junctions"]))
+            # print 'added key {} to this->lr_pair'.format(tuple(junctions["junctions"]))
             self.lr_pair[tuple(junctions["junctions"])] = []
             self.lr_pair[tuple(junctions["junctions"])].append((junctions["left"], junctions["right"]))
             self.strand_cnt[tuple(junctions["junctions"])]=[]
@@ -510,7 +510,7 @@ class Isoforms(object):
         """
         update an existing isoform. st is the key of dict
         """
-        print "started update_one on (size {}) {}".format(len(junctions["junctions"]), junctions)
+        # print "started update_one on (size {}) {}".format(len(junctions["junctions"]), junctions)
 
         if len(junctions["junctions"])==0:
             self.single_blocks[self.single_block_dict[st]].append(
@@ -539,6 +539,11 @@ class Isoforms(object):
             print "\tup to entry {}, size {}".format(num, len(self.junction_list[self.junction_dict[j]]))
             num=num+1
 
+			# [j, vec] = junction_dict
+			# new_j = tuple((Counter(it[i] for it in vec).most_common(1).first.first for i in range(len(j))))
+            # so the main thing with new_j is going through every junction, and finding the most common
+			# value at each position, capped at the length of the key
+			# then we use this as the new junction value
             if len(self.junction_list[self.junction_dict[j]]) >= self.Min_sup_cnt:  # only more than `Min_sup_cnt` reads support this splicing
                 new_j = tuple((Counter(it[i] for it in self.junction_list[self.junction_dict[j]]).most_common(1)[0][0] for i in range(len(j))))
                 junction_tmp[new_j] = self.junction_dict[j]
@@ -680,7 +685,12 @@ class Isoforms(object):
                 cl_p = (take_closest(cnt_l, p[0]), take_closest(cnt_r, p[1]))
                 if (abs(cl_p[0]-p[0]) < 0.5*self.MAX_TS_DIST)  and  (abs(cl_p[1]-p[1]) < 0.5*self.MAX_TS_DIST):
                     if len(pair_after_filtering) > 0:
-                        dis = abs(take_closest([it[0] for it in pair_after_filtering], cl_p[0]) -cl_p[0])+abs(take_closest([it[1] for it in pair_after_filtering], cl_p[1])-cl_p[1])
+                        dis = abs(
+							take_closest([it[0] for it in pair_after_filtering],
+							 cl_p[0]) -cl_p[0]) + \
+							abs(
+								take_closest([it[1] for it in pair_after_filtering], 
+								cl_p[1])-cl_p[1])
                         if dis > self.MAX_TS_DIST:
                             if cl_p[0]<j[0] and cl_p[1]>j[-1]:
                                 pair_after_filtering.append(cl_p)
@@ -1100,8 +1110,6 @@ def group_bam2isoform(bam_in, out_gff3, out_stat, summary_csv, chr_to_blocks, ge
         fa_dict[c[0]] = c[1]
     for ch in chr_to_blocks:
         print "\t\tstarting on {} which has {} blocks".format(ch, len(chr_to_blocks[ch]))
-        #if ch != "5":
-        #    continue
         num = 0
         for ith, bl in enumerate(chr_to_blocks[ch]):
             print "looking at {} block: ({}, {})".format(num, bl.s, bl.e)
@@ -1109,11 +1117,6 @@ def group_bam2isoform(bam_in, out_gff3, out_stat, summary_csv, chr_to_blocks, ge
             num = num+1
 
             it_region = bamfile.fetch(ch, bl.s, bl.e)
-            # print 'reading'
-            # print ch
-            # print 'at'
-            # print bl.s
-            # print bl.e
 
             TSS_TES_site = get_TSS_TES_site(transcript_to_junctions, bl.transcript_list)
             print "TSS_TES_site={}".format(TSS_TES_site)
@@ -1122,13 +1125,6 @@ def group_bam2isoform(bam_in, out_gff3, out_stat, summary_csv, chr_to_blocks, ge
             for rec in it_region:
                 print 'looking at rec {}'.format(recnum)
                 recnum = recnum+1
-                # print 'found a rec'
-                # print 'cigar:'
-                # print rec.cigar
-                # print 'rec.reference_start:'
-                # print rec.reference_start
-                # print 'rec.reference_name:'
-                # print rec.reference_name
 
                 # if 0<downsample_ratio<1 and random.uniform(0, 1)>downsample_ratio:
                 #     continue   # downsample analysis
@@ -1146,6 +1142,7 @@ def group_bam2isoform(bam_in, out_gff3, out_stat, summary_csv, chr_to_blocks, ge
                 print "\t\tadding junctions to isoform:"
                 print junctions
                 tmp_isoform.add_isoform(junctions,rec.is_reverse)
+
             if len(tmp_isoform)>0:
                 print "\t\tfound an isoform of len>0\n"
                 tmp_isoform.update_all_splice()

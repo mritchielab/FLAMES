@@ -4,8 +4,11 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <functional>
 
 #include <Rcpp.h>
+
+
 
 // R system.file
 // https://stackoverflow.com/questions/52979101/acessing-data-on-inst-extdata-from-rcpp-catch-tests
@@ -23,7 +26,7 @@ inline std::string get_tempfile(std::string ext) {
 
 // compare two unordered streams of values
 template <typename T>
-inline bool compare_unordered(std::vector<T> a, std::vector<T> b) {
+inline bool compare_unordered(const std::vector<T> &a, const std::vector<T> &b) {
 	if (a.size() != b.size()) return false;
 
 	for (int i = 0; i < a.size(); i++) {
@@ -35,29 +38,37 @@ inline bool compare_unordered(std::vector<T> a, std::vector<T> b) {
 
 // compare two unordered maps
 template <typename T, typename U>
-inline bool compare_map(std::unordered_map<T, std::vector<U>> a, std::unordered_map<T, std::vector<U>> b) {
+inline bool compare_map(const std::unordered_map<T, std::vector<U>> &a, const std::unordered_map<T, std::vector<U>> &b) {
 	for (const auto &[key, value] : a) {
-		if (!compare_unordered<U>(value, b[key])) return false;
+		if (!compare_unordered<U>(value, b.at(key))) return false;
 	}
 	return true;
 }
 template <typename T, typename U>
-inline bool compare_map(std::map<T, std::vector<U>> a, std::map<T, std::vector<U>> b) {
+inline bool compare_map(const std::map<T, std::vector<U>> &a, const std::map<T, std::vector<U>> &b) {
 	for (const auto &[key, value] : a) {
-		if (!compare_unordered<U>(value, b[key])) return false;
+		if (!compare_unordered<U>(value, b.at(key))) return false;
 	}
 	return true;
 }
 
 // Compare two iterable streams, expecting values to be in the same order
 template <class Iter>
-inline bool compare_stream(Iter &a, Iter &b) {
+inline bool compare_stream(const Iter &a, const Iter &b) {
 	for (auto i = a.begin(), j = b.begin(); i != a.end(); i++, j++) {
 		if (*i != *j) return false;
 	}
 	return true;
 }
 
+template <typename T, typename U>
+inline std::vector<U> map(const std::vector<T> &a, std::function<U(const T &)> f) {
+	std::vector<U> out;
+	for (auto it : a) {
+		out.push_back(f(it));
+	}
+	return out;
+}
 
 
 

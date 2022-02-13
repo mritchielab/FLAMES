@@ -17,12 +17,7 @@
 
 
 int 
-take_closest
-(
-    std::vector<int> list,
-    int num
-)
-{
+take_closest(std::vector<int> list, int num) {
     /*
         returns the value in list that is closest to num
     */
@@ -68,27 +63,27 @@ blocks_to_junctions (std::vector<StartEndPair> blocks)
 DoubleJunctions 
 get_TSS_TES_site
 (
-    std::unordered_map<std::string, Junctions> * transcript_to_junctions,
-    const std::vector<std::string> * tr_list
+    const std::unordered_map<std::string, Junctions> &transcript_to_junctions,
+    const std::vector<std::string> &tr_list
 )
 {
     DoubleJunctions all_site;
 
-    for (const auto & t : *tr_list) {
+    for (const auto & t : tr_list) {
         if (all_site.left.size() > 0) {
-            if (abs(take_closest(all_site.left, (*transcript_to_junctions)[t].left) - (*transcript_to_junctions)[t].left) > 5) {
-                all_site.left.push_back((*transcript_to_junctions)[t].left);
+            if (abs(take_closest(all_site.left, transcript_to_junctions.at(t).left) - transcript_to_junctions.at(t).left) > 5) {
+                all_site.left.push_back(transcript_to_junctions.at(t).left);
             }
         } else {
-            all_site.left.push_back((*transcript_to_junctions)[t].left);
+            all_site.left.push_back(transcript_to_junctions.at(t).left);
         }
 
         if (all_site.right.size() > 0) {
-            if (abs(take_closest(all_site.right, (*transcript_to_junctions)[t].right) - (*transcript_to_junctions)[t].right) > 5) {
-                all_site.right.push_back((*transcript_to_junctions)[t].right);
+            if (abs(take_closest(all_site.right, transcript_to_junctions.at(t).right) - transcript_to_junctions.at(t).right) > 5) {
+                all_site.right.push_back(transcript_to_junctions.at(t).right);
             }
         } else {
-            all_site.right.push_back((*transcript_to_junctions)[t].right);
+            all_site.right.push_back(transcript_to_junctions.at(t).right);
         }
     }
 

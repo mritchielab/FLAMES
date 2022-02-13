@@ -7,26 +7,6 @@
 #include "../utility/cigars.h"
 #include "BamRecord.h"
 
-/*  take a bam entry,
-    populate a vector with all of its CIGAR operations
-    this is to mimic the output of bamnostic's default cigar from bamfile.fetch
-*/
-std::vector<CigarPair>
-generate_cigar_pairs(const bam1_t *b)
-{
-    std::vector<CigarPair>
-    cigar_pairs;
-
-    // iterate over the cigar
-    const uint32_t *cigar = bam_get_cigar(b);
-    for (int k = 0; k < b->core.n_cigar; k++) {
-        cigar_pairs.push_back((CigarPair){
-            (int)bam_cigar_op(cigar[k]),
-            (int)bam_cigar_oplen(cigar[k])
-        });
-    }
-    return cigar_pairs;
-}
 
 /*  takes a flag int, converts it to all of the properties it encodes for 
 */
@@ -57,17 +37,15 @@ BAMRecord
 read_record(const bam1_t * b, const bam_header_t * header)
 {
     BAMRecord rec;
-    rec.reference_start = b->core.pos;
-    rec.reference_end = b->core.pos + b->core.l_qseq;
-    rec.reference_name = header->target_name[b->core.tid];
+    rec.reference_start = bam_alignment_start(b);
+    rec.reference_end = bam_alignment_end(b);
+    rec.reference_name = std::string(header->target_name[b->core.tid]);
     rec.AS_tag = bam_aux2i(bam_aux_get(b, "AS"));
     rec.query_alignment_length = b->core.l_qseq;
-    rec.read_name = bam1_qname(b);
-    rec.mapping_quality = (int)(b->core.qual);
-
-    // rec.reference_name = std::string(sam_hdr_tid2name(header, b->core.tid));
-    // std::cout << sam_hdr _tid2len(header, b->core.tid) << "\n";
+    rec.read_name = std::string(bam1_qname(b));
+    rec.mapping_quality = (int)bam_mapping_qual(b);
     rec.cigar = generate_cigar_pairs(b);
+	rec.cigar_string = generate_cigar(rec.cigar);
     rec.flag = read_flag(b->core.flag);
     return rec;
 }

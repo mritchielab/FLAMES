@@ -21,10 +21,6 @@ find_isoform_cpp <- function(gff3, genome_bam, isoform_gff3, tss_test_stat, geno
     .Call(`_FLAMES_find_isoform_cpp`, gff3, genome_bam, isoform_gff3, tss_test_stat, genomefa, transcript_fa, downsample_ratio, config_list, raw_splice_isoform)
 }
 
-bam_read_cpp <- function(bam_in, chr, s, e) {
-    invisible(.Call(`_FLAMES_bam_read_cpp`, bam_in, chr, s, e))
-}
-
 #' Match Cell Barcodes
 #'
 #' @description Match cell barcodes in the given fastq directory with the reference csv, \code{ref_csv}. Matches are returned
