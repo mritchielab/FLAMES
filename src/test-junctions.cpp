@@ -1,3 +1,7 @@
+#ifndef TEST_JUNCTIONS
+#define TEST_JUNCTIONS
+
+
 #include <vector>
 #include <string>
 #include <unordered_map>
@@ -379,7 +383,6 @@ context("Junctions functions") {
 		};
 		expect_true(is_exon_similar(exon3, exon4, 10));
 	}
-
 	test_that("splice sites can be aquired") {
 		std::vector<std::string> tr_list {
 			"SIRV508", "SIRV509", "SIRV502", "SIRV503", "SIRV501", "SIRV506", "SIRV507", "SIRV504", "SIRV505", "SIRV512", "SIRV510"

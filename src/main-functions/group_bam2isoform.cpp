@@ -251,4 +251,9 @@ group_bam2isoform (
     if (raw_gff3 != "") {
         splice_raw.close();
     }
+
+    // delete everything from isoform_dict that's still in memory
+    for (const auto & [key, isoform] : isoform_dict) {
+        delete isoform;
+    }
 }
