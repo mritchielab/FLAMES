@@ -521,7 +521,7 @@ context("Isoform Class & Related Functions") {
 		////////////////////////////////////////////////////////////////////////////////////////////////
 		//////////////////////////////// Test updating all splices using a large number of junctions
 		////////////////////////////////////////////////////////////////////////////////////////////////
-		for (int i = 10; i < junctions.size(); i++) {
+		for (int i = 10; i < (int)junctions.size(); i++) {
 			tmp_isoform.add_isoform(junctions[i].first, junctions[i].second);
 		}
 		expect_true(tmp_isoform.size() == 136);
@@ -546,7 +546,7 @@ context("Isoform Class & Related Functions") {
 		for (const auto &[key, junc_vec] : real_dict) {
 			expect_true(junc_vec.size() == tmp_isoform.junction_dict[key].size());
 			bool test = true;
-			for (int i = 0; i < junc_vec.size(); i++) {
+			for (int i = 0; i < (int)junc_vec.size(); i++) {
 				test &= compare_stream(junc_vec[i], tmp_isoform.junction_dict[key][i]);
 			}
 			expect_true(test);
@@ -1005,7 +1005,7 @@ void what() {
  			{{13356, {}, 13606}, false}
 		};
 
-	for (int i = 0; i < junctions.size(); i++) {	
+	for (int i = 0; i < (int)junctions.size(); i++) {	
 		tmp_isoform.add_isoform(junctions[i].first, junctions[i].second);
 	}
 	

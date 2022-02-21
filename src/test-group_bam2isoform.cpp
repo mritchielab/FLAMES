@@ -468,7 +468,7 @@ context("Group BAM 2 Isoform") {
 		std::vector<std::vector<StartEndPair>> rec_blocks = map<BAMRecord, std::vector<StartEndPair>>(recs, [](const BAMRecord &b) { return get_blocks(b); });
 	
 		expect_true(res_blocks.size() == rec_blocks.size());
-		for (int i = 0; i < res_blocks.size(); i++) {
+		for (int i = 0; i < (int)res_blocks.size(); i++) {
 			expect_true(compare_stream(res_blocks[i], rec_blocks[i]));
 		}
 	}

@@ -139,7 +139,7 @@ get_fa_simple(std::string filename)
 {
     /* a quick lambda function to find the position of the first space in a line */
     auto first_space = [] (std::string line) {
-        for (int i = 0; i < line.length(); ++i) {
+        for (int i = 0; i < (int)line.length(); ++i) {
             if (line[i] == ' ') {
                 return i;
             }
@@ -188,7 +188,7 @@ void
 write_fa(std::ofstream* fa_out, std::string na, std::string seq, int wrap_len)
 {
     (*fa_out) << ">" << na << "\n";
-    for (int i = 0; i < seq.length(); ++i) {
+    for (int i = 0; i < (int)seq.length(); ++i) {
         // break the line if we need to
         if ((i > 0) && (i % wrap_len == 0)) {
             (*fa_out) << "\n";

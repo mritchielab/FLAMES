@@ -252,7 +252,7 @@ group_bam2isoform (
     }
 
     // delete everything from isoform_dict that's still in memory
-    for (const auto & [key, isoform] : isoform_dict) {
-        delete isoform;
-    }
+    // for (const auto & [key, isoform] : isoform_dict) {
+    //     delete isoform;
+    // }
 }

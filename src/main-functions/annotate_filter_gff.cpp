@@ -194,7 +194,7 @@ annotate_full_splice_match
     anno (anno_out);
 
     anno << "transcript_id,gene_id,FSM_match,FSM_match_to_ref,total_count\n";
-    for (int i = 0; i < tr_id_list.size(); ++i) {
+    for (int i = 0; i < (int)tr_id_list.size(); ++i) {
         anno << tr_id_list[i] << ","
             << gene_id_list[i] << ","
             << FSM_id_list[i] << ","

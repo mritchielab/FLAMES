@@ -29,7 +29,7 @@ template <typename T>
 inline bool compare_unordered(const std::vector<T> &a, const std::vector<T> &b) {
 	if (a.size() != b.size()) return false;
 
-	for (int i = 0; i < a.size(); i++) {
+	for (int i = 0; i < (int)a.size(); i++) {
 		if (std::find(b.begin(), b.end(), a[i]) == b.end()) return false;
 	}
 	

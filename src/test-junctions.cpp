@@ -439,7 +439,4 @@ context("Junctions functions") {
 	}
 }
 
-// [[Rcpp::export]]
-void what() {
-  return;
-}
+#endif

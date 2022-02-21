@@ -7,7 +7,6 @@
 #include "../classes/GeneAnnoParser/GFFRecord.h"
 #include "../classes/Pos.h"
 
-
 namespace ranges
 {
     template<typename Range, typename Function>
@@ -75,7 +74,7 @@ mostCommonEachCell(const std::vector<std::vector<T>> &values, int maxSize) {
 	std::vector<T> newValue;
 	for (int i = 0; i < maxSize; i++) {
 		std::unordered_map<T, int> thisPosValueCounts;
-		for (int j = 0; j < values.size(); j++) {
+		for (int j = 0, size = values.size(); j < size; j++) {
 			thisPosValueCounts[values[j][i]]++;
 		}
 		// get the the most common value of junction

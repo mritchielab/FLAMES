@@ -30,7 +30,7 @@ std::vector<std::string> parseLine(std::string, char);
 // is this just the same as parseLeadingChar?
 inline ParseResult parseUntilChar(std::string full, char tok) {
 	int tok_pos = full.find(tok);
-	if (tok_pos != std::string::npos) {
+	if (tok_pos != (int)std::string::npos) {
 		return ParseResult {full.substr(0, tok_pos), full.substr(tok_pos + 1, full.length())};
 	} else {
 		return ParseResult {full, std::string()};

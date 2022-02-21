@@ -30,7 +30,7 @@ context("Transcript writing and utility functions") {
 		};
 
 	 	// run the test cases
-		for (int i = 0; i < res.size(); i++) {
+		for (int i = 0; i < (int)res.size(); i++) {
 			expect_true(edit_distance(ps[i].first, ps[i].second) == res[i]);
 		}
 	}
