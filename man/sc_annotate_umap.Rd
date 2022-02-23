@@ -14,7 +14,9 @@ sc_annotate_umap(
   cluster_annotation,
   dup_bc = NULL,
   sce_all = NULL,
-  return_sce_all = T
+  return_sce_all = T,
+  heatmap_annotation_colors = "BrBG",
+  isoform_legend_width = 7
 )
 }
 \arguments{
@@ -38,6 +40,13 @@ data. (Filtering long-read data will be implemented in the main pipeline soon)}
 \item{sce_all}{The \code{SingleCellExperiment} object containing gene counts assay for the combined library.}
 
 \item{return_sce_all}{Whether to return the processed \code{SingleCellExperiment} object.}
+
+\item{heatmap_annotation_colors}{Color palettes to use for cell group annotation in heatmaps, palettes should be from \code{RColorBrewer}\cr
+available diverging palettes are:\cr
+\code{BrBG PiYG PRGn PuOr RdBu RdGy RdYlBu RdYlGn Spectral}\cr
+when there are more than 11 groups, this argument will be ignored and random palettes will be generated.}
+
+\item{isoform_legend_width}{The width of isoform legends in heatmaps, in \code{cm}.}
 }
 \value{
 a list containing the combined UMAP, the isoform exon alignments and the UMAP with isoform expression levels.

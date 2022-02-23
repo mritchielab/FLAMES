@@ -29,7 +29,8 @@ Imports:
     S4Vectors, scuttle, stats, rtracklayer,
     igraph, ggbio, GenomicRanges, Matrix,
     BiocGenerics, ggplot2, scran, pheatmap,
-    ggplotify
+    ComplexHeatmap, RColorBrewer, grid, 
+    gridExtra
 Suggests: 
     BiocStyle,
     knitr,
