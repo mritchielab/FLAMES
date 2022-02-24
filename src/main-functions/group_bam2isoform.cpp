@@ -238,6 +238,7 @@ group_bam2isoform (
                     // splice_raw.write(tmp_isoform()); 
                 }
                 iso_annotated << tmp_isoform.isoform_to_gff3(isoform_parameters.MIN_CNT_PCT);
+                also_out << tmp_isoform.isoform_to_gff3(isoform_parameters.MIN_CNT_PCT);
             }
         }
     }
