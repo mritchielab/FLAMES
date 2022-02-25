@@ -28,9 +28,8 @@ Imports:
     zlibbioc, scater, dplyr, tidyr, magrittr,
     S4Vectors, scuttle, stats, rtracklayer,
     igraph, ggbio, GenomicRanges, Matrix,
-    BiocGenerics, ggplot2, scran, pheatmap,
-    ComplexHeatmap, RColorBrewer, grid, 
-    gridExtra
+    BiocGenerics, ggplot2, scran, ComplexHeatmap,
+    RColorBrewer, circlize, grid, gridExtra
 Suggests: 
     BiocStyle,
     knitr,

@@ -1,7 +1,3 @@
-# TODO:
-#       Better visualisation
-#       add documentation
-#
 #' FLAMES Annotated Plottings
 #'
 #' Plot isoform exons alignments for a given gene, along with UMAP showing expression levels.
@@ -13,9 +9,11 @@
 #' are then overlayed on top of the UMAP. SNN inference based on gene counts were performed to impute isoform expression
 #' for cells in the larger library.
 #'
-#' @param sce_80 The \code{SingleCellExperiment} object containing gene counts assay for the larger library.
-#' @param sce_20 The \code{SingleCellExperiment} object containing gene counts assay for the smaller library.
 #' @param sce_all The \code{SingleCellExperiment} object containing gene counts assay for the combined library.
+#' Require \code{sce_all$lib} to specify the library of each cell, either "\code{lib20}" or "\code{lib80}".
+#' Alternatively, provide \code{sce_20} \code{sce_80} and the function will create \code{sce_all} using \code{BiocGenerics::cbind}.
+#' @param sce_80 The \code{SingleCellExperiment} object containing gene counts assay for the larger (80% ~ 90%) library.
+#' @param sce_20 The \code{SingleCellExperiment} object containing gene counts assay for the smaller (10% ~ 20%) library.
 #' @param path The path to the folder containing outputs of \code{sc_long_pipeline}.
 #' @param gene The gene symbol of interest.
 #' @param n_isoforms The number of expressed isoforms to keep.
@@ -24,7 +22,7 @@
 #' @param dup_bc Cell barcodes found both in the larger and smaller library, will be used to filter cells in the long-read
 #' data. (Filtering long-read data will be implemented in the main pipeline soon)
 #' @param return_sce_all Whether to return the processed \code{SingleCellExperiment} object.
-#' @param heatmap_annotation_colors Color palettes to use for cell group annotation in heatmaps, palettes should be from \code{RColorBrewer}\cr
+#' @param heatmap_annotation_colors Name of color palette to use for cell group annotation in heatmaps, see [RColorBrewer::brewer.pal()] \cr
 #' available diverging palettes are:\cr
 #' \code{BrBG PiYG PRGn PuOr RdBu RdGy RdYlBu RdYlGn Spectral}\cr
 #' when there are more than 11 groups, this argument will be ignored and random palettes will be generated.
@@ -45,79 +43,67 @@
 #' @importFrom ggbio autoplot geom_alignment xlim
 #' @importFrom GenomicRanges GRanges GRangesList
 #' @importFrom rtracklayer import.gff3
-#' @importFrom BiocGenerics cbind colnames rownames
+#' @importFrom BiocGenerics cbind colnames rownames start end
 #' @importFrom ComplexHeatmap Heatmap HeatmapAnnotation columnAnnotation AnnotationFunction rowAnnotation
 #' @importFrom igraph as_adjacency_matrix
 #' @importFrom rtracklayer import
 #' @importFrom Matrix t colSums
 #' @importFrom cowplot plot_grid get_legend
 #' @importFrom RColorBrewer brewer.pal
+#' @importFrom circlize colorRamp2
 #' @importFrom grid unit viewport
 #' @importFrom gridExtra grid.arrange
 #' @export
-sc_annotate_umap <- function(sce_20, sce_80, path, gene, n_isoforms = 4, n_pcs = 40, cluster_annotation, dup_bc = NULL, sce_all = NULL, return_sce_all = T, heatmap_annotation_colors = "BrBG", isoform_legend_width = 7) {
+#' @md
+sc_annotate_umap <- function(gene, path, sce_all = NULL, sce_20 = NULL, sce_80 = NULL, n_isoforms = 4, n_pcs = 40, cluster_annotation, dup_bc = NULL, return_sce_all = T,
+                             heatmap_annotation_colors = "BrBG", isoform_legend_width = 7, heatmap_color_quantile = 0.95, col_low = "#313695", col_mid = "#FFFFBF", col_high = "#A50026") {
   ## dup_bc: cell barcodes found in both lib_20 and lib_80
   ## the pipeline should filter out these cells (not implemented yet)
   ## this parameter will need to be removed after implementing filtering in the pipeline
 
   # Check args
-  if (any(missing(sce_20), missing(path), missing(gene))) {
-    stop("arguments sce_20, path and gene are required\n")
+  if (missing(path) || missing(gene)) {
+    stop("arguments path and gene are required\n")
   }
 
-  if (missing(sce_80) && is.null(sce_all)) {
-    stop("please provide at least one of:\n - sce_80, or\n - sce_all\n")
+  if ((missing(sce_20) || missing(sce_80)) && missing(sce_all)) {
+    stop("Please provide sce_all, or both sce_20 and sce_80\n")
+  }
+
+  if (!is.null(sce_all) && (is.null(sce_all$lib) || !all(sce_all$lib %in% c("lib20", "lib80")))) {
+    stop("Please provide sce_all$lib to specify the library of each cell\n
+          Values of sce_all$lib should be either \"lib20\" or \"lib80\".\n")
   }
 
   outputs <- list()
 
-  # Process SCE
+  # Process short reads SCE
   if (is.null(sce_all)) {
-    cat("creating sce_all from sce_20 and sce_80 ...\n")
+    cat("Creating sce_all from sce_20 and sce_80 ...\n")
     rowData(sce_20) <- rowData(sce_20)[!(names(rowData(sce_20)) %in% c("mean", "detected"))]
     rowData(sce_80) <- rowData(sce_80)[!(names(rowData(sce_80)) %in% c("mean", "detected"))]
     sce_all <- cbind(sce_80, sce_20)
     sce_all$lib <- c(rep("lib80", dim(sce_80)[2]), rep("lib20", dim(sce_20)[2]))
-  } else if (is.null(sce_all$lib)) {
-    sce_all$lib <- rep("lib80", dim(sce_all)[2])
-    sce_all$lib[match(rownames(sce_20), rownames(sce_all))] <- "lib20"
+  } else {
+    cat("Creating sce_20 and sce_80 from sce_all ... \n")
+    sce_20 <- sce_all[, sce_all$lib == "lib20"]
+    sce_80 <- sce_all[, sce_all$lib == "lib80"]
   }
 
-  # TODO: use first n PCs when n_pcs less than n_pcs@SCE
-  if (!("PCA" %in% reducedDimNames(sce_all)) || dim(sce_all@int_colData$reducedDims$PCA)[2] != n_pcs) {
-    cat("Running PCA for sce_all ...\n")
-    sce_all <- logNormCounts(sce_all)
-    hvgs <- getTopHVGs(modelGeneVar(sce_all), n = 2000)
-    sce_all <- fixedPCA(sce_all, rank = n_pcs, subset.row = hvgs)
+  # Process barcodes from short reads
+  for (sce in list(sce_20, sce_80, sce_all)) {
+    if (is.null((colnames(sce))) && is.null(colData(sce)@listData$Barcode)) {
+      stop("Please add barcodes to SCEs, as colnames or colData(sce)@listData$Barcode)")
+    } else if (is.null((colnames(sce))) && !is.null(colData(sce)@listData$Barcode)) {
+      colnames(sce) <- colData(sce)@listData$Barcode
+    }
+    if (!all(grepl("-1$", colnames(sce)))) {
+      cat("Trimming \"-1\" from colnames\n")
+      colnames(sce) <- gsub("-1$", "", colnames(sce))
+    }
   }
 
-  # Distance matrix for imputation
-  snn <- buildSNNGraph(sce_all, use.dimred = "PCA")
-  snn_mat <- as_adjacency_matrix(snn, attr = "weight")
-  diag(snn_mat) <- ceiling(max(snn_mat))
-
-  if (!("UMAP" %in% reducedDimNames(sce_all))) {
-    cat("Running UMAP for sce_all ...\n")
-    sce_all <- runUMAP(sce_all)
-  }
-
-  plot_umap <- ggplot() +
-    geom_point(aes(
-      x = sce_all@int_colData$reducedDims$UMAP[, 1],
-      y = sce_all@int_colData$reducedDims$UMAP[, 2],
-      col = factor(sce_all$lib)
-    ),
-    size = 0.02
-    ) +
-    labs(x = "Dim1", y = "Dim2", title = "Lib_all UMAP", color = "library")
-
-  #  if ( !("PCA" %in% reducedDimNames(sce_20) )) {
-  #    cat("running PCA for sce_20 ...\n")
-  #    sce_20 <- logNormCounts(sce_20)
-  #    hvgs <- getTopHVGs(modelGeneVar(sce_20), n=2000)
-  #    sce_20 <- fixedPCA(sce_20, rank=n_pcs, subset.row=hvgs)
-  #  }
-
+  # SCE from long reads
   ### Transcrips counts from long read data
   cat("Loading long read data ...\n")
   transcript_count <- read.csv(file.path(path, "transcript_count.csv.gz"), stringsAsFactors = FALSE)
@@ -142,26 +128,102 @@ sc_annotate_umap <- function(sce_20, sce_80, path, gene, n_isoforms = 4, n_pcs =
     cat(paste0(c(fsm_csv, "saved.\n")))
   }
 
-
-  # Transcript count matrix QC
+  # Create long read SCE
   tr_anno <- tr_anno[match(mer_tmp$FSM_match, tr_anno$FSM_match), ]
   tr_sce <- SingleCellExperiment(assays = list(counts = as.matrix(mer_tmp[, -1])))
   rownames(tr_sce) <- mer_tmp$FSM_match
   rowData(tr_sce) <- DataFrame(tr_anno)
+
+  # QC for long read SCE
   tr_sce <- tr_sce[, !(colnames(tr_sce) %in% dup_bc)]
   tr_sce <- addPerCellQC(tr_sce)
   tr_sce <- addPerFeatureQC(tr_sce)
   keep.hi <- isOutlier(tr_sce$sum, type = "higher", log = TRUE)
   keep.low <- isOutlier(tr_sce$sum, type = "lower", log = TRUE)
   tr_sce <- tr_sce[, (!keep.hi) & (!keep.low)]
-  tr_sce <- logNormCounts(tr_sce)
 
+  # Handle barcodes
+  n_rm <- dim(tr_sce)[2]
+  tr_sce <- tr_sce[, colnames(tr_sce) %in% colnames(sce_all)]
+  n_rm <- n_rm - dim(tr_sce)[2]
+  if (n_rm != 0) {
+    message(paste0(c(n_rm, " barcode(s) from long reads are not found in any short read library, they are removed from analysis\n")))
+  }
+
+  n_rm <- dim(tr_sce)[2]
+  tr_sce <- tr_sce[, colnames(tr_sce) %in% colnames(sce_20)]
+  n_rm <- n_rm - dim(tr_sce)[2]
+  if (n_rm != 0) {
+    message(paste0(c(
+      n_rm, " barcode(s) from long reads are assigned to the 80% ~ 90% library (in short read SCEs), they are removed from analysis\n",
+      "Please consider revising short read libraries\n"
+    )))
+  }
+
+  n_rm <- dim(sce_20)[2]
+  sce_20 <- sce_20[, colnames(sce_20) %in% colnames(tr_sce)]
+  n_rm <- n_rm - dim(sce_20)[2]
+  if (n_rm != 0) {
+    message(paste0(c(n_rm, " barcode(s) from the 10% ~ 20% library are not found in long reads, removing ... \n")))
+    sce_all <- sce_all[, colnames(sce_all) %in% c(colnames(sce_80), colnames(sce_20))]
+  }
+
+
+  ### Process SCEs
+  tr_sce <- logNormCounts(tr_sce)
   rowData(tr_sce)$gene_id <- gsub("\\..*", "", rowData(tr_sce)$gene_id)
   # gene_name = mapIds(org.Hs.eg.db,
   #                   keys=rowData(tr_sce)$gene_id,
   #                   column="SYMBOL",
   #                   keytype="ENSEMBL",
   #                   multiVals="first")
+
+  if (!("PCA" %in% reducedDimNames(sce_all)) || dim(sce_all@int_colData$reducedDims$PCA)[2] < n_pcs) {
+    cat("Running PCA for sce_all ...\n")
+    sce_all <- logNormCounts(sce_all)
+    hvgs <- getTopHVGs(modelGeneVar(sce_all), n = 2000)
+    sce_all <- fixedPCA(sce_all, rank = n_pcs, subset.row = hvgs)
+    snn <- buildSNNGraph(sce_all, use.dimred = "PCA")
+  } else if (dim(sce_all@int_colData$reducedDims$PCA)[2] > n_pcs) {
+    message(paste0(c(
+      "sce_all have ", dim(sce_all@int_colData$reducedDims$PCA)[2], " PCs, using the first ",
+      n_pcs, " PCs since n_pcs set to ", n_pcs, "\n"
+    )))
+    sce_all@int_colData$reducedDims$tmp <- sce_all@int_colData$reducedDims$PCA[, 1:n_pcs]
+    snn <- buildSNNGraph(sce_all, use.dimred = "tmp")
+    sce_all@int_colData$reducedDims$tmp <- NULL
+  } else {
+    snn <- buildSNNGraph(sce_all, use.dimred = "PCA")
+  }
+
+  # Distance matrix for imputation
+  snn_mat <- as_adjacency_matrix(snn, attr = "weight")
+  diag(snn_mat) <- ceiling(max(snn_mat))
+
+  if (!("UMAP" %in% reducedDimNames(sce_all))) {
+    cat("Running UMAP for sce_all ...\n")
+    sce_all <- runUMAP(sce_all)
+  } else {
+    cat("Skipping runUMAP...\n")
+  }
+
+  plot_umap <- ggplot() +
+    geom_point(aes(
+      x = sce_all@int_colData$reducedDims$UMAP[, 1],
+      y = sce_all@int_colData$reducedDims$UMAP[, 2],
+      col = factor(sce_all$lib)
+    ),
+    size = 0.02
+    ) +
+    labs(x = "Dim1", y = "Dim2", title = "Lib_all UMAP", color = "library")
+
+  #  if ( !("PCA" %in% reducedDimNames(sce_20) )) {
+  #    cat("running PCA for sce_20 ...\n")
+  #    sce_20 <- logNormCounts(sce_20)
+  #    hvgs <- getTopHVGs(modelGeneVar(sce_20), n=2000)
+  #    sce_20 <- fixedPCA(sce_20, rank=n_pcs, subset.row=hvgs)
+  #  }
+
 
   # Select transcript with alternative isoforms
   cat("Finding transcript with alternative isoforms...\n")
@@ -246,7 +308,7 @@ sc_annotate_umap <- function(sce_20, sce_80, path, gene, n_isoforms = 4, n_pcs =
   rownames(expr_all) <- rownames(expr)
   colnames(expr_all) <- colnames(sce_all)
 
-  expr <- expr[, colnames(expr) %in% colnames(sce_all)]
+  # expr <- expr[, colnames(expr) %in% colnames(sce_all)]
   expr_all[, colnames(expr)] <- expr
   expr_all <- expr_all %*% snn_mat
   colnames(expr_all) <- colnames(sce_all)
@@ -290,7 +352,7 @@ sc_annotate_umap <- function(sce_20, sce_80, path, gene, n_isoforms = 4, n_pcs =
       geom_point(data = umap_80, aes(x = x, y = y), alpha = 0.2, size = 0.2, col = "grey", show.legend = F) +
       geom_point(data = umap_20, aes(x = x, y = y, col = expr), alpha = 0.7, size = 0.7) +
       labs(x = "Dim1", y = "Dim2", col = "scaled expression") +
-      scale_colour_gradient2(low = "#313695", mid = "#FFFFBF", high = "#A50026", na.value = "grey", midpoint = 0) +
+      scale_colour_gradient2(low = col_low, mid = col_mid, high = col_high, na.value = "grey", midpoint = 0) +
       theme_bw() +
       theme(
         panel.grid.major = element_blank(),
@@ -307,7 +369,7 @@ sc_annotate_umap <- function(sce_20, sce_80, path, gene, n_isoforms = 4, n_pcs =
     plot_expression_umaps_impute <- ggplot() +
       geom_point(data = umap_all, aes(x = x, y = y, col = expr), alpha = 0.7, size = 0.2) +
       labs(x = "Dim1", y = "Dim2", col = "scaled expression") +
-      scale_colour_gradient2(low = "#313695", mid = "#FFFFBF", high = "#A50026", na.value = "grey", midpoint = 0) +
+      scale_colour_gradient2(low = col_low, mid = col_mid, high = col_high, na.value = "grey", midpoint = 0) +
       theme_bw() +
       theme(
         panel.grid.major = element_blank(),
@@ -333,7 +395,7 @@ sc_annotate_umap <- function(sce_20, sce_80, path, gene, n_isoforms = 4, n_pcs =
         geom_point(data = umap_80, aes(x = x, y = y), alpha = 0.2, size = 0.2, col = "grey", show.legend = F) +
         geom_point(data = umap_20, aes(x = x, y = y, col = umap_20[, idx]), alpha = 0.7, size = 0.7) +
         labs(x = "Dim1", y = "Dim2", col = "scaled expression", title = colnames(umap_20)[idx]) +
-        scale_colour_gradient2(low = "#313695", mid = "#FFFFBF", high = "#A50026", na.value = "grey", midpoint = median(umap_20[, idx], na.rm = T)) +
+        scale_colour_gradient2(low = col_low, mid = col_mid, high = col_high, na.value = "grey", midpoint = median(umap_20[, idx], na.rm = T)) +
         theme_bw() +
         theme(
           panel.grid.major = element_blank(),
@@ -353,7 +415,7 @@ sc_annotate_umap <- function(sce_20, sce_80, path, gene, n_isoforms = 4, n_pcs =
       p <- ggplot() +
         geom_point(data = umap_all, aes(x = x, y = y, col = umap_all[, idx]), alpha = 0.7, size = 0.2) +
         labs(x = "Dim1", y = "Dim2", col = "scaled expression", title = colnames(umap_all)[idx]) +
-        scale_colour_gradient2(low = "#313695", mid = "#FFFFBF", high = "#A50026", na.value = "grey", midpoint = median(umap_all[, idx], na.rm = T)) +
+        scale_colour_gradient2(low = col_low, mid = col_mid, high = col_high, na.value = "grey", midpoint = median(umap_all[, idx], na.rm = T)) +
         theme_bw() +
         theme(
           panel.grid.major = element_blank(),
@@ -376,7 +438,7 @@ sc_annotate_umap <- function(sce_20, sce_80, path, gene, n_isoforms = 4, n_pcs =
       geom_point(aes(x = x, y = y, col = c(-1, 1))) +
       labs(col = "scaled expression") +
       scale_colour_gradient2(
-        low = "#313695", mid = "#FFFFBF", high = "#A50026",
+        low = col_low, mid = col_mid, high = col_high,
         breaks = c(-0.8, 0.8),
         labels = c("Low", "High")
       )
@@ -449,6 +511,16 @@ sc_annotate_umap <- function(sce_20, sce_80, path, gene, n_isoforms = 4, n_pcs =
       return(column_anno)
     }
 
+    expr_color_mapping <- function(expr_matrix) {
+      if (heatmap_color_quantile > 1 || heatmap_color_quantile < 0) {
+        heatmap_color_quantile <- 0.95
+      }
+      return(colorRamp2(
+        c(quantile(expr_matrix, 1 - heatmap_color_quantile, na.rm = T), 0, quantile(expr_matrix, heatmap_color_quantile, na.rm = T)),
+        c(col_low, col_mid, col_high)
+      ))
+    }
+
     isoform_annotation <- AnnotationFunction(
       fun = function(index) {
         grid.arrange(grobs = legends_heatmap, ncol = 1, vp = viewport(), newpage = F)
@@ -465,28 +537,30 @@ sc_annotate_umap <- function(sce_20, sce_80, path, gene, n_isoforms = 4, n_pcs =
 
     outputs[["heatmap"]] <- Heatmap(expr_20,
       name = "scaled expression",
-      cluster_rows = FALSE, cluster_columns = FALSE, use_raster = FALSE,
-      show_column_names = F, top_annotation = group_annotation(cluster_barcode_20)
+      cluster_rows = FALSE, cluster_columns = FALSE, use_raster = FALSE, show_column_names = F,
+      top_annotation = group_annotation(cluster_barcode_20), col = expr_color_mapping(expr_20)
     )
 
     outputs[["heatmap_impute"]] <- Heatmap(expr_all,
       name = "scaled expression",
-      cluster_rows = FALSE, cluster_columns = FALSE, use_raster = FALSE,
-      show_column_names = F, top_annotation = group_annotation(cluster_barcode_all)
+      cluster_rows = FALSE, cluster_columns = FALSE, use_raster = FALSE, show_column_names = F,
+      top_annotation = group_annotation(cluster_barcode_all), col = expr_color_mapping(expr_all)
     )
 
     outputs[["combined_heatmap"]] <- Heatmap(expr_20,
       name = "scaled expression",
       cluster_rows = FALSE, cluster_columns = FALSE, use_raster = FALSE,
       show_column_names = F, show_row_names = F, top_annotation = group_annotation(cluster_barcode_20),
-      left_annotation = rowAnnotation(isoform = isoform_annotation, annotation_name_rot = 0)
+      left_annotation = rowAnnotation(isoform = isoform_annotation, annotation_name_rot = 0),
+      col = expr_color_mapping(expr_20)
     )
 
     outputs[["combined_heatmap_impute"]] <- Heatmap(expr_all,
       name = "scaled expression",
       cluster_rows = FALSE, cluster_columns = FALSE, use_raster = FALSE,
       show_column_names = F, show_row_names = F, top_annotation = group_annotation(cluster_barcode_all),
-      left_annotation = rowAnnotation(isoform = isoform_annotation, annotation_name_rot = 0)
+      left_annotation = rowAnnotation(isoform = isoform_annotation, annotation_name_rot = 0),
+      col = expr_color_mapping(expr_all)
     )
   } else {
     cat("Cluster annotation not found, heatmaps skipped.\n")

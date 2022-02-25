@@ -5,28 +5,36 @@
 \title{FLAMES Annotated Plottings}
 \usage{
 sc_annotate_umap(
-  sce_20,
-  sce_80,
-  path,
   gene,
+  path,
+  sce_all = NULL,
+  sce_20 = NULL,
+  sce_80 = NULL,
   n_isoforms = 4,
   n_pcs = 40,
   cluster_annotation,
   dup_bc = NULL,
-  sce_all = NULL,
   return_sce_all = T,
   heatmap_annotation_colors = "BrBG",
-  isoform_legend_width = 7
+  isoform_legend_width = 7,
+  heatmap_color_quantile = 0.95,
+  col_low = "#313695",
+  col_mid = "#FFFFBF",
+  col_high = "#A50026"
 )
 }
 \arguments{
-\item{sce_20}{The \code{SingleCellExperiment} object containing gene counts assay for the smaller library.}
-
-\item{sce_80}{The \code{SingleCellExperiment} object containing gene counts assay for the larger library.}
+\item{gene}{The gene symbol of interest.}
 
 \item{path}{The path to the folder containing outputs of \code{sc_long_pipeline}.}
 
-\item{gene}{The gene symbol of interest.}
+\item{sce_all}{The \code{SingleCellExperiment} object containing gene counts assay for the combined library.
+Require \code{sce_all$lib} to specify the library of each cell, either "\code{lib20}" or "\code{lib80}".
+Alternatively, provide \code{sce_20} \code{sce_80} and the function will create \code{sce_all} using \code{BiocGenerics::cbind}.}
+
+\item{sce_20}{The \code{SingleCellExperiment} object containing gene counts assay for the smaller (10\% ~ 20\%) library.}
+
+\item{sce_80}{The \code{SingleCellExperiment} object containing gene counts assay for the larger (80\% ~ 90\%) library.}
 
 \item{n_isoforms}{The number of expressed isoforms to keep.}
 
@@ -37,11 +45,9 @@ sc_annotate_umap(
 \item{dup_bc}{Cell barcodes found both in the larger and smaller library, will be used to filter cells in the long-read
 data. (Filtering long-read data will be implemented in the main pipeline soon)}
 
-\item{sce_all}{The \code{SingleCellExperiment} object containing gene counts assay for the combined library.}
-
 \item{return_sce_all}{Whether to return the processed \code{SingleCellExperiment} object.}
 
-\item{heatmap_annotation_colors}{Color palettes to use for cell group annotation in heatmaps, palettes should be from \code{RColorBrewer}\cr
+\item{heatmap_annotation_colors}{Name of color palette to use for cell group annotation in heatmaps, see \code{\link[RColorBrewer:ColorBrewer]{RColorBrewer::brewer.pal()}} \cr
 available diverging palettes are:\cr
 \code{BrBG PiYG PRGn PuOr RdBu RdGy RdYlBu RdYlGn Spectral}\cr
 when there are more than 11 groups, this argument will be ignored and random palettes will be generated.}
