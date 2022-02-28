@@ -1061,7 +1061,7 @@ def group_bam2isoform(bam_in, out_gff3, out_stat, summary_csv, chr_to_blocks, ge
 					if raw_gff3 is not None:
 						splice_raw.write(tmp_isoform.raw_splice_to_gff3())
 					iso_annotated.write(tmp_isoform.isoform_to_gff3(isoform_pct=config["Min_cnt_pct"]))
-			except ValueError as ve:
+			except (ValueError, IndexError) as ve:
 				print ve, ": ", ve.args, ". Skipping chromosome ", ch, " with start and end: ", str(bl.s) + " " + str(bl.e)
 	#with open(iso_exact,"w") as out_f:
     #    out_f.write("##gff-version 3\n")
