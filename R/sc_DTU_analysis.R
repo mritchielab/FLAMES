@@ -222,7 +222,7 @@ sc_DTU_analysis <- function(sce, path, min_count=15){
     rownames(data_wide_tmp) <- rn
     data_wide_tmp <- data_wide_tmp[apply(data_wide_tmp,1,max)>min_count,apply(data_wide_tmp,2,max)>min_count]
       if (!is.null(dim(data_wide_tmp))){
-          if(ncol(data_wide_tmp)>2 & nrow(data_wide_tmp)>1){
+          if(ncol(data_wide_tmp)>=2 & nrow(data_wide_tmp)>1){
             fit <- suppressWarnings(chisq.test(data_wide_tmp))
             ge_name <- c(ge_name,ge)
             X_value <- c(X_value,fit$statistic)
@@ -251,6 +251,10 @@ sc_DTU_analysis <- function(sce, path, min_count=15){
                     DTU_tr=DTU_tr,
                     DTU_group=DTU_group,
                     p_value=p_value,stringsAsFactors = FALSE)
+  if (any(dim(res_df) == 0)){
+    message("No DTU gene was found\n")
+    return(res_df)
+  }
   res_df$adj_p <- res_df$p_value*nrow(res_df)
   res_df$adj_p <- sapply(res_df$adj_p,function(x){min(1,x)})
   res_df <- res_df[order(res_df$p_value),]

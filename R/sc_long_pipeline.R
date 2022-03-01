@@ -32,7 +32,7 @@
 #' @param in_bam Optional file path to a bam file to use instead of fastq file (skips initial alignment step)
 #' @param outdir The path to directory to store all output files.
 #' @param genome_fa The file path to genome fasta file.
-#' @param minimap2_dir Path to the directory containing minimap2, if it is not in PATH. Only required if either or both of 
+#' @param minimap2_dir Path to the directory containing minimap2, if it is not in PATH. Only required if either or both of
 #' \code{do_genome_align} and \code{do_read_realign} are \code{TRUE}.
 #' @param downsample_ratio Integer; downsampling ratio if performing downsampling analysis.
 #' @param config_file File path to the JSON configuration file. If specified, \code{config_file} overrides
@@ -95,7 +95,11 @@
 #' [bulk_long_pipeline()] for bulk long data,
 #' [SingleCellExperiment()] for how data is outputted
 #'
-#' @importFrom SingleCellExperiment SingleCellExperiment
+#' @importFrom dplyr group_by summarise_at slice_max filter
+#' @importFrom magrittr "%>%"
+#' @importFrom SingleCellExperiment SingleCellExperiment reducedDimNames logcounts
+#' @importFrom SummarizedExperiment rowData colData rowData<- colData<-
+#' @importFrom BiocGenerics cbind colnames rownames start end
 #' @importFrom utils read.csv read.table
 #'
 #' @example inst/examples/pipeline_example.R
@@ -133,7 +137,6 @@ sc_long_pipeline <-
              use_annotation = TRUE,
              min_tr_coverage = 0.75,
              min_read_coverage = 0.75) {
-        
         checked_args <- check_arguments(annot,
             fastq,
             in_bam,
@@ -162,16 +165,17 @@ sc_long_pipeline <-
             no_flank,
             use_annotation,
             min_tr_coverage,
-            min_read_coverage)
+            min_read_coverage
+        )
 
-		config_file <- checked_args$config
-        
+        config_file <- checked_args$config
+
         infq <- NULL
         if (is.null(in_bam)) {
             if (match_barcode) {
                 if (!file.exists(reference_csv)) {
-                      stop("reference_csv must exists.")
-                  }
+                    stop("reference_csv must exists.")
+                }
                 infq <-
                     paste(outdir, "matched_reads.fastq.gz", sep = "/")
                 bc_stat <-
@@ -185,8 +189,8 @@ sc_long_pipeline <-
                     UMI_LEN
                 )
             } else {
-                  infq <- fastq
-              } # requesting to not match barcodes implies `fastq` has already been run through the
+                infq <- fastq
+            } # requesting to not match barcodes implies `fastq` has already been run through the
             # function in a previous FLAMES call
         }
 
@@ -222,7 +226,7 @@ sc_long_pipeline <-
                 min_tr_coverage,
                 min_read_coverage
             )
-        
+
         sce <- generate_sc_singlecell(out_files)
 
         sce
@@ -230,32 +234,31 @@ sc_long_pipeline <-
 
 generate_sc_singlecell <- function(out_files) {
     # this method requires testing using single cell data
-    counts <- read.csv(out_files$counts)
-    annot <- read.csv(out_files$annot, sep="\t", comment.char="#")
-    colnames(annot) <-
-        c(
-            "SequenceID",
-            "Source",
-            "Feature",
-            "Start",
-            "End",
-            "Score",
-            "Strand",
-            "Phase",
-            "Attributes"
-        )
     mdata <- list(
-        "Annotations" = annot,
-        "AnnotationFile" = out_files$annot,
         "OutputFiles" = out_files
     )
-    sce <-
-        SingleCellExperiment::SingleCellExperiment(list(
-            "Flames Single Cell" =
-                counts
-        ),
+
+    transcript_count <- read.csv(out_files$counts, stringsAsFactors = FALSE)
+    isoform_FSM_annotation <- read.csv(file.path(out_files$outdir, "isoform_FSM_annotation.csv"), stringsAsFactors = FALSE)
+
+    transcript_count <- transcript_count[match(isoform_FSM_annotation$transcript_id, transcript_count$transcript_id), ]
+    transcript_count$FSM_match <- isoform_FSM_annotation$FSM_match
+    cell_bcs <- colnames(transcript_count)[!(colnames(transcript_count) %in% c("transcript_id", "gene_id", "FSM_match"))]
+    tr_anno <- transcript_count[, c("transcript_id", "gene_id", "FSM_match")]
+
+    # sum transcript (FSM) counts
+    mer_tmp <- transcript_count %>%
+        group_by(FSM_match) %>%
+        summarise_at(cell_bcs, sum)
+
+    # Create long read SCE
+    tr_anno <- tr_anno[match(mer_tmp$FSM_match, tr_anno$FSM_match), ]
+    tr_sce <- SingleCellExperiment::SingleCellExperiment(
+        assays = list(counts = as.matrix(mer_tmp[, -1])),
         metadata = mdata
-        )
+    )
+    rownames(tr_sce) <- mer_tmp$FSM_match
+    rowData(tr_sce) <- DataFrame(tr_anno)
     # return the created singlecellexperiment
-    sce
+    tr_sce
 }

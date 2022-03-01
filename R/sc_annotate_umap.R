@@ -202,7 +202,7 @@ sc_annotate_umap <- function(gene, path, sce_all = NULL, sce_20 = NULL, sce_80 =
 
   if (!("UMAP" %in% reducedDimNames(sce_all))) {
     cat("Running UMAP for sce_all ...\n")
-    sce_all <- runUMAP(sce_all)
+    sce_all <- runUMAP(sce_all, dimred = "PCA")
   } else {
     cat("Skipping runUMAP...\n")
   }
@@ -255,7 +255,7 @@ sc_annotate_umap <- function(gene, path, sce_all = NULL, sce_20 = NULL, sce_80 =
   names(isoform_sel) <- row_meta$FSM_match[match(names(isoform_sel), row_meta$transcript_id)] # Set names to FSM
   isoform_sel <- isoform_sel[row_meta$FSM_match] # Order by expression levels
   if (length(isoform_sel) == 2) {
-    fill_by_isoform <- c(rep("#A50026", length(isoform_sel[[1]])), rep("#313695", length(isoform_sel[[2]])))
+    fill_by_isoform <- c(rep(col_low, length(isoform_sel[[1]])), rep(col_high, length(isoform_sel[[2]])))
     plot_isoforms <- ggbio::autoplot(isoform_sel, label = TRUE, fill = fill_by_isoform) +
       theme_bw() + theme(
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
@@ -270,13 +270,9 @@ sc_annotate_umap <- function(gene, path, sce_all = NULL, sce_20 = NULL, sce_80 =
     # ggbio::geom_alignment does not follow the order in isoform_sel
   }
 
-  # ggbio::geom_alignment orders isoforms by sum of exon lengths
-  tr_len <- rep(0, length(isoform_sel))
-  names(tr_len) <- names(isoform_sel)
-  for (i in names(isoform_sel)) {
-    tr_len[i] <- sum(isoform_sel[[i]]@ranges@width)
-  }
-  tr_order <- names(sort(tr_len, decreasing = F))
+  # Could try using stat_stepping() to get the order of isoforms
+  # https://github.com/lawremi/ggbio/issues/149
+  tr_order <- rev(names(isoform_sel)[match(1:n_isoforms, plot_isoforms$layers[[length(plot_isoforms$layers)]]$data$stepping)])
   # isoform_sel <- isoform_sel[tr_order]
 
   legends_heatmap <- list()
@@ -346,13 +342,17 @@ sc_annotate_umap <- function(gene, path, sce_all = NULL, sce_20 = NULL, sce_80 =
   colnames(umap_20) <- c("x", "y")
 
   if (n_isoforms == 2) {
-    umap_20 <- cbind(expr = expr_20[names(isoform_sel)[1], ], umap_20)
-    umap_all <- cbind(expr = expr_all[names(isoform_sel)[1], ], umap_all)
+    # issue: Rps24.png
+    umap_20$expr <- "grey"
+    umap_all$expr <- "grey"
+    umap_20$expr[expr_20[names(isoform_sel)[1], ] > 0] <- col_low
+    umap_all$expr[expr_all[names(isoform_sel)[1], ] > 0] <- col_low
+    umap_20$expr[expr_20[names(isoform_sel)[1], ] < 0] <- col_high
+    umap_all$expr[expr_all[names(isoform_sel)[1], ] < 0] <- col_high
     plot_expression_umaps <- ggplot() +
       geom_point(data = umap_80, aes(x = x, y = y), alpha = 0.2, size = 0.2, col = "grey", show.legend = F) +
-      geom_point(data = umap_20, aes(x = x, y = y, col = expr), alpha = 0.7, size = 0.7) +
-      labs(x = "Dim1", y = "Dim2", col = "scaled expression") +
-      scale_colour_gradient2(low = col_low, mid = col_mid, high = col_high, na.value = "grey", midpoint = 0) +
+      geom_point(data = umap_20, aes(x = x, y = y), col = umap_20$expr, alpha = 0.7, size = 0.7) +
+      labs(x = "Dim1", y = "Dim2", col = "dominant isoform") +
       theme_bw() +
       theme(
         panel.grid.major = element_blank(),
@@ -367,9 +367,8 @@ sc_annotate_umap <- function(gene, path, sce_all = NULL, sce_20 = NULL, sce_80 =
         legend.text = element_blank()
       )
     plot_expression_umaps_impute <- ggplot() +
-      geom_point(data = umap_all, aes(x = x, y = y, col = expr), alpha = 0.7, size = 0.2) +
-      labs(x = "Dim1", y = "Dim2", col = "scaled expression") +
-      scale_colour_gradient2(low = col_low, mid = col_mid, high = col_high, na.value = "grey", midpoint = 0) +
+      geom_point(data = umap_all, aes(x = x, y = y), col = umap_all$expr, alpha = 0.7, size = 0.2) +
+      labs(x = "Dim1", y = "Dim2", col = "dominant isoform") +
       theme_bw() +
       theme(
         panel.grid.major = element_blank(),
@@ -433,6 +432,9 @@ sc_annotate_umap <- function(gene, path, sce_all = NULL, sce_20 = NULL, sce_80 =
     }
     plot_expression_umaps <- lapply(1:n_isoforms, plot_idx)
     plot_expression_umaps_impute <- lapply(1:n_isoforms, plot_idx_impute)
+    plot_expression_umaps <- plot_expression_umaps[match(tr_order, colnames(umap_20)[1:n_isoforms])]
+    plot_expression_umaps_impute <- plot_expression_umaps_impute[match(tr_order, colnames(umap_all)[1:n_isoforms])]
+
 
     legend <- ggplot(data.frame(x = 1:2, y = 1:2)) +
       geom_point(aes(x = x, y = y, col = c(-1, 1))) +
@@ -453,7 +455,7 @@ sc_annotate_umap <- function(gene, path, sce_all = NULL, sce_20 = NULL, sce_80 =
   if (file.exists(file.path(path, "cluster_annotation.csv")) || (!missing(cluster_annotation) && file.exists(cluster_annotation)) || !is.null(sce_all$cell_type)) {
     cat("Plotting heatmaps ...\n")
     if (file.exists(file.path(path, "cluster_annotation.csv"))) {
-      cluster_barcode <- read.csv(file.path(outdir, "cluster_annotation.csv"), stringsAsFactors = FALSE)
+      cluster_barcode <- read.csv(file.path(path, "cluster_annotation.csv"), stringsAsFactors = FALSE)
       cluster_barcode <- cluster_barcode[, c("barcode_seq", "groups")]
     } else if (!missing(cluster_annotation) && file.exists(cluster_annotation)) {
       cluster_barcode <- read.csv(cluster_annotation, stringsAsFactors = FALSE)
