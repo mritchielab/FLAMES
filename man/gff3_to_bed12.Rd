@@ -4,7 +4,7 @@
 \alias{gff3_to_bed12}
 \title{GFF3 to BED12}
 \usage{
-gff3_to_bed12(gff3_file, bed12_file)
+gff3_to_bed12(minimap2_dir, gff3_file, bed12_file)
 }
 \arguments{
 \item{gff3_file}{The file path to the GFF3 file to convert}

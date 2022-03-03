@@ -5,17 +5,26 @@ import os
 # depreciated conversion using paftools.
 # new version (gtf_to_bed in gff3_to_bed module) uses custom script
 def gff3_to_bed12(mm2_prog_path, gff3_file, bed12_file):
-    if mm2_prog_path != "":
+    if os.path.isfile(os.path.join(mm2_prog_path, "k8")):
         cmd = "{_k8} {_paftools} gff2bed {_gff3} > {_bed}".format(
             _k8=os.path.join(mm2_prog_path, "k8"),
             _paftools=os.path.join(mm2_prog_path, "paftools.js"),
             _gff3=gff3_file,
             _bed=bed12_file)
+    elif os.path.isfile(os.path.join(os.path.dirname(mm2_prog_path), "k8")):
+        cmd = "{_k8} {_paftools} gff2bed {_gff3} > {_bed}".format(
+            _k8=os.path.join(os.path.dirname(mm2_prog_path), "k8"),
+            _paftools=os.path.join(os.path.dirname(mm2_prog_path), "paftools.js"),
+            _gff3=gff3_file,
+            _bed=bed12_file)
     else:
+        print "k8 not found in minimap2_dir or its parent folder"
         cmd = "paftools.js gff2bed {_gff3} > {_bed}".format(
             _gff3=gff3_file,
             _bed=bed12_file)
+    print cmd
     print subprocess.check_output([cmd], shell=True, stderr=subprocess.STDOUT)
+    return
 
 
 def minimap2_align(mm2_prog_path, fa_file, fq_in, sam_out, no_flank=False, bed12_junc=None):

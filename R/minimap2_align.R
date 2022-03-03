@@ -15,13 +15,13 @@
 #' }
 #' @importFrom reticulate import_from_path
 #' @export
-gff3_to_bed12 <- function(gff3_file, bed12_file) {
+gff3_to_bed12 <- function(minimap2_dir, gff3_file, bed12_file) {
     python_path <- system.file("python", package = "FLAMES")
-    callBasilisk(flames_nopysam_env, function(gff3, bed12) {
-        convert <- reticulate::import_from_path("gtf_to_bed", python_path)
+    callBasilisk(flames_nopysam_env, function(minimap2, gff3, bed12) {
+        convert <- reticulate::import_from_path("minimap2_align", python_path)
 
-        convert$gtf_to_bed(gff3, bed12)
-    }, gff3 = gff3_file, bed12 = bed12_file)
+        convert$gff3_to_bed12(minimap2, gff3, bed12)
+    }, minimap2 = minimap2_dir, gff3 = gff3_file, bed12 = bed12_file)
 
     bed12_file # output file
 }
@@ -59,8 +59,8 @@ minimap2_align <-
                 reticulate::import_from_path("minimap2_align", python_path)
 
             if (is.null(minimap2_prog_path)) {
-                  minimap2_prog_path <- ""
-              }
+                minimap2_prog_path <- ""
+            }
             mm2$minimap2_align(mm2_path, fa, fq, sam, flank, bed12_junc)
         },
         mm2_path = minimap2_prog_path, fa = fa_file, fq = fq_in, sam = sam_out, flank =
@@ -137,22 +137,22 @@ minimap2_tr_align <-
     }
 
 #' Check if minimap2 is available
-#' 
+#'
 #' @description Checks if minimap2 is available from given directory or in path.
 #' Uses python's subprocess module to check if the help page is accessable.
-#' 
+#'
 #' @param mm2_prog_path the path to the directory containing minimap2
 #' @return TRUE if minimap2 is available, FALSE otherwise
-#' 
+#'
 #' @importFrom reticulate import_from_path
-minimap2_check_callable <- 
+minimap2_check_callable <-
     function(mm2_prog_path) {
         available <- callBasilisk(flames_nopysam_env, function(mm2) {
-            python_path <- system.file("python", package="FLAMES")
+            python_path <- system.file("python", package = "FLAMES")
 
             check <- reticulate::import_from_path("minimap2_align", python_path)
             check$check_minimap2_available(mm2)
-        }, mm2=mm2_prog_path)
+        }, mm2 = mm2_prog_path)
 
         return(available)
     }
