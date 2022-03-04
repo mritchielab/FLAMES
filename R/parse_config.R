@@ -3,7 +3,7 @@
 #' @description Convert a json configuration file into a named R list, grouped into sub lists according to their
 #'      usage in the Flames pipeline.
 #'
-#' @param json_file the file path to the JSON file to convert into an R list. 
+#' @param json_file the file path to the JSON file to convert into an R list.
 #' This can be the default FLAMES configuration file found using \code{get_default_config_file()}
 #'
 #' @return A named R list of the parameters in \code{json_file}. Subsections are: \code{pipeline_parameters},
@@ -19,7 +19,7 @@
 #' @importFrom reticulate import_from_path
 #' @export
 parse_json_config <- function(json_file) {
-    config <- callBasilisk(flames_nopysam_env, function(json) {
+    config <- callBasilisk(flames_env, function(json) {
         python_path <- system.file("python", package = "FLAMES")
 
         conf <-
@@ -41,7 +41,7 @@ parse_json_config <- function(json_file) {
 #'
 #' @importFrom reticulate import_from_path
 print_config <- function(config) {
-    callBasilisk(flames_nopysam_env, function(config) {
+    callBasilisk(flames_env, function(config) {
         python_path <- system.file("python", package = "FLAMES")
 
         conf <-
@@ -63,7 +63,7 @@ print_config <- function(config) {
 #' @importFrom reticulate import_from_path
 write_config <- function(config, config_file) {
     # write the config file to given file path
-    callBasilisk(flames_nopysam_env, function(config, config_file) {
+    callBasilisk(flames_env, function(config, config_file) {
         python_path <- system.file("python", package = "FLAMES")
 
         conf <-
@@ -106,7 +106,7 @@ write_config <- function(config, config_file) {
 #' @return file path to the config file created
 #' @examples
 #' # create the default configuartion file
-#' output = tempfile()
+#' output <- tempfile()
 #' \dontrun{
 #' config <- create_config(
 #'     tempfile(), TRUE, TRUE,

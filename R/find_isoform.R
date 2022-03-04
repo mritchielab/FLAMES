@@ -9,15 +9,15 @@ find_isoform <- function(gff3,
                          downsample_ratio,
                          config,
                          raw) {
-    ret <- callBasilisk(flames_nopysam_env, function(gff3,
-                                                     genome,
-                                                     iso,
-                                                     tss,
-                                                     fa,
-                                                     tran,
-                                                     ds,
-                                                     conf,
-                                                     raw) {
+    ret <- callBasilisk(flames_env, function(gff3,
+                                             genome,
+                                             iso,
+                                             tss,
+                                             fa,
+                                             tran,
+                                             ds,
+                                             conf,
+                                             raw) {
         python_path <- system.file("python", package = "FLAMES")
 
         find <-

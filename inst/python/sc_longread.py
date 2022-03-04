@@ -1,6 +1,6 @@
 # find isoforms in longread data
 #import pysam # get rid
-import bamnostic as bs
+import pysam as ps
 #from BCBio import GFF # never stop running. is there a bug?
 
 ####### from: https://techoverflow.net/2013/11/30/a-simple-gff3-parser-in-python/
@@ -366,8 +366,8 @@ def get_gene_blocks(gene_dict, chr_to_gene, gene_to_transcript):
 
 
 def parse_bam_intron(bam_in, bam_out, summary_csv, chr_to_blocks, gene_dict):
-    bamfile = bs.AlignmentFile(bam_in, "rb")
-    bamfile_o = bs.AlignmentFile(bam_out, "wb", template=bamfile)
+    bamfile = ps.AlignmentFile(bam_in, "rb")
+    bamfile_o = ps.AlignmentFile(bam_out, "wb", template=bamfile)
     csv_out = open(summary_csv,"w")
     map_tag="YE"
     gene_tag="GE"
@@ -1020,7 +1020,7 @@ def group_bam2isoform(bam_in, out_gff3, out_stat, summary_csv, chr_to_blocks, ge
         random.seed(config["random_seed"])
     else:
         random.seed(666666)
-    bamfile = bs.AlignmentFile(bam_in, "rb")
+    bamfile = ps.AlignmentFile(bam_in, "rb")
     #csv_out = open(summary_csv,"w")
     iso_annotated = open(out_gff3,"w")
     iso_annotated.write("##gff-version 3\n")
@@ -1035,34 +1035,33 @@ def group_bam2isoform(bam_in, out_gff3, out_stat, summary_csv, chr_to_blocks, ge
     for ch in chr_to_blocks:
         #if ch != "5":
         #    continue
+        print ch
         for ith, bl in enumerate(chr_to_blocks[ch]):
-			try:
-				it_region = bamfile.fetch(ch, bl.s, bl.e)
-				TSS_TES_site = get_TSS_TES_site(transcript_to_junctions, bl.transcript_list)
-				tmp_isoform = Isoforms(ch, config)
-				for rec in it_region:
-					# if 0<downsample_ratio<1 and random.uniform(0, 1)>downsample_ratio:
-					#     continue   # downsample analysis
-					# if rec.is_secondary:
-					#     continue
-					rec.cigar = smooth_cigar(rec.cigar, thr=20)
-					rec.cigartuples = rec.cigar
-					rec.cigarstring = generate_cigar(rec.cigar)
-					blocks = get_blocks(rec)
-					junctions = blocks_to_junctions(blocks)
-					tmp_isoform.add_isoform(junctions,rec.is_reverse)
-				if len(tmp_isoform)>0:
-					tmp_isoform.update_all_splice()
-					tmp_isoform.filter_TSS_TES(tss_tes_stat,known_site=TSS_TES_site,fdr_cutoff=0.1)
-					#tmp_isoform.site_stat(tss_tes_stat)
-					# issue
-					tmp_isoform.match_known_annotation(transcript_to_junctions, transcript_dict, gene_dict, bl, fa_dict)
-					isoform_dict[(ch, bl.s, bl.e)] =tmp_isoform
-					if raw_gff3 is not None:
-						splice_raw.write(tmp_isoform.raw_splice_to_gff3())
-					iso_annotated.write(tmp_isoform.isoform_to_gff3(isoform_pct=config["Min_cnt_pct"]))
-			except (ValueError, IndexError) as ve:
-				print ve, ": ", ve.args, ". Skipping chromosome ", ch, " with start and end: ", str(bl.s) + " " + str(bl.e)
+
+			it_region = bamfile.fetch(ch, bl.s, bl.e)
+			TSS_TES_site = get_TSS_TES_site(transcript_to_junctions, bl.transcript_list)
+			tmp_isoform = Isoforms(ch, config)
+			for rec in it_region:
+				# if 0<downsample_ratio<1 and random.uniform(0, 1)>downsample_ratio:
+				#     continue   # downsample analysis
+				# if rec.is_secondary:
+				#     continue
+				rec.cigar = smooth_cigar(rec.cigar, thr=20)
+				rec.cigartuples = rec.cigar
+				rec.cigarstring = generate_cigar(rec.cigar)
+				blocks = get_blocks(rec)
+				junctions = blocks_to_junctions(blocks)
+				tmp_isoform.add_isoform(junctions,rec.is_reverse)
+			if len(tmp_isoform)>0:
+				tmp_isoform.update_all_splice()
+				tmp_isoform.filter_TSS_TES(tss_tes_stat,known_site=TSS_TES_site,fdr_cutoff=0.1)
+				#tmp_isoform.site_stat(tss_tes_stat)
+				# issue
+				tmp_isoform.match_known_annotation(transcript_to_junctions, transcript_dict, gene_dict, bl, fa_dict)
+				isoform_dict[(ch, bl.s, bl.e)] =tmp_isoform
+				if raw_gff3 is not None:
+					splice_raw.write(tmp_isoform.raw_splice_to_gff3())
+				iso_annotated.write(tmp_isoform.isoform_to_gff3(isoform_pct=config["Min_cnt_pct"]))
 	#with open(iso_exact,"w") as out_f:
     #    out_f.write("##gff-version 3\n")
     tss_tes_stat.close()

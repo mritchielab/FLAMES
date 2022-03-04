@@ -1,6 +1,6 @@
 # quantify transcript
 #import pysam
-import bamnostic as bs
+import pysam as ps
 import os
 from collections import Counter
 import gzip
@@ -102,7 +102,7 @@ def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_re
     tr_cov_dict = {}
     read_dict = {}
     cnt_stat = Counter()
-    bamfile = bs.AlignmentFile(bam_in, "rb")
+    bamfile = ps.AlignmentFile(bam_in, "rb")
 
     if "bc_file" in kwargs.keys():
         bc_dict = make_bc_dict(kwargs["bc_file"])
@@ -184,7 +184,7 @@ def parse_realigned_bam1(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_r
     tr_cov_dict = {}
     read_dict = {}
     cnt_stat = Counter()
-    bamfile = bs.AlignmentFile(bam_in, "rb")
+    bamfile = ps.AlignmentFile(bam_in, "rb")
     for rec in bamfile.fetch(until_eof=True):
         inferred_read_length = query_len(rec.cigarstring)
         if rec.is_unmapped or rec.is_secondary: #or rec.mapping_quality==0:
@@ -221,7 +221,7 @@ def parse_realigned_bam_raw(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, mi
     tr_cov_dict = {}
     read_dict = {}
     cnt_stat = Counter()
-    bamfile = bs.AlignmentFile(bam_in, "rb")
+    bamfile = ps.AlignmentFile(bam_in, "rb")
     for rec in bamfile.fetch(until_eof=True):
         if rec.is_unmapped or rec.is_secondary: #or rec.mapping_quality==0:
             cnt_stat["not_counted"] += 1
@@ -263,7 +263,7 @@ def realigned_bam_coverage(bam_in, fa_idx_f, coverage_dir):
     bc_pct = {0:{},1:{},2:{},3:{},4:{}}
     bc_cov_pct = {0:[],1:[],2:[],3:[],4:[]}
     gene_pct = {0:[],1:[],2:[],3:[],4:[]}
-    bamfile = bs.AlignmentFile(bam_in, "rb")
+    bamfile = ps.AlignmentFile(bam_in, "rb")
     for rec in bamfile.fetch(until_eof=True):
         if rec.is_unmapped or rec.is_supplementary or rec.is_secondary:
             continue

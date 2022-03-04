@@ -6,12 +6,12 @@ annotate_filter_gff <-
              anno_out,
              tr_cnt,
              min_sup_reads) {
-        callBasilisk(flames_nopysam_env, function(isoform_gff,
-                                                  ref_gff,
-                                                  isoform_out,
-                                                  anno_out,
-                                                  tr_cnt,
-                                                  min_sup_reads) {
+        callBasilisk(flames_env, function(isoform_gff,
+                                          ref_gff,
+                                          isoform_out,
+                                          anno_out,
+                                          tr_cnt,
+                                          min_sup_reads) {
             python_path <- system.file("python", package = "FLAMES")
 
             filter <-

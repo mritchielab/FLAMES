@@ -39,13 +39,13 @@ merge_bulk_fastq <- function(fastq_dir, out_fastq) {
     # }, fq_dir = fastq_dir, out_fq = out_fastq)
 
     # out_fastq
-    fastq_files <- paste(fastq_dir, list.files(fastq_dir), sep="/")
+    fastq_files <- paste(fastq_dir, list.files(fastq_dir), sep = "/")
     merge_bulk_fastq_cpp(fastq_files, out_fastq)
 
     out_fastq
 }
 
-#' Merge FASTQ using python. Depreciated 
+#' Merge FASTQ using python. Depreciated
 #'
 #' Merges all fastq files in the given folder into a single file.
 #'
@@ -78,7 +78,7 @@ merge_bulk_fastq <- function(fastq_dir, out_fastq) {
 merge_bulk_fastq_python <- function(fastq_dir, out_fastq) {
     cat("WARNING: This function has depreciated. Use FLAMES::merge_bulk_fastq instead.\n")
 
-    callBasilisk(flames_nopysam_env, function(fq_dir, out_fq) {
+    callBasilisk(flames_env, function(fq_dir, out_fq) {
         python_path <- system.file("python", package = "FLAMES")
 
         merge_bulk <-

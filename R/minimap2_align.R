@@ -17,7 +17,7 @@
 #' @export
 gff3_to_bed12 <- function(minimap2_dir, gff3_file, bed12_file) {
     python_path <- system.file("python", package = "FLAMES")
-    callBasilisk(flames_nopysam_env, function(minimap2, gff3, bed12) {
+    callBasilisk(flames_env, function(minimap2, gff3, bed12) {
         convert <- reticulate::import_from_path("minimap2_align", python_path)
 
         convert$gff3_to_bed12(minimap2, gff3, bed12)
@@ -48,12 +48,12 @@ minimap2_align <-
              sam_out,
              no_flank = FALSE,
              bed12_junc = NULL) {
-        callBasilisk(flames_nopysam_env, function(mm2_path,
-                                                  fa,
-                                                  fq,
-                                                  sam,
-                                                  flank,
-                                                  bed12_junc) {
+        callBasilisk(flames_env, function(mm2_path,
+                                          fa,
+                                          fq,
+                                          sam,
+                                          flank,
+                                          bed12_junc) {
             python_path <- system.file("python", package = "FLAMES")
             mm2 <-
                 reticulate::import_from_path("minimap2_align", python_path)
@@ -125,7 +125,7 @@ samtools_as_bam <- function(sam_in, bam_out) {
 #' @importFrom reticulate import_from_path
 minimap2_tr_align <-
     function(mm2_prog_path, fa_file, fq_in, sam_out) {
-        callBasilisk(flames_nopysam_env, function(mm2, fa, fq, sam) {
+        callBasilisk(flames_env, function(mm2, fa, fq, sam) {
             python_path <- system.file("python", package = "FLAMES")
 
             align <-
@@ -147,7 +147,7 @@ minimap2_tr_align <-
 #' @importFrom reticulate import_from_path
 minimap2_check_callable <-
     function(mm2_prog_path) {
-        available <- callBasilisk(flames_nopysam_env, function(mm2) {
+        available <- callBasilisk(flames_env, function(mm2) {
             python_path <- system.file("python", package = "FLAMES")
 
             check <- reticulate::import_from_path("minimap2_align", python_path)

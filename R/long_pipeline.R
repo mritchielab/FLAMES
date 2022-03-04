@@ -41,7 +41,6 @@ generic_long_pipeline <-
              use_annotation,
              min_tr_coverage,
              min_read_coverage) {
-        
         cat("Running FLAMES pipeline...\n")
         config <- parse_json_config(config_file)
 
@@ -84,8 +83,8 @@ generic_long_pipeline <-
             cat("\tinput bam:", in_bam, "\n")
             genome_bam <- in_bam
         } else {
-              cat("\tinput fastq:", fastq, "\n")
-          }
+            cat("\tinput fastq:", fastq, "\n")
+        }
         cat("\toutput directory:", outdir, "\n")
         cat("\tdirectory containing minimap2:", minimap2_dir, "\n")
 
@@ -95,7 +94,7 @@ generic_long_pipeline <-
             cat("#### Aligning reads to genome using minimap2\n")
 
             if (config$alignment_parameters$use_junctions) {
-                gff3_to_bed12(annot, tmp_bed)
+                gff3_to_bed12(minimap2_dir, annot, tmp_bed)
             }
             minimap2_align(
                 minimap2_dir,
@@ -104,18 +103,18 @@ generic_long_pipeline <-
                 tmp_sam,
                 no_flank = config$alignment_parameters$no_flank,
                 bed12_junc = if (config$alignment_parameters$use_junctions) {
-                      tmp_bed
-                  } else {
-                      NULL
-                  }
+                    tmp_bed
+                } else {
+                    NULL
+                }
             )
             samtools_as_bam(tmp_sam, tmp_bam)
             samtools_sort_index(tmp_bam, genome_bam)
             file.remove(tmp_sam)
             file.remove(tmp_bam)
             if (config$alignment_parameters$use_junctions) {
-                  file.remove(tmp_bed)
-              }
+                file.remove(tmp_bed)
+            }
         } else {
             cat("#### Skip aligning reads to genome\n")
         }
@@ -200,36 +199,36 @@ generic_long_pipeline <-
         )
     }
 
-check_arguments <- 
+check_arguments <-
     function(annot,
-            fastq,
-            in_bam,
-            outdir,
-            genome_fa,
-            minimap2_dir,
-            downsample_ratio,
-            config_file,
-            do_genome_align,
-            do_isoform_id = TRUE,
-            do_read_realign,
-            do_transcript_quanti,
-            gen_raw_isoform,
-            has_UMI,
-            MAX_DIST,
-            MAX_TS_DIST,
-            MAX_SPLICE_MATCH_DIST,
-            min_fl_exon_len,
-            Max_site_per_splice,
-            Min_sup_cnt,
-            Min_cnt_pct,
-            Min_sup_pct,
-            strand_specific,
-            remove_incomp_reads,
-            use_junctions,
-            no_flank,
-            use_annotation,
-            min_tr_coverage,
-            min_read_coverage) {
+             fastq,
+             in_bam,
+             outdir,
+             genome_fa,
+             minimap2_dir,
+             downsample_ratio,
+             config_file,
+             do_genome_align,
+             do_isoform_id = TRUE,
+             do_read_realign,
+             do_transcript_quanti,
+             gen_raw_isoform,
+             has_UMI,
+             MAX_DIST,
+             MAX_TS_DIST,
+             MAX_SPLICE_MATCH_DIST,
+             min_fl_exon_len,
+             Max_site_per_splice,
+             Min_sup_cnt,
+             Min_cnt_pct,
+             Min_sup_pct,
+             strand_specific,
+             remove_incomp_reads,
+             use_junctions,
+             no_flank,
+             use_annotation,
+             min_tr_coverage,
+             min_read_coverage) {
         if (!dir.exists(outdir)) {
             cat("Output directory does not exists: one is being created\n")
             dir.create(outdir)
@@ -277,19 +276,19 @@ check_arguments <-
         }
         if (!is.null(fastq) &&
             !file.exists(fastq)) {
-              stop(paste0("Make sure ", fastq, " exists."))
-          }
+            stop(paste0("Make sure ", fastq, " exists."))
+        }
         if (!file.exists(annot)) {
-              stop(paste0("Make sure ", annot, " exists."))
-          }
+            stop(paste0("Make sure ", annot, " exists."))
+        }
         if (!file.exists(genome_fa)) {
-              stop(paste0("Make sure ", genome_fa, " exists."))
-          }
+            stop(paste0("Make sure ", genome_fa, " exists."))
+        }
 
         if (!is.null(in_bam)) {
             if (!file.exists(in_bam)) {
-                  stop("Make sure in_bam exists")
-              }
+                stop("Make sure in_bam exists")
+            }
         }
 
         if (do_genome_align || do_read_realign) {
@@ -298,5 +297,5 @@ check_arguments <-
             }
         }
 
-		return(list(config=config_file))
+        return(list(config = config_file))
     }

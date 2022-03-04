@@ -6,7 +6,7 @@
 #' These components are returned in a named list.
 #'
 #' @param gff_file the file path to the gff3 file to parse
-#' @return a named list with the elements 
+#' @return a named list with the elements
 #' "chr_to_gene", "transcript_dict", "gene_to_transcript", "transcript_to_exon", containing
 #' the data parsed from the gff3 file.
 #' @importFrom reticulate import_from_path
@@ -22,7 +22,7 @@
 #' }
 #' @export
 parse_gff_tree <- function(gff_file) {
-    ret <- callBasilisk(flames_nopysam_env, function(args) {
+    ret <- callBasilisk(flames_env, function(args) {
         python_path <- system.file("python", package = "FLAMES")
         parse <-
             reticulate::import_from_path("parse_gene_anno", python_path)

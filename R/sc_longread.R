@@ -1,6 +1,6 @@
 #' @importFrom reticulate import_from_path
 blocks_to_junctions <- function(block) {
-    junctions <- callBasilisk(flames_nopysam_env, function(block) {
+    junctions <- callBasilisk(flames_env, function(block) {
         python_path <- system.file("python", package = "FLAMES")
 
         sc <-
@@ -16,7 +16,7 @@ remove_similar_tr <-
     function(gene_to_transcript,
              transcript_to_exon,
              thr = 10) {
-        callBasilisk(flames_nopysam_env, function(gene_tran, tr_exon, thr) {
+        callBasilisk(flames_env, function(gene_tran, tr_exon, thr) {
             python_path <- system.file("python", package = "FLAMES")
 
             sc <-
@@ -33,7 +33,7 @@ remove_similar_tr <-
 #' @importFrom reticulate import_from_path
 get_gene_flat <- function(gene_to_transcript, transcript_to_exon) {
     gene_flat <-
-        callBasilisk(flames_nopysam_env, function(gene_tran, tran_exon) {
+        callBasilisk(flames_env, function(gene_tran, tran_exon) {
             python_path <- system.file("python", package = "FLAMES")
 
             sc <-
@@ -50,7 +50,7 @@ get_gene_blocks <-
              chr_to_gene,
              gene_to_transcript) {
         gene_blocks <-
-            callBasilisk(flames_nopysam_env, function(g_dict, chr_gene, gene_tran) {
+            callBasilisk(flames_env, function(g_dict, chr_gene, gene_tran) {
                 python_path <- system.file("python", package = "FLAMES")
 
                 sc <-
@@ -76,18 +76,18 @@ group_bam2isoform <-
              config,
              downsample_ratio,
              raw_gff3 = NULL) {
-        callBasilisk(flames_nopysam_env, function(bin,
-                                                  o_gff3,
-                                                  o_stat,
-                                                  summary,
-                                                  chr,
-                                                  gene,
-                                                  trans_junc,
-                                                  trans_dict,
-                                                  fa,
-                                                  conf,
-                                                  dr,
-                                                  raw) {
+        callBasilisk(flames_env, function(bin,
+                                          o_gff3,
+                                          o_stat,
+                                          summary,
+                                          chr,
+                                          gene,
+                                          trans_junc,
+                                          trans_dict,
+                                          fa,
+                                          conf,
+                                          dr,
+                                          raw) {
             python_path <- system.file("python", package = "FLAMES")
 
             sc <-
