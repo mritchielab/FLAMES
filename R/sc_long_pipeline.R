@@ -171,28 +171,26 @@ sc_long_pipeline <-
         config_file <- checked_args$config
 
         infq <- NULL
-        if (is.null(in_bam)) {
-            if (match_barcode) {
-                if (!file.exists(reference_csv)) {
-                    stop("reference_csv must exists.")
-                }
-                infq <-
-                    paste(outdir, "matched_reads.fastq.gz", sep = "/")
-                bc_stat <-
-                    paste(outdir, "matched_barcode_stat", sep = "/")
-                match_cell_barcode(
-                    fastq,
-                    bc_stat,
-                    infq,
-                    reference_csv,
-                    MAX_DIST,
-                    UMI_LEN
-                )
-            } else {
-                infq <- fastq
-            } # requesting to not match barcodes implies `fastq` has already been run through the
-            # function in a previous FLAMES call
-        }
+        if (match_barcode) {
+            if (!file.exists(reference_csv)) {
+                stop("reference_csv must exists.")
+            }
+            infq <-
+                paste(outdir, "matched_reads.fastq.gz", sep = "/")
+            bc_stat <-
+                paste(outdir, "matched_barcode_stat", sep = "/")
+            match_cell_barcode(
+                fastq,
+                bc_stat,
+                infq,
+                reference_csv,
+                MAX_DIST,
+                UMI_LEN
+            )
+        } else {
+            infq <- fastq
+        } # requesting to not match barcodes implies `fastq` has already been run through the
+        # function in a previous FLAMES call
 
         out_files <-
             generic_long_pipeline(

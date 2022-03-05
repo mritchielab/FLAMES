@@ -7,7 +7,7 @@
 parse_json_config(json_file)
 }
 \arguments{
-\item{json_file}{the file path to the JSON file to convert into an R list. 
+\item{json_file}{the file path to the JSON file to convert into an R list.
 This can be the default FLAMES configuration file found using \code{get_default_config_file()}}
 }
 \value{

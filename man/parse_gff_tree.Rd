@@ -10,7 +10,7 @@ parse_gff_tree(gff_file)
 \item{gff_file}{the file path to the gff3 file to parse}
 }
 \value{
-a named list with the elements 
+a named list with the elements
 "chr_to_gene", "transcript_dict", "gene_to_transcript", "transcript_to_exon", containing
 the data parsed from the gff3 file.
 }

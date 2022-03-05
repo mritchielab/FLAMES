@@ -46,8 +46,11 @@ generic_long_pipeline <-
 
         using_bam <- FALSE
         if (!is.null(in_bam)) {
+            if (!file.exists(paste0(in_bam, ".bai"))) {
+                stop("Please make sure the BAM file is indexed")
+            }
             using_bam <- TRUE
-            fastq <- NULL
+            config$pipeline_parameters$do_genome_alignment <- FALSE
         }
 
         # setup of internal arguments which hold output files and intermediate files
@@ -82,9 +85,8 @@ generic_long_pipeline <-
         if (using_bam) {
             cat("\tinput bam:", in_bam, "\n")
             genome_bam <- in_bam
-        } else {
-            cat("\tinput fastq:", fastq, "\n")
         }
+        cat("\tinput fastq:", fastq, "\n")
         cat("\toutput directory:", outdir, "\n")
         cat("\tdirectory containing minimap2:", minimap2_dir, "\n")
 

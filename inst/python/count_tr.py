@@ -144,7 +144,12 @@ def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_re
         # in this case, umi is assumed to be delimited from the barcode by the last _
         #bc, umi = r.split("#")[0].split("_")  # assume cleaned barcode
         split_r = r.split("#")[0].split("_")
-        bc, umi = split_r[-2], split_r[-1]
+        try:
+            bc, umi = split_r[-2], split_r[-1]
+        except IndexError as ie:
+            print ie, ": ", ie.args, "."
+            raise IndexError("Please check if barcode and UMI are delimited by \"_\"")
+            
         if "bc_file" in kwargs.keys():
             bc = bc_dict[bc]
         if len(tmp)==1 and tmp[0][4]>0:
