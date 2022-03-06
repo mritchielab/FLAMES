@@ -6,8 +6,6 @@
 #include <unordered_map>
 #include <map>
 #include <fstream>
-#include <iostream>
-#include <stdio.h>
 #include <Rcpp.h>
 
 #include "../classes/Config.h"

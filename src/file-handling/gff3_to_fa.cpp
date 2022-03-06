@@ -9,11 +9,10 @@ get_transcript_seq
 (
     std::string fa_file,
     std::string fa_out_f,
-    std::unordered_map<std::string, std::vector<std::string>>   * chr_to_gene,
-    std::unordered_map<std::string, Pos>                        * transcript_dict,
-    std::unordered_map<std::string, std::vector<std::string>>   * gene_to_transcript,
-    std::unordered_map<std::string, std::vector<StartEndPair>>  * transcript_to_exon,
-
+    const std::unordered_map<std::string, std::vector<std::string>>   &chr_to_gene,
+    const std::unordered_map<std::string, Pos>                        &transcript_dict,
+    const std::unordered_map<std::string, std::vector<std::string>>   &gene_to_transcript,
+    const std::unordered_map<std::string, std::vector<StartEndPair>>  &transcript_to_exon,
     ReferenceDict * ref_dict
 )
 {
@@ -35,16 +34,16 @@ get_transcript_seq
     // then look through all the data we just loaded in
     for (const auto & [chr, seq] : raw_dict) {
         // first, check that the chr is in chr_to_gene
-        if ((*chr_to_gene).find(chr) == (*chr_to_gene).end()) {
+        if (chr_to_gene.find(chr) == chr_to_gene.end()) {
             continue;
         }
 
-        for (const auto & gene : (*chr_to_gene)[chr]) {
-            for (const auto & transcript : (*gene_to_transcript)[gene]) {
+        for (const auto & gene : chr_to_gene.at(chr)) {
+            for (const auto & transcript : gene_to_transcript.at(gene)) {
                 // make a list of every StartEndPair in this transcript
                 std::vector<int>
                 iso_list = {};
-                for (const auto & exon : (*transcript_to_exon)[transcript]) {
+                for (const auto & exon : transcript_to_exon.at(transcript)) {
                     iso_list.push_back(exon.start);
                     iso_list.push_back(exon.end);
                 }
@@ -58,13 +57,13 @@ get_transcript_seq
                     // now, build a string that is the full sequence of the given transcript
                     std::string
                     transcript_seq = "";
-                    for (const auto & exon : (*transcript_to_exon)[transcript]) {
+                    for (const auto & exon : transcript_to_exon.at(transcript)) {
                         transcript_seq.append(seq.substr(exon.start, exon.end - exon.start));
                     }
 
                     // check if we need to reverse and swap the strand
-                    if ((*transcript_dict)[transcript].strand != '+') {
-                        transcript_seq = r_c(&transcript_seq);
+                    if (transcript_dict.at(transcript).strand != '+') {
+                        transcript_seq = r_c(transcript_seq);
                     }
 
                     fa_dict[transcript] = transcript_seq;
@@ -78,16 +77,16 @@ get_transcript_seq
             if (ref_dict != nullptr) {
                 // if the reference dictionary contains the chr
                 if (ref_dict->chr_to_gene.find(chr) != ref_dict->chr_to_gene.end()) {
-                    for (const auto & transcript : (*ref_dict).gene_to_transcript[gene]) {
+                    for (const auto & transcript : ref_dict->gene_to_transcript.at(gene)) {
                         // first check that the transcript isn't in transcript_to_exon
-                        if ((*transcript_to_exon).find(transcript) != (*transcript_to_exon).end()) {
+                        if (transcript_to_exon.find(transcript) != transcript_to_exon.end()) {
                             continue;
                         }
 
                         std::vector<int>
                         iso_list = {};
 
-                        for (const auto & exon : ref_dict->transcript_to_exon[transcript]) {
+                        for (const auto & exon : ref_dict->transcript_to_exon.at(transcript)) {
                             iso_list.push_back(exon.start);
                             iso_list.push_back(exon.end);
                         }
@@ -103,13 +102,13 @@ get_transcript_seq
                             
                             std::string
                             transcript_seq;
-                            for (const auto & exon : ref_dict->transcript_to_exon[transcript]) {
+                            for (const auto & exon : ref_dict->transcript_to_exon.at(transcript)) {
                                 transcript_seq.append(seq.substr(exon.start, exon.end - exon.start));
                             }
                             
                             // reverse and switch strands if we need to
-                            if (ref_dict->transcript_dict[transcript].strand != '+') {
-                                transcript_seq = r_c(&transcript_seq);
+                            if (ref_dict->transcript_dict.at(transcript).strand != '+') {
+                                transcript_seq = r_c(transcript_seq);
                             }
                             
                             // log a duplicate if we need to
@@ -126,7 +125,7 @@ get_transcript_seq
     }
 
     for (const auto & [transcript_seq, transcript] : global_seq_dict) {
-        write_fa(&fa_out, transcript, transcript_seq);
+        write_fa(fa_out, transcript, transcript_seq);
     }
     fa_out.close();
 }
@@ -185,28 +184,28 @@ get_fa_simple(std::string filename)
     wrapping after each wrap_len characters
 */
 void
-write_fa(std::ofstream* fa_out, std::string na, std::string seq, int wrap_len)
+write_fa(std::ofstream &fa_out, std::string na, std::string seq, int wrap_len)
 {
-    (*fa_out) << ">" << na << "\n";
+    fa_out << ">" << na << "\n";
     for (int i = 0; i < seq.length(); ++i) {
         // break the line if we need to
         if ((i > 0) && (i % wrap_len == 0)) {
-            (*fa_out) << "\n";
+            fa_out << "\n";
         }
 
         // log the next character
-        (*fa_out) << seq[i];
+        fa_out << seq[i];
     }
-    (*fa_out) << "\n";
+    fa_out << "\n";
 }
 
 /*  takes a full sequence,
     reverses it and swaps all of the characters using CP
 */
 std::string
-r_c(const std::string* seq)
+r_c(const std::string &seq)
 {
-    std::unordered_map<char, char>
+    const std::unordered_map<char, char>
     CP = {
         {'A', 'T'},
         {'T', 'A'},
@@ -222,8 +221,8 @@ r_c(const std::string* seq)
     std::string
     new_seq = "";
 
-    for (int i = (int)(*seq).length() - 1; i >= 0; --i) {
-        new_seq.push_back(CP[(*seq)[i]]);
+    for (int i = (int)seq.length() - 1; i >= 0; --i) {
+        new_seq.push_back(CP.at(seq[i]));
     }
 
     return new_seq;

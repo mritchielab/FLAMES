@@ -23,6 +23,14 @@ inline std::string get_tempfile(std::string ext) {
 	std::string res = Rcpp::as<std::string> (temp_file(Rcpp::_["fileext"] = ext));
 	return std::string(res);
 }
+inline std::string get_tempdir() {
+	Rcpp::Function temp_dir("tempdir");
+	return Rcpp::as<std::string> (temp_dir());
+}
+inline void rename_file(std::string from, std::string to) {
+	Rcpp::Function rename("file.rename");
+	rename(Rcpp::_["from"]=from, Rcpp::_["to"]=to);
+}
 
 // compare two unordered streams of values
 template <typename T>
@@ -70,6 +78,24 @@ inline std::vector<U> map(const std::vector<T> &a, std::function<U(const T &)> f
 	return out;
 }
 
+template <typename K, typename T, typename U>
+inline std::unordered_map<K, U> map(const std::unordered_map<K, T> &a, std::function<U(const T &)> f) {
+	std::unordered_map<K, U> out;
+	for (const auto &[key, value] : a) {
+		out[key] = f(value);
+	}
+	return out;
+}
 
+template <typename T>
+inline std::string printVec(const std::vector<T> &a) {
+	std::stringstream ss;
+	ss << "{" << *(a.begin());
+	for (auto it = a.begin()+1; it != a.end(); it++) {
+		ss << ", " << *it;
+	}
+	ss << "}";
+	return ss.str();
+}
 
 #endif // TEST_UTILITIES_H

@@ -1,10 +1,20 @@
 #include <string>
 #include <fstream>
+#include <vector>
 #include <unordered_map>
 #include <testthat.h>
+#include <Rcpp.h>
 
 #include "test_utilities.h"
 #include "file-handling/gtf_to_bed.h"
+#include "main-functions/group_bam2isoform.h"
+#include "classes/Config.h"
+#include "classes/GFFData.h"
+#include "classes/GeneBlocks.h"
+#include "classes/GeneAnnoParser/GeneAnnoParser.h"
+#include "utility/junctions.h"
+#include "classes/Pos.h"
+#include "classes/StartEndPair.h"
 #include "classes/Parser.h"
 
 
@@ -62,5 +72,4 @@ context("GTF To Bed file conversion") {
 		expect_true(m["SIRV3\t4601\t4762\tSIRV311\t1000\t-\t4601\t4762\t255,0,0\t1\t161\t0"]);
 		expect_true(m["SIRV2\t1035\t5911\tSIRV202\t1000\t-\t1035\t5911\t255,0,0\t11\t626,112,91,128,129,220,160,128,141,113,123\t0,706,938,1639,1846,2070,2630,2931,3303,3652,4753"]);
 	}
-
 }

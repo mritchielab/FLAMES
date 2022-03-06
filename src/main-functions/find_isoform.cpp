@@ -115,8 +115,7 @@ log_params
 
 // [[Rcpp::export]]
 Rcpp::List
-find_isoform
-(
+find_isoform (
     std::string gff3, 
     std::string genome_bam, 
     std::string isoform_gff3, 
@@ -126,8 +125,7 @@ find_isoform
     int         downsample_ratio, 
     Rcpp::List  config_list, 
     std::string raw_splice_isoform
-)
-{
+) {
     Rcpp::Rcout << "#### Reading Gene Annotations\n";
 
     // first, extract from the gff file
@@ -146,29 +144,15 @@ find_isoform
     for (const auto & [transcript, exon] : transcript_to_exon) {
         transcript_to_junctions[transcript] = blocks_to_junctions(exon); // junctions.h
     }
-
-    // Rcpp::Rcout << "gene_to_transcript:\n";
-    // for (const auto & [gene, transcript] : gene_to_transcript) {
-    //     Rcpp::Rcout << "gene:" << gene << "\ntranscript:";
-    //     for (const auto & tr : transcript) {
-    //         Rcpp::Rcout << tr << ",";
-    //     }
-    // }
-
-    // Rcpp::Rcout << "transcript_to_junctions:\n";
-    // for (const auto & [transcript, junctions] : transcript_to_junctions) {
-    //     Rcpp::Rcout << "transcript:" << transcript << "\n";
-    //     Rcpp::Rcout << "junctions:" << junctions.left[0] << "," << junctions.right[0] << "\n";
-    // }
     
     // remove transcripts that are too similar
     remove_similar_tr(gene_to_transcript, transcript_to_exon, 10); // junctions.h
     
     std::unordered_map<std::string, std::vector<StartEndPair>>
-    gene_dict = get_gene_flat(&gene_to_transcript, &transcript_to_exon); // junctions.h
+    gene_dict = get_gene_flat(gene_to_transcript, transcript_to_exon); // junctions.h
     
     std::unordered_map<std::string, std::vector<GeneBlocks>>
-    chr_to_blocks = get_gene_blocks(&gene_dict, &chr_to_gene, &gene_to_transcript); // junctions.h
+    chr_to_blocks = get_gene_blocks(gene_dict, chr_to_gene, gene_to_transcript); // junctions.h
     
     Config config;
     config.from_R(config_list);
@@ -186,7 +170,7 @@ find_isoform
         transcript_dict,
         genomefa,
         config.isoform_parameters,
-        ""
+        raw_splice_isoform
     );
 
     GFFData isoform_gff = parseGeneAnno(isoform_gff3);
@@ -212,10 +196,10 @@ find_isoform
     get_transcript_seq(
         genomefa,
         transcript_fa,
-        &chr_to_gene_iso,
-        &transcript_dict_iso,
-        &gene_to_transcript_iso,
-        &transcript_to_exon_iso,
+        chr_to_gene_iso,
+        transcript_dict_iso,
+        gene_to_transcript_iso,
+        transcript_to_exon_iso,
         &ref_dict
     );
 

@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "../utility/bam.h"
+#include "../classes/Isoforms.h"
 #include "BamRecord.h"
 
 /*  quick struct so we have something to pass down both ref name and records
@@ -12,6 +13,12 @@
 struct DataStruct {
     bam_header_t * header;
     std::vector<BAMRecord> * records;
+};
+
+struct DataStruct2 {
+	bam_header_t *header;
+	Isoforms *isoform;
+	int i;
 };
 
 #define BAM_CMATCH      0   // CIGAR character for matching

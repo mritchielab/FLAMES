@@ -115,21 +115,21 @@ get_splice_site
 std::unordered_map<std::string, std::vector<StartEndPair>>
 get_gene_flat
 (
-    std::unordered_map<std::string, std::vector<std::string>>   * gene_to_transcript,
-    std::unordered_map<std::string, std::vector<StartEndPair>>  * transcript_to_exon
+    const std::unordered_map<std::string, std::vector<std::string>>   	&gene_to_transcript,
+    const std::unordered_map<std::string, std::vector<StartEndPair>>  	&transcript_to_exon
 )
 {
     std::unordered_map<std::string, std::vector<StartEndPair>>
     gene_dict = {};
 
-    for (const auto & [gene, transcript] : (*gene_to_transcript)) {
-        gene_dict[gene] = (*transcript_to_exon)[transcript[0]];
+    for (const auto & [gene, transcript] : gene_to_transcript) {
+        gene_dict[gene] = transcript_to_exon.at(transcript[0]);
 
         if (transcript.size() > 1) {
             // for each entry in transcript
             for (auto t = transcript.begin() + 1; t != transcript.end(); ++t) {
                 // and then for each entry in the corresponding exon
-                for (auto exon = (*transcript_to_exon)[*t].begin(); exon != (*transcript_to_exon)[*t].end(); ++exon) {
+                for (auto exon = transcript_to_exon.at(*t).begin(); exon != transcript_to_exon.at(*t).end(); ++exon) {
                     bool
                     exon_found = false;
                     // and then for each entry in the gene dictionary
@@ -241,15 +241,15 @@ is_exon_similar
 std::unordered_map<std::string, std::vector<GeneBlocks>>
 get_gene_blocks
 (
-    std::unordered_map<std::string, std::vector<StartEndPair>>  * gene_dict,
-    std::unordered_map<std::string, std::vector<std::string>>   * chr_to_gene,
-    std::unordered_map<std::string, std::vector<std::string>>   * gene_to_transcript
+    const std::unordered_map<std::string, std::vector<StartEndPair>>	&gene_dict,
+    const std::unordered_map<std::string, std::vector<std::string>>   	&chr_to_gene,
+    const std::unordered_map<std::string, std::vector<std::string>>   	&gene_to_transcript
 )
 {
     std::unordered_map<std::string, std::vector<GeneBlocks>>
     chr_to_blocks = {};
 
-    for (const auto & [chr, genes] : (*chr_to_gene)) {
+    for (const auto & [chr, genes] : chr_to_gene) {
         chr_to_blocks[chr] = {};
 
         struct GeneListEntry {
@@ -264,9 +264,9 @@ get_gene_blocks
         gene_list;
         for (const auto & gene : genes) {
             gene_list.push_back({
-                (*gene_dict)[gene].front().start, 
-                (*gene_dict)[gene].back().end, 
-                (*gene_to_transcript)[gene], 
+                gene_dict.at(gene).front().start, 
+                gene_dict.at(gene).back().end, 
+                gene_to_transcript.at(gene), 
                 gene
             });
         }

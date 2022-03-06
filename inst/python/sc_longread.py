@@ -767,7 +767,7 @@ class Isoforms(object):
                 if self.strand_specific==0:
                     tmp_std = self.strand_cnt[one_exon]
                 else:
-                    tmp_std = 1 if transcript_dict[tr].strand=="+" else -1
+                    tmp_std = 1 if transcript_dict[tr][0].strand=="+" else -1
                 if len(transcript_to_junctions[tr]["junctions"])==0 and (tmp_std == self.strand_cnt[one_exon]):
                     if abs(one_exon[0]-transcript_to_junctions[tr]["left"])<self.MAX_TS_DIST and abs(one_exon[1]-transcript_to_junctions[tr]["right"])<self.MAX_TS_DIST:
                         known_exons = (transcript_to_junctions[tr]["left"], transcript_to_junctions[tr]["right"])

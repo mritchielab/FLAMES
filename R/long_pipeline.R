@@ -43,7 +43,9 @@ generic_long_pipeline_cpp <-
              min_tr_coverage,
              min_read_coverage) {
         cat("Running FLAMES pipeline...\n")
-        config <- parse_json_config_cpp(config_file)
+        # this needs to take into account the optional arguments if config_file is null,
+		# and should generate a new config file if it is null
+		config <- parse_json_config_cpp(config_file)
 
         using_bam <- FALSE
         if (!is.null(in_bam)) {
@@ -53,28 +55,19 @@ generic_long_pipeline_cpp <-
 
         # setup of internal arguments which hold output files and intermediate files
         isoform_gff3 <- paste(outdir, "isoform_annotated.gff3", sep = "/")
-        isoform_gff3_f <- paste(outdir, "isoform_annotated.filtered.gff3",
-            sep =
-                "/"
-        )
+        isoform_gff3_f <- paste(outdir, "isoform_annotated.filtered.gff3", sep = "/")
         FSM_anno_out <- paste(outdir, "isoform_FSM_annotation.csv", sep = "/")
         raw_splice_isoform <- paste(outdir, "splice_raw.gff3", sep = "/")
         tss_tes_stat <- paste(outdir, "tss_tes.bedgraph", sep = "/")
         transcript_fa <- paste(outdir, "transcript_assembly.fa", sep = "/")
-        transcript_fa_idx <- paste(outdir, "transcript_assembly.fa.fai",
-            sep =
-                "/"
-        )
+        transcript_fa_idx <- paste(outdir, "transcript_assembly.fa.fai", sep = "/")
         tmp_bam <- paste(outdir, "tmp_align.bam", sep = "/")
         tmp_bed <- paste(outdir, "tmp_splice_anno.bed12", sep = "/")
         tmp_sam <- paste(outdir, "tmp_align.sam", sep = "/")
         genome_bam <- paste(outdir, "align2genome.bam", sep = "/")
         realign_bam <- paste(outdir, "realign2transcript.bam", sep = "/")
         tr_cnt_csv <- paste(outdir, "transcript_count.csv.gz", sep = "/")
-        tr_badcov_cnt_csv <- paste(outdir, "transcript_count.bad_coverage.csv.gz",
-            sep =
-                "/"
-        )
+        tr_badcov_cnt_csv <- paste(outdir, "transcript_count.bad_coverage.csv.gz", sep = "/")
 
         cat("#### Input parameters:\n")
         print_config_cpp(config)
@@ -126,20 +119,19 @@ generic_long_pipeline_cpp <-
         cat("genome_fa:",genome_fa,"\n")
         cat("transcript_fa:",transcript_fa,"\n")
         cat("downsample_ratio:",downsample_ratio,"\n")
-        raw <- "nothing"
-        cat("raw:",raw,"\n")
-        isoform_objects <-
-            find_isoform_cpp(
-                annot,
-                genome_bam,
-                isoform_gff3,
-                tss_tes_stat,
-                genome_fa,
-                transcript_fa,
-                downsample_ratio,
-                config,
-                raw
-            )
+        cat("raw:",raw_splice_isoform,"\n")
+        isoform_objects <- find_isoform_cpp(
+			annot,
+			genome_bam,
+			isoform_gff3,
+			tss_tes_stat,
+			genome_fa,
+			transcript_fa,
+			downsample_ratio,
+			config,
+			ifelse(config$global_parameters$generate_raw_isoform, raw_splice_isoform, "")
+		)
+		
         Rsamtools::indexFa(transcript_fa) # index the output fa file
 
         # realign to transcript

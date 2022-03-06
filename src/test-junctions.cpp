@@ -1,7 +1,3 @@
-#ifndef TEST_JUNCTIONS
-#define TEST_JUNCTIONS
-
-
 #include <vector>
 #include <string>
 #include <unordered_map>
@@ -139,7 +135,7 @@ context("Junctions functions") {
 			{"SIRV3", {"SIRV310", "SIRV311", "SIRV308", "SIRV309", "SIRV304", "SIRV305", "SIRV306", "SIRV307", "SIRV301", "SIRV302", "SIRV303"}},
 			{"SIRV2", {"SIRV205", "SIRV204", "SIRV206", "SIRV201", "SIRV203", "SIRV202"}}
 		};
-		std::unordered_map<std::string, std::vector<GeneBlocks>> chr_to_blocks = get_gene_blocks(&gene_dict, &chr_to_gene, &gene_to_transcript);
+		std::unordered_map<std::string, std::vector<GeneBlocks>> chr_to_blocks = get_gene_blocks(gene_dict, chr_to_gene, gene_to_transcript);
 
 		// For these tests, we will only test SIRV5, SIRV3 and SIRV6
 		GeneBlocks 
@@ -250,7 +246,7 @@ context("Junctions functions") {
 			{"SIRV201", {{1000, 1661}, {1741, 1853}, {1973, 2064}, {2674, 2802}, {2881, 3010}, {3105, 3374}, {3665, 3825}, {3966, 4094}, {4338, 4479}, {4687, 4800}, {5788, 5907}}}
 		};
 
-		std::unordered_map<std::string, std::vector<StartEndPair>> gene_flat = get_gene_flat(&gene_to_transcript, &transcript_to_exon);
+		std::unordered_map<std::string, std::vector<StartEndPair>> gene_flat = get_gene_flat(gene_to_transcript, transcript_to_exon);
 
 		// result
 		std::unordered_map<std::string, std::vector<StartEndPair>> flat_res = {
@@ -437,9 +433,4 @@ context("Junctions functions") {
 		expect_true(compare_unordered(sites2.left, real_sites2.left));
 		expect_true(compare_unordered(sites2.right, real_sites2.right));
 	}
-}
-
-// [[Rcpp::export]]
-void what() {
-  return;
 }

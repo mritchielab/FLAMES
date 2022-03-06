@@ -1,3 +1,6 @@
+#ifndef UTILITY_H
+#define UTILITY_H
+
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -6,7 +9,6 @@
 
 #include "../classes/GeneAnnoParser/GFFRecord.h"
 #include "../classes/Pos.h"
-
 
 namespace ranges
 {
@@ -37,6 +39,28 @@ namespace ranges
 			sum += f(it);
 		}
 		return sum;
+	}
+
+	template <typename T>
+	std::vector<T> filter(const std::vector<T> &vec, std::function<bool(T)> f) {
+		std::vector<T> out;
+		std::copy_if(vec.begin(), vec.end(), std::back_inserter(out), f);
+		return out;
+	}
+
+	template <typename T>
+	void filter(const std::vector<T> &vec, std::vector<T> &out, std::function<bool(T)> f) {
+		std::copy_if(vec.begin(), vec.end(), std::back_inserter(out), f);
+	}
+	
+	template <typename T>
+	T slice(const T &vec, int start, int end) {
+		return {std::next(vec.begin(), start), std::next(vec.begin(), end)};
+	}
+
+	template <typename T, typename U>
+	int count(const T &vec, const U &val) {
+		return std::count(vec.begin(), vec.end(), val);
 	}
 
 	// template <typename T, typename U>
@@ -144,3 +168,4 @@ static inline sortNumberOccurances(const std::unordered_map<T, int> &counts) {
 	return out;	
 }
 
+#endif // UTILITY_H

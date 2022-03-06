@@ -33,6 +33,10 @@ struct CigarPair
 	inline bool operator==(const CigarPair &a) const {
 		return (a.op == op) && (a.len == len);
 	}
+
+	inline bool operator!=(const CigarPair &a) const {
+		return !(this->operator==(a));
+	}
 };
 
 std::vector<CigarPair>

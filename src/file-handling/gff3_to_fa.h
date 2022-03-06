@@ -16,11 +16,10 @@ get_transcript_seq
 (
     std::string fa_file,
     std::string fa_out_f,
-    std::unordered_map<std::string, std::vector<std::string>>   * chr_to_gene,
-    std::unordered_map<std::string, Pos>                        * transcript_dict,
-    std::unordered_map<std::string, std::vector<std::string>>   * gene_to_transcript,
-    std::unordered_map<std::string, std::vector<StartEndPair>>  * transcript_to_exon,
-
+    const std::unordered_map<std::string, std::vector<std::string>>   &chr_to_gene,
+    const std::unordered_map<std::string, Pos>                        &transcript_dict,
+    const std::unordered_map<std::string, std::vector<std::string>>   &gene_to_transcript,
+    const std::unordered_map<std::string, std::vector<StartEndPair>>  &transcript_to_exon,
     ReferenceDict * ref_dict = nullptr
 );
 
@@ -29,9 +28,10 @@ std::unordered_map<std::string, std::string>
 get_fa_simple(std::string filename);
 
 void
-write_fa(std::ofstream* fa_out, std::string na, std::string seq, int wrap_len=50);
+write_fa(std::ofstream &fa_out, std::string na, std::string seq, int wrap_len=50);
 
+// reverse complement
 std::string
-r_c(const std::string* seq);
+r_c(const std::string &seq);
 
 #endif // GFF3_TO_FA_H

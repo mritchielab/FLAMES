@@ -32,11 +32,13 @@ class Isoforms {
 		void update_one(Junctions junctions, std::vector<int> key, bool strand);
 		void update_one(Junctions junctions, StartEndPair key, bool strand);
 
+		void update_new_isoform(const std::vector<int> &, long, const std::string &, const std::string &);
+
 		std::vector<int> insert_dist(std::vector<int>, std::vector<int>);
 
 		static std::vector<std::pair<int, int>> filter_site(const std::unordered_map<int, int> &, float);
 
-		static void output_to_bedgraph(std::ofstream &, std::string, int, int, int);
+		static inline void output_to_bedgraph(std::ofstream &, std::string, int, int, int);
 
 		std::vector<int> countLR(std::ofstream &, const std::unordered_map<int, int> &, std::vector<int>, float);
   	public:
@@ -93,10 +95,10 @@ class Isoforms {
 		//unused
 		// std::pair<std::vector<int>, std::unordered_map<int, int>>
 		// group_sites(std::vector<int> l, int smooth_window, int min_threshold);
-
+ 
 		void match_known_annotation (
 			const std::unordered_map<std::string, Junctions> 					& transcript_to_junctions,
-			const std::unordered_map<std::string, Pos> 						& transcript_dict,
+			const std::unordered_map<std::string, Pos> 							& transcript_dict,
 			const std::unordered_map<std::string, std::vector<StartEndPair>> 	& gene_dict,
 			GeneBlocks one_block,
 			std::unordered_map<std::string, std::string> fa_dict

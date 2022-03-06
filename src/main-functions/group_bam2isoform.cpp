@@ -23,14 +23,26 @@
 static int
 fetch_function(const bam1_t *b, void *data)
 {
-    DataStruct * data_struct = (DataStruct*)data;
+	DataStruct2 *data_struct = (DataStruct2 *)data;
+	BAMRecord rec = read_record(b, data_struct->header);
 
-    std::vector<BAMRecord> * records = data_struct->records;
-    bam_header_t * header = data_struct->header;
-
-    BAMRecord rec = read_record(b, header);
-    records->push_back(rec);
+	auto cigar = smooth_cigar(rec.cigar, 20);
+	rec.cigar = cigar;
+	std::string cigar_string = generate_cigar(cigar);
+	std::vector<StartEndPair> tmp_blocks = get_blocks(rec);
+	Junctions junctions = blocks_to_junctions(tmp_blocks);
+	
+	data_struct->isoform->add_isoform(junctions, rec.flag.read_reverse_strand);
+	data_struct->i = data_struct->i + 1;
 	return 0;
+    // DataStruct * data_struct = (DataStruct*)data;
+
+    // std::vector<BAMRecord> * records = data_struct->records;
+    // bam_header_t * header = data_struct->header;
+
+    // BAMRecord rec = read_record(b, header);
+    // records->push_back(rec);
+	// return 0;
 }
 
 // void
@@ -53,8 +65,7 @@ fetch_function(const bam1_t *b, void *data)
 // }
 
 std::vector<StartEndPair>
-get_blocks(const BAMRecord &record)
-{
+get_blocks(const BAMRecord &record) {
     std::vector<StartEndPair>
     blocks = {};
     int pos = record.reference_start;
@@ -78,9 +89,7 @@ get_blocks(const BAMRecord &record)
 }
 
 void
-minimal_group_bam2isoform
-(
-
+minimal_group_bam2isoform(
     std::string bam_in, 
     std::string out_gff3, 
     std::string out_stat, 
@@ -90,8 +99,7 @@ minimal_group_bam2isoform
     std::unordered_map<std::string, Pos>                        * transcript_dict,
     std::string fa_f,
     IsoformParameters isoform_parameters,
-    std::string raw_gff3
-)
+    std::string raw_gff3)
 {
     // read a bamfile
     bamFile bam = bam_open(bam_in.c_str(), "r"); // bam.h
@@ -161,8 +169,6 @@ group_bam2isoform (
     iso_annotated.open(out_gff3);
     iso_annotated << "##gff-version 3\n";
 
-    std::ofstream also_out ("also_out_cpp.gff");
-    also_out << "##gff-version 3\n";
     // add to splice_raw if we are planning on outputting raw_gff3
     std::ofstream splice_raw;
     if (raw_gff3 != "") {
@@ -170,57 +176,52 @@ group_bam2isoform (
         splice_raw << "##gff-version 3\n";
     }
 
-    std::ofstream 
-    tss_tes_stat (out_stat);
-
-    // std::unordered_map<IsoformKey, Isoforms*>
-    // isoform_dict = {};
+    std::ofstream tss_tes_stat (out_stat);
 
     // import all the values of fa_f
-    std::unordered_map<std::string, std::string>
-    fa_dict;
+    std::unordered_map<std::string, std::string> fa_dict;
     for (const auto & c : get_fa(fa_f)) {
         fa_dict[c.first] = c.second;
     }
 
-    std::vector<BAMRecord>
-    records = {};
-    DataStruct data = {header, &records};
-
+	int outer = 0;
     for (const auto & [chr, blocks] : chr_to_blocks) {
+		outer++;
         int tid = bam_get_tid(header, chr.c_str());
 
-        int ith = 0;
+		int inner = 0;
         for (const auto & block : blocks) {
-            ith++;
-            records = {};
-            // extract this from the bam file
+			inner++;
+			Isoforms tmp_isoform(chr, isoform_parameters);
+            // std::vector<BAMRecord> records = {};
+    		// DataStruct data = {header, &records};
+			DataStruct2 data = {header, &tmp_isoform, 0};
 
             // auto it = bam_fetch(bam, bam_index, tid, block.start, block.end, &data, &fetch_function);
             bam_fetch(bam, bam_index, tid, block.start, block.end, &data, &fetch_function);
 			auto TSS_TES_site = get_TSS_TES_site(transcript_to_junctions, block.transcript_list);
-            Isoforms tmp_isoform(chr, isoform_parameters);
+            // Isoforms tmp_isoform(chr, isoform_parameters);
             
             // add all the records in the bamfile to the Isoform object
-            int recnum = 0;
-            for (BAMRecord & rec : records) {
-
-                recnum++;
+            // int recnum = 0;
+            // for (BAMRecord & rec : records) {
+            //     recnum++;
 				
-                auto cigar = smooth_cigar(rec.cigar, 20);
-                rec.cigar = cigar;
-                std::string
-                cigar_string = generate_cigar(cigar);
-                std::vector<StartEndPair>
-                tmp_blocks = get_blocks(rec);
-                Junctions
-                junctions = blocks_to_junctions(tmp_blocks);
+            //     auto cigar = smooth_cigar(rec.cigar, 20);
+            //     rec.cigar = cigar;
+            //     std::string cigar_string = generate_cigar(cigar);
+            //     std::vector<StartEndPair> tmp_blocks = get_blocks(rec);
+            //     Junctions junctions = blocks_to_junctions(tmp_blocks);
                 
-                tmp_isoform.add_isoform(junctions, rec.flag.read_reverse_strand);
-            }
+            //     tmp_isoform.add_isoform(junctions, rec.flag.read_reverse_strand);
+            // }
+
+			Rcpp::Rcout << "chr: " << chr << ". chr_to_blocks: " << outer << ". blocks: " << inner << ". recs: " << data.i << "\n";
+
 
             // then process the isoform
             if (tmp_isoform.size() > 0) {
+				Rcpp::Rcout << "\tlen tmp_isform: " << tmp_isoform.size() << "\n";
                 tmp_isoform.update_all_splice();
                 tmp_isoform.filter_TSS_TES(tss_tes_stat, TSS_TES_site, (float)0.1);
                 tmp_isoform.match_known_annotation(
@@ -230,15 +231,14 @@ group_bam2isoform (
                     block,
                     fa_dict
                 );
-                // isoform_dict[{chr, block.start, block.end}] = Isoforms(chr, isoform_parameters);
-                // isoform_dict[{chr, block.start, block.end}] = tmp_isoform;
-                
+				
                 if (raw_gff3 != "") {
                     // todo - i haven't written the Isoforms function to do this yet
                     // splice_raw.write(tmp_isoform()); 
                 }
                 iso_annotated << tmp_isoform.isoform_to_gff3(isoform_parameters.MIN_CNT_PCT);
-            }
+				Rcpp::Rcout << "\tlen tmp_isoform: " << tmp_isoform.size() << "\n\tmincntpct: " << isoform_parameters.MIN_CNT_PCT << "\n";
+			}
         }
     }
 
@@ -246,13 +246,7 @@ group_bam2isoform (
     bam_close(bam);
     tss_tes_stat.close();
     iso_annotated.close();
-    also_out.close();
     if (raw_gff3 != "") {
         splice_raw.close();
-    }
-
-    // delete everything from isoform_dict that's still in memory
-    for (const auto & [key, isoform] : isoform_dict) {
-        delete isoform;
     }
 }
