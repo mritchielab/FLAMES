@@ -46,7 +46,7 @@ generic_long_pipeline <-
 
         using_bam <- FALSE
         if (!is.null(in_bam)) {
-            if (!file.exists(paste0(in_bam, ".bai"))) {
+            if (!file.exists(paste0(in_bam, ".bai")) && !file.exists(paste0(in_bam, ".csi"))) {
                 stop("Please make sure the BAM file is indexed")
             }
             using_bam <- TRUE

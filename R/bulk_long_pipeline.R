@@ -38,6 +38,7 @@ bulk_long_pipeline <-
     function(annot,
              fastq,
              in_bam = NULL,
+             merged_fq = NULL,
              outdir,
              genome_fa,
              minimap2_dir = "",
@@ -65,11 +66,16 @@ bulk_long_pipeline <-
              min_tr_coverage = 0.75,
              min_read_coverage = 0.75) {
         # filenames for internal steps
-        infq <- paste(outdir, "merged.fastq.gz", sep = "/")
+        if (is.null(merged_fq) || !file.exists(merged_fq)) {
+            merged_fq <- paste(outdir, "merged.fastq.gz", sep = "/")
+        } else {
+            fastq <- merged_fq
+        }
         # bc_file <- paste(outdir, "pseudo_barcode_annotation.csv", sep="/")
 
 
-        check_return <- check_arguments(annot,
+        check_return <- check_arguments(
+            annot,
             fastq,
             in_bam,
             outdir,
@@ -97,9 +103,10 @@ bulk_long_pipeline <-
             no_flank,
             use_annotation,
             min_tr_coverage,
-            min_read_coverage)
+            min_read_coverage
+        )
 
-		config_file <- check_return$config
+        config_file <- check_return$config
 
         # create output directory if one doesn't exist
         if (!dir.exists(outdir)) {
@@ -108,24 +115,20 @@ bulk_long_pipeline <-
             print(outdir)
         }
 
-        if (is.null(in_bam)) {
-            # use existing merge fastq if already exists
-            if (file.exists(infq)) {
-                cat(infq, " already exists, no need to merge fastq files\n")
-            } else {
-                # this preprocessing needs only be done if we are using a fastq_dir, instead
-                # of a bam file for reads,
-                cat("Preprocessing bulk fastqs...\n")
-                # run the merge_bulk_fastq function as preprocessing
-                merge_bulk_fastq(fastq, infq)
-            }
+        if (file.exists(merged_fq)) {
+            cat(merged_fq, " already exists, no need to merge fastq files\n")
         } else {
-            infq <- NULL
+            # this preprocessing needs only be done if we are using a fastq_dir, instead
+            # of a bam file for reads,
+            cat("Preprocessing bulk fastqs...\n")
+            # run the merge_bulk_fastq function as preprocessing
+            merge_bulk_fastq(fastq, merged_fq)
         }
+
         out_files <-
             generic_long_pipeline(
                 annot,
-                infq,
+                merged_fq,
                 in_bam,
                 outdir,
                 genome_fa,
@@ -164,7 +167,7 @@ bulk_long_pipeline <-
 generate_bulk_summarized <- function(out_files) {
     # change this to use out_files
     counts <- read.csv(out_files$counts)
-    annot <- read.csv(out_files$annot, sep="\t", comment.char="#")
+    annot <- read.csv(out_files$annot, sep = "\t", comment.char = "#")
     colnames(annot) <-
         c(
             "SequenceID",
