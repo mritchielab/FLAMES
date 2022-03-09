@@ -98,7 +98,7 @@
 #' @importFrom dplyr group_by summarise_at slice_max filter
 #' @importFrom magrittr "%>%"
 #' @importFrom SingleCellExperiment SingleCellExperiment reducedDimNames logcounts
-#' @importFrom SummarizedExperiment rowData colData rowData<- colData<-
+#' @importFrom SummarizedExperiment rowData colData rowData<- colData<- rowRanges rowRanges<-
 #' @importFrom BiocGenerics cbind colnames rownames start end
 #' @importFrom utils read.csv read.table
 #'
@@ -255,8 +255,31 @@ generate_sc_singlecell <- function(out_files) {
         assays = list(counts = as.matrix(mer_tmp[, -1])),
         metadata = mdata
     )
+
+    isoform_gff <- rtracklayer::import.gff3(out_files$isoform_annotated)
+    isoform_gff$Parent <- as.character(isoform_gff$Parent)
+    isoform_gff$transcript_id <- unlist(lapply(strsplit(isoform_gff$Parent, split = ":"), function(x) {
+        x[2]
+    }))
+    isoform_gff <- S4Vectors::split(isoform_gff, isoform_gff$transcript_id)
+
     rownames(tr_sce) <- mer_tmp$FSM_match
     rowData(tr_sce) <- DataFrame(tr_anno)
+    rowRanges(tr_sce) <- isoform_gff[rownames(tr_sce)]
     # return the created singlecellexperiment
     tr_sce
+}
+
+#' @export
+create_sce_from_dir <- function(outdir) {
+    out_files <- list(
+        counts = file.path(outdir, "transcript_count.csv.gz"),
+        isoform_annotated = file.path(outdir, "isoform_annotated.filtered.gff3"),
+        outdir = outdir,
+        transcript_assembly = file.path(outdir, "transcript_assembly.fa"),
+        align_bam = file.path(outdir, "align2genome.bam"),
+        realign2transcript = file.path(outdir, "realign2transcript.bam"),
+        tss_tes = file.path(outdir, "tss_tes.bedgraph")
+    )
+    return(generate_sc_singlecell(out_files))
 }
