@@ -4,6 +4,26 @@
 
 CXX_STD = CXX17
 
+## The subdirectory paths which contain C files
+CFILES = $(wildcard \
+    *.c \
+    **/*.c \
+    **/*/*.c \
+)
+
+## The subdirectory paths which contain C++ files
+CPPFILES = $(wildcard \
+    *.cpp \
+    **/*.cpp \
+    **/*/*.cpp \
+)
+
+## Combine the two sets of files
+FILES = $(CFILES) $(CPPFILES)
+
+SOURCES = $(FILES)
+OBJECTS = $(CPPFILES:.cpp=.o) $(CFILES:.c=.o)
+
 RHTSLIB_LIBS=$(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript" -e \
     'Rhtslib::pkgconfig("PKG_LIBS")')
 RHTSLIB_CPPFLAGS=$(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript" -e \

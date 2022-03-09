@@ -16,20 +16,11 @@
 #' @return returns NULL
 #' @import zlibbioc
 #' @useDynLib FLAMES, .registration=TRUE
-match_cell_barcode <- function(fastq_dir, stats_file, out_fastq, ref_csv, MAX_DIST, UMI_LEN = 10L) {
-    invisible(.Call(`_FLAMES_match_cell_barcode`, fastq_dir, stats_file, out_fastq, ref_csv, MAX_DIST, UMI_LEN))
+#' @export
+match_cell_barcode_cpp <- function(fastq_dir, stats_file, out_fastq, ref_csv, MAX_DIST, UMI_LEN = 10L) {
+    invisible(.Call(`_FLAMES_match_cell_barcode_cpp`, fastq_dir, stats_file, out_fastq, ref_csv, MAX_DIST, UMI_LEN))
 }
 
-#' Merge Bulk Fastq Files
-#' 
-#' @description Merge all fastq files into a single fastq
-#' This function also inserts the original fastq file name into the header line of each read.
-#'
-#' @param fastq_files a string vector of the fastq file paths to merge
-#' @param out_fastq the fastq file path of the output file
-#' @return returns NULL
-#' @useDynLib FLAMES, .registration=TRUE
-#' @import zlibbioc
 merge_bulk_fastq_cpp <- function(fastq_files, out_fastq) {
     invisible(.Call(`_FLAMES_merge_bulk_fastq_cpp`, fastq_files, out_fastq))
 }

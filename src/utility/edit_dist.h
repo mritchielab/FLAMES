@@ -1,9 +1,8 @@
+#ifndef EDIT_DISTANCE_H
+#define EDIT_DISTANCE_H
+
 #include <string>
-#include <vector>
-#include <map>
-#include <bitset>
-#include <algorithm>
-#include <stdlib.h>
+
 
 namespace scutil{
     int hamming_distance(const std::string &A, const std::string &B);
@@ -12,3 +11,4 @@ namespace scutil{
 
 }
 
+#endif

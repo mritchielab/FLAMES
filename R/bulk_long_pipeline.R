@@ -38,7 +38,6 @@ bulk_long_pipeline <-
     function(annot,
              fastq,
              in_bam = NULL,
-             merged_fq = NULL,
              outdir,
              genome_fa,
              minimap2_dir = "",
@@ -66,11 +65,7 @@ bulk_long_pipeline <-
              min_tr_coverage = 0.75,
              min_read_coverage = 0.75) {
         # filenames for internal steps
-        if (is.null(merged_fq) || !file.exists(merged_fq)) {
-            merged_fq <- paste(outdir, "merged.fastq.gz", sep = "/")
-        } else {
-            fastq <- merged_fq
-        }
+        merged_fq <- paste(outdir, "merged.fastq.gz", sep = "/")
         # bc_file <- paste(outdir, "pseudo_barcode_annotation.csv", sep="/")
 
 

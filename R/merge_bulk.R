@@ -39,10 +39,14 @@ merge_bulk_fastq <- function(fastq_dir, out_fastq) {
     # }, fq_dir = fastq_dir, out_fq = out_fastq)
 
     # out_fastq
+    if (utils::file_test("-f", fastq_dir)) {
+        merge_bulk_fastq_cpp(fastq_files, out_fastq)
+        return(out_fastq)
+    }
     fastq_files <- paste(fastq_dir, list.files(fastq_dir), sep = "/")
+    fastq_files <- fastq_files[(endsWith(fastq_files, ".fq") | endsWith(fastq_files, ".fastq")) & utils::file_test("-f", fastq_files)]
     merge_bulk_fastq_cpp(fastq_files, out_fastq)
-
-    out_fastq
+    return(out_fastq)
 }
 
 #' Merge FASTQ using python. Depreciated
