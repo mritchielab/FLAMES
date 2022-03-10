@@ -1,5 +1,7 @@
-#parse config files
+# parse config files
 import json
+import sys
+
 
 def parse_json_config(json_file):
     with open(json_file) as f:
@@ -10,38 +12,47 @@ def parse_json_config(json_file):
     assert("alignment_parameters" in decoded_dict)
     assert("global_parameters" in decoded_dict)
     assert("pipeline_parameters" in decoded_dict)
-    assert(all(argument in decoded_dict["isoform_parameters"] for argument in ["MAX_DIST","MAX_TS_DIST","MAX_SPLICE_MATCH_DIST","Max_site_per_splice","Min_sup_cnt","Min_cnt_pct","Min_sup_pct","strand_specific","remove_incomp_reads"]))
-    assert(all(argument in decoded_dict["alignment_parameters"] for argument in ["use_junctions"]))
-    assert(all(argument in decoded_dict["global_parameters"] for argument in ["generate_raw_isoform"]))
-    assert(all(argument in decoded_dict["pipeline_parameters"] for argument in ["do_genome_alignment","do_isoform_identification","do_read_realignment","do_transcript_quantification"]))
-    assert(all(argument in decoded_dict["transcript_counting"] for argument in ["min_tr_coverage","min_read_coverage"]))
+    assert(all(argument in decoded_dict["isoform_parameters"] for argument in ["MAX_DIST", "MAX_TS_DIST", "MAX_SPLICE_MATCH_DIST",
+           "Max_site_per_splice", "Min_sup_cnt", "Min_cnt_pct", "Min_sup_pct", "strand_specific", "remove_incomp_reads"]))
+    assert(all(argument in decoded_dict["alignment_parameters"]
+           for argument in ["use_junctions"]))
+    assert(all(argument in decoded_dict["global_parameters"]
+           for argument in ["generate_raw_isoform"]))
+    assert(all(argument in decoded_dict["pipeline_parameters"] for argument in [
+           "do_genome_alignment", "do_isoform_identification", "do_read_realignment", "do_transcript_quantification"]))
+    assert(all(argument in decoded_dict["transcript_counting"] for argument in [
+           "min_tr_coverage", "min_read_coverage"]))
     # check all arguments within range
-    assert(decoded_dict["isoform_parameters"]["MAX_DIST"]>0)
-    assert(decoded_dict["isoform_parameters"]["MAX_TS_DIST"]>0)
-    assert(decoded_dict["isoform_parameters"]["MAX_SPLICE_MATCH_DIST"]>0)
-    assert(decoded_dict["isoform_parameters"]["Max_site_per_splice"]>0)
-    assert(decoded_dict["isoform_parameters"]["Min_sup_cnt"]>0)
-    assert(1>decoded_dict["isoform_parameters"]["Min_sup_pct"]>0)
-    assert(decoded_dict["isoform_parameters"]["strand_specific"] in [-1,0,1])
-    assert(decoded_dict["isoform_parameters"]["remove_incomp_reads"] >=0)
+    assert(decoded_dict["isoform_parameters"]["MAX_DIST"] > 0)
+    assert(decoded_dict["isoform_parameters"]["MAX_TS_DIST"] > 0)
+    assert(decoded_dict["isoform_parameters"]["MAX_SPLICE_MATCH_DIST"] > 0)
+    assert(decoded_dict["isoform_parameters"]["Max_site_per_splice"] > 0)
+    assert(decoded_dict["isoform_parameters"]["Min_sup_cnt"] > 0)
+    assert(1 > decoded_dict["isoform_parameters"]["Min_sup_pct"] > 0)
+    assert(decoded_dict["isoform_parameters"]["strand_specific"] in [-1, 0, 1])
+    assert(decoded_dict["isoform_parameters"]["remove_incomp_reads"] >= 0)
 
     assert(type(decoded_dict["alignment_parameters"]["use_junctions"]) == bool)
 
-    assert(type(decoded_dict["global_parameters"]["generate_raw_isoform"]) == bool)
+    assert(type(decoded_dict["global_parameters"]
+           ["generate_raw_isoform"]) == bool)
     assert(type(decoded_dict["global_parameters"]["has_UMI"]) == bool)
     return decoded_dict
 
 
 def print_config(decoded_dict):
-    print("\tParameters in configuration file:")
+    print("\tParameters in configuration file:", flush=True)
     for cat1 in decoded_dict:
         if type(decoded_dict[cat1]) == dict:
-            print("\t" + str(cat1))
+            print(("\t" + str(cat1)), flush=True)
             for cat2 in decoded_dict[cat1]:
                 #print("\t",cat2,": ",decoded_dict[cat1][cat2],sep="")
-                print "\t\t"+str(cat2),":",decoded_dict[cat1][cat2]
+                print("\t\t"+str(cat2), ":",
+                      decoded_dict[cat1][cat2], flush=True)
         else:
-            print "\t"+str(cat1),":",decoded_dict[cat1]
+            print("\t"+str(cat1), ":", decoded_dict[cat1], flush=True)
+    sys.stdout.flush()
+
 
 def write_config(config_dict, config_file):
     with open(config_file, 'w') as outfile:
