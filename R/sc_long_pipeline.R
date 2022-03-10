@@ -265,7 +265,7 @@ generate_sc_singlecell <- function(out_files) {
 
     rownames(tr_sce) <- mer_tmp$FSM_match
     rowData(tr_sce) <- DataFrame(tr_anno)
-    rowRanges(tr_sce) <- isoform_gff[rownames(tr_sce)]
+    rowRanges(tr_sce) <- isoform_gff[rowData(tr_sce)$transcript_id]
     # return the created singlecellexperiment
     tr_sce
 }
