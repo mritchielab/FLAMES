@@ -278,7 +278,8 @@ generate_sc_sce <- function(out_files, load_genome_anno = NULL, create_function)
 
     if (!is.null(load_genome_anno)) {
         genome_anno <- S4Vectors::split(load_genome_anno, load_genome_anno$transcript_id)
-        rowRanges(tr_sce[missing_tr, ]) <- genome_anno[tr_anno[missing_tr, "transcript_id"]]
+        add_from_genome_anno <- (missing_tr & (tr_anno$transcript_id %in% names(genome_anno)))
+        rowRanges(tr_sce[add_from_genome_anno, ]) <- genome_anno[tr_anno[add_from_genome_anno, "transcript_id"]]
         if (!all((!missing_tr) | tr_anno[, "transcript_id"] %in% names(genome_anno))) {
             message("Warning: some transcript_id could not be found in annotation file\n")
         }
@@ -306,7 +307,7 @@ generate_bulk_summarized <- function(out_files, load_genome_anno = NULL) {
 create_sce_from_dir <- function(outdir, annot = NULL) {
     out_files <- list(
         counts = file.path(outdir, "transcript_count.csv.gz"),
-        isoform_annotated = file.path(outdir, "isoform_annotated.filtered.gff3"),
+        isoform_annotated = file.path(outdir, "isoform_annotated.gff3"),
         outdir = outdir,
         transcript_assembly = file.path(outdir, "transcript_assembly.fa"),
         align_bam = file.path(outdir, "align2genome.bam"),
@@ -326,7 +327,7 @@ create_sce_from_dir <- function(outdir, annot = NULL) {
 create_se_from_dir <- function(outdir) {
     out_files <- list(
         counts = file.path(outdir, "transcript_count.csv.gz"),
-        isoform_annotated = file.path(outdir, "isoform_annotated.filtered.gff3"),
+        isoform_annotated = file.path(outdir, "isoform_annotated.gff3"),
         outdir = outdir,
         transcript_assembly = file.path(outdir, "transcript_assembly.fa"),
         align_bam = file.path(outdir, "align2genome.bam"),
