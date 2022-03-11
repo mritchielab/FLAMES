@@ -225,22 +225,33 @@ sc_long_pipeline <-
                 min_read_coverage
             )
 
-        sce <- generate_sc_singlecell(out_files)
+        load_genome_anno <- rtracklayer::import(annot, feature.type = c("exon", "utr"))
+        sce <- generate_sc_singlecell(out_files, load_genome_anno = load_genome_anno)
 
         sce
     }
 
-generate_sc_singlecell <- function(out_files) {
+generate_sc_sce <- function(out_files, load_genome_anno = NULL, create_function) {
     # this method requires testing using single cell data
     mdata <- list(
         "OutputFiles" = out_files
     )
 
     transcript_count <- read.csv(out_files$counts, stringsAsFactors = FALSE)
-    isoform_FSM_annotation <- read.csv(file.path(out_files$outdir, "isoform_FSM_annotation.csv"), stringsAsFactors = FALSE)
+    if ("fsm_annotation" %in% names(out_files)) {
+        isoform_FSM_annotation <- read.csv(out_files$fsm_annotation, stringsAsFactors = FALSE)
+    } else {
+        isoform_FSM_annotation <- read.csv(file.path(out_files$outdir, "isoform_FSM_annotation.csv"), stringsAsFactors = FALSE)
+    }
 
-    transcript_count <- transcript_count[match(isoform_FSM_annotation$transcript_id, transcript_count$transcript_id), ]
+    isoform_FSM_annotation <- isoform_FSM_annotation[match(transcript_count$transcript_id, isoform_FSM_annotation$transcript_id), ]
+    # transcript_count <- transcript_count[match(isoform_FSM_annotation$transcript_id, transcript_count$transcript_id), ]
     transcript_count$FSM_match <- isoform_FSM_annotation$FSM_match
+    if (!all(transcript_count$transcript_id %in% isoform_FSM_annotation$transcript_id)) {
+        message("Some transcript_ids are not recorded in isoform_FSM_annotation.csv")
+        transcript_count$FSM_match[is.na(transcript_count$FSM_match)] <- transcript_count$transcript_id[is.na(transcript_count$FSM_match)]
+    }
+
     cell_bcs <- colnames(transcript_count)[!(colnames(transcript_count) %in% c("transcript_id", "gene_id", "FSM_match"))]
     tr_anno <- transcript_count[, c("transcript_id", "gene_id", "FSM_match")]
 
@@ -251,10 +262,11 @@ generate_sc_singlecell <- function(out_files) {
 
     # Create long read SCE
     tr_anno <- tr_anno[match(mer_tmp$FSM_match, tr_anno$FSM_match), ]
-    tr_sce <- SingleCellExperiment::SingleCellExperiment(
+    tr_sce <- create_function(
         assays = list(counts = as.matrix(mer_tmp[, -1])),
         metadata = mdata
     )
+    rownames(tr_sce) <- mer_tmp$FSM_match
 
     isoform_gff <- rtracklayer::import.gff3(out_files$isoform_annotated)
     isoform_gff$Parent <- as.character(isoform_gff$Parent)
@@ -262,16 +274,36 @@ generate_sc_singlecell <- function(out_files) {
         x[2]
     }))
     isoform_gff <- S4Vectors::split(isoform_gff, isoform_gff$transcript_id)
+    missing_tr <- !(tr_anno$transcript_id %in% names(isoform_gff))
 
-    rownames(tr_sce) <- mer_tmp$FSM_match
+    if (!is.null(load_genome_anno)) {
+        genome_anno <- S4Vectors::split(load_genome_anno, load_genome_anno$transcript_id)
+        rowRanges(tr_sce[missing_tr, ]) <- genome_anno[tr_anno[missing_tr, "transcript_id"]]
+        if (!all((!missing_tr) | tr_anno[, "transcript_id"] %in% names(genome_anno))) {
+            message("Warning: some transcript_id could not be found in annotation file\n")
+        }
+    } else if (any(missing_tr)) {
+        message("Warning: some transcript_id could not be found in annotation file\n")
+    }
+
+    rowRanges(tr_sce[!missing_tr, ]) <- isoform_gff[tr_anno[!missing_tr, "transcript_id"]]
+
+
     rowData(tr_sce) <- DataFrame(tr_anno)
-    rowRanges(tr_sce) <- isoform_gff[rowData(tr_sce)$transcript_id]
     # return the created singlecellexperiment
-    tr_sce
+    return(tr_sce)
+}
+
+generate_sc_singlecell <- function(out_files, load_genome_anno = NULL) {
+    return(generate_sc_sce(out_files = out_files, load_genome_anno = load_genome_anno, create_function = SingleCellExperiment::SingleCellExperiment))
+}
+
+generate_bulk_summarized <- function(out_files, load_genome_anno = NULL) {
+    return(generate_sc_sce(out_files = out_files, load_genome_anno = load_genome_anno, create_function = SummarizedExperiment::SummarizedExperiment))
 }
 
 #' @export
-create_sce_from_dir <- function(outdir) {
+create_sce_from_dir <- function(outdir, annot = NULL) {
     out_files <- list(
         counts = file.path(outdir, "transcript_count.csv.gz"),
         isoform_annotated = file.path(outdir, "isoform_annotated.filtered.gff3"),
@@ -281,5 +313,31 @@ create_sce_from_dir <- function(outdir) {
         realign2transcript = file.path(outdir, "realign2transcript.bam"),
         tss_tes = file.path(outdir, "tss_tes.bedgraph")
     )
-    return(generate_sc_singlecell(out_files))
+    if (!is.null(annot)) {
+        out_files[["annot"]] <- annot
+        load_genome_anno <- rtracklayer::import(annot, feature.type = c("exon", "utr"))
+        return(generate_sc_singlecell(out_files, load_genome_anno = load_genome_anno))
+    } else {
+        return(generate_sc_singlecell(out_files))
+    }
+}
+
+#' @export
+create_se_from_dir <- function(outdir) {
+    out_files <- list(
+        counts = file.path(outdir, "transcript_count.csv.gz"),
+        isoform_annotated = file.path(outdir, "isoform_annotated.filtered.gff3"),
+        outdir = outdir,
+        transcript_assembly = file.path(outdir, "transcript_assembly.fa"),
+        align_bam = file.path(outdir, "align2genome.bam"),
+        realign2transcript = file.path(outdir, "realign2transcript.bam"),
+        tss_tes = file.path(outdir, "tss_tes.bedgraph")
+    )
+    if (!is.null(annot)) {
+        out_files[["annot"]] <- annot
+        load_genome_anno <- rtracklayer::import(annot, feature.type = c("exon", "utr"))
+        return(generate_bulk_summarized(out_files, load_genome_anno = load_genome_anno))
+    } else {
+        return(generate_bulk_summarized(out_files))
+    }
 }

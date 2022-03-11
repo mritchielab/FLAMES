@@ -32,3 +32,21 @@ annotate_filter_gff <-
 
         invisible()
     }
+
+
+
+annotate_full_splice_match_all_sample <-
+    function(anno_out, isoform_gff, ref_gff) {
+        callBasilisk(flames_env, function(anno_out, isoform_gff, ref_gff) {
+            python_path <- system.file("python", package = "FLAMES")
+
+            filter <-
+                reticulate::import_from_path("filter_gff", python_path)
+
+            filter$annotate_full_splice_match_all_sample(anno_out, isoform_gff, ref_gff)
+        },
+        anno_out = anno_out, isoform_gff = isoform_gff, ref_gff = ref_gff
+        )
+
+        invisible()
+    }

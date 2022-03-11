@@ -174,3 +174,86 @@ def annotate_filter_gff(isoform_gff, ref_gff, isoform_out, anno_out, tr_cnt, min
         print(prt)
     annotate_full_splice_match(transcript_to_exon, transcript_to_exon_ref,
                                transcript_dict, transcript_dict_ref, anno_out, tr_cnt, min_sup_reads)
+
+
+def annotate_full_splice_match_all_sample(anno_out, isoform_gff, ref_gff):
+    """
+    Similar to annotate_full_splice_match(...), but write all transcripts regardless of `min_sup_reads`
+    Used in sc_long_mutisample_pipeline to create fsm annotation for all samples.
+    """
+
+    _, transcript_dict, _, transcript_to_exon = parse_gff_tree(
+        isoform_gff)
+    _, transcript_dict_ref, _, transcript_to_exon_ref = parse_gff_tree(
+        ref_gff)
+
+    splice_dict = {}
+    splice_dict_ref = {}
+    splice_gene_dict = {}
+    tr_id_list = []
+    FSM_id_list = []
+    FSM_to_reference = []
+    gene_id_list = []
+    for tr in transcript_to_exon:
+        tmp = []
+        for ex in transcript_to_exon[tr]:
+            tmp.append(ex[0])
+            tmp.append(ex[1])
+        if len(tmp) == 2:
+            continue
+        tmp = tuple(tmp[1:-1])
+        splice_dict.setdefault(tmp, []).append(tr)
+        splice_gene_dict.setdefault(tmp, []).append(
+            transcript_dict[tr].parent_id)
+    for tr in transcript_to_exon_ref:
+        tmp = []
+        for ex in transcript_to_exon_ref[tr]:
+            tmp.append(ex[0])
+            tmp.append(ex[1])
+        if len(tmp) == 2:
+            continue
+        tmp = tuple(tmp[1:-1])
+        splice_dict.setdefault(tmp, []).append(tr)
+        splice_gene_dict.setdefault(tmp, []).append(
+            transcript_dict_ref[tr].parent_id)
+        splice_dict_ref.setdefault(tmp, []).append(tr)
+    for s in splice_gene_dict:
+        if len(set(splice_gene_dict[s])) > 1:
+            print("shared splice chain:", set(splice_gene_dict[s]))
+            print(s)
+    for s in splice_dict:
+        if len(splice_dict[s]) == 1:
+            tr_id_list.append(splice_dict[s][0])
+            gene_id_list.append(splice_gene_dict[s][0])
+            if s in splice_dict_ref:
+                FSM_id_list.append(splice_dict_ref[s][0])
+                FSM_to_reference.append(True)
+            else:
+                FSM_id_list.append(splice_dict[s][0])
+                FSM_to_reference.append(False)
+        else:
+            ref_tr = [tr for tr in splice_dict[s]
+                      if tr in transcript_to_exon_ref]
+            if len(ref_tr) > 0:
+                for tr in splice_dict[s]:
+                    tr_id_list.append(tr)
+                    gene_id_list.append(splice_gene_dict[s][0])
+                    FSM_id_list.append(ref_tr[0])
+                    FSM_to_reference.append(True)
+            elif s in splice_dict_ref:
+                for tr in splice_dict[s]:
+                    tr_id_list.append(tr)
+                    gene_id_list.append(splice_gene_dict[s][0])
+                    FSM_id_list.append(splice_dict_ref[s][0])
+                    FSM_to_reference.append(True)
+            else:
+                for tr in splice_dict[s]:
+                    tr_id_list.append(tr)
+                    gene_id_list.append(splice_gene_dict[s][0])
+                    FSM_id_list.append(splice_dict[s][0])
+                    FSM_to_reference.append(False)
+    with open(anno_out, "w") as f:
+        f.write("transcript_id,gene_id,FSM_match,FSM_match_to_ref\n")
+        for i in range(len(tr_id_list)):
+            f.write("{},{},{},{}\n".format(
+                tr_id_list[i], gene_id_list[i], FSM_id_list[i], FSM_to_reference[i]))

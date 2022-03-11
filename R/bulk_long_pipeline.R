@@ -156,62 +156,9 @@ bulk_long_pipeline <-
                 min_read_coverage
             )
 
-        se <- generate_bulk_summarized(out_files)
+        load_genome_anno <- rtracklayer::import(annot, feature.type = c("exon", "utr"))
+        se <- generate_bulk_summarized(out_files, load_genome_anno = load_genome_anno)
 
         # return the created summarizedexperiment
         se
     }
-
-generate_bulk_summarized <- function(out_files) {
-    mdata <- list(
-        "OutputFiles" = out_files
-    )
-
-    transcript_count <- read.csv(out_files$counts, stringsAsFactors = FALSE)
-    isoform_FSM_annotation <- read.csv(file.path(out_files$outdir, "isoform_FSM_annotation.csv"), stringsAsFactors = FALSE)
-
-    transcript_count <- transcript_count[match(isoform_FSM_annotation$transcript_id, transcript_count$transcript_id), ]
-    transcript_count$FSM_match <- isoform_FSM_annotation$FSM_match
-    sample_bcs <- colnames(transcript_count)[!(colnames(transcript_count) %in% c("transcript_id", "gene_id", "FSM_match"))]
-    tr_anno <- transcript_count[, c("transcript_id", "gene_id", "FSM_match")]
-
-    # sum transcript (FSM) counts
-    mer_tmp <- transcript_count %>%
-        group_by(FSM_match) %>%
-        summarise_at(sample_bcs, sum)
-
-    # Create long read SCE
-    tr_anno <- tr_anno[match(mer_tmp$FSM_match, tr_anno$FSM_match), ]
-    tr_se <- SummarizedExperiment::SummarizedExperiment(
-        assays = list(counts = as.matrix(mer_tmp[, -1])),
-        metadata = mdata
-    )
-
-    # Annotation for rowRanges
-    isoform_gff <- rtracklayer::import.gff3(out_files$isoform_annotated)
-    isoform_gff$Parent <- as.character(isoform_gff$Parent)
-    isoform_gff$transcript_id <- unlist(lapply(strsplit(isoform_gff$Parent, split = ":"), function(x) {
-        x[2]
-    }))
-    isoform_gff <- S4Vectors::split(isoform_gff, isoform_gff$transcript_id)
-
-    rownames(tr_se) <- mer_tmp$FSM_match
-    rowData(tr_se) <- DataFrame(tr_anno)
-    rowRanges(tr_se) <- isoform_gff[rowData(tr_se)$transcript_id]
-    # return the created singlecellexperiment
-    tr_se
-}
-
-#' @export
-create_se_from_dir <- function(outdir) {
-    out_files <- list(
-        counts = file.path(outdir, "transcript_count.csv.gz"),
-        isoform_annotated = file.path(outdir, "isoform_annotated.filtered.gff3"),
-        outdir = outdir,
-        transcript_assembly = file.path(outdir, "transcript_assembly.fa"),
-        align_bam = file.path(outdir, "align2genome.bam"),
-        realign2transcript = file.path(outdir, "realign2transcript.bam"),
-        tss_tes = file.path(outdir, "tss_tes.bedgraph")
-    )
-    return(generate_bulk_summarized(out_files))
-}

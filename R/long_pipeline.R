@@ -132,7 +132,7 @@ generic_long_pipeline <-
                 transcript_fa,
                 downsample_ratio,
                 config,
-                raw
+                raw_splice_isoform
             )
 
         # realign to transcript
@@ -277,7 +277,7 @@ check_arguments <-
             stop("downsample_ratio should be between 0 and 1")
         }
         if (!is.null(fastq) &&
-            !file.exists(fastq)) {
+            any(!file.exists(fastq))) {
             stop(paste0("Make sure ", fastq, " exists."))
         }
         if (!file.exists(annot)) {
@@ -288,7 +288,7 @@ check_arguments <-
         }
 
         if (!is.null(in_bam)) {
-            if (!file.exists(in_bam)) {
+            if (any(!file.exists(in_bam))) {
                 stop("Make sure in_bam exists")
             }
         }
