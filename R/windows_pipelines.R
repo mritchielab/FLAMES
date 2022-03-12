@@ -132,7 +132,7 @@ sc_windows_pipeline_setup <-
                     paste(outdir, "matched_reads.fastq.gz", sep = "/")
                 bc_stat <-
                     paste(outdir, "matched_barcode_stat", sep = "/")
-                match_cell_barcode(
+                match_cell_barcode_cpp(
                     fastq,
                     bc_stat,
                     infq,

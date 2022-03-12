@@ -203,7 +203,7 @@ sc_long_multisample_pipeline <-
             infqs <- file.path(outdir, paste(samples, "matched_reads.fastq.gz", sep = "_"))
             bc_stats <- file.path(outdir, paste(samples, "matched_barcode_stat", sep = "_"))
             for (i in length(fastqs)) {
-                match_cell_barcode(
+                match_cell_barcode_cpp(
                     fastqs[i],
                     bc_stats[i],
                     infqs[i],

@@ -2,6 +2,8 @@
 
 #include <sys/types.h>
 #include <dirent.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include <errno.h>
 #include <vector>
 #include <utility>
@@ -25,7 +27,11 @@ static const int BC_WINDOW = 10;
 std::string join_path(const std::string p1, const std::string p2)
 {
   auto sep = '/';
+  if (p2.size())
+  {
   return p1.back() == sep ? p1 + p2 : p1 + sep + p2;
+  }
+  return p1;
 }
 
 int find_polyT(std::string &seq, int start_pos)
@@ -131,6 +137,17 @@ int getdir(const char dir[], std::vector<std::string> &files)
   std::string fq_ext2 = "fq";
   struct dirent *dirp;
   std::string f_name;
+  struct stat path_stat;
+  stat(dir, &path_stat);
+
+  // Users expected tp provied file instead of folder
+  if (S_ISREG(path_stat.st_mode))
+  {
+    files.push_back(std::string(""));
+    Rprintf("Path points to a file instead of a folder:\n\t%s\n", dir);
+    return 0;
+  }
+
   if ((dp = opendir(dir)) == NULL)
   {
     Rprintf("Error(%d) opening %s\n", errno, dir);
