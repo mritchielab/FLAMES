@@ -11,6 +11,7 @@ generic_long_pipeline(
   outdir,
   genome_fa,
   minimap2_dir,
+  seed = NULL,
   downsample_ratio,
   config_file,
   do_genome_align,

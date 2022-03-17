@@ -11,6 +11,7 @@ sc_long_pipeline(
   outdir,
   genome_fa,
   minimap2_dir = "",
+  seed = NULL,
   downsample_ratio = 1,
   reference_csv,
   match_barcode = TRUE,

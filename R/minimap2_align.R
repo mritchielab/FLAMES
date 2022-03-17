@@ -17,9 +17,11 @@
 #' @export
 gff3_to_bed12 <- function(minimap2_dir, gff3_file, bed12_file) {
     python_path <- system.file("python", package = "FLAMES")
+    if (missing(minimap2_dir)) {
+        minimap2_dir <- ""
+    }
     callBasilisk(flames_env, function(minimap2, gff3, bed12) {
         convert <- reticulate::import_from_path("minimap2_align", python_path)
-
         convert$gff3_to_bed12(minimap2, gff3, bed12)
     }, minimap2 = minimap2_dir, gff3 = gff3_file, bed12 = bed12_file)
 
@@ -47,13 +49,15 @@ minimap2_align <-
              fq_in,
              sam_out,
              no_flank = FALSE,
-             bed12_junc = NULL) {
+             bed12_junc = NULL,
+             seed) {
         callBasilisk(flames_env, function(mm2_path,
                                           fa,
                                           fq,
                                           sam,
                                           flank,
-                                          bed12_junc) {
+                                          bed12_junc,
+                                          seed) {
             python_path <- system.file("python", package = "FLAMES")
             mm2 <-
                 reticulate::import_from_path("minimap2_align", python_path)
@@ -61,10 +65,10 @@ minimap2_align <-
             if (is.null(minimap2_prog_path)) {
                 minimap2_prog_path <- ""
             }
-            mm2$minimap2_align(mm2_path, fa, fq, sam, flank, bed12_junc)
+            mm2$minimap2_align(mm2_path, fa, fq, sam, flank, bed12_junc, seed)
         },
         mm2_path = minimap2_prog_path, fa = fa_file, fq = fq_in, sam = sam_out, flank =
-            no_flank, bed12_junc = bed12_junc
+            no_flank, bed12_junc = bed12_junc, seed = seed
         )
         sam_out # output file
     }
@@ -124,14 +128,14 @@ samtools_as_bam <- function(sam_in, bam_out) {
 
 #' @importFrom reticulate import_from_path
 minimap2_tr_align <-
-    function(mm2_prog_path, fa_file, fq_in, sam_out) {
-        callBasilisk(flames_env, function(mm2, fa, fq, sam) {
+    function(mm2_prog_path, fa_file, fq_in, sam_out, seed) {
+        callBasilisk(flames_env, function(mm2, fa, fq, sam, seed) {
             python_path <- system.file("python", package = "FLAMES")
 
             align <-
                 reticulate::import_from_path("minimap2_align", python_path)
-            align$minimap2_tr_align(mm2, fa, fq, sam)
-        }, mm2 = mm2_prog_path, fa = fa_file, fq = fq_in, sam = sam_out)
+            align$minimap2_tr_align(mm2, fa, fq, sam, seed)
+        }, mm2 = mm2_prog_path, fa = fa_file, fq = fq_in, sam = sam_out, seed = seed)
 
         sam_out # output file
     }

@@ -18,6 +18,7 @@ generic_long_pipeline <-
              outdir,
              genome_fa,
              minimap2_dir,
+             seed = NULL,
              downsample_ratio,
              config_file,
              do_genome_align,
@@ -108,7 +109,8 @@ generic_long_pipeline <-
                     tmp_bed
                 } else {
                     NULL
-                }
+                },
+                seed
             )
             samtools_as_bam(tmp_sam, tmp_bam)
             samtools_sort_index(tmp_bam, genome_bam)
@@ -139,7 +141,7 @@ generic_long_pipeline <-
         # if (!using_bam && do_read_realign) {
         if (do_read_realign) {
             cat("#### Realign to transcript using minimap2\n")
-            minimap2_tr_align(minimap2_dir, transcript_fa, fastq, tmp_sam)
+            minimap2_tr_align(minimap2_dir, transcript_fa, fastq, tmp_sam, seed)
             samtools_as_bam(tmp_sam, tmp_bam)
             samtools_sort_index(tmp_bam, realign_bam)
             file.remove(tmp_sam)

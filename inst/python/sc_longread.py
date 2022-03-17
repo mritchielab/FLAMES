@@ -278,7 +278,7 @@ def get_gene_flat(gene_to_transcript, transcript_to_exon):
                     if j_found == False:
                         # no overlapping, add new exon
                         gene_dict[g].append(
-                            transcript_to_exon[gene_to_transcript[g][i]][j])
+                            copy.deepcopy(transcript_to_exon[gene_to_transcript[g][i]][j]))
         gene_dict[g].sort(key=lambda x: x[0])  # sort by left most positions
     return gene_dict
 
