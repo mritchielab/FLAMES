@@ -253,33 +253,31 @@ def find_best_splice_chain(raw_iso, junc_list, max_dist):
 
 def get_gene_flat(gene_to_transcript, transcript_to_exon):
     """
-    Returns a dictionary where keys are gene names, the value is a list of all the exons of that gene.
+    Return a dictionary with gene_id as key and list of exons as value.
+    Overlapping exons are merged, e.g. (1,4),(2,5) -> (1,5)
+    Exons are either a list of 2 int or a tuple of 2 int.
     """
     gene_dict = {}
     for g in gene_to_transcript:
-        if type(gene_to_transcript[g]) != type([]):
-            gene_to_transcript[g] = [gene_to_transcript[g]]
-        gene_dict[g] = copy.deepcopy(
-            transcript_to_exon[gene_to_transcript[g][0]])
-        if len(gene_to_transcript[g]) > 1:
-            for i in range(1, len(gene_to_transcript[g])):
-                for j in range(len(transcript_to_exon[gene_to_transcript[g][i]])):
-                    j_found = False
-                    for k in range(len(gene_dict[g])):
-                        # if there are overlapping, extend the exon to cover the whole area
-                        if transcript_to_exon[gene_to_transcript[g][i]][j][0] > gene_dict[g][k][1] or \
-                                transcript_to_exon[gene_to_transcript[g][i]][j][1] < gene_dict[g][k][0]:
-                            continue
-                        j_found = True
-                        if transcript_to_exon[gene_to_transcript[g][i]][j][1] > gene_dict[g][k][1]:
-                            gene_dict[g][k][1] = transcript_to_exon[gene_to_transcript[g][i]][j][1]
-                        if transcript_to_exon[gene_to_transcript[g][i]][j][0] < gene_dict[g][k][0]:
-                            gene_dict[g][k][0] = transcript_to_exon[gene_to_transcript[g][i]][j][0]
-                    if j_found == False:
-                        # no overlapping, add new exon
-                        gene_dict[g].append(
-                            copy.deepcopy(transcript_to_exon[gene_to_transcript[g][i]][j]))
-        gene_dict[g].sort(key=lambda x: x[0])  # sort by left most positions
+        exons = []
+        for tr in gene_to_transcript[g]:
+            for exon in transcript_to_exon[tr]:
+                exons.append(copy.deepcopy(exon))
+
+        if len(exons) < 2:
+            gene_dict[g] = exons
+        else:
+            exons.sort(key=lambda exon: exon[0])
+            merged_exons = [exons[0]]
+            for higher in exons[1:]: # start of higher >= start of lower
+                lower = merged_exons[-1]
+                if higher[0] <= lower[1]:
+                    end = max(lower[1], higher[1])
+                    merged_exons[-1] = (lower[0], end) # Tuple
+                else:
+                    merged_exons.append(higher)
+            gene_dict[g] = merged_exons
+
     return gene_dict
 
 
@@ -1152,10 +1150,10 @@ def group_bam2isoform(bam_in, out_gff3, out_stat, summary_csv, chr_to_blocks, ge
                 transcript_to_junctions, bl.transcript_list)
             tmp_isoform = Isoforms(ch, config)
             for rec in it_region:
-                # if 0<downsample_ratio<1 and random.uniform(0, 1)>downsample_ratio:
-                #     continue   # downsample analysis
-                # if rec.is_secondary:
-                #     continue
+                if 0<downsample_ratio<1 and random.uniform(0, 1)>downsample_ratio:
+                    continue   # downsample analysis
+                if rec.is_secondary:
+                    continue
                 rec.cigar = smooth_cigar(rec.cigar, thr=20)
                 rec.cigartuples = rec.cigar
                 rec.cigarstring = generate_cigar(rec.cigar)
