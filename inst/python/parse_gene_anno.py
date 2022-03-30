@@ -169,8 +169,8 @@ def _parse_gtf_tree(gtf_f):
                     rec.attributes))
                 continue
             gene_id = rec.attributes["gene_id"]
-            if gene_id not in chr_to_gene[rec.seqid]:
-                chr_to_gene.setdefault(rec.seqid, []).append(gene_id)
+            if gene_id not in chr_to_gene.setdefault(rec.seqid, []):
+                chr_to_gene[rec.seqid].append(gene_id)
             gene_to_transcript.setdefault(gene_id, []).append(
                 rec.attributes["transcript_id"])
             transcript_dict[rec.attributes["transcript_id"]] = Pos(

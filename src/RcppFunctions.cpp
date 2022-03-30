@@ -55,3 +55,24 @@ merge_bulk_fastq_cpp(Rcpp::StringVector fastq_files, Rcpp::String out_fastq)
 {
     return merge_bulk_fastq(fastq_files, out_fastq);
 }
+
+
+/*****************************************************************************/
+// GffRead
+// https://github.com/gpertea/gffread MIT License
+// https://github.com/gpertea/gclib Artistic License 2.0
+
+#include "gffread/gffread.h"
+
+// [[Rcpp::export]]
+int
+gffread_cpp(
+    Rcpp::String genome_fa,
+    Rcpp::String transcript_fa,
+    Rcpp::String gff3
+)
+{
+    int argc = 6;
+    char* argv[] = {(char *)"gffread", (char*)gff3.get_cstring(), (char *)"-g", (char*)genome_fa.get_cstring(), (char *)"-w", (char*)transcript_fa.get_cstring()};
+    return gffread(argc, argv);
+}
