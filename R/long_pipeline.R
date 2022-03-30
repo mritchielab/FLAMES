@@ -11,6 +11,8 @@
 #' in the given `outdir` directory. These files are loaded into R in either
 #' a SummarizedExperiment or SingleCellExperiment object by the callers to this
 #' function, `sc_long_pipeline()` and `bulk_long_pipeline()` respectively.
+#'
+#' @importFrom GenomeInfoDb seqlengths
 generic_long_pipeline <-
     function(annot,
              fastq,
@@ -23,6 +25,7 @@ generic_long_pipeline <-
              config_file,
              do_genome_align,
              do_isoform_id = TRUE,
+             isoform_id_bambu = FALSE,
              do_read_realign,
              do_transcript_quanti,
              gen_raw_isoform,
@@ -55,7 +58,11 @@ generic_long_pipeline <-
         }
 
         # setup of internal arguments which hold output files and intermediate files
-        isoform_gff3 <- paste(outdir, "isoform_annotated.gff3", sep = "/")
+        if (do_isoform_id && isoform_id_bambu) {
+            isoform_gff3 <- paste(outdir, "isoform_annotated.gtf", sep = "/") # Bambu outputs GTF
+        } else {
+            isoform_gff3 <- paste(outdir, "isoform_annotated.gff3", sep = "/")
+        }
         isoform_gff3_f <- paste(outdir, "isoform_annotated.filtered.gff3",
             sep =
                 "/"
@@ -124,18 +131,30 @@ generic_long_pipeline <-
         }
 
         # find isofroms
-        isoform_objects <-
-            find_isoform(
-                annot,
-                genome_bam,
-                isoform_gff3,
-                tss_tes_stat,
-                genome_fa,
-                transcript_fa,
-                downsample_ratio,
-                config,
-                raw_splice_isoform
-            )
+        if (isoform_id_bambu) {
+            bambuAnnotations <- bambu::prepareAnnotations(annot)
+            # Tmp fix: remove withr if bambu imports seqlengths properly
+            bambu_out <- withr::with_package("GenomeInfoDb", bambu::bambu(reads = genome_bam, annotations = bambuAnnotations, genome = genome_fa, quant = FALSE))
+            bambu::writeToGTF(bambu_out, isoform_gff3) # Does bambu_out include both novel and known isoforms ???
+            # Create transcriptome assembly .fa
+            gffread_cpp(genome_fa, transcript_fa, isoform_gff3) # Use XStringSet + extractTranscriptSeqs instead?
+            Rsamtools::indexFa(transcript_fa)
+            # Todo: convert bambu_out (GRangesList) to transcript_dict directly
+            isoform_objects <- list(transcript_dict = NULL, transcript_dict_i = parse_gff_tree(isoform_gff3)$transcript_dict)
+        } else {
+            isoform_objects <-
+                find_isoform(
+                    annot,
+                    genome_bam,
+                    isoform_gff3,
+                    tss_tes_stat,
+                    genome_fa,
+                    transcript_fa,
+                    downsample_ratio,
+                    config,
+                    raw_splice_isoform
+                )
+        }
 
         # realign to transcript
         # if (!using_bam && do_read_realign) {
@@ -214,6 +233,7 @@ check_arguments <-
              config_file,
              do_genome_align,
              do_isoform_id = TRUE,
+             isoform_id_bambu = FALSE,
              do_read_realign,
              do_transcript_quanti,
              gen_raw_isoform,
@@ -298,6 +318,12 @@ check_arguments <-
         if (do_genome_align || do_read_realign) {
             if (!minimap2_check_callable(minimap2_dir)) {
                 stop(paste0("minimap2 is not available from the given directory: ", minimap2_dir))
+            }
+        }
+
+        if (isoform_id_bambu) {
+            if (tail(stringr::str_split(annot, "\\.")[[1]], n = 1) != "gtf") {
+                stop("Bambu requires GTF format for annotation file.\n")
             }
         }
 

@@ -50,7 +50,11 @@ Imports:
     circlize,
     grid,
     gridExtra,
-    cowplot
+    cowplot,
+    stringr,
+    bambu,
+    GenomeInfoDb,
+    withr
 Suggests: 
     BiocStyle,
     knitr,
