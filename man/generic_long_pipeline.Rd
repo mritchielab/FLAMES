@@ -62,6 +62,8 @@ all configuration parameters}
 
 \item{do_isoform_id}{Boolean; specifies whether to run the isoform identification step. \code{TRUE} is recommended}
 
+\item{isoform_id_bambu}{Boolean; specifies whether to use Bambu for isoform identification.}
+
 \item{do_read_realign}{Boolean; specifies whether to run the read realignment step. \code{TRUE} is recommended}
 
 \item{do_transcript_quanti}{Boolean; specifies whether to run the transcript quantification step. \code{TRUE} is recommended}

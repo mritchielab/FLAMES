@@ -16,9 +16,10 @@
 #' and transcript start/end errors. Transcripts that have similar splice junctions
 #' and transcript start/end to the reference transcript are merged with the
 #' reference. This process will also collapse isoforms that are likely to be truncated
-#' transcripts. Next is the read realignment step (\code{do_read_realign}), where the sequence of each polished transcript is extracted and used as
-#' the updated reference. The reads are realigned to this reference by minimap2. The
-#' transcripts with only a few full-length aligned reads are discarded.
+#' transcripts. If \code{isoform_id_bambu} is set to \code{TRUE}, \code{bambu::bambu} will be used to generate the updated annotations (Not implemented for multi-sample yet).
+#' Next is the read realignment step (\code{do_read_realign}), where the sequence of each transcript from the update annotation is extracted, and
+#' the reads are realigned to this updated \code{transcript_assembly.fa} by minimap2. The
+#' transcripts with only a few full-length aligned reads are discarded (Not implemented for multi-sample yet).
 #' The reads are assigned to transcripts based on both alignment score, fractions of
 #' reads aligned and transcript coverage. Reads that cannot be uniquely assigned to
 #' transcripts or have low transcript coverage are discarded. The UMI transcript
@@ -27,44 +28,11 @@
 #' of up to 2 by default. Most of the parameters, such as the minimal distance to splice site and minimal percentage of transcript coverage
 #' can be modified by the JSON configuration file (\code{config_file}).
 #'
-#' @param annot The file path to gene annotations file in gff3  format
 #' @param fastqs A vector containing the paths to each fastq files. If \code{in_bams} is not provided, this argument can also
 #' be provided as the path to the folder containing the fastq files. Each fastq file will be treated as a sample.
 #' @param in_bams Optional vector containing file paths the  bam files to use instead of fastq file (skips initial alignment step).
 #' The order of the bam files need to mach the order in \code{fastqs}.
-#' @param outdir The path to directory to store all output files.
-#' @param genome_fa The file path to genome fasta file.
-#' @param minimap2_dir Path to the directory containing minimap2, if it is not in PATH. Only required if either or both of
-#' \code{do_genome_align} and \code{do_read_realign} are \code{TRUE}.
-#' @param downsample_ratio Integer; downsampling ratio if performing downsampling analysis.
-#' @param config_file File path to the JSON configuration file. If specified, \code{config_file} overrides
-#' all configuration parameters
-#' @param do_genome_align Boolean; specifies whether to run the genome alignment step. \code{TRUE} is recommended
-#' @param do_isoform_id Boolean; specifies whether to run the isoform identification step. \code{TRUE} is recommended
-#' @param do_read_realign Boolean; specifies whether to run the read realignment step. \code{TRUE} is recommended
-#' @param do_transcript_quanti Boolean; specifies whether to run the transcript quantification step. \code{TRUE} is recommended
-#' @param gen_raw_isoform Boolean; specifies whether a gff3 should be generated containing the raw isoform information in the isoform identification step
-#' @param has_UMI Boolean; specifies if the data contains UMI.
-#' @param MAX_DIST Real; maximum distance allowed when merging splicing sites in isoform consensus clustering.
-#' @param MAX_TS_DIST Real; maximum distance allowed when merging transcript start/end position in isoform consensus clustering.
-#' @param MAX_SPLICE_MATCH_DIST Real; maximum distance allowed when merging splice site called from the data and the reference annotation.
-#' @param min_fl_exon_len Real; minimum length for the first exon outside the gene body in reference annotation. This is to correct the alignment artifact
-#' @param Max_site_per_splice Real; maximum transcript start/end site combinations allowed per splice chain
-#' @param Min_sup_cnt Real; minimum number of read support an isoform. Decreasing this number will significantly increase the number of isoform detected.
-#' @param Min_cnt_pct Real; minimum percentage of count for an isoform relative to total count for the same gene.
-#' @param Min_sup_pct Real; minimum percentage of count for an splice chain that support a given transcript start/end site combination.
-#' @param strand_specific 1, -1 or 0. 1 indicates if reads are in the same
-#' strand as mRNA, -1 indicates reads are reverse complemented, 0 indicates
-#' reads are not strand specific.
-#' @param remove_incomp_reads Real; determines the strength of truncated isoform filtering. Larger number means more stringent filtering.
-#' @param use_junctions Boolean; determiens whether to use known splice junctions to help correct the alignment results
-#' @param no_flank Boolean; passed to minimap2 for synthetic spike-in data. Refer to Minimap2 document for more details
-#' @param use_annotation Boolean; specifies whether to use reference to help annotate known isoforms
-#' @param min_tr_coverage Real; minimum percentage of isoform coverage for a read to be aligned to that isoform
-#' @param min_read_coverage Real; minimum percentage of read coverage for a read to be uniquely aligned to that isoform
-#' @param UMI_LEN Integer; the length of UMI sequence in bases
-#' @param reference_csv The file path to the reference csv used for demultiplexing
-#' @param match_barcode Boolean; specifies if demultiplexing should be performed using `FLAMES::match_cell_barcode`
+#' @inheritParams sc_long_pipeline
 #' @return \code{sc_long_pipeline} returns a SingleCellExperiment object, containing a count
 #' matrix as an assay, gene annotations under metadata, as well as a list of the other
 #' output files generated by the pipeline. The pipeline also outputs a number of output
@@ -149,6 +117,7 @@ sc_long_multisample_pipeline <-
             config_file,
             do_genome_align,
             do_isoform_id = TRUE,
+            isoform_id_bambu = FALSE,
             do_read_realign,
             do_transcript_quanti,
             gen_raw_isoform,

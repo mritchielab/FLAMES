@@ -34,7 +34,7 @@ sc_windows_pipeline_setup(
 \item{config_file}{JSON configuration file. If specified,  \code{config_file} overrides
 all configuration parameters}
 
-\item{match_barcode}{boolean, specify if barcode matching should take place before the pipeline begins}
+\item{match_barcode}{Boolean; specifies if demultiplexing should be performed using `FLAMES::match_cell_barcode_cpp`}
 
 \item{reference_csv}{reference csv for barcode matching}
 

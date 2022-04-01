@@ -62,6 +62,8 @@ all configuration parameters}
 
 \item{do_isoform_id}{Boolean; specifies whether to run the isoform identification step. \code{TRUE} is recommended}
 
+\item{isoform_id_bambu}{Boolean; specifies whether to use Bambu for isoform identification.}
+
 \item{do_read_realign}{Boolean; specifies whether to run the read realignment step. \code{TRUE} is recommended}
 
 \item{do_transcript_quanti}{Boolean; specifies whether to run the transcript quantification step. \code{TRUE} is recommended}
@@ -129,8 +131,9 @@ annotation is compared against the reference annotation to correct potential spl
 and transcript start/end errors. Transcripts that have similar splice junctions
 and transcript start/end to the reference transcript are merged with the
 reference. This process will also collapse isoforms that are likely to be truncated
-transcripts. Next is the read realignment step (\code{do_read_realign}), where the sequence of each polished transcript is extracted and used as
-the updated reference. The reads are realigned to this reference by minimap2. The
+transcripts. If \code{isoform_id_bambu} is set to \code{TRUE}, \code{bambu::bambu} will be used to generate the updated annotations.
+Next is the read realignment step (\code{do_read_realign}), where the sequence of each transcript from the update annotation is extracted, and
+the reads are realigned to this updated \code{transcript_assembly.fa} by minimap2. The
 transcripts with only a few full-length aligned reads are discarded.
 The reads are assigned to transcripts based on both alignment score, fractions of
 reads aligned and transcript coverage. Reads that cannot be uniquely assigned to
