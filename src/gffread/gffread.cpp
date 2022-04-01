@@ -1,7 +1,7 @@
+#include <Rcpp.h>
 #include "GArgs.h"
 #include "gff_utils.h"
 #include <ctype.h>
-#include <Rcpp.h>
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 

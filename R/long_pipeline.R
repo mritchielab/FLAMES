@@ -134,6 +134,7 @@ generic_long_pipeline <-
         if (isoform_id_bambu) {
             bambuAnnotations <- bambu::prepareAnnotations(annot)
             # Tmp fix: remove withr if bambu imports seqlengths properly
+            # https://github.com/GoekeLab/bambu/issues/255
             bambu_out <- withr::with_package("GenomeInfoDb", bambu::bambu(reads = genome_bam, annotations = bambuAnnotations, genome = genome_fa, quant = FALSE))
             bambu::writeToGTF(bambu_out, isoform_gff3) # Does bambu_out include both novel and known isoforms ???
             # Create transcriptome assembly .fa

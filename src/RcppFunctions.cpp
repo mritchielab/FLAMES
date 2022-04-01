@@ -61,6 +61,7 @@ merge_bulk_fastq_cpp(Rcpp::StringVector fastq_files, Rcpp::String out_fastq)
 // GffRead
 // https://github.com/gpertea/gffread MIT License
 // https://github.com/gpertea/gclib Artistic License 2.0
+// TODO: fix anonymous structs (set options in Makevar?)
 
 #include "gffread/gffread.h"
 

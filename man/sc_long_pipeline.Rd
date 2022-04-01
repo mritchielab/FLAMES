@@ -18,6 +18,7 @@ sc_long_pipeline(
   config_file = NULL,
   do_genome_align = TRUE,
   do_isoform_id = TRUE,
+  isoform_id_bambu = FALSE,
   do_read_realign = TRUE,
   do_transcript_quanti = TRUE,
   gen_raw_isoform = TRUE,

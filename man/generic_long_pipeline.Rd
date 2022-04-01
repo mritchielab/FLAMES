@@ -16,6 +16,7 @@ generic_long_pipeline(
   config_file,
   do_genome_align,
   do_isoform_id = TRUE,
+  isoform_id_bambu = FALSE,
   do_read_realign,
   do_transcript_quanti,
   gen_raw_isoform,
