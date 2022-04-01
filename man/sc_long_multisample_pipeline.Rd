@@ -59,7 +59,7 @@ The order of the bam files need to mach the order in \code{fastqs}.}
 
 \item{reference_csv}{The file path to the reference csv used for demultiplexing}
 
-\item{match_barcode}{Boolean; specifies if demultiplexing should be performed using \code{FLAMES::match_cell_barcode}}
+\item{match_barcode}{Boolean; specifies if demultiplexing should be performed using \code{FLAMES::match_cell_barcode_cpp}}
 
 \item{config_file}{File path to the JSON configuration file. If specified, \code{config_file} overrides
 all configuration parameters}
@@ -138,9 +138,10 @@ annotation is compared against the reference annotation to correct potential spl
 and transcript start/end errors. Transcripts that have similar splice junctions
 and transcript start/end to the reference transcript are merged with the
 reference. This process will also collapse isoforms that are likely to be truncated
-transcripts. Next is the read realignment step (\code{do_read_realign}), where the sequence of each polished transcript is extracted and used as
-the updated reference. The reads are realigned to this reference by minimap2. The
-transcripts with only a few full-length aligned reads are discarded.
+transcripts. If \code{isoform_id_bambu} is set to \code{TRUE}, \code{bambu::bambu} will be used to generate the updated annotations (Not implemented for multi-sample yet).
+Next is the read realignment step (\code{do_read_realign}), where the sequence of each transcript from the update annotation is extracted, and
+the reads are realigned to this updated \code{transcript_assembly.fa} by minimap2. The
+transcripts with only a few full-length aligned reads are discarded (Not implemented for multi-sample yet).
 The reads are assigned to transcripts based on both alignment score, fractions of
 reads aligned and transcript coverage. Reads that cannot be uniquely assigned to
 transcripts or have low transcript coverage are discarded. The UMI transcript

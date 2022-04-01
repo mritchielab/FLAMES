@@ -11,6 +11,12 @@
 //'
 //' @description Match cell barcodes in the given fastq directory with the reference csv, \code{ref_csv}. Matches are returned
 //' in the output file \code{out_fastq}
+//' The flanking sequence is aligned to the first 30000 reads to identify the regions where cell barcode is likely to be found within. 
+//' Next, sequences within this region are matched to barcodes in \code{ref_csv}, allowing \code{MAX_DIST} hamming distances. 
+//' Reads that are successfully matched with a barcode are reported as the \code{barcode hm match} count. 
+//' Every read that could not be matched in the previous step is aligned to the flanking sequence again to identify the location of 
+//' barcode individually, and barcode matching is done with up to \code{MAX_DIST} levenshtein distances (allowing indels). Reads that are
+//' matched by this step is reported as the \code{fuzzy match} counts.
 //'
 //' @param fastq_dir directory containing fastq files to match
 //' @param stats_file NEEDED

@@ -99,7 +99,7 @@ bulk_windows_pipeline_setup <-
 #' @param downsample_ratio downsampling ratio if performing downsampling analysis.
 #' @param config_file JSON configuration file. If specified,  \code{config_file} overrides
 #' all configuration parameters
-#' @param match_barcode boolean, specify if barcode matching should take place before the pipeline begins
+#' @param match_barcode Boolean; specifies if demultiplexing should be performed using `FLAMES::match_cell_barcode_cpp`
 #' @param reference_csv reference csv for barcode matching
 #' @param MAX_DIST max dist
 #' @param UMI_LEN length of the UMI to find
@@ -126,8 +126,8 @@ sc_windows_pipeline_setup <-
         if (is.null(in_bam)) {
             if (match_barcode) {
                 if (!file.exists(reference_csv)) {
-                      stop("reference_csv must exists.")
-                  }
+                    stop("reference_csv must exists.")
+                }
                 infq <-
                     paste(outdir, "matched_reads.fastq.gz", sep = "/")
                 bc_stat <-
@@ -141,8 +141,8 @@ sc_windows_pipeline_setup <-
                     UMI_LEN
                 )
             } else {
-                  infq <- fastq
-              }
+                infq <- fastq
+            }
         }
 
         windows_pipeline_setup(annot,
@@ -190,22 +190,22 @@ windows_pipeline_setup <-
             stop("downsample_ratio should be between 0 and 1")
         }
         if (!file.exists(fastq)) {
-              stop(paste0("Make sure ", fastq, " exists."))
-          }
+            stop(paste0("Make sure ", fastq, " exists."))
+        }
         if (!file.exists(annot)) {
-              stop(paste0("Make sure ", annot, " exists."))
-          }
+            stop(paste0("Make sure ", annot, " exists."))
+        }
         if (!file.exists(genome_fa)) {
-              stop(paste0("Make sure ", genome_fa, " exists."))
-          }
+            stop(paste0("Make sure ", genome_fa, " exists."))
+        }
 
         using_bam <- FALSE
         if (!is.null(in_bam)) {
             using_bam <- TRUE
             fastq <- NULL
             if (!file.exists(in_bam)) {
-                  stop("Make sure in_bam exists")
-              }
+                stop("Make sure in_bam exists")
+            }
         }
 
         pipeline_variables <- list(
@@ -230,10 +230,10 @@ windows_pipeline_setup <-
             tmp_bed = paste(outdir, "tmp_splice_anno.bed12", sep = "/"),
             tmp_sam = paste(outdir, "tmp_align.sam", sep = "/"),
             genome_bam = if (using_bam) {
-                  in_bam
-              } else {
-                  paste(outdir, "align2genome.bam", sep = "/")
-              },
+                in_bam
+            } else {
+                paste(outdir, "align2genome.bam", sep = "/")
+            },
             realign_bam = paste(outdir, "realign2transcript.bam", sep = "/"),
             tr_cnt_csv = paste(outdir, "transcript_count.csv.gz", sep = "/"),
             tr_badcov_cnt_csv = paste(outdir, "transcript_count.bad_coverage.csv.gz",
@@ -261,8 +261,8 @@ windows_pipeline_setup <-
         if (using_bam) {
             cat("\tinput bam:", in_bam, "\n")
         } else {
-              cat("\tinput fastq:", fastq, "\n")
-          }
+            cat("\tinput fastq:", fastq, "\n")
+        }
         cat("\toutput directory:", outdir, "\n")
 
         # align reads to genome
@@ -277,10 +277,10 @@ windows_pipeline_setup <-
                 fastq = fastq,
                 no_flank = config$alignment_parameters$no_flank,
                 bed12_junc = if (config$alignment_parameters$use_junctions) {
-                      pipeline_variables$tmp_bed
-                  } else {
-                      NULL
-                  },
+                    pipeline_variables$tmp_bed
+                } else {
+                    NULL
+                },
                 annot = annot,
                 output_bam = pipeline_variables$genome_bam
             )
