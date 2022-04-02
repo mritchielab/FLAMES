@@ -112,8 +112,8 @@ def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_re
 
     if "bc_file" in list(kwargs.keys()):
         bc_dict = make_bc_dict(kwargs["bc_file"])
-    for _,  rec in enumerate(bamfile):
-        if rec.is_unmapped or rec.seq == '*':
+    for rec in bamfile.fetch(until_eof=True):
+        if rec.is_unmapped:
             cnt_stat["unmapped"] += 1
             continue
         map_st = rec.reference_start
@@ -121,24 +121,22 @@ def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_re
         tr = rec.reference_name
         tr_cov = float(map_en-map_st)/fa_idx[tr]
         tr_cov_dict.setdefault(tr, []).append(tr_cov)
-
-        inferred_read_length = query_len(rec.cigarstring)
         if rec.query_name not in read_dict:
             read_dict.setdefault(rec.query_name, []).append((tr, rec.get_tag("AS"), tr_cov, float(
-                rec.query_alignment_length)/inferred_read_length, rec.mapping_quality))
+                rec.query_alignment_length)/rec.infer_read_length(), rec.mapping_quality))
         else:
             if rec.get_tag("AS") > read_dict[rec.query_name][0][1]:
                 read_dict[rec.query_name].insert(0, (tr, rec.get_tag("AS"), tr_cov, float(
-                    rec.query_alignment_length)/inferred_read_length, rec.mapping_quality))
+                    rec.query_alignment_length)/rec.infer_read_length(), rec.mapping_quality))
             # same aligned sequence
-            elif rec.get_tag("AS") == read_dict[rec.query_name][0][1] and float(rec.query_alignment_length)/inferred_read_length == read_dict[rec.query_name][0][3]:
+            elif rec.get_tag("AS") == read_dict[rec.query_name][0][1] and float(rec.query_alignment_length)/rec.infer_read_length() == read_dict[rec.query_name][0][3]:
                 # choose the one with higher transcript coverage, might be internal TSS
                 if tr_cov > read_dict[rec.query_name][0][2]:
                     read_dict[rec.query_name].insert(0, (tr, rec.get_tag("AS"), tr_cov, float(
-                        rec.query_alignment_length)/inferred_read_length, rec.mapping_quality))
+                        rec.query_alignment_length)/rec.infer_read_length(), rec.mapping_quality))
             else:
                 read_dict[rec.query_name].append((tr, rec.get_tag("AS"), tr_cov, float(
-                    rec.query_alignment_length)/inferred_read_length, rec.mapping_quality))
+                    rec.query_alignment_length)/rec.infer_read_length(), rec.mapping_quality))
         if tr not in fa_idx:
             cnt_stat["not_in_annotation"] += 1
             print("\t" + str(tr), "not in annotation ???")
@@ -157,12 +155,11 @@ def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_re
         # below line creates issue when header line has more than one _.
         # in this case, umi is assumed to be delimited from the barcode by the last _
         # bc, umi = r.split("#")[0].split("_")  # assume cleaned barcode
-        split_r = r.split("#")[0].split("_")
         try:
-            bc, umi = split_r[-2], split_r[-1]
-        except IndexError as ie:
-            print(ie, ": ", ie.args, ".")
-            raise IndexError(
+            bc, umi = r.split("#")[0].split("_")  # assume cleaned barcode
+        except ValueError as ve:
+            print(ve, ": ", ve.args, ".")
+            raise ValueError(
                 "Please check if barcode and UMI are delimited by \"_\"")
 
         if "bc_file" in list(kwargs.keys()):
