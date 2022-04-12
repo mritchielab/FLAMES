@@ -24,3 +24,4 @@ vignettes/.build.timestamp
 **/*.log
 vignettes/FLAMES_vignette.md
 **/.smbdelete*
+check
