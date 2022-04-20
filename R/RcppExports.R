@@ -31,7 +31,3 @@ merge_bulk_fastq_cpp <- function(fastq_files, out_fastq) {
     invisible(.Call(`_FLAMES_merge_bulk_fastq_cpp`, fastq_files, out_fastq))
 }
 
-gffread_cpp <- function(genome_fa, transcript_fa, gff3) {
-    .Call(`_FLAMES_gffread_cpp`, genome_fa, transcript_fa, gff3)
-}
-

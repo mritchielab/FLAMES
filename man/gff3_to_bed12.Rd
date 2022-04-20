@@ -7,6 +7,8 @@
 gff3_to_bed12(minimap2_dir, gff3_file, bed12_file)
 }
 \arguments{
+\item{minimap2_dir}{The folder containing k8 or paftools.js}
+
 \item{gff3_file}{The file path to the GFF3 file to convert}
 
 \item{bed12_file}{The file path of the bed12 output file.}

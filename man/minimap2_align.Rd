@@ -26,6 +26,8 @@ minimap2_align(
 \item{no_flank}{Boolean; used if studying SIRV, to tell minimap2 to ignore additional bases}
 
 \item{bed12_junc}{file path to the gene annotations in BED12 format. If specified, minmap2 prefers splicing in annotations.}
+
+\item{seed}{Integer or NULL; The random seed for minimap2.}
 }
 \value{
 file path to the given output BAM file, \code{bam_out}

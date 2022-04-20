@@ -36,24 +36,10 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
-// gffread_cpp
-int gffread_cpp(Rcpp::String genome_fa, Rcpp::String transcript_fa, Rcpp::String gff3);
-RcppExport SEXP _FLAMES_gffread_cpp(SEXP genome_faSEXP, SEXP transcript_faSEXP, SEXP gff3SEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::String >::type genome_fa(genome_faSEXP);
-    Rcpp::traits::input_parameter< Rcpp::String >::type transcript_fa(transcript_faSEXP);
-    Rcpp::traits::input_parameter< Rcpp::String >::type gff3(gff3SEXP);
-    rcpp_result_gen = Rcpp::wrap(gffread_cpp(genome_fa, transcript_fa, gff3));
-    return rcpp_result_gen;
-END_RCPP
-}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_FLAMES_match_cell_barcode_cpp", (DL_FUNC) &_FLAMES_match_cell_barcode_cpp, 6},
     {"_FLAMES_merge_bulk_fastq_cpp", (DL_FUNC) &_FLAMES_merge_bulk_fastq_cpp, 2},
-    {"_FLAMES_gffread_cpp", (DL_FUNC) &_FLAMES_gffread_cpp, 3},
     {NULL, NULL, 0}
 };
 

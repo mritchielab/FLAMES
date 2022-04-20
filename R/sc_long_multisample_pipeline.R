@@ -70,7 +70,7 @@
 #' @importFrom SingleCellExperiment SingleCellExperiment reducedDimNames logcounts
 #' @importFrom SummarizedExperiment rowData colData rowData<- colData<- rowRanges rowRanges<-
 #' @importFrom BiocGenerics cbind colnames rownames start end
-#' @importFrom utils read.csv read.table
+#' @importFrom utils read.csv read.table file_test
 #'
 #' @example inst/examples/pipeline_example.R
 #' @export

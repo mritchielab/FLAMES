@@ -27,6 +27,11 @@
 #' \code{BrBG PiYG PRGn PuOr RdBu RdGy RdYlBu RdYlGn Spectral}\cr
 #' when there are more than 11 groups, this argument will be ignored and random palettes will be generated.
 #' @param isoform_legend_width The width of isoform legends in heatmaps, in \code{cm}.
+#' @param col_low Color for cells with low expression levels in UMAPs.
+#' @param col_mid Color for cells with intermediate expression levels in UMAPs.
+#' @param col_high Color for cells with high expression levels in UMAPs.
+#' @param heatmap_color_quantile Float; Expression levels higher than this quantile will all be shown with \code{col_high}.
+#' Expression levels lower than 1 - \code{heatmap_color_quantile} will all be shown with \code{col_low};
 #'
 #' @return a list containing the combined UMAP, the isoform exon alignments and the UMAP with isoform expression levels.
 #'
@@ -53,9 +58,10 @@
 #' @importFrom circlize colorRamp2
 #' @importFrom grid unit viewport
 #' @importFrom gridExtra grid.arrange
+#' @importFrom stats quantile median
 #' @export
 #' @md
-sc_annotate_umap <- function(gene, path, sce_all = NULL, sce_20 = NULL, sce_80 = NULL, n_isoforms = 4, n_pcs = 40, cluster_annotation, dup_bc = NULL, return_sce_all = T,
+sc_annotate_umap <- function(gene, path, sce_all = NULL, sce_20 = NULL, sce_80 = NULL, n_isoforms = 4, n_pcs = 40, cluster_annotation, dup_bc = NULL, return_sce_all = TRUE,
                              heatmap_annotation_colors = "BrBG", isoform_legend_width = 7, heatmap_color_quantile = 0.95, col_low = "#313695", col_mid = "#FFFFBF", col_high = "#A50026") {
   ## dup_bc: cell barcodes found in both lib_20 and lib_80
   ## the pipeline should filter out these cells (not implemented yet)
@@ -279,7 +285,7 @@ sc_annotate_umap <- function(gene, path, sce_all = NULL, sce_20 = NULL, sce_80 =
   for (i in names(isoform_sel)) {
     p <- ggplot(isoform_sel[[i]]) +
       geom_alignment(
-        label = F, range.geom = "rect",
+        label = FALSE, range.geom = "rect",
         gap.geom = "arrow", utr.geom = "rect"
       ) +
       xlim(c(min(min(start(isoform_sel))), max(max(end(isoform_sel))))) +
@@ -313,8 +319,8 @@ sc_annotate_umap <- function(gene, path, sce_all = NULL, sce_20 = NULL, sce_80 =
   expr_all <- scale(expr_all)
 
   reduce_quantile <- function(x, q = 0.05) {
-    x[x < quantile(x, q, na.rm = T)] <- quantile(x, q, na.rm = T)
-    x[x > quantile(x, 1 - q, na.rm = T)] <- quantile(x, 1 - q, na.rm = T)
+    x[x < quantile(x, q, na.rm = TRUE)] <- quantile(x, q, na.rm = TRUE)
+    x[x > quantile(x, 1 - q, na.rm = TRUE)] <- quantile(x, 1 - q, na.rm = TRUE)
     x
   }
   expr_all <- t(apply(expr_all, 1, reduce_quantile))
@@ -350,7 +356,7 @@ sc_annotate_umap <- function(gene, path, sce_all = NULL, sce_20 = NULL, sce_80 =
     umap_20$expr[expr_20[names(isoform_sel)[1], ] < 0] <- col_high
     umap_all$expr[expr_all[names(isoform_sel)[1], ] < 0] <- col_high
     plot_expression_umaps <- ggplot() +
-      geom_point(data = umap_80, aes(x = x, y = y), alpha = 0.2, size = 0.2, col = "grey", show.legend = F) +
+      geom_point(data = umap_80, aes(x = x, y = y), alpha = 0.2, size = 0.2, col = "grey", show.legend = FALSE) +
       geom_point(data = umap_20, aes(x = x, y = y), col = umap_20$expr, alpha = 0.7, size = 0.7) +
       labs(x = "Dim1", y = "Dim2", col = "dominant isoform") +
       theme_bw() +
@@ -391,10 +397,10 @@ sc_annotate_umap <- function(gene, path, sce_all = NULL, sce_20 = NULL, sce_80 =
     #   may need to unquote idx with !! operator
     plot_idx <- function(idx) {
       p <- ggplot() +
-        geom_point(data = umap_80, aes(x = x, y = y), alpha = 0.2, size = 0.2, col = "grey", show.legend = F) +
+        geom_point(data = umap_80, aes(x = x, y = y), alpha = 0.2, size = 0.2, col = "grey", show.legend = FALSE) +
         geom_point(data = umap_20, aes(x = x, y = y, col = umap_20[, idx]), alpha = 0.7, size = 0.7) +
         labs(x = "Dim1", y = "Dim2", col = "scaled expression", title = colnames(umap_20)[idx]) +
-        scale_colour_gradient2(low = col_low, mid = col_mid, high = col_high, na.value = "grey", midpoint = median(umap_20[, idx], na.rm = T)) +
+        scale_colour_gradient2(low = col_low, mid = col_mid, high = col_high, na.value = "grey", midpoint = median(umap_20[, idx], na.rm = TRUE)) +
         theme_bw() +
         theme(
           panel.grid.major = element_blank(),
@@ -414,7 +420,7 @@ sc_annotate_umap <- function(gene, path, sce_all = NULL, sce_20 = NULL, sce_80 =
       p <- ggplot() +
         geom_point(data = umap_all, aes(x = x, y = y, col = umap_all[, idx]), alpha = 0.7, size = 0.2) +
         labs(x = "Dim1", y = "Dim2", col = "scaled expression", title = colnames(umap_all)[idx]) +
-        scale_colour_gradient2(low = col_low, mid = col_mid, high = col_high, na.value = "grey", midpoint = median(umap_all[, idx], na.rm = T)) +
+        scale_colour_gradient2(low = col_low, mid = col_mid, high = col_high, na.value = "grey", midpoint = median(umap_all[, idx], na.rm = TRUE)) +
         theme_bw() +
         theme(
           panel.grid.major = element_blank(),
@@ -518,19 +524,19 @@ sc_annotate_umap <- function(gene, path, sce_all = NULL, sce_20 = NULL, sce_80 =
         heatmap_color_quantile <- 0.95
       }
       return(colorRamp2(
-        c(quantile(expr_matrix, 1 - heatmap_color_quantile, na.rm = T), 0, quantile(expr_matrix, heatmap_color_quantile, na.rm = T)),
+        c(quantile(expr_matrix, 1 - heatmap_color_quantile, na.rm = TRUE), 0, quantile(expr_matrix, heatmap_color_quantile, na.rm = TRUE)),
         c(col_low, col_mid, col_high)
       ))
     }
 
     isoform_annotation <- AnnotationFunction(
       fun = function(index) {
-        grid.arrange(grobs = legends_heatmap, ncol = 1, vp = viewport(), newpage = F)
+        grid.arrange(grobs = legends_heatmap, ncol = 1, vp = viewport(), newpage = FALSE)
       },
       which = "row",
       width = unit(isoform_legend_width, "cm"),
       n = length(legends_heatmap),
-      subsetable = F
+      subsetable = FALSE
     )
 
     expr_20 <- expr_20[tr_order, cell_order_20]
@@ -539,20 +545,20 @@ sc_annotate_umap <- function(gene, path, sce_all = NULL, sce_20 = NULL, sce_80 =
 
     outputs[["heatmap"]] <- Heatmap(expr_20,
       name = "scaled expression",
-      cluster_rows = FALSE, cluster_columns = FALSE, use_raster = FALSE, show_column_names = F,
+      cluster_rows = FALSE, cluster_columns = FALSE, use_raster = FALSE, show_column_names = FALSE,
       top_annotation = group_annotation(cluster_barcode_20), col = expr_color_mapping(expr_20)
     )
 
     outputs[["heatmap_impute"]] <- Heatmap(expr_all,
       name = "scaled expression",
-      cluster_rows = FALSE, cluster_columns = FALSE, use_raster = FALSE, show_column_names = F,
+      cluster_rows = FALSE, cluster_columns = FALSE, use_raster = FALSE, show_column_names = FALSE,
       top_annotation = group_annotation(cluster_barcode_all), col = expr_color_mapping(expr_all)
     )
 
     outputs[["combined_heatmap"]] <- Heatmap(expr_20,
       name = "scaled expression",
       cluster_rows = FALSE, cluster_columns = FALSE, use_raster = FALSE,
-      show_column_names = F, show_row_names = F, top_annotation = group_annotation(cluster_barcode_20),
+      show_column_names = FALSE, show_row_names = FALSE, top_annotation = group_annotation(cluster_barcode_20),
       left_annotation = rowAnnotation(isoform = isoform_annotation, annotation_name_rot = 0),
       col = expr_color_mapping(expr_20)
     )
@@ -560,7 +566,7 @@ sc_annotate_umap <- function(gene, path, sce_all = NULL, sce_20 = NULL, sce_80 =
     outputs[["combined_heatmap_impute"]] <- Heatmap(expr_all,
       name = "scaled expression",
       cluster_rows = FALSE, cluster_columns = FALSE, use_raster = FALSE,
-      show_column_names = F, show_row_names = F, top_annotation = group_annotation(cluster_barcode_all),
+      show_column_names = FALSE, show_row_names = FALSE, top_annotation = group_annotation(cluster_barcode_all),
       left_annotation = rowAnnotation(isoform = isoform_annotation, annotation_name_rot = 0),
       col = expr_color_mapping(expr_all)
     )

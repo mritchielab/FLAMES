@@ -180,11 +180,19 @@ file.copy(c(fastq1, fastq2), fastq_dir)
 unlink(c(fastq1, fastq2)) # the original files can be deleted
 
 \dontrun{
-# run the FLAMES bulk pipeline, using the downloaded files
+    # run the FLAMES bulk pipeline, using the downloaded files
+outdir <- tempdir()
 se <- bulk_long_pipeline(annot=system.file("extdata/SIRV_anno.gtf", package="FLAMES"), 
-                   fastq=fastq_dir,
-                   outdir=tempdir(), genome_fa=system.file("extdata/SIRV_genomefa.fasta", package="FLAMES"),
+                   fastq=fastq_dir, outdir=outdir, 
+                   genome_fa=system.file("extdata/SIRV_genomefa.fasta", package="FLAMES"),
                    config_file=system.file("extdata/SIRV_config_default.json", package="FLAMES"))
+}
+
+\donttest{
+    # create SummarizedExperiment from output folder
+    se_2 <- create_se_from_dir(outdir = outdir, annot = system.file("extdata/SIRV_anno.gtf", package="FLAMES"))
+    # Could also be use to create SummarizedExperiment from the Python FLAMES output folder
+    sce <- create_se_from_dir(outdir = sce_outdir, annot = system.file("extdata/SIRV_anno.gtf", package="FLAMES"))
 }
 # OR
 # run the FLAMES single cell pipeline

@@ -54,7 +54,9 @@ Imports:
     stringr,
     bambu,
     GenomeInfoDb,
-    withr
+    withr,
+    Biostrings,
+    GenomicFeatures
 Suggests: 
     BiocStyle,
     knitr,

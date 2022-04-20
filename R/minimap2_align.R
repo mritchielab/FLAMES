@@ -2,6 +2,7 @@
 #'
 #' Converts a gff3 file to a bed12
 #'
+#' @param minimap2_dir The folder containing k8 or paftools.js
 #' @param gff3_file The file path to the GFF3 file to convert
 #' @param bed12_file The file path of the bed12 output file.
 #'
@@ -40,6 +41,7 @@ gff3_to_bed12 <- function(minimap2_dir, gff3_file, bed12_file) {
 #' @param sam_out File path to the output SAM file
 #' @param no_flank Boolean; used if studying SIRV, to tell minimap2 to ignore additional bases
 #' @param bed12_junc file path to the gene annotations in BED12 format. If specified, minmap2 prefers splicing in annotations.
+#' @param seed Integer or NULL; The random seed for minimap2.
 #'
 #' @return file path to the given output BAM file, \code{bam_out}
 #' @importFrom reticulate import_from_path
