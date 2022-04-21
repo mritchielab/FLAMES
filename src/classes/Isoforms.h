@@ -4,6 +4,7 @@
 #include <map>
 #include <unordered_map>
 #include <vector>
+#include <tuple>
 
 #include "StartEndPair.h"
 #include "Pos.h"
@@ -21,6 +22,13 @@ struct Iso
 	long support_count;
 	std::string transcript_id; 
 	std::string gene_id;
+
+	bool operator==(const Iso &rhs) {
+		return std::tie(support_count, transcript_id, gene_id) == std::tie(rhs.support_count, rhs.transcript_id, rhs.gene_id);
+	}
+	bool operator!=(const Iso &rhs) {
+		return std::tie(support_count, transcript_id, gene_id) != std::tie(rhs.support_count, rhs.transcript_id, rhs.gene_id);
+	}
 };
 
 class Isoforms {
@@ -37,10 +45,7 @@ class Isoforms {
 		std::vector<int> insert_dist(std::vector<int>, std::vector<int>);
 
 		static std::vector<std::pair<int, int>> filter_site(const std::unordered_map<int, int> &, float);
-
 		static inline void output_to_bedgraph(std::ofstream &, std::string, int, int, int);
-
-		std::vector<int> countLR(std::ofstream &, const std::unordered_map<int, int> &, std::vector<int>, float);
   	public:
 		Isoforms(const std::string ch, IsoformParameters parameters)
 		{
@@ -105,6 +110,9 @@ class Isoforms {
 		);
 
 		std::string isoform_to_gff3(float isoform_pct);
-};
+
+		std::vector<int> countLR(std::ofstream &, const std::unordered_map<int, int> &, std::vector<int>, float);
+
+		};
 
 #endif // ISOFORMS

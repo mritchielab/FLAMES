@@ -30,9 +30,11 @@ context("Transcript writing and utility functions") {
 		};
 
 	 	// run the test cases
+		bool allgood = true;
 		for (int i = 0; i < res.size(); i++) {
-			expect_true(edit_distance(ps[i].first, ps[i].second) == res[i]);
+			allgood &= edit_distance(ps[i].first, ps[i].second) == res[i];
 		}
+		expect_true(allgood);
 	}
 
 	test_that("umi_dedup dedups correctly") {
@@ -281,7 +283,7 @@ context("Transcript writing and utility functions") {
 		};
 		
 		std::string out_csv = get_tempfile(".csv");
-		
+		std::cout << out_csv << "\n";
 		std::unordered_map<std::string, int> result {
 			{"SIRV410,SIRV4,23,119", 1},
 			{"SIRV403,SIRV4,14,2", 1},
@@ -349,12 +351,14 @@ context("Transcript writing and utility functions") {
 		std::string line;
 		std::getline(output, line); // ignore the header line
 		int numlines = 0;
+		bool alllinesgood = true;
 		while(std::getline(output, line)) {
 			if (line.length()) {
 				numlines++;
-				expect_true(result.count(line));
+				alllinesgood = alllinesgood && result.count(line);
 			}
 		}
+		expect_true(alllinesgood);
 		expect_true(numlines == result.size());
 
 		// test the retured value
@@ -417,9 +421,11 @@ context("Transcript writing and utility functions") {
 			{"SIRV501", 32},
 			{"SIRV201", 16}
 		};
-
+		
+		bool allgood = true;
 		for (const auto & [key, value] : real_cnt) {
-			expect_true(tr_cnt[key] == value);
+			allgood &= tr_cnt[key] == value;
 		}
+		expect_true(allgood);
 	}
 }

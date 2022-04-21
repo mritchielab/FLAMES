@@ -42,7 +42,7 @@ struct InvJunctions {
 };
 
 int 
-take_closest (std::vector<int> list, int num);
+take_closest (const std::vector<int> &list, int num);
 
 Junctions 
 blocks_to_junctions (std::vector<StartEndPair> blocks);

@@ -11,7 +11,7 @@
 
 #include "../classes/GFFData.h"
 #include "../classes/GeneAnnoParser/GeneAnnoParser.h"
-
+#include "../utility/utility.h"
 
 void
 annotate_full_splice_match
@@ -39,13 +39,13 @@ annotate_full_splice_match
 )
 {
     std::unordered_map<std::string, std::vector<std::string>>
-    splice_dict = {};
+    splice_dict;
 
     std::unordered_map<std::string, std::vector<std::string>>
-    splice_dict_ref = {};
+    splice_dict_ref;
 
     std::unordered_map<std::string, std::vector<std::string>>
-    splice_gene_dict = {};
+    splice_gene_dict;
 
     std::vector<std::string>
     tr_id_list;
@@ -59,9 +59,9 @@ annotate_full_splice_match
     std::vector<std::string>
     gene_id_list;
 
+	// can we lambda these two loops?? basically the same thing
     for (const auto & [tr, exon_list] : transcript_to_exon) {
-        std::vector<int>
-        tmp;
+        std::vector<int> tmp;
 
         for (const auto & exon : exon_list) {
             tmp.push_back(exon.start);
@@ -73,25 +73,16 @@ annotate_full_splice_match
             continue;
         }
 
-        auto
-        tmp_slice = std::vector<int>(tmp.begin() + 1, tmp.end() - 1);
+        auto tmp_slice = std::vector<int>(tmp.begin() + 1, tmp.end() - 1);
 
         if (tr_count.count(tr) && tr_count[tr] >= min_sup_reads) {
-            if (splice_dict.count(tr) == 0) {
-                splice_dict[tr] = {};
-            }
-            splice_dict[tr].push_back(tr);
-
-            if (splice_gene_dict.count(tr) == 0) {
-                splice_gene_dict[tr] = {};
-            }
+            splice_dict[tr].push_back(tr); // operator[] will create a new vector if tr is not a current key
             splice_gene_dict[tr].push_back(transcript_dict[tr].parent_id);
         }
     }
 
     for (const auto & [tr, exon_list] : transcript_to_exon_ref) {
-        std::vector<int>
-        tmp;
+        std::vector<int> tmp;
 
         for (const auto & exon : exon_list) {
             tmp.push_back(exon.start);
@@ -103,53 +94,39 @@ annotate_full_splice_match
             continue;
         }
 
-        auto
-        tmp_slice = std::vector<int>(tmp.begin() + 1, tmp.end() - 1);
+        auto tmp_slice = std::vector<int>(tmp.begin() + 1, tmp.end() - 1);
 
-        if (tr_count.count(tr) > 0 && transcript_to_exon.count(tr) == 0 && tr_count[tr] >= min_sup_reads) {
-            if (splice_dict.count(tr) == 0) {
-                splice_dict[tr] = {};
-            }
+        if (tr_count.count(tr) && transcript_to_exon.count(tr) == 0 && tr_count[tr] >= min_sup_reads) {
             splice_dict[tr].push_back(tr);
+			splice_gene_dict[tr].push_back(transcript_dict[tr].parent_id);
+		}
 
-            if (splice_gene_dict.count(tr) == 0) {
-                splice_gene_dict[tr] = {};
-            }
-       if (splice_dict.count(tr) == 0) {
-                splice_dict[tr] = {};
-            }
-            splice_dict[tr].push_back(tr);
-            splice_gene_dict[tr].push_back(transcript_dict_ref[tr].parent_id);
-        }
-
-        if (splice_dict_ref.count(tr) == 0) {
-            splice_dict_ref[tr] = {};
-        }
         splice_dict_ref[tr].push_back(tr);
     }
 
+
+	// just printing the values
     for (const auto & [key, val] : splice_gene_dict) {
         // get all the unique values
-        std::set<std::string>
-        dict_set;
+        std::set<std::string> dict_set;
         for (const auto & i : val) {
             dict_set.insert(i);
         }
 
         if (dict_set.size() > 1) {
-            std::cout << "Shared splice chain: (";
+            Rcpp::Rcout << "Shared splice chain: (";
             for (const auto & i : dict_set) {
-                std::cout << i << " ";
+                Rcpp::Rcout << i << " ";
             }
         }
-        std::cout << "), " << key;
+       Rcpp::Rcout << "), " << key;
     }
 
     for (const auto & [key, val] : splice_dict) {
-        if (key.size() == 1) {
+        if (val.size() == 1) {
             tr_id_list.push_back(val.front());
             gene_id_list.push_back(splice_gene_dict[key].front());
-            if (splice_dict_ref.count(key) > 0) {
+            if (splice_dict_ref.count(key)) {
                 FSM_id_list.push_back(splice_dict_ref[key].front());
                 FSM_to_reference.push_back(true);
             } else {
@@ -157,32 +134,29 @@ annotate_full_splice_match
                 FSM_to_reference.push_back(false);
             }
         } else {
-            std::vector<std::string>
-            ref_tr;
-            for (const auto & tr : val) {
-                if (transcript_to_exon_ref.count(tr) > 0) {
-                    ref_tr.push_back(tr);
-                }
-            }
+            std::vector<std::string> ref_tr = ranges::filter<std::string>(val, 
+				[&transcript_to_exon_ref](const std::string &tr){
+					return (bool)transcript_to_exon_ref.count(tr);
+				});
 
-            if (ref_tr.size() > 0) {
+            if (ref_tr.size()) {
                 for (const auto & tr : val) {
                     tr_id_list.push_back(tr);
-                    gene_id_list.push_back(val.front());
+                    gene_id_list.push_back(splice_gene_dict[key].front());
                     FSM_id_list.push_back(ref_tr.front());
                     FSM_to_reference.push_back(true);
                 }
-            } else if (splice_dict_ref.count(key) > 0) {
+            } else if (splice_dict_ref.count(key)) {
                 for (const auto & tr : val) {
                     tr_id_list.push_back(tr);
-                    gene_id_list.push_back(val.front());
-                    FSM_id_list.push_back(val.front());
+                    gene_id_list.push_back(splice_gene_dict[key].front());
+                    FSM_id_list.push_back(splice_dict_ref[key].front());
                     FSM_to_reference.push_back(true);
                 }
             } else {
                 for (const auto & tr : val) {
                     tr_id_list.push_back(tr);
-                    gene_id_list.push_back(val.front());
+                    gene_id_list.push_back(splice_gene_dict[key].front());
                     FSM_id_list.push_back(val.front());
                     FSM_to_reference.push_back(false);
                 }
@@ -190,8 +164,7 @@ annotate_full_splice_match
         }
     }
 
-    std::ofstream
-    anno (anno_out);
+    std::ofstream anno (anno_out);
 
     anno << "transcript_id,gene_id,FSM_match,FSM_match_to_ref,total_count\n";
     for (int i = 0; i < tr_id_list.size(); ++i) {

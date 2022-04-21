@@ -98,4 +98,5 @@ inline std::string printVec(const std::vector<T> &a) {
 	return ss.str();
 }
 
+
 #endif // TEST_UTILITIES_H

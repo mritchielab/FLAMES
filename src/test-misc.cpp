@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <string>
 
+#include "classes/StartEndPair.h"
 #include "utility/utility.h"
 #include "test_utilities.h"
 
@@ -26,4 +27,16 @@ context("Test misc functions & utilities") {
 		std::vector<int> z_real{1,2,5,4,7};
 		expect_true(compare_stream(z_real, z1));
 	}
+
+	test_that("Most Common StartEndPair values are found") {
+		std::vector<StartEndPair> x {
+			{1, 5}, {2, 10}, {3, 15}, {1, 6}, {1, 10}, {15, 10}
+		};
+
+		StartEndPair resX = mostCommonSEP(x);
+
+		expect_true((resX == StartEndPair{1, 10}));
+	}
+
+	// TODO: test the rest of the functions in utility/utility.h
 }

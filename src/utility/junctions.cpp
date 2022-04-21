@@ -17,13 +17,12 @@
 
 
 int 
-take_closest(std::vector<int> list, int num) {
+take_closest(const std::vector<int> &list, int num) {
     /*
         returns the value in list that is closest to num
     */
 
-    int output = list.back();
-    list.pop_back();
+    int output = list[0];
 
     for (const auto & i : list) {
         if (abs(i - num) < abs(output - num)) {

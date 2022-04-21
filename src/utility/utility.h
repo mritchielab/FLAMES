@@ -2,13 +2,15 @@
 #define UTILITY_H
 
 #include <string>
+#include <sstream>
 #include <unordered_map>
 #include <vector>
 #include <functional>
 #include <algorithm>
+#include <set>
 
-#include "../classes/GeneAnnoParser/GFFRecord.h"
 #include "../classes/Pos.h"
+#include "../classes/StartEndPair.h"
 
 namespace ranges
 {
@@ -32,9 +34,9 @@ namespace ranges
 		return out;
 	}
 
-	template <typename T>
-	int sumMap(const std::vector<T> &vec, std::function<int(T)> f) {
-		int sum = 0;
+	template <typename T, typename U>
+	U sumMap(const std::vector<T> &vec, std::function<U(T)> f) {
+		U sum = 0;
 		for (auto it : vec) {
 			sum += f(it);
 		}
@@ -42,15 +44,15 @@ namespace ranges
 	}
 
 	template <typename T>
-	std::vector<T> filter(const std::vector<T> &vec, std::function<bool(T)> f) {
-		std::vector<T> out;
+	void filter(const std::vector<T> &vec, std::vector<T> &out, std::function<bool(T)> f) {
 		std::copy_if(vec.begin(), vec.end(), std::back_inserter(out), f);
-		return out;
 	}
 
 	template <typename T>
-	void filter(const std::vector<T> &vec, std::vector<T> &out, std::function<bool(T)> f) {
-		std::copy_if(vec.begin(), vec.end(), std::back_inserter(out), f);
+	std::vector<T> filter(const std::vector<T> &vec, std::function<bool(T)> f) {
+		std::vector<T> out;
+		filter(vec, out, f);
+		return out;
 	}
 	
 	template <typename T>
@@ -61,6 +63,17 @@ namespace ranges
 	template <typename T, typename U>
 	int count(const T &vec, const U &val) {
 		return std::count(vec.begin(), vec.end(), val);
+	}
+
+	template <typename T>
+	bool hasDuplicates(const std::vector<T> &vec) {
+		std::set<T> set(vec.begin(), vec.end());
+		return vec.size() > set.size();
+	}
+	
+	template <typename T, class Comp>
+	void sort(std::vector<T> &vec, Comp f) {
+		std::sort(vec.begin(), vec.end(), f);
 	}
 
 	// template <typename T, typename U>
@@ -89,6 +102,16 @@ std::string PosToStr(Pos);
 
 std::string VecToStr(std::vector<std::string>);
 
+template <typename T>
+inline std::string VecToStr(const std::vector<T> &v) {
+	std::stringstream ss;
+	ss << "{";
+	for (const auto &it : v) {
+		ss << it << ",";
+	}
+	ss << "}";
+	return ss.str();
+}
 /*
  * At vector position, determine the most value across all vectors
  * @return a vector of the most common elements at each position
@@ -125,15 +148,15 @@ static inline T mostCommon(const std::vector<T> &values) {
 		counts[it]++;
 	}
 
-	T max = (*std::max_element(
-				counts.cbegin(), counts.cend(),
-				[](const std::pair<T, int> &a, const std::pair<T, int> &b) { 
-					return a.second < b.second; 
-				}
-	)).first;
+	T max = values[0];
+	for (const auto &[val, count] : counts) {
+		max = count > counts[max] ? val : max;
+	}
 
 	return max;
 }
+
+StartEndPair mostCommonSEP(const std::vector<StartEndPair> &);
 
 /*
  * Taking a vector of values (which contains duplicates)
@@ -166,6 +189,16 @@ static inline sortNumberOccurances(const std::unordered_map<T, int> &counts) {
 	);
 
 	return out;	
+}
+
+template <typename T>
+std::unordered_map<T, int>
+static inline countUnique(const std::vector<T> &vec) {
+	std::unordered_map<T, int> counts;
+	for (const auto &it : vec) {
+		counts[it]++;
+	}
+	return counts;
 }
 
 #endif // UTILITY_H

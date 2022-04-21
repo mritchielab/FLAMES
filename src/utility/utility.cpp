@@ -5,7 +5,6 @@
 #include <vector>
 #include <sstream>
 
-#include "../classes/GeneAnnoParser/GFFRecord.h"
 #include "../classes/Pos.h"
 
 template <typename T>
@@ -34,3 +33,32 @@ std::string PosToStr(Pos p) {
 	return ss.str();
 }
 
+StartEndPair mostCommonSEP(const std::vector<StartEndPair> &values) {
+	StartEndPair newValue = values[0];
+	std::unordered_map<int, int> startValues, endValues;
+	for (const auto &it : values) {
+		startValues[it.start]++;
+		endValues[it.end]++;
+	}
+
+	int startMaxCount = 0;
+	int endMaxCount = 0;
+	for (const auto &[start, count] : startValues) {
+		if (count > startMaxCount) {
+			startMaxCount = count;
+			newValue.start = start;
+		} else if (count == startMaxCount && start < newValue.start) {
+			newValue.start = start;
+		}
+	}
+	for (const auto &[end, count] : endValues) {
+		if (count > endMaxCount) {
+			endMaxCount = count;
+			newValue.end = end;
+		} else if (count == endMaxCount && end > newValue.end) {
+			newValue.end = end;
+		}
+	}
+
+	return newValue;
+}

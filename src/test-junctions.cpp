@@ -89,7 +89,7 @@ context("Junctions functions") {
 		std::vector<int> sample {1,2,3,4,5,8,10,20,30,60,100};
 		
 		expect_true(take_closest(sample, 6) == 5);
-		expect_true(take_closest(sample, 80) == 100);
+		expect_true(take_closest(sample, 80) == 60);
 		expect_true(take_closest(sample, 14) == 10);
 	}
 	
