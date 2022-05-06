@@ -536,7 +536,7 @@ sc_annotate_umap <- function(gene, path, sce_all = NULL, sce_20 = NULL, sce_80 =
       which = "row",
       width = unit(isoform_legend_width, "cm"),
       n = length(legends_heatmap),
-      subsetable = FALSE
+      subsettable = FALSE
     )
 
     expr_20 <- expr_20[tr_order, cell_order_20]
