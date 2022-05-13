@@ -87,10 +87,10 @@ get_hm_idx
 void
 match_cell_barcode
 (
-    String fastq_dir, 
-    String stats_file, 
-    String out_fastq, 
-    String ref_csv, 
+    Rcpp::String fastq_dir, 
+    Rcpp::String stats_file, 
+    Rcpp::String out_fastq, 
+    Rcpp::String ref_csv, 
     int MAX_DIST, 
     int UMI_LEN
 );

@@ -4,7 +4,6 @@
 
 #include <Rcpp.h>
 
-
 #include "main-functions/match_cell_barcode.h"
 
 //' Match Cell Barcodes
@@ -54,7 +53,7 @@ match_cell_barcode_cpp
 /*****************************************************************************/
 
 #include "main-functions/merge_bulk.h"
-
+//' @useDynLib FLAMES, .registration=TRUE
 // [[Rcpp::export]]
 void 
 merge_bulk_fastq_cpp(Rcpp::StringVector fastq_files, Rcpp::String out_fastq) 
