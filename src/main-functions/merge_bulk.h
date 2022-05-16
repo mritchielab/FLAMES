@@ -22,8 +22,8 @@ shorten_filename
 void
 merge_bulk_fastq
 (
-    StringVector fastq_files,
-    String out_fastq
+    Rcpp::StringVector fastq_files,
+    Rcpp::String out_fastq
 );
 
 #endif
