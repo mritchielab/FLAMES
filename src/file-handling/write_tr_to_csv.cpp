@@ -68,7 +68,7 @@ void xx() {
 	};
 
 	std::string x1, x2;
-	for (int i = 0; i < res.size(); i++) {
+	for (int i = 0; i < (int)res.size(); i++) {
 		x1 = ps[i].first;
 		x2 = ps[i].second;
 		Rcpp::Rcout << "String 1 : " << x1 << " String 2 : " << x2 << "\n";
@@ -91,7 +91,7 @@ umi_dedup (std::vector<std::string> l, bool has_UMI)
 		l_count[i]++;
 	}
 
-	if (l_count.size() == 1) {
+	if ((int)l_count.size() == 1) {
 		return 1;
 	}
 
@@ -108,7 +108,7 @@ umi_dedup (std::vector<std::string> l, bool has_UMI)
 
 	
 	std::unordered_map<std::string, int> rm_umi;
-	for (int i = 0; i < l_count.size(); ++i) {
+	for (int i = 0; i < (int)l_count.size(); ++i) {
 		for (int j = l_count.size(); j > i; j--) { // first assess the low abundant UMI
 			if (!rm_umi.count(l_count_vec[j].first)) {
 				if (edit_distance(l_count_vec[i].first, l_count_vec[j].first) < 2) {

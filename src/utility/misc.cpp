@@ -20,7 +20,7 @@ find_best_splice_chain(std::vector<int> raw_iso, std::vector<std::vector<int>> j
 {
   // index, length-1, starting position
   int best_match[3] = {-1, 0, 0};
-  for (int i = 0; i < junction_list.size(); i++) {
+  for (int i = 0; i < (int)junction_list.size(); i++) {
     // hold onto this
     std::vector<int>
     junction = junction_list[i];
@@ -28,7 +28,7 @@ find_best_splice_chain(std::vector<int> raw_iso, std::vector<std::vector<int>> j
     // populate vector i_st with the indices of junction_list[i] entries
     // that match certain criteria
     std::vector<int> iter_start;
-    for (int j = 0; j < junction_list[i].size(); j++) {
+    for (int j = 0; j < (int)junction_list[i].size(); j++) {
 
       if (abs(junction[j] - raw_iso[1]) < max_dist) {
         iter_start.push_back(j);
@@ -39,7 +39,7 @@ find_best_splice_chain(std::vector<int> raw_iso, std::vector<std::vector<int>> j
       int iter_start_int = iter_start[0];
       int iter = iter_start_int + 1;
       int iter_end = iter_start_int;
-      while (iter < junction.size() && iter - iter_start_int + 1 < raw_iso.size()) {
+      while (iter < (int)junction.size() && iter - iter_start_int + 1 < (int)raw_iso.size()) {
         if (abs(junction[iter] - raw_iso[iter - iter_start_int + 1]) < max_dist) {
           iter_end = iter;
           iter += 1;
@@ -78,7 +78,7 @@ if_exon_contains(std::vector<int> s1, std::vector<int> s2, int MAX_TOLERANCE)
     only searches for exact matches
   */
 
-  if (s2.size() == 2) { // ignore single exon transcripts 
+  if ((int)s2.size() == 2) { // ignore single exon transcripts 
     return 0;
   }
 
@@ -95,8 +95,8 @@ if_exon_contains(std::vector<int> s1, std::vector<int> s2, int MAX_TOLERANCE)
     return 0;
   }
 
-  for (int i = 2; i < s2.size() - 1; i++) {
-    if (fs + i - 1 > s1.size() - 1) {
+  for (int i = 2; i < (int)s2.size() - 1; i++) {
+    if (fs + i - 1 > (int)s1.size() - 1) {
       return 0;
     }
 
@@ -105,10 +105,10 @@ if_exon_contains(std::vector<int> s1, std::vector<int> s2, int MAX_TOLERANCE)
     }
   }
 
-  if (fs + s2.size() - 2 > s1.size() - 1) {
+  if (fs + (int)s2.size() - 2 > (int)s1.size() - 1) {
     return 0;
   }
-  if ((s2.back() - s1[fs + s2.size() - 2]) > MAX_TOLERANCE) {
+  if ((s2.back() - s1[fs + (int)s2.size() - 2]) > MAX_TOLERANCE) {
     return 0;
   }
 
@@ -173,7 +173,7 @@ pairwise (std::vector<int> input)
   std::vector<StartEndPair>
   output;
 
-  for (int i = 1; i < input.size(); i+=2) {
+  for (int i = 1; i < (int)input.size(); i+=2) {
     StartEndPair
     new_pair = {input[i-1], input[i]};
 
@@ -229,7 +229,7 @@ get_fa(std::string filename)
 
     std::string output = input;
 
-    for (int i = 0; i < input.size(); i++) {
+    for (int i = 0; i < (int)input.size(); i++) {
       output[i] = std::toupper(output[i]);
     }
     return output;
@@ -270,7 +270,7 @@ bool
 isStrictlyIncreasing(std::vector<int> vec)
 {
     bool strictlyIncreasing = 1;
-    for (int i = 1; i < vec.size(); i++) {
+    for (int i = 1; i < (int)vec.size(); i++) {
         if (vec[i] < vec[i - 1]) {
             // then the vector is not strictly increasing
             strictlyIncreasing = 0;

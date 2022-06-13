@@ -74,7 +74,7 @@ static inline void bed_write_row (
 			<< blockSizes << "\t"
 			<< blockStarts << "\n";
 	}
-};
+}
 
 // lambda function to write rows to a psl file
 // format described here: http://genome.ucsc.edu/FAQ/FAQformat#format2
@@ -125,7 +125,7 @@ static inline void psl_write_row(
 		<< blockSizes << "\t"
 		<< qStarts << "\t"
 		<< tStarts << "\n";
-};
+}
 
 // generic function to write any amount of data to a tab-separated CSV row
 static void csv_write_row (std::ofstream& file, std::vector<std::string> data) {
@@ -133,7 +133,7 @@ static void csv_write_row (std::ofstream& file, std::vector<std::string> data) {
 		file << *entry << '\t';
 	}
 	file << data.back() << '\n';
-};
+}
 
 
 // [[Rcpp::export]]
@@ -230,7 +230,7 @@ gtf_to_bed(std::string in_gtf, std::string out_bed, std::string chrom_sizes_file
 					int pos = 0;
 					qstarts = {pos};
 
-					for (int b = 0; b < blocksizes.size() - 1; b++) {
+					for (int b = 0; b < (int)blocksizes.size() - 1; b++) {
 						pos += blocksizes[b];
 						qstarts.push_back(pos);
 					}

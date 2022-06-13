@@ -48,8 +48,8 @@ blocks_to_junctions (std::vector<StartEndPair> blocks)
 	output.left = blocks.front().start;
 	output.right = blocks.back().end;
 
-    if (blocks.size() > 1) {
-        for (int i = 1; i < blocks.size(); i++) {
+    if ((int)blocks.size() > 1) {
+        for (int i = 1; i < (int)blocks.size(); i++) {
             output.junctions.push_back(blocks[i - 1].end);
             output.junctions.push_back(blocks[i].start);
         }
@@ -189,8 +189,8 @@ remove_similar_tr
         dup_set = {};
 
         // iterate through every pair of transcripts t1 and t2 in the gene
-        for (t1 = 0; t1 < transcript.size() - 1; ++t1) {
-            for (t2 = t1 + 1; t2 < transcript.size(); ++t2) {
+        for (t1 = 0; t1 < (int)transcript.size() - 1; ++t1) {
+            for (t2 = t1 + 1; t2 < (int)transcript.size(); ++t2) {
             // std::cout << "t2 is " << t2 << " / " << transcript.size() << "\n";
                 if (is_exon_similar(transcript_to_exon.at(transcript[t1]), transcript_to_exon.at(transcript[t2]), threshold)) {
                     dup_set.insert(t2);
@@ -228,7 +228,7 @@ is_exon_similar
 
     // then add up the difference
     int diff = 0;
-    for (int i = 0; i < exon1.size(); ++i) {
+    for (int i = 0; i < (int)exon1.size(); ++i) {
         diff += std::abs(exon1.at(i).start - exon2.at(i).start) + std::abs(exon1.at(i).end - exon2.at(i).end);
         if (diff > threshold) {
             return false;

@@ -45,7 +45,7 @@ context("GTF To Bed file conversion") {
 			"0,5337,5560,6552"
 		};
 		std::vector<std::string> test = parseLine(line);
-		for (int i = 0; i < real.size(); i++) {
+		for (int i = 0; i < (int)real.size(); i++) {
 			expect_true(real[i] == test[i]);
 		}
 	}

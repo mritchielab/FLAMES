@@ -82,7 +82,7 @@ void Isoforms::add_isoform(Junctions junctions, bool is_reversed) {
 						// they are the same size. see if they are similar
 						// instead of comparing
 						bool similar = true;
-						for (int i = 0; i < current_key.size(); i++) {
+						for (int i = 0; i < (int)current_key.size(); i++) {
 							if (std::abs(current_key[i] - junctions.junctions[i]) >= this->parameters.MAX_DIST) {
 								// they are too far apart
 								similar = false;
@@ -108,7 +108,7 @@ void Isoforms::add_isoform(Junctions junctions, bool is_reversed) {
 			}
 		}
 	}
-};
+}
 
 /* takes a junctions object,
  * adds it to junction_list, junction_dict,
@@ -192,7 +192,7 @@ void Isoforms::update_all_splice() {
 	// look through junction_dict and update entries
 	// with the most common value in each vector
 	for (auto const& [key, junction_vec] : junction_tmp) {
-		if (junction_vec.size() >= this->parameters.MIN_SUP_CNT) {
+		if ((int)junction_vec.size() >= this->parameters.MIN_SUP_CNT) {
 			// produce a new key from the most common
 			// junction at each position in the vector of junction vectors
 			std::vector<int> newKey = mostCommonEachCell(junction_vec, key.size());
@@ -213,6 +213,7 @@ void Isoforms::update_all_splice() {
 	for (auto const & [key, blocks] : single_block_tmp) {
 		if (blocks.size() >= this->parameters.MIN_SUP_CNT) {
 			StartEndPair newKey = mostCommonSEP(blocks); // uses StartEndPair specific mostCommon to find the most common individual start and end values
+
 			int commonCount = mostCommon<int>(strand_counts_tmp.at({key.start, key.end}));
 			
 			this->single_block_dict[newKey] = single_block_tmp.at(key);
@@ -252,7 +253,7 @@ Isoforms::filter_site(const std::unordered_map<int, int> &list_counts, float fdr
 	
 	// create and populate a cumulative_probability variable
 	std::vector<float> cumulative_probability { prob[0] };
-	for (int i = 1; i < prob.size(); i++) {
+	for (int i = 1; i < (int)prob.size(); i++) {
 		cumulative_probability.push_back(cumulative_probability[i-1] + prob[i]);
 	}
 
@@ -261,7 +262,7 @@ Isoforms::filter_site(const std::unordered_map<int, int> &list_counts, float fdr
 	} else {
 		std::vector<std::pair<int, int>> sliced_mx;
 
-		for (int i = 0; i < cumulative_probability.size(); i++) {
+		for (int i = 0; i < (int)cumulative_probability.size(); i++) {
 			// finish if we've gone past the cutoff
 			if (cumulative_probability[i] > fdr_cutoff) {
 				break;
@@ -277,8 +278,8 @@ std::vector<int>
 Isoforms::insert_dist(std::vector<int> fs, std::vector<int> known_site) {
 	std::vector<int> tmp = {fs[0]};
 
-	if (fs.size() > 1) {
-		for (int it = 1; it < fs.size(); it++) {
+	if ((int)fs.size() > 1) {
+		for (int it = 1; it != (int)fs.size(); it++) {
 			int clo_p = take_closest(tmp, fs[it]);
 
 			if (std::abs(clo_p - fs[it]) > this->parameters.MAX_TS_DIST / 2) {
@@ -286,8 +287,9 @@ Isoforms::insert_dist(std::vector<int> fs, std::vector<int> known_site) {
 			}
 		}
 	}
-	
-	if (known_site.size() > 0) {
+
+	// if known_site is not None
+	if ((int)known_site.size() > 0) {
 		for (auto s : known_site) {
 			int clo_p = take_closest(tmp, s);
 			
@@ -396,7 +398,7 @@ void Isoforms::filter_TSS_TES(std::ofstream &out_f, DoubleJunctions known_site, 
 				}
 
 				// but we only want to allow up to MAX_SITE_PER_SLICE combinations
-				if (pair_after_filtering.size() >= this->parameters.MAX_SITE_PER_SPLICE) {
+				if ((int)pair_after_filtering.size() >= this->parameters.MAX_SITE_PER_SPLICE) {
 					break;
 				}
 			}
@@ -423,7 +425,7 @@ void Isoforms::filter_TSS_TES(std::ofstream &out_f, DoubleJunctions known_site, 
 			);
 
 			for (const auto & [p, _] : pair_enrich) {
-				if (pair_after_filtering.size() > 0) {
+				if ((int)pair_after_filtering.size() > 0) {
 					// now we want to extract the left and right elements again
 					std::vector<int> pair_after_filtering_left;
 					std::vector<int> pair_after_filtering_right;
@@ -450,7 +452,7 @@ void Isoforms::filter_TSS_TES(std::ofstream &out_f, DoubleJunctions known_site, 
 				}
 
 				// we only want up to MAX_SITE_PER_SLICE combinations
-				if (pair_after_filtering.size() >= this->parameters.MAX_SITE_PER_SPLICE) {
+				if ((int)pair_after_filtering.size() >= this->parameters.MAX_SITE_PER_SPLICE) {
 					// so just disreagard any after that point
 					break;
 				}

@@ -518,7 +518,7 @@ context("Isoform Class & Related Functions") {
 		////////////////////////////////////////////////////////////////////////////////////////////////
 		//////////////////////////////// Test updating all splices using a large number of junctions
 		////////////////////////////////////////////////////////////////////////////////////////////////
-		for (int i = 10; i < junctions.size(); i++) {
+		for (int i = 10; i < (int)junctions.size(); i++) {
 			tmp_isoform.add_isoform(junctions[i].first, junctions[i].second);
 		}
 		expect_true(tmp_isoform.size() == 136);
@@ -595,6 +595,7 @@ context("Isoform Class & Related Functions") {
 			{{1022, 1149, 1987, 2381}, 1}, {{8381, 8454, 8585, 10858}, 1}, {{8315, 8585, 10858, 10991}, 1}, {{2177, 2390}, -1}, {{1022, 1149, 1992, 2381}, 1}, {{1149, 1992}, 1}, {{8214, 8585, 10858, 10991}, 1}, {{8214, 8381, 8454, 8585, 10858, 10991}, 1}, {{1989, 2381}, 1}, {{1149, 1987, 2033, 2119, 2156, 2270, 2315, 3298, 3404, 3483, 3643, 5380, 5450, 5543, 5626, 6111, 6169, 6327, 6452, 6658, 6722, 6826, 6957, 7144, 7307, 7681, 7762, 7870, 8381, 8454, 8585, 10858}, 1}, {{8585, 10858}, 1}, {{8315, 8381, 8454, 8585, 10858, 10991, 11311, 11866}, 1}, {{1022, 1149, 1987, 2033, 2119, 2156, 2270, 2315, 3298, 3404, 3483, 3643, 5380, 5450, 5543, 5626, 6111, 6169, 6327, 6452, 6658, 6722, 6826, 6957, 7144, 7307, 7681, 7762, 7870, 8381, 8454, 8585, 10858, 10991}, 1}, {{1149, 1987}, 1}, {{8315, 8381, 8454, 8585, 10858, 10991}, 1}, {{8381, 8454, 8585, 10858, 10991, 11311}, 1}
 		};
 
+<<<<<<< HEAD
 		expect_true(strand_counts.size() == filter_isoform.strand_counts.size());
 		// for (const auto &[key, val] : strand_counts) {
 		// 	expect_true(filter_isoform.strand_counts[key][0] == val);
@@ -607,6 +608,10 @@ context("Isoform Class & Related Functions") {
 		// for (const auto &[key, val] : raw_isoforms) {
 		// 	expect_true(filter_isoform[key] == val);
 		// }
+=======
+	for (int i = 0; i < (int)junctions.size(); i++) {	
+		tmp_isoform.add_isoform(junctions[i].first, junctions[i].second);
+>>>>>>> 472acffe3f3e476716a299d8c0a88adfd71776f3
 	}
 
 	test_that("auxillary isoform functions are correct") {

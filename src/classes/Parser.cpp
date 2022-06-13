@@ -17,7 +17,7 @@ ParseResult parseSpaces(std::string full) {
 // parse any leading char away from the start of a token
 // returns a ParseResult of {leading chars, rest of string}
 ParseResult parseLeadingChar(std::string full, char c) {
-	for (int i = 0; i < full.size(); i++) {
+	for (int i = 0; i < (int)full.size(); ++i) {
 		// if we've encountered a character not of the given char, return the remaining strin
 		if (full[i] != c) {
 			return ParseResult (full.substr(0, i), full.substr(i, std::string::npos));
@@ -27,7 +27,7 @@ ParseResult parseLeadingChar(std::string full, char c) {
 	return ParseResult (full, std::string());
 }
 ParseResult parseLeadingChar(std::string full, std::function<int(int)> condition) {
-	for (int i = 0; i < full.size(); i++) {
+	for (int i = 0; i < (int)full.size(); ++i) {
 		if (!condition(full[i])) {
 			return ParseResult(full.substr(0, i), full.substr(i, std::string::npos));
 		}
@@ -42,7 +42,7 @@ ParseResult parseColumn(std::string full) {
 	// parse away any leading spaces
 	full = parseSpaces(full).second;
 	// parse the token up until any closing spaces.
-	for (int i = 0; i < full.size(); i++) {
+	for (int i = 0; i < (int)full.size(); ++i) {
 		if (isspace(full[i])) {
 			return ParseResult (full.substr(0, i), full.substr(i+1, std::string::npos));
 		}
@@ -94,7 +94,7 @@ ParseResult parseKeyValue(std::string full) {
 }
 ParseResult parseKeyValue(std::string full, char seperator) {
 	int sep = full.find(seperator);
-	if (sep != std::string::npos) {
+	if (sep != (int)std::string::npos) {
 		return ParseResult (full.substr(0, sep), full.substr(sep+1, std::string::npos));
 	}
 
@@ -127,7 +127,7 @@ ParseResult parseAttribute(std::string full) {
 
 	int colonPos = full.find(';');
 
-	if (colonPos != std::string::npos) {
+	if (colonPos != (int)std::string::npos) {
 		return ParseResult (full.substr(0, colonPos), full.substr(colonPos+1, std::string::npos));
 	}
 
