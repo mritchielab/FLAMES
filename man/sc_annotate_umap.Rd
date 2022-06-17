@@ -14,7 +14,7 @@ sc_annotate_umap(
   n_pcs = 40,
   cluster_annotation,
   dup_bc = NULL,
-  return_sce_all = T,
+  return_sce_all = TRUE,
   heatmap_annotation_colors = "BrBG",
   isoform_legend_width = 7,
   heatmap_color_quantile = 0.95,
@@ -53,6 +53,15 @@ available diverging palettes are:\cr
 when there are more than 11 groups, this argument will be ignored and random palettes will be generated.}
 
 \item{isoform_legend_width}{The width of isoform legends in heatmaps, in \code{cm}.}
+
+\item{heatmap_color_quantile}{Float; Expression levels higher than this quantile will all be shown with \code{col_high}.
+Expression levels lower than 1 - \code{heatmap_color_quantile} will all be shown with \code{col_low};}
+
+\item{col_low}{Color for cells with low expression levels in UMAPs.}
+
+\item{col_mid}{Color for cells with intermediate expression levels in UMAPs.}
+
+\item{col_high}{Color for cells with high expression levels in UMAPs.}
 }
 \value{
 a list containing the combined UMAP, the isoform exon alignments and the UMAP with isoform expression levels.

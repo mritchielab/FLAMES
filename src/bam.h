@@ -363,7 +363,7 @@ extern "C" {
 	 @abstract     Formats a BAM record and writes it and \n to stdout
 	 @return       0 if successful, -1 on error
 	 */
-	int bam_view1(const bam_header_t *header, const bam1_t *b);
+	//int bam_view1(const bam_header_t *header, const bam1_t *b);
 
 	/*!
 	 @abstract       Check whether a BAM record is plausibly valid

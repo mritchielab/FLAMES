@@ -137,8 +137,13 @@ generic_long_pipeline <-
             # https://github.com/GoekeLab/bambu/issues/255
             bambu_out <- withr::with_package("GenomeInfoDb", bambu::bambu(reads = genome_bam, annotations = bambuAnnotations, genome = genome_fa, quant = FALSE))
             bambu::writeToGTF(bambu_out, isoform_gff3) # Does bambu_out include both novel and known isoforms ???
+
             # Create transcriptome assembly .fa
-            gffread_cpp(genome_fa, transcript_fa, isoform_gff3) # Use XStringSet + extractTranscriptSeqs instead?
+            dna_string_set <- Biostrings::readDNAStringSet(genome_fa)
+            names(dna_string_set) <- gsub(" .*$", "", names(dna_string_set))
+            tr_string_set <- GenomicFeatures::extractTranscriptSeqs(dna_string_set, get_GRangesList(isoform_gff3))
+            Biostrings::writeXStringSet(tr_string_set, transcript_fa)
+
             Rsamtools::indexFa(transcript_fa)
             # Todo: convert bambu_out (GRangesList) to transcript_dict directly
             isoform_objects <- list(transcript_dict = NULL, transcript_dict_i = parse_gff_tree(isoform_gff3)$transcript_dict)
@@ -223,6 +228,7 @@ generic_long_pipeline <-
         )
     }
 
+#' @importFrom Matrix tail
 check_arguments <-
     function(annot,
              fastq,
@@ -330,3 +336,12 @@ check_arguments <-
 
         return(list(config = config_file))
     }
+
+get_GRangesList <- function(file, gene = NULL) {
+    isoform_gff <- rtracklayer::import(file, feature.type = c("exon", "utr"))
+    if (is.null("gene")) {
+        isoform_gff <- isoform_gff[isoform_gff$gene_id == gene]
+    }
+    isoform_gff <- S4Vectors::split(isoform_gff, isoform_gff$transcript_id)
+    isoform_gff
+}

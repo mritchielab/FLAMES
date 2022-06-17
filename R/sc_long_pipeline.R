@@ -35,6 +35,7 @@
 #' @param genome_fa The file path to genome fasta file.
 #' @param minimap2_dir Path to the directory containing minimap2, if it is not in PATH. Only required if either or both of
 #' \code{do_genome_align} and \code{do_read_realign} are \code{TRUE}.
+#' @param seed Integer or NULL; The random seed for minimap2.
 #' @param downsample_ratio Integer; downsampling ratio if performing downsampling analysis.
 #' @param config_file File path to the JSON configuration file. If specified, \code{config_file} overrides
 #' all configuration parameters
@@ -311,6 +312,12 @@ generate_bulk_summarized <- function(out_files, load_genome_anno = NULL) {
     return(generate_sc_sce(out_files = out_files, load_genome_anno = load_genome_anno, create_function = SummarizedExperiment::SummarizedExperiment))
 }
 
+
+#' Create \code{SingleCellExperiment} object from \code{FLAMES} output folder
+#' @param outdir The folder containing \code{FLAMES} output files
+#' @param annot (Optional) the annotation file that was used to produce the output files
+#' @return a \code{SingleCellExperiment} object
+#' @example inst/examples/pipeline_example.R
 #' @export
 create_sce_from_dir <- function(outdir, annot = NULL) {
     out_files <- list(
@@ -331,8 +338,13 @@ create_sce_from_dir <- function(outdir, annot = NULL) {
     }
 }
 
+#' Create \code{SummarizedExperiment} object from \code{FLAMES} output folder
+#' @param outdir The folder containing \code{FLAMES} output files
+#' @param annot (Optional) the annotation file that was used to produce the output files
+#' @return a \code{SummarizedExperiment} object
+#' @example inst/examples/pipeline_example.R
 #' @export
-create_se_from_dir <- function(outdir) {
+create_se_from_dir <- function(outdir, annot) {
     out_files <- list(
         counts = file.path(outdir, "transcript_count.csv.gz"),
         isoform_annotated = file.path(outdir, "isoform_annotated.gff3"),

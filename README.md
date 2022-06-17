@@ -1,6 +1,8 @@
 
 # FLAMES
 
+[![R build status](https://github.com/ChangqingW/FLAMES-R/workflows/R-CMD-check-bioc/badge.svg)](https://github.com/ChangqingW/FLAMES-R/actions)
+
 <img  src="inst/images/FLAMES-01.png">
 
 

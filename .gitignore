@@ -1,6 +1,7 @@
 .Rproj.user/
 .Rhistory
 .RData
+.Rprofile
 .ds_store
 *.DS_Store
 *.Rproj
@@ -17,6 +18,7 @@ inst/data/align2genome.sample.fastq.gz
 inst/data/trimgff.py
 doc
 Meta
+check
 /doc/
 /Meta/
 R/shortisoformtest.R

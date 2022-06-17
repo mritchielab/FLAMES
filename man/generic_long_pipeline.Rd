@@ -53,6 +53,8 @@ realignment steps}
 \item{minimap2_dir}{Path to the directory containing minimap2, if it is not in PATH. Only required if either or both of
 \code{do_genome_align} and \code{do_read_realign} are \code{TRUE}.}
 
+\item{seed}{Integer or NULL; The random seed for minimap2.}
+
 \item{downsample_ratio}{Integer; downsampling ratio if performing downsampling analysis.}
 
 \item{config_file}{File path to the JSON configuration file. If specified, \code{config_file} overrides
