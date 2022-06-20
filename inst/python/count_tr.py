@@ -12,7 +12,7 @@ from itertools import groupby
 
 def umi_dedup(l, has_UMI):
     if has_UMI:
-        l_cnt = Counter(l).most_common()
+        l_cnt = sorted(Counter(l).most_common(), key=lambda x: (x[1], x[0]), reverse=True)
         if len(l_cnt) == 1:
             return 1
         rm_umi = {}
