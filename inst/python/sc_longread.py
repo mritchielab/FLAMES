@@ -772,11 +772,11 @@ class Isoforms(object):
                     if abs(one_exon[0]-transcript_to_junctions[tr]["left"])<self.MAX_TS_DIST and abs(one_exon[1]-transcript_to_junctions[tr]["right"])<self.MAX_TS_DIST:
                         known_exons = (transcript_to_junctions[tr]["left"], transcript_to_junctions[tr]["right"])
                         if known_exons in self.known_isoforms:
-                            self.known_isoforms[known_exons] = Iso(self.known_isoforms[known_exons].support_cnt+len(self.single_blocks[self.single_block_dict[one_exon]]),tr,transcript_dict[tr].parent_id)
+                            self.known_isoforms[known_exons] = Iso(self.known_isoforms[known_exons].support_cnt+len(self.single_blocks[self.single_block_dict[one_exon]]),tr,transcript_dict[tr][0].parent_id)
                         else:
-                            self.known_isoforms[known_exons] = Iso(len(self.single_blocks[self.single_block_dict[one_exon]]),tr,transcript_dict[tr].parent_id)
+                            self.known_isoforms[known_exons] = Iso(len(self.single_blocks[self.single_block_dict[one_exon]]),tr,transcript_dict[tr][0].parent_id)
                             if self.strand_specific==0:  # if not strand specific protocol, use annotation
-                                self.strand_cnt[tuple(known_exons)] = 1 if transcript_dict[tr].strand=="+" else -1
+                                self.strand_cnt[tuple(known_exons)] = 1 if transcript_dict[tr][0].strand=="+" else -1
                             else:
                                 self.strand_cnt[tuple(known_exons)] = self.strand_cnt[one_exon]
         print "doing match_known_annotation"
@@ -793,7 +793,7 @@ class Isoforms(object):
                 if self.strand_specific==0:
                     tmp_std = self.strand_cnt[raw_iso]
                 else:
-                    tmp_std = 1 if transcript_dict[tr].strand=="+" else -1
+                    tmp_std = 1 if transcript_dict[tr][0].strand=="+" else -1
                 # same number of exons, same strand
                 if (len(raw_iso)-2 == len(transcript_to_junctions[tr]["junctions"])) and (tmp_std == self.strand_cnt[raw_iso]):
                     if all(abs(it-ij)<self.MAX_DIST for it, ij in zip(raw_iso[1:-1], transcript_to_junctions[tr]["junctions"])):
@@ -802,11 +802,11 @@ class Isoforms(object):
                             known_exons.insert(0,transcript_to_junctions[tr]["left"])
                             known_exons.append(transcript_to_junctions[tr]["right"])
                             if tuple(known_exons) in self.known_isoforms:
-                                self.known_isoforms[tuple(known_exons)] = Iso(max(self.known_isoforms[tuple(known_exons)].support_cnt, self.raw_isoforms[raw_iso]),tr,transcript_dict[tr].parent_id)
+                                self.known_isoforms[tuple(known_exons)] = Iso(max(self.known_isoforms[tuple(known_exons)].support_cnt, self.raw_isoforms[raw_iso]),tr,transcript_dict[tr][0].parent_id)
                             else:
-                                self.known_isoforms[tuple(known_exons)] = Iso(self.raw_isoforms[raw_iso],tr,transcript_dict[tr].parent_id)
+                                self.known_isoforms[tuple(known_exons)] = Iso(self.raw_isoforms[raw_iso],tr,transcript_dict[tr][0].parent_id)
                                 if self.strand_specific==0:  # if not strand specific protocol, use annotation
-                                    self.strand_cnt[tuple(known_exons)] = 1 if transcript_dict[tr].strand=="+" else -1
+                                    self.strand_cnt[tuple(known_exons)] = 1 if transcript_dict[tr][0].strand=="+" else -1
                                 else:
                                     self.strand_cnt[tuple(known_exons)] = self.strand_cnt[raw_iso]
                             found = True
@@ -895,12 +895,12 @@ class Isoforms(object):
                             sim_pct = get_exon_sim_pct(ni, kn)
                             if sim_pct>0.95:
                                 del_key.append(ni)
-                                self.known_isoforms[kn] = Iso(self.new_isoforms[ni].support_cnt,exons_dict[kn],transcript_dict[exons_dict[kn]].parent_id)
-                                self.strand_cnt[kn] = 1 if transcript_dict[exons_dict[kn]].strand=="+" else -1
+                                self.known_isoforms[kn] = Iso(self.new_isoforms[ni].support_cnt,exons_dict[kn],transcript_dict[exons_dict[kn]][0].parent_id)
+                                self.strand_cnt[kn] = 1 if transcript_dict[exons_dict[kn]][0].strand=="+" else -1
                         elif ni==kn:
                             del_key.append(ni)  # should not be the same
-                            self.known_isoforms[kn] = Iso(self.new_isoforms[ni].support_cnt,exons_dict[kn],transcript_dict[exons_dict[kn]].parent_id)
-                            self.strand_cnt[kn] = 1 if transcript_dict[exons_dict[kn]].strand=="+" else -1
+                            self.known_isoforms[kn] = Iso(self.new_isoforms[ni].support_cnt,exons_dict[kn],transcript_dict[exons_dict[kn]][0].parent_id)
+                            self.strand_cnt[kn] = 1 if transcript_dict[exons_dict[kn]][0].strand=="+" else -1
             for key in list(set(del_key)):
                 del self.new_isoforms[key]
             if len(self.new_isoforms) > 1:  # 3. match among new isoform
@@ -940,7 +940,7 @@ class Isoforms(object):
                 tmp = [(exon_overlap(i, gene_dict[ge]),ge) for ge in one_block.gene_to_tr]
                 if self.strand_specific != 0:  # if  strand specific protocol, use read
                     stnd = "+" if self.strand_cnt[i]==1 else "-"
-                    tmp = [it for it in tmp if transcript_dict[one_block.gene_to_tr[it[1]][0]].strand == stnd]
+                    tmp = [it for it in tmp if transcript_dict[one_block.gene_to_tr[it[1]][0]][0].strand == stnd]
                     if len(tmp) == 0:
                         #print "no match", stnd, one_block.gene_to_tr.keys()
                         continue
@@ -988,7 +988,7 @@ class Isoforms(object):
                 self.ge_dict.setdefault(self.new_isoforms[i].gene_id, []).append(i)
                 if self.strand_specific == 0:
                     if self.strand_cnt[i] == 0:
-                        self.strand_cnt[i] = 1 if transcript_dict[one_block.gene_to_tr[self.new_isoforms[i].gene_id][0]].strand=="+" else -1
+                        self.strand_cnt[i] = 1 if transcript_dict[one_block.gene_to_tr[self.new_isoforms[i].gene_id][0]][0].strand=="+" else -1
         for i in self.known_isoforms:
             self.ge_dict.setdefault(self.known_isoforms[i].gene_id, []).append(i)
                         

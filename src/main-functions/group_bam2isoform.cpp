@@ -153,6 +153,8 @@ group_bam2isoform (
     std::string raw_gff3
 )
 {
+	// test
+	Rcpp::Rcout << "Started Group bam2isoform\n";
     // if (config.count("random_seed")) {
     //     srand(config["random_seed"]);
     // } else {
@@ -178,17 +180,22 @@ group_bam2isoform (
 
     std::ofstream tss_tes_stat (out_stat);
 
+	// test
+	Rcpp::Rcout << "first for loop\n";
     // import all the values of fa_f
     std::unordered_map<std::string, std::string> fa_dict;
     for (const auto & c : get_fa(fa_f)) {
         fa_dict[c.first] = c.second;
     }
 
+	Rcpp::Rcout << "main for loop\n";
+	Rcpp::Rcout << "chr_to_blocks len: " << chr_to_blocks.size() << "\n";
 	int outer = 0;
     for (const auto & [chr, blocks] : chr_to_blocks) {
 		outer++;
         int tid = bam_get_tid(header, chr.c_str());
 
+		Rcpp::Rcout << "block len: " << blocks.size() << "\n";
 		int inner = 0;
         for (const auto & block : blocks) {
 			inner++;
@@ -241,6 +248,7 @@ group_bam2isoform (
 			}
         }
     }
+	
 
     // finally, close all the files
     bam_close(bam);

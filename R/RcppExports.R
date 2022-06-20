@@ -57,11 +57,7 @@ minimap2_tr_align_cpp <- function(mm2_prog_path, fa_file, fq_in, sam_out) {
     invisible(.Call(`_FLAMES_minimap2_tr_align_cpp`, mm2_prog_path, fa_file, fq_in, sam_out))
 }
 
-what2 <- function() {
-    invisible(.Call(`_FLAMES_what2`))
-}
-
-what <- function() {
-    invisible(.Call(`_FLAMES_what`))
+test_group_bam2isoform <- function() {
+    invisible(.Call(`_FLAMES_test_group_bam2isoform`))
 }
 

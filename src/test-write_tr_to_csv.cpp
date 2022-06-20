@@ -31,7 +31,7 @@ context("Transcript writing and utility functions") {
 
 	 	// run the test cases
 		bool allgood = true;
-		for (int i = 0; i < res.size(); i++) {
+		for (int i = 0; i < (int)res.size(); i++) {
 			allgood &= edit_distance(ps[i].first, ps[i].second) == res[i];
 		}
 		expect_true(allgood);
@@ -283,7 +283,7 @@ context("Transcript writing and utility functions") {
 		};
 		
 		std::string out_csv = get_tempfile(".csv");
-		std::cout << out_csv << "\n";
+		// // std::cout << out_csv << "\n";
 		std::unordered_map<std::string, int> result {
 			{"SIRV410,SIRV4,23,119", 1},
 			{"SIRV403,SIRV4,14,2", 1},
@@ -428,4 +428,5 @@ context("Transcript writing and utility functions") {
 		}
 		expect_true(allgood);
 	}
+
 }

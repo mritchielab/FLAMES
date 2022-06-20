@@ -198,7 +198,6 @@ context("BamRecord & Utility BAM/CIGAR Function Testing") {
 		
 		expect_true(compareBAMRecord(rec, res));
 
-
 		bam_close(bam);
 	}
 

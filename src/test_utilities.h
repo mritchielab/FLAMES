@@ -31,7 +31,14 @@ inline void rename_file(std::string from, std::string to) {
 	Rcpp::Function rename("file.rename");
 	rename(Rcpp::_["from"]=from, Rcpp::_["to"]=to);
 }
-
+inline void download_file(std::string url, std::string dest) {
+	Rcpp::Function downloadFile("download.file");
+	downloadFile(Rcpp::Named("url")=url, Rcpp::Named("destfile")=dest);
+}
+inline bool file_exists(std::string file) {
+	Rcpp::Function fileExists("file.exists");
+	return Rcpp::as<bool> (fileExists(file));
+}
 // compare two unordered streams of values
 template <typename T>
 inline bool compare_unordered(const std::vector<T> &a, const std::vector<T> &b) {

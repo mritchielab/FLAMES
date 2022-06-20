@@ -393,6 +393,7 @@ context("Junctions functions") {
 
 		expect_true(compare_stream(real_site, out_site));
 	}
+	
 	test_that("TSS_TES Sites can be acquired") {
 		// // python :
 		// // from sc_longread import blocks_to_junctions, get_TSS_TES_site
@@ -433,4 +434,5 @@ context("Junctions functions") {
 		expect_true(compare_unordered(sites2.left, real_sites2.left));
 		expect_true(compare_unordered(sites2.right, real_sites2.right));
 	}
+
 }

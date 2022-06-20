@@ -2,6 +2,7 @@
 #include <vector>
 #include <unordered_map>
 #include <string>
+#include <fstream>
 
 #include "classes/StartEndPair.h"
 #include "utility/utility.h"
@@ -38,5 +39,41 @@ context("Test misc functions & utilities") {
 		expect_true((resX == StartEndPair{1, 10}));
 	}
 
+	test_that("can download a small csv file successfully") {
+		std::string dest = get_tempfile(".csv");
+		std::string in = "https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data/small_test.csv";
+
+		// download the file
+		download_file(in, dest);
+
+		bool fileExists = file_exists(dest);
+		expect_true(fileExists);
+
+		if (fileExists) {
+			std::string res[6] {
+				"AAGTC",
+				"AGTCC",
+				"AGTCA",
+				"GTACA",
+				"AGTAC",
+				"AGTCA"
+			};
+
+			std::string lines[6];
+			std::ifstream file(dest);
+
+			std::string line;
+			int i = 0;
+			while (getline(file, line)) {
+				lines[i++] = line;
+			}
+
+			expect_true(i == 6);
+
+			for (int j = 0; j < 6; j++) {
+				expect_true(res[j] == lines[j]);
+			}
+		}
+	}
 	// TODO: test the rest of the functions in utility/utility.h
 }

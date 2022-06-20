@@ -146,21 +146,12 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
-// what2
-void what2();
-RcppExport SEXP _FLAMES_what2() {
+// test_group_bam2isoform
+void test_group_bam2isoform();
+RcppExport SEXP _FLAMES_test_group_bam2isoform() {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
-    what2();
-    return R_NilValue;
-END_RCPP
-}
-// what
-void what();
-RcppExport SEXP _FLAMES_what() {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    what();
+    test_group_bam2isoform();
     return R_NilValue;
 END_RCPP
 }
@@ -178,8 +169,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_FLAMES_quantification_cpp", (DL_FUNC) &_FLAMES_quantification_cpp, 10},
     {"_FLAMES_minimap2_align_cpp", (DL_FUNC) &_FLAMES_minimap2_align_cpp, 6},
     {"_FLAMES_minimap2_tr_align_cpp", (DL_FUNC) &_FLAMES_minimap2_tr_align_cpp, 4},
-    {"_FLAMES_what2", (DL_FUNC) &_FLAMES_what2, 0},
-    {"_FLAMES_what", (DL_FUNC) &_FLAMES_what, 0},
+    {"_FLAMES_test_group_bam2isoform", (DL_FUNC) &_FLAMES_test_group_bam2isoform, 0},
     {"run_testthat_tests", (DL_FUNC) &run_testthat_tests, 1},
     {NULL, NULL, 0}
 };
