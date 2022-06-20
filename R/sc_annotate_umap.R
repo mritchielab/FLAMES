@@ -531,7 +531,7 @@ sc_annotate_umap <- function(gene, path, sce_all = NULL, sce_20 = NULL, sce_80 =
 
     isoform_annotation <- AnnotationFunction(
       fun = function(index) {
-        grid.arrange(grobs = legends_heatmap, ncol = 1, vp = viewport(), newpage = FALSE)
+        gridExtra::grid.arrange(grobs = legends_heatmap, ncol = 1, vp = viewport(), newpage = FALSE)
       },
       which = "row",
       width = unit(isoform_legend_width, "cm"),
