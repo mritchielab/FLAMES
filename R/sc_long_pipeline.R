@@ -247,6 +247,7 @@ generate_sc_sce <- function(out_files, load_genome_anno = NULL, create_function)
     )
 
     transcript_count <- read.csv(out_files$counts, stringsAsFactors = FALSE)
+    transcript_count <- transcript_count[order(transcript_count$transcript_id),]
     if ("fsm_annotation" %in% names(out_files)) {
         isoform_FSM_annotation <- read.csv(out_files$fsm_annotation, stringsAsFactors = FALSE)
     } else {
