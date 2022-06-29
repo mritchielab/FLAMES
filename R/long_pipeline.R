@@ -13,6 +13,7 @@
 #' function, `sc_long_pipeline()` and `bulk_long_pipeline()` respectively.
 #'
 #' @importFrom GenomeInfoDb seqlengths
+#' @importFrom jsonlite fromJSON toJSON
 generic_long_pipeline <-
     function(annot,
              fastq,
@@ -46,7 +47,7 @@ generic_long_pipeline <-
              min_tr_coverage,
              min_read_coverage) {
         cat("Running FLAMES pipeline...\n")
-        config <- parse_json_config(config_file)
+        config <- jsonlite::fromJSON(config_file)
 
         using_bam <- FALSE
         if (!is.null(in_bam)) {
@@ -87,16 +88,16 @@ generic_long_pipeline <-
         )
 
         cat("#### Input parameters:\n")
-        print_config(config)
-        cat("\tgene annotation:", annot, "\n")
-        cat("\tgenome fasta:", genome_fa, "\n")
+        cat(jsonlite::toJSON(config, pretty = TRUE),'\n')
+        cat("gene annotation:", annot, "\n")
+        cat("genome fasta:", genome_fa, "\n")
         if (using_bam) {
-            cat("\tinput bam:", in_bam, "\n")
+            cat("input bam:", in_bam, "\n")
             genome_bam <- in_bam
         }
-        cat("\tinput fastq:", fastq, "\n")
-        cat("\toutput directory:", outdir, "\n")
-        cat("\tdirectory containing minimap2:", minimap2_dir, "\n")
+        cat("input fastq:", fastq, "\n")
+        cat("output directory:", outdir, "\n")
+        cat("directory containing minimap2:", minimap2_dir, "\n")
 
         # align reads to genome
         # if (!using_bam && config$pipeline_parameters$do_genome_alignment) {

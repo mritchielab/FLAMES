@@ -71,6 +71,7 @@
 #' @importFrom SummarizedExperiment rowData colData rowData<- colData<- rowRanges rowRanges<-
 #' @importFrom BiocGenerics cbind colnames rownames start end
 #' @importFrom utils read.csv read.table file_test
+#' @importFrom jsonlite fromJSON
 #'
 #' @example inst/examples/pipeline_example.R
 #' @export
@@ -188,7 +189,7 @@ sc_long_multisample_pipeline <-
 
 
         cat("Running FLAMES pipeline...\n")
-        config <- parse_json_config(config_file)
+        config <- jsonlite::fromJSON(config_file)
 
         using_bam <- FALSE
         if (!is.null(in_bams)) {
@@ -229,16 +230,16 @@ sc_long_multisample_pipeline <-
         realign_bams <- paste(outdir, paste(samples, "realign2transcript.bam", sep = "_"), sep = "/")
 
         cat("#### Input parameters:\n")
-        print_config(config)
-        cat("\tgene annotation:", annot, "\n")
-        cat("\tgenome fasta:", genome_fa, "\n")
+        cat(jsonlite::toJSON(config, pretty = TRUE))
+        cat("gene annotation:", annot, "\n")
+        cat("genome fasta:", genome_fa, "\n")
         if (using_bam) {
-            cat("\tinput bam:", paste0(in_bams, sep = "\n"), "\n")
+            cat("input bam:", paste0(in_bams, sep = "\n"), "\n")
             genome_bams <- in_bams
         }
-        cat("\tinput fastqs:", paste0(fastqs, sep = "\n"), "\n")
-        cat("\toutput directory:", outdir, "\n")
-        cat("\tdirectory containing minimap2:", minimap2_dir, "\n")
+        cat("input fastqs:", paste0(fastqs, sep = "\n"), "\n")
+        cat("output directory:", outdir, "\n")
+        cat("directory containing minimap2:", minimap2_dir, "\n")
 
         # align reads to genome
         # if (!using_bam && config$pipeline_parameters$do_genome_alignment) {

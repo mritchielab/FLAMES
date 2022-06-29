@@ -1,7 +1,6 @@
 from parse_gene_anno import parse_gff_tree
 from sc_longread import blocks_to_junctions, remove_similar_tr, get_gene_blocks, get_gene_flat, group_bam2isoform, group_bam2isoform_multisample
 from gff3_to_fa import get_transcript_seq
-from parse_config import parse_json_config
 import sys
 
 

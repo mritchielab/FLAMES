@@ -56,7 +56,8 @@ Imports:
     GenomeInfoDb,
     withr,
     Biostrings,
-    GenomicFeatures
+    GenomicFeatures,
+    jsonlite
 Suggests: 
     BiocStyle,
     knitr,

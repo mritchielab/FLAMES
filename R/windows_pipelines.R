@@ -157,6 +157,7 @@ sc_windows_pipeline_setup <-
     }
 
 
+#' @importFrom jsonlite fromJSON toJSON
 windows_pipeline_setup <-
     function(annot,
              fastq,
@@ -174,7 +175,7 @@ windows_pipeline_setup <-
         if (is.null(config_file)) {
             stop("windows_pipeline requires a configuration file")
         } else {
-            config <- parse_json_config(config_file)
+            config <- jsonlite::fromJSON(config_file)
         }
 
         if (!config$pipeline_parameters$do_isoform_identification) {
@@ -255,15 +256,15 @@ windows_pipeline_setup <-
         )
 
         cat("#### Input parameters:\n")
-        print_config(config)
-        cat("\tgene annotation:", annot, "\n")
-        cat("\tgenome fasta:", genome_fa, "\n")
+        cat(jsonlite::toJSON(config, pretty = TRUE),'\n')
+        cat("gene annotation:", annot, "\n")
+        cat("genome fasta:", genome_fa, "\n")
         if (using_bam) {
-            cat("\tinput bam:", in_bam, "\n")
+            cat("input bam:", in_bam, "\n")
         } else {
-            cat("\tinput fastq:", fastq, "\n")
+            cat("input fastq:", fastq, "\n")
         }
-        cat("\toutput directory:", outdir, "\n")
+        cat("output directory:", outdir, "\n")
 
         # align reads to genome
         if (!using_bam &&

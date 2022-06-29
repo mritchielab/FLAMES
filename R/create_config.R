@@ -1,78 +1,3 @@
-#' Parse Json Configuration File
-#'
-#' @description Convert a json configuration file into a named R list, grouped into sub lists according to their
-#'      usage in the Flames pipeline.
-#'
-#' @param json_file the file path to the JSON file to convert into an R list.
-#' This can be the default FLAMES configuration file found using \code{get_default_config_file()}
-#'
-#' @return A named R list of the parameters in \code{json_file}. Subsections are: \code{pipeline_parameters},
-#'      \code{global_parameters}, \code{isoform_parameters}, \code{alignment_parameters}, \code{realign_parameters} and
-#'      \code{transcript_counting}.
-#'
-#' @examples
-#' config <- get_default_config_file()
-#' \dontrun{
-#' parse_json_config(config)
-#' }
-#' @importFrom basilisk basiliskStart basiliskStop basiliskRun
-#' @importFrom reticulate import_from_path
-#' @export
-parse_json_config <- function(json_file) {
-    config <- callBasilisk(flames_env, function(json) {
-        python_path <- system.file("python", package = "FLAMES")
-
-        conf <-
-            reticulate::import_from_path("parse_config", python_path)
-
-        conf$parse_json_config(json)
-    }, json = json_file)
-
-    config
-}
-
-#' Print Configuration File
-#'
-#' @details Print the configuration file, represented as a named list used for the Flames pipeline.
-#'
-#' @param config List; the configuration list to print.
-#'
-#' @return return NULL
-#'
-#' @importFrom reticulate import_from_path
-print_config <- function(config) {
-    callBasilisk(flames_env, function(config) {
-        python_path <- system.file("python", package = "FLAMES")
-
-        conf <-
-            reticulate::import_from_path("parse_config", python_path)
-        conf$print_config(config)
-    }, config = config)
-    invisible()
-}
-
-#' Write Configuration Dictionary to File
-#'
-#' @details Write the configuration file, represented as a named list used for the Flames pipeline.
-#'
-#' @param config List; the configuration list to write to file.
-#' @param config_file the file to output \code{config} to. Should be .json extension
-#'
-#' @return returns NULL
-#'
-#' @importFrom reticulate import_from_path
-write_config <- function(config, config_file) {
-    # write the config file to given file path
-    callBasilisk(flames_env, function(config, config_file) {
-        python_path <- system.file("python", package = "FLAMES")
-
-        conf <-
-            reticulate::import_from_path("parse_config", python_path)
-        conf$write_config(config, config_file)
-    }, config = config, config_file = config_file)
-    invisible()
-}
-
 #' Create Configuration File From Arguments
 #'
 #' @details Create a list object containing the arguments supplied in a format usable for the FLAMES pipeline.
@@ -119,7 +44,7 @@ write_config <- function(config, config_file) {
 #'     TRUE, 0.75, 0.75
 #' )
 #' }
-#' @importFrom reticulate import_from_path
+#' @importFrom jsonlite toJSON
 #' @export
 create_config <- function(outdir,
                           do_genome_align,
@@ -199,7 +124,7 @@ create_config <- function(outdir,
         config_file_path,
         "\n"
     )
-    write_config(config, config_file_path)
+    write(jsonlite::toJSON(config, pretty = TRUE), config_file_path)
 
     return(config_file_path)
 }
