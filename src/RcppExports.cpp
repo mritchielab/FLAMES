@@ -118,32 +118,14 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
-// minimap2_align_cpp
-void minimap2_align_cpp(std::string mm2_prog_path, std::string fa_file, std::string fq_in, std::string sam_out, bool no_flank, std::string bed12_junc);
-RcppExport SEXP _FLAMES_minimap2_align_cpp(SEXP mm2_prog_pathSEXP, SEXP fa_fileSEXP, SEXP fq_inSEXP, SEXP sam_outSEXP, SEXP no_flankSEXP, SEXP bed12_juncSEXP) {
+// test_fi
+Rcpp::List test_fi();
+RcppExport SEXP _FLAMES_test_fi() {
 BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::string >::type mm2_prog_path(mm2_prog_pathSEXP);
-    Rcpp::traits::input_parameter< std::string >::type fa_file(fa_fileSEXP);
-    Rcpp::traits::input_parameter< std::string >::type fq_in(fq_inSEXP);
-    Rcpp::traits::input_parameter< std::string >::type sam_out(sam_outSEXP);
-    Rcpp::traits::input_parameter< bool >::type no_flank(no_flankSEXP);
-    Rcpp::traits::input_parameter< std::string >::type bed12_junc(bed12_juncSEXP);
-    minimap2_align_cpp(mm2_prog_path, fa_file, fq_in, sam_out, no_flank, bed12_junc);
-    return R_NilValue;
-END_RCPP
-}
-// minimap2_tr_align_cpp
-void minimap2_tr_align_cpp(std::string mm2_prog_path, std::string fa_file, std::string fq_in, std::string sam_out);
-RcppExport SEXP _FLAMES_minimap2_tr_align_cpp(SEXP mm2_prog_pathSEXP, SEXP fa_fileSEXP, SEXP fq_inSEXP, SEXP sam_outSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::string >::type mm2_prog_path(mm2_prog_pathSEXP);
-    Rcpp::traits::input_parameter< std::string >::type fa_file(fa_fileSEXP);
-    Rcpp::traits::input_parameter< std::string >::type fq_in(fq_inSEXP);
-    Rcpp::traits::input_parameter< std::string >::type sam_out(sam_outSEXP);
-    minimap2_tr_align_cpp(mm2_prog_path, fa_file, fq_in, sam_out);
-    return R_NilValue;
+    rcpp_result_gen = Rcpp::wrap(test_fi());
+    return rcpp_result_gen;
 END_RCPP
 }
 // test_group_bam2isoform
@@ -167,8 +149,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_FLAMES_match_cell_barcode_cpp", (DL_FUNC) &_FLAMES_match_cell_barcode_cpp, 6},
     {"_FLAMES_merge_bulk_fastq_cpp", (DL_FUNC) &_FLAMES_merge_bulk_fastq_cpp, 2},
     {"_FLAMES_quantification_cpp", (DL_FUNC) &_FLAMES_quantification_cpp, 10},
-    {"_FLAMES_minimap2_align_cpp", (DL_FUNC) &_FLAMES_minimap2_align_cpp, 6},
-    {"_FLAMES_minimap2_tr_align_cpp", (DL_FUNC) &_FLAMES_minimap2_tr_align_cpp, 4},
+    {"_FLAMES_test_fi", (DL_FUNC) &_FLAMES_test_fi, 0},
     {"_FLAMES_test_group_bam2isoform", (DL_FUNC) &_FLAMES_test_group_bam2isoform, 0},
     {"run_testthat_tests", (DL_FUNC) &run_testthat_tests, 1},
     {NULL, NULL, 0}

@@ -4,7 +4,7 @@
 #include <fstream>
 #include <testthat.h>
 #include <Rcpp.h>
-
+#include <algorithm>
 #include "test_utilities.h"
 
 #include "main-functions/group_bam2isoform.h"
@@ -481,15 +481,16 @@ context("Group BAM 2 Isoform") {
 		}
 	}
 
-	// test_that("full group_bam2isoform function executes correctly") {
+	test_that("full group_bam2isoform function executes correctly") {
 		// don't test the full group_bam2isoform as file is too big and takes too long
 		// must test it separately using test_group_bam2isoform
-	// }
+		Rcpp::Rcout << "must run test_group_bam2isoform to individually test group_bam2isoform function";
+		expect_true(true);
+	}
 }
 
 // [[Rcpp::export]]
 void test_group_bam2isoform() {
-	// this takes far too long. need to determine why
 	// python
 		// from sc_longread import *
 		// from parse_gene_anno import *
@@ -507,9 +508,10 @@ void test_group_bam2isoform() {
 		// chr_to_blocks = get_gene_blocks(gene_dict, chr_to_gene, gene_to_transcript)t
 		// config_dict = parse_json_config(config)
 		// group_bam2isoform(bam, isoform_gff3, tss_tes_stat, "", chr_to_blocks, gene_dict, transcript_to_junctions, transcript_dict, genomefa, config=config_dict["isoform_parameters"], downsample_ratio=1,raw_gff3=None)
-	// std::string bam_in = get_tempfile(".bam");
-	// download_file("https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data/align2genome.bam", bam_in); //downloadFile(Rcpp::_["url"]="https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data/align2genome.bam", Rcpp::_["destfile"] = "testout");//tmp_destfile.c_str());
-	std::string bam_in = "/Users/voogd.o/Documents/FLAMESData/data/align2genome.bam";
+	std::string bam_in = download_align2genome();
+	if (bam_in == "") {
+		return;
+	}
 	
 	std::string out_gff3 = get_tempfile("isoform_annotated.gff3"); 
 	std::string out_stat = get_tempfile("tss_tes.bedgraph");
@@ -538,10 +540,29 @@ void test_group_bam2isoform() {
 		transcript_to_junctions, data.transcript_dict,
 		fa_f, isoform_parameters, raw_gff3);
 
-	
-	// what can we test here?
-	// output file is out_gff3
-	// can compare to the real one in FlamesData
+	// need to compare this output (out_gff3) against the one in inst/extdata/isoform_annotated.gff3
+	std::ifstream real(get_extdata("isoform_annotated.gff3"));
+	std::vector<std::string> realLines;
+	std::string line;
+	while (getline(real, line)) {
+		realLines.push_back(line);
+	}
+	real.close();
+
+	std::ifstream test(out_gff3);
+	int match = 0;
+	int nomatch = 0;
+
+	while(getline(test,line)) {
+		if (std::find(realLines.begin(), realLines.end(), line) != realLines.end()) {
+			match++;
+		} else {
+			nomatch++;
+		}
+	} 
+	test.close();
+
+	Rcpp::Rcout << "group_bam2isoform matched " << match << " times with the expected result, with " << nomatch << " mismatches.\n";
 }
 
 // // [[Rcpp::export]]

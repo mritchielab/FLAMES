@@ -159,8 +159,7 @@ find_isoform (
     
     // next we find isoforms
     Rcpp::Rcout << "#### Finding Isoforms\n";
-    group_bam2isoform(
-    // minimal_group_bam2isoform(
+    bool group_bam_success = group_bam2isoform(
         genome_bam,
         isoform_gff3,
         tss_tes_stat,
@@ -172,6 +171,10 @@ find_isoform (
         config.isoform_parameters,
         raw_splice_isoform
     );
+	// if (!group_bam_success) {
+	// 	// not sure what to do if group_bam2isoform fails.
+		
+	// }
 
     GFFData isoform_gff = parseGeneAnno(isoform_gff3);
     // isoform_gff.log("final_gff_log_cpp.txt");
@@ -204,16 +207,6 @@ find_isoform (
     );
 
     IsoformObjects isoform_objects = {transcript_dict, transcript_dict_iso};
-    
-    // std::ofstream
-    // out_test ("isoform_objects.txt");
-
-    // out_test << "transcript_dict:\n";
-    // for (const auto & [key, val] : isoform_objects.transcript_dict) {
-    //     out_test << "\t" << key << ":" << val.chr << "," << val.start << "," << val.end << "\n";
-    // }
-
-    // out_test << "transcript_dict_iso:\n";
     
     Rcpp::List isoform_objects_list = isoform_objects_to_R(&isoform_objects);
     return isoform_objects_to_R(&isoform_objects);

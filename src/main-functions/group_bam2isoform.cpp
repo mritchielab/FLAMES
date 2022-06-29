@@ -17,7 +17,7 @@
 #include "../utility/misc.h"
 #include "../utility/bam.h"
 #include "../utility/cigars.h"
-
+#include "../test_utilities.h"
 
 
 static int
@@ -139,7 +139,7 @@ minimal_group_bam2isoform(
     bam_close(bam);
 }
 
-void
+bool
 group_bam2isoform (
     std::string bam_in, 
     std::string out_gff3, 
@@ -155,6 +155,11 @@ group_bam2isoform (
 {
 	// test
 	Rcpp::Rcout << "Started Group bam2isoform\n";
+
+	if (!file_exists(bam_in + ".bai")) {
+		Rcpp::Rcout << "Can not find corresponding .bai file for " << bam_in << ". Cancelling group_bam2isoform.\n";
+		return false;
+	}
     // if (config.count("random_seed")) {
     //     srand(config["random_seed"]);
     // } else {
@@ -180,55 +185,33 @@ group_bam2isoform (
 
     std::ofstream tss_tes_stat (out_stat);
 
-	// test
-	Rcpp::Rcout << "first for loop\n";
     // import all the values of fa_f
     std::unordered_map<std::string, std::string> fa_dict;
     for (const auto & c : get_fa(fa_f)) {
         fa_dict[c.first] = c.second;
     }
 
-	Rcpp::Rcout << "main for loop\n";
-	Rcpp::Rcout << "chr_to_blocks len: " << chr_to_blocks.size() << "\n";
 	int outer = 0;
     for (const auto & [chr, blocks] : chr_to_blocks) {
 		outer++;
         int tid = bam_get_tid(header, chr.c_str());
 
-		Rcpp::Rcout << "block len: " << blocks.size() << "\n";
 		int inner = 0;
         for (const auto & block : blocks) {
 			inner++;
 			Isoforms tmp_isoform(chr, isoform_parameters);
-            // std::vector<BAMRecord> records = {};
-    		// DataStruct data = {header, &records};
 			DataStruct2 data = {header, &tmp_isoform, 0};
 
-            // auto it = bam_fetch(bam, bam_index, tid, block.start, block.end, &data, &fetch_function);
-            bam_fetch(bam, bam_index, tid, block.start, block.end, &data, &fetch_function);
+			// fetch_function adds every retrieved region to tmp_isoform, which
+			// is passed in as part of data
+			bam_fetch(bam, bam_index, tid, block.start, block.end, &data, &fetch_function);
 			auto TSS_TES_site = get_TSS_TES_site(transcript_to_junctions, block.transcript_list);
-            // Isoforms tmp_isoform(chr, isoform_parameters);
-            
-            // add all the records in the bamfile to the Isoform object
-            // int recnum = 0;
-            // for (BAMRecord & rec : records) {
-            //     recnum++;
-				
-            //     auto cigar = smooth_cigar(rec.cigar, 20);
-            //     rec.cigar = cigar;
-            //     std::string cigar_string = generate_cigar(cigar);
-            //     std::vector<StartEndPair> tmp_blocks = get_blocks(rec);
-            //     Junctions junctions = blocks_to_junctions(tmp_blocks);
-                
-            //     tmp_isoform.add_isoform(junctions, rec.flag.read_reverse_strand);
-            // }
 
-			Rcpp::Rcout << "chr: " << chr << ". chr_to_blocks: " << outer << ". blocks: " << inner << ". recs: " << data.i << "\n";
+			// Rcpp::Rcout << "chr: " << chr << ". chr_to_blocks: " << outer << ". blocks: " << inner << ". recs: " << data.i << "\n";
 
-
-            // then process the isoform
+            // then process the complete isoform
             if (tmp_isoform.size() > 0) {
-				Rcpp::Rcout << "\tlen tmp_isform: " << tmp_isoform.size() << "\n";
+				// Rcpp::Rcout << "\tlen tmp_isform: " << tmp_isoform.size() << "\n";
                 tmp_isoform.update_all_splice();
                 tmp_isoform.filter_TSS_TES(tss_tes_stat, TSS_TES_site, (float)0.1);
                 tmp_isoform.match_known_annotation(
@@ -244,7 +227,7 @@ group_bam2isoform (
                     // splice_raw.write(tmp_isoform()); 
                 }
                 iso_annotated << tmp_isoform.isoform_to_gff3(isoform_parameters.MIN_CNT_PCT);
-				Rcpp::Rcout << "\tlen tmp_isoform: " << tmp_isoform.size() << "\n\tmincntpct: " << isoform_parameters.MIN_CNT_PCT << "\n";
+				// Rcpp::Rcout << "\tlen tmp_isoform: " << tmp_isoform.size() << "\n\tmincntpct: " << isoform_parameters.MIN_CNT_PCT << "\n";
 			}
         }
     }
@@ -257,4 +240,6 @@ group_bam2isoform (
     if (raw_gff3 != "") {
         splice_raw.close();
     }
+
+	return true;
 }

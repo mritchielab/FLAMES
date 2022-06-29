@@ -43,7 +43,6 @@ void merge_bulk_fastq(Rcpp::StringVector fastq_files, Rcpp::String out_fastq) {
     int l;
 
     gzFile o_stream_gz = gzopen(out_fastq.get_cstring(), "wb2");
-    Rcout << o_stream_gz << "\n";
     
     // int array to track the number of reads processed in each fastq file.
     unsigned int * read_counts = (unsigned int *)malloc(fastq_files.size() * sizeof(unsigned));

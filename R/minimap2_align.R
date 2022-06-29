@@ -48,26 +48,36 @@ minimap2_align <-
              sam_out,
              no_flank = FALSE,
              bed12_junc = NULL) {
-        callBasilisk(flames_env, function(mm2_path,
-                                                  fa,
-                                                  fq,
-                                                  sam,
-                                                  flank,
-                                                  bed12_junc) {
-            python_path <- system.file("python", package = "FLAMES")
-            mm2 <-
-                reticulate::import_from_path("minimap2_align", python_path)
-
-            if (is.null(minimap2_prog_path)) {
-                  minimap2_prog_path <- ""
-              }
-            mm2$minimap2_align(mm2_path, fa, fq, sam, flank, bed12_junc)
-        },
-        mm2_path = minimap2_prog_path, fa = fa_file, fq = fq_in, sam = sam_out, flank =
-            no_flank, bed12_junc = bed12_junc
-        )
-        sam_out # output file
+    if (is.null(bed12_junc)) {
+        junc_cmd <- paste0("--junc-bed ", bed12_junc, " --junc-bonus 1")
+    } else {
+        junc_cmd <- ""
     }
+
+    if (no_flank) {
+        no_flank_cmd <- "--splice-flank=no"
+    } else {
+        no_flank_cmd <- ""
+    }
+    #align_cmd = "{_prog} -ax splice -t 12 {_others} -k14 --secondary=no {_index} {_fq} | samtools view -bS -@ 4 -m 2G -o {_out} -  ".format(\
+    align_cmd <- paste0(minimap2_prog_path, "minimap2", " -ax splice -t 12 ",
+                        paste(junc_cmd, no_flank_cmd), 
+                        " -k14 --secondary=no ", fa_file, " ",
+                        fq_in, " -o ", sam_out)
+
+    output <- system(command = align_cmd, intern = TRUE)
+    cat(output, "\n")
+}
+
+#' @importFrom reticulate import_from_path
+minimap2_tr_align <- function(mm2_prog_path, fa_file, fq_in, sam_out) {
+    align_cmd <- paste0(mm2_prog_path, "minimap2",
+                        " -ax map-ont -p 0.9 --end-bonus 10 - N 3 -t 12 ",
+                        fa_file, " ", fq_in, " -o ", sam_out)
+    output <- system(command = align_cmd, intern = TRUE)
+
+    cat(output, "\n")
+}
 
 #' Samtools Sort and Index
 #'
@@ -122,20 +132,6 @@ samtools_as_bam <- function(sam_in, bam_out) {
     bam_out
 }
 
-#' @importFrom reticulate import_from_path
-minimap2_tr_align <-
-    function(mm2_prog_path, fa_file, fq_in, sam_out) {
-        callBasilisk(flames_env, function(mm2, fa, fq, sam) {
-            python_path <- system.file("python", package = "FLAMES")
-
-            align <-
-                reticulate::import_from_path("minimap2_align", python_path)
-            align$minimap2_tr_align(mm2, fa, fq, sam)
-        }, mm2 = mm2_prog_path, fa = fa_file, fq = fq_in, sam = sam_out)
-
-        sam_out # output file
-    }
-
 #' Check if minimap2 is available
 #' 
 #' @description Checks if minimap2 is available from given directory or in path.
@@ -145,14 +141,15 @@ minimap2_tr_align <-
 #' @return TRUE if minimap2 is available, FALSE otherwise
 #' 
 #' @importFrom reticulate import_from_path
-minimap2_check_callable <- 
-    function(mm2_prog_path) {
-        available <- callBasilisk(flames_env, function(mm2) {
-            python_path <- system.file("python", package="FLAMES")
+minimap2_check_callable <- function(mm2_prog_path) {
+    return(file.exists(paste0(mm2_prog_path, "/minimap2")))
 
-            check <- reticulate::import_from_path("minimap2_align", python_path)
-            check$check_minimap2_available(mm2)
-        }, mm2=mm2_prog_path)
+    # available <- callBasilisk(flames_env, function(mm2) {
+    #     python_path <- system.file("python", package="FLAMES")
 
-        return(available)
-    }
+    #     check <- reticulate::import_from_path("minimap2_align", python_path)
+    #     check$check_minimap2_available(mm2)
+    # }, mm2=mm2_prog_path)
+
+    # return(available)
+}

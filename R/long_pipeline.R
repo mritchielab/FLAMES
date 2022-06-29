@@ -44,8 +44,8 @@ generic_long_pipeline_cpp <-
              min_read_coverage) {
         cat("Running FLAMES pipeline...\n")
         # this needs to take into account the optional arguments if config_file is null,
-		# and should generate a new config file if it is null
-		config <- parse_json_config_cpp(config_file)
+        # and should generate a new config file if it is null
+        config <- parse_json_config_cpp(config_file)
 
         using_bam <- FALSE
         if (!is.null(in_bam)) {
@@ -88,7 +88,7 @@ generic_long_pipeline_cpp <-
             if (config$alignment_parameters$use_junctions) {
                 gtf_to_bed_cpp(annot, tmp_bed, "")
             }
-            minimap2_align_cpp(
+            minimap2_align(
                 minimap2_dir,
                 genome_fa,
                 fastq,
@@ -121,24 +121,25 @@ generic_long_pipeline_cpp <-
         cat("downsample_ratio:",downsample_ratio,"\n")
         cat("raw:",raw_splice_isoform,"\n")
         isoform_objects <- find_isoform_cpp(
-			annot,
-			genome_bam,
-			isoform_gff3,
-			tss_tes_stat,
-			genome_fa,
-			transcript_fa,
-			downsample_ratio,
-			config,
-			ifelse(config$global_parameters$generate_raw_isoform, raw_splice_isoform, "")
-		)
-		
+            annot,
+            genome_bam,
+            isoform_gff3,
+            tss_tes_stat,
+            genome_fa,
+            transcript_fa,
+            downsample_ratio,
+            config,
+            ifelse(config$global_parameters$generate_raw_isoform, 
+                    raw_splice_isoform, "")
+        )
+        
         Rsamtools::indexFa(transcript_fa) # index the output fa file
 
         # realign to transcript
         # if (!using_bam && do_read_realign) {
         if (do_read_realign) {
             cat("#### Realign to transcript using minimap2\n")
-            minimap2_tr_align_cpp(minimap2_dir, transcript_fa, fastq, tmp_sam)
+            minimap2_tr_align(minimap2_dir, transcript_fa, fastq, tmp_sam)
             samtools_as_bam(tmp_sam, tmp_bam)
             samtools_sort_index(tmp_bam, realign_bam)
             file.remove(tmp_sam)
@@ -290,6 +291,7 @@ generic_long_pipeline <-
         } else {
             cat("#### Skip aligning reads to genome\n")
         }
+        return()
 
         # find isofroms
         isoform_objects <-

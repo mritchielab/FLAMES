@@ -39,7 +39,7 @@ minimal_group_bam2isoform (
     IsoformParameters isoform_parameters,
     std::string raw_gff3
 );
-void
+bool
 group_bam2isoform (
     std::string bam_in, 
     std::string out_gff3, 

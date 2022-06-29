@@ -95,33 +95,33 @@ find_isoform_cpp
 
 /*****************************************************************************/
 
-// // [[Rcpp::export]]
-void
-group_bam2isoform_cpp (
-    std::string bam_in, 
-    std::string out_gff3, 
-    std::string out_stat, 
-    const std::unordered_map<std::string, std::vector<GeneBlocks>>		& chr_to_blocks, 
-    const std::unordered_map<std::string, std::vector<StartEndPair>>  	& gene_dict, 
-    const std::unordered_map<std::string, Junctions>                  	& transcript_to_junctions,
-    const std::unordered_map<std::string, Pos>                        	& transcript_dict,
-    std::string fa_f,
-    IsoformParameters isoform_parameters,
-    std::string raw_gff3
-) {
-	return group_bam2isoform (
-		bam_in, 
-		out_gff3, 
-		out_stat, 
-		chr_to_blocks, 
-		gene_dict, 
-		transcript_to_junctions,
-		transcript_dict,
-		fa_f,
-		isoform_parameters,
-		raw_gff3
-	);
-}
+// // // [[Rcpp::export]]
+// void
+// group_bam2isoform_cpp (
+//     std::string bam_in, 
+//     std::string out_gff3, 
+//     std::string out_stat, 
+//     const std::unordered_map<std::string, std::vector<GeneBlocks>>		& chr_to_blocks, 
+//     const std::unordered_map<std::string, std::vector<StartEndPair>>  	& gene_dict, 
+//     const std::unordered_map<std::string, Junctions>                  	& transcript_to_junctions,
+//     const std::unordered_map<std::string, Pos>                        	& transcript_dict,
+//     std::string fa_f,
+//     IsoformParameters isoform_parameters,
+//     std::string raw_gff3
+// ) {
+// 	return group_bam2isoform (
+// 		bam_in, 
+// 		out_gff3, 
+// 		out_stat, 
+// 		chr_to_blocks, 
+// 		gene_dict, 
+// 		transcript_to_junctions,
+// 		transcript_dict,
+// 		fa_f,
+// 		isoform_parameters,
+// 		raw_gff3
+// 	);
+// }
 
 /*****************************************************************************/
 
@@ -212,42 +212,42 @@ quantification_cpp
 
 /*****************************************************************************/
 
-#include "utility/minimap2/minimap2_align.h"
+// #include "utility/minimap2/minimap2_align.h"
 
-// [[Rcpp::export]]
-void
-minimap2_align_cpp
-(
-    std::string mm2_prog_path,
-    std::string fa_file,
-    std::string fq_in,
-    std::string sam_out,
-    bool no_flank,
-    std::string bed12_junc
-)
-{
-    return minimap2_align(
-        mm2_prog_path,
-        fa_file,
-        fq_in,
-        sam_out,
-        no_flank,
-        bed12_junc);
-}
+// // [[Rcpp::export]]
+// void
+// minimap2_align_cpp
+// (
+//     std::string mm2_prog_path,
+//     std::string fa_file,
+//     std::string fq_in,
+//     std::string sam_out,
+//     bool no_flank,
+//     std::string bed12_junc
+// )
+// {
+//     return minimap2_align(
+//         mm2_prog_path,
+//         fa_file,
+//         fq_in,
+//         sam_out,
+//         no_flank,
+//         bed12_junc);
+// }
 
-// [[Rcpp::export]]
-void
-minimap2_tr_align_cpp(
-    std::string mm2_prog_path,
-    std::string fa_file,
-    std::string fq_in,
-    std::string sam_out
-)
-{
-    return minimap2_tr_align(
-        mm2_prog_path,
-        fa_file,
-        fq_in,
-        sam_out
-    );
-}
+// // [[Rcpp::export]]
+// void
+// minimap2_tr_align_cpp(
+//     std::string mm2_prog_path,
+//     std::string fa_file,
+//     std::string fq_in,
+//     std::string sam_out
+// )
+// {
+//     return minimap2_tr_align(
+//         mm2_prog_path,
+//         fa_file,
+//         fq_in,
+//         sam_out
+//     );
+// }

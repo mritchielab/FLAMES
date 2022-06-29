@@ -49,12 +49,8 @@ quantification_cpp <- function(config_list, realign_bam, transcript_fa_idx, isof
     invisible(.Call(`_FLAMES_quantification_cpp`, config_list, realign_bam, transcript_fa_idx, isoform_objects_list, tr_cnt_csv, tr_badcov_cnt_csv, isoform_gff3, annot, isoform_gff3_f, FSM_anno_out))
 }
 
-minimap2_align_cpp <- function(mm2_prog_path, fa_file, fq_in, sam_out, no_flank, bed12_junc) {
-    invisible(.Call(`_FLAMES_minimap2_align_cpp`, mm2_prog_path, fa_file, fq_in, sam_out, no_flank, bed12_junc))
-}
-
-minimap2_tr_align_cpp <- function(mm2_prog_path, fa_file, fq_in, sam_out) {
-    invisible(.Call(`_FLAMES_minimap2_tr_align_cpp`, mm2_prog_path, fa_file, fq_in, sam_out))
+test_fi <- function() {
+    .Call(`_FLAMES_test_fi`)
 }
 
 test_group_bam2isoform <- function() {

@@ -35,9 +35,30 @@ inline void download_file(std::string url, std::string dest) {
 	Rcpp::Function downloadFile("download.file");
 	downloadFile(Rcpp::Named("url")=url, Rcpp::Named("destfile")=dest);
 }
+inline std::string download_data_file(std::string name) {
+	std::string tempfile = get_tempfile(name);
+	download_file("https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data/" + name, tempfile);
+	return tempfile;
+}
 inline bool file_exists(std::string file) {
 	Rcpp::Function fileExists("file.exists");
 	return Rcpp::as<bool> (fileExists(file));
+}
+
+inline std::string download_align2genome() {
+	std::string bam_dir = get_tempdir();
+	std::string bam_in = bam_dir + "/align.bam";
+	std::string bam_bai = bam_in + ".bai";
+	std::string file_url = "https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data/align2genome.bam";
+	download_file(file_url, bam_in); 
+	download_file(file_url + ".bai", bam_bai);
+	// std::string bam_in = "/Users/voogd.o/Documents/FLAMESData/data/align2genome.bam";
+	if (!file_exists(bam_in) || !file_exists(bam_bai)) {
+		Rcpp::Rcout << "required BAM file or BAM index file could not be downloaded from " << file_url << "\n";
+		return "";
+	}
+
+	return bam_in;
 }
 // compare two unordered streams of values
 template <typename T>

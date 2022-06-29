@@ -159,43 +159,96 @@ bulk_long_pipeline <-
         se
     }
 
-bulk_long_pipeline_cpp <-
-    function(annot,
-             fastq,
-             in_bam = NULL,
-             outdir,
-             genome_fa,
-             minimap2_dir = "",
-             downsample_ratio = 1,
-             config_file = NULL,
-             do_genome_align = TRUE,
-             do_isoform_id = TRUE,
-             do_read_realign = TRUE,
-             do_transcript_quanti = TRUE,
-             gen_raw_isoform = TRUE,
-             has_UMI = FALSE,
-             MAX_DIST = 10,
-             MAX_TS_DIST = 100,
-             MAX_SPLICE_MATCH_DIST = 10,
-             min_fl_exon_len = 40,
-             Max_site_per_splice = 3,
-             Min_sup_cnt = 10,
-             Min_cnt_pct = 0.01,
-             Min_sup_pct = 0.2,
-             strand_specific = 1,
-             remove_incomp_reads = 5,
-             use_junctions = TRUE,
-             no_flank = TRUE,
-             use_annotation = TRUE,
-             min_tr_coverage = 0.75,
-             min_read_coverage = 0.75) {
-        # filenames for internal steps
-        infq <- paste(outdir, "merged.fastq.gz", sep = "/")
-        # bc_file <- paste(outdir, "pseudo_barcode_annotation.csv", sep="/")
+bulk_long_pipeline_cpp <- function(
+        annot,
+        fastq,
+        in_bam = NULL,
+        outdir,
+        genome_fa,
+        minimap2_dir = "",
+        downsample_ratio = 1,
+        config_file = NULL,
+        do_genome_align = TRUE,
+        do_isoform_id = TRUE,
+        do_read_realign = TRUE,
+        do_transcript_quanti = TRUE,
+        gen_raw_isoform = TRUE,
+        has_UMI = FALSE,
+        MAX_DIST = 10,
+        MAX_TS_DIST = 100,
+        MAX_SPLICE_MATCH_DIST = 10,
+        min_fl_exon_len = 40,
+        Max_site_per_splice = 3,
+        Min_sup_cnt = 10,
+        Min_cnt_pct = 0.01,
+        Min_sup_pct = 0.2,
+        strand_specific = 1,
+        remove_incomp_reads = 5,
+        use_junctions = TRUE,
+        no_flank = TRUE,
+        use_annotation = TRUE,
+        min_tr_coverage = 0.75,
+        min_read_coverage = 0.75) {
+    # filenames for internal steps
+    infq <- paste(outdir, "merged.fastq.gz", sep = "/")
+    # bc_file <- paste(outdir, "pseudo_barcode_annotation.csv", sep="/")
 
 
-        check_arguments(annot,
-            fastq,
+    check_arguments(annot,
+        fastq,
+        in_bam,
+        outdir,
+        genome_fa,
+        minimap2_dir,
+        downsample_ratio,
+        config_file,
+        do_genome_align,
+        do_isoform_id,
+        do_read_realign,
+        do_transcript_quanti,
+        gen_raw_isoform,
+        has_UMI,
+        MAX_DIST,
+        MAX_TS_DIST,
+        MAX_SPLICE_MATCH_DIST,
+        min_fl_exon_len,
+        Max_site_per_splice,
+        Min_sup_cnt,
+        Min_cnt_pct,
+        Min_sup_pct,
+        strand_specific,
+        remove_incomp_reads,
+        use_junctions,
+        no_flank,
+        use_annotation,
+        min_tr_coverage,
+        min_read_coverage)
+
+    # create output directory if one doesn't exist
+    if (!dir.exists(outdir)) {
+        cat("Output directory does not exists: one is being created\n")
+        dir.create(outdir)
+        print(outdir)
+    }
+
+    if (is.null(in_bam)) {
+        # use existing merge fastq if already exists
+        if (file.exists(infq)) {
+            cat(infq, " already exists, no need to merge fastq files\n")
+        } else {
+            # this preprocessing needs only be done if we are using a fastq_dir, instead
+            # of a bam file for reads,
+            cat("Preprocessing bulk fastqs...\n")
+            # run the merge_bulk_fastq function as preprocessing
+            merge_bulk_fastq(fastq, infq)
+        }
+    } else {
+        infq <- NULL
+    }
+    out_files <-
+        generic_long_pipeline_cpp(
+            annot,
+            infq,
             in_bam,
             outdir,
             genome_fa,
@@ -222,67 +275,14 @@ bulk_long_pipeline_cpp <-
             no_flank,
             use_annotation,
             min_tr_coverage,
-            min_read_coverage)
+            min_read_coverage
+        )
 
-        # create output directory if one doesn't exist
-        if (!dir.exists(outdir)) {
-            cat("Output directory does not exists: one is being created\n")
-            dir.create(outdir)
-            print(outdir)
-        }
+    se <- generate_bulk_summarized(out_files)
 
-        if (is.null(in_bam)) {
-            # use existing merge fastq if already exists
-            if (file.exists(infq)) {
-                cat(infq, " already exists, no need to merge fastq files\n")
-            } else {
-                # this preprocessing needs only be done if we are using a fastq_dir, instead
-                # of a bam file for reads,
-                cat("Preprocessing bulk fastqs...\n")
-                # run the merge_bulk_fastq function as preprocessing
-                merge_bulk_fastq(fastq, infq)
-            }
-        } else {
-            infq <- NULL
-        }
-        out_files <-
-            generic_long_pipeline_cpp(
-                annot,
-                infq,
-                in_bam,
-                outdir,
-                genome_fa,
-                minimap2_dir,
-                downsample_ratio,
-                config_file,
-                do_genome_align,
-                do_isoform_id,
-                do_read_realign,
-                do_transcript_quanti,
-                gen_raw_isoform,
-                has_UMI,
-                MAX_DIST,
-                MAX_TS_DIST,
-                MAX_SPLICE_MATCH_DIST,
-                min_fl_exon_len,
-                Max_site_per_splice,
-                Min_sup_cnt,
-                Min_cnt_pct,
-                Min_sup_pct,
-                strand_specific,
-                remove_incomp_reads,
-                use_junctions,
-                no_flank,
-                use_annotation,
-                min_tr_coverage,
-                min_read_coverage
-            )
-
-        se <- generate_bulk_summarized(out_files)
-
-        # return the created summarizedexperiment
-        se
-    }
+    # return the created summarizedexperiment
+    se
+}
 
 
 generate_bulk_summarized <- function(out_files) {

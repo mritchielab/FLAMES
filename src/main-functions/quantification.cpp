@@ -41,19 +41,10 @@ quantification
     Config config;
     config.from_R(config_list);
     IsoformObjects isoform_objects = isoform_objects_from_R(isoform_objects_list);
-    // std::cout << "isoform_objects.transcript_dict is " << isoform_objects.transcript_dict.size() << " long\n";
-    // std::cout << "isoform_objects.transcript_dict_iso is " << isoform_objects.transcript_dict_iso.size() << " long\n";
-    
-    // std::cout << "isoform_objects.transcript_dict:\n";
-    // for (const auto & [key, val] : isoform_objects.transcript_dict) {
-    //     std::cout << "\t" << key << ":" << val.chr << "," << val.start << "," << val.end << "\n";
-    // }
-    // return;
 
     AttributesMap kwargs = {};
 
-    auto
-    parse_realign = parse_realigned_bam(
+    RealignedBamData parse_realign = parse_realigned_bam(
         realign_bam,
         transcript_fa_idx,
         config.isoform_parameters.MIN_SUP_CNT,
@@ -62,8 +53,7 @@ quantification
         kwargs
     );
 
-    auto
-    tr_count = write_tr_to_csv_cpp(
+    std::unordered_map<std::string, int> tr_count = write_tr_to_csv_cpp(
         parse_realign.bc_tr_count_dict,
         isoform_objects.transcript_dict_iso,
         tr_cnt_csv,
