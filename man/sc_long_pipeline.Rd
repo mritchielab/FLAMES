@@ -10,35 +10,10 @@ sc_long_pipeline(
   in_bam = NULL,
   outdir,
   genome_fa,
-  minimap2_dir = "",
-  seed = NULL,
-  downsample_ratio = 1,
+  minimap2_dir = NULL,
   reference_csv,
   match_barcode = TRUE,
-  config_file = NULL,
-  do_genome_align = TRUE,
-  do_isoform_id = TRUE,
-  isoform_id_bambu = FALSE,
-  do_read_realign = TRUE,
-  do_transcript_quanti = TRUE,
-  gen_raw_isoform = TRUE,
-  has_UMI = FALSE,
-  UMI_LEN = 10,
-  MAX_DIST = 10,
-  MAX_TS_DIST = 100,
-  MAX_SPLICE_MATCH_DIST = 10,
-  min_fl_exon_len = 40,
-  Max_site_per_splice = 3,
-  Min_sup_cnt = 10,
-  Min_cnt_pct = 0.01,
-  Min_sup_pct = 0.2,
-  strand_specific = 1,
-  remove_incomp_reads = 5,
-  use_junctions = TRUE,
-  no_flank = TRUE,
-  use_annotation = TRUE,
-  min_tr_coverage = 0.75,
-  min_read_coverage = 0.75
+  config_file = NULL
 )
 }
 \arguments{
@@ -55,16 +30,16 @@ sc_long_pipeline(
 \item{minimap2_dir}{Path to the directory containing minimap2, if it is not in PATH. Only required if either or both of
 \code{do_genome_align} and \code{do_read_realign} are \code{TRUE}.}
 
-\item{seed}{Integer or NULL; The random seed for minimap2.}
-
-\item{downsample_ratio}{Integer; downsampling ratio if performing downsampling analysis.}
-
 \item{reference_csv}{The file path to the reference csv used for demultiplexing}
 
 \item{match_barcode}{Boolean; specifies if demultiplexing should be performed using \code{FLAMES::match_cell_barcode_cpp}}
 
 \item{config_file}{File path to the JSON configuration file. If specified, \code{config_file} overrides
 all configuration parameters}
+
+\item{seed}{Integer or NULL; The random seed for minimap2.}
+
+\item{downsample_ratio}{Integer; downsampling ratio if performing downsampling analysis.}
 
 \item{do_genome_align}{Boolean; specifies whether to run the genome alignment step. \code{TRUE} is recommended}
 
@@ -79,8 +54,6 @@ all configuration parameters}
 \item{gen_raw_isoform}{Boolean; specifies whether a gff3 should be generated containing the raw isoform information in the isoform identification step}
 
 \item{has_UMI}{Boolean; specifies if the data contains UMI.}
-
-\item{UMI_LEN}{Integer; the length of UMI sequence in bases}
 
 \item{MAX_DIST}{Real; maximum distance allowed when merging splicing sites in isoform consensus clustering.}
 
@@ -113,6 +86,8 @@ reads are not strand specific.}
 \item{min_tr_coverage}{Real; minimum percentage of isoform coverage for a read to be aligned to that isoform}
 
 \item{min_read_coverage}{Real; minimum percentage of read coverage for a read to be uniquely aligned to that isoform}
+
+\item{UMI_LEN}{Integer; the length of UMI sequence in bases}
 }
 \value{
 \code{sc_long_pipeline} returns a SingleCellExperiment object, containing a count

@@ -81,66 +81,21 @@ sc_long_multisample_pipeline <-
              in_bams = NULL,
              outdir,
              genome_fa,
-             minimap2_dir = "",
-             downsample_ratio = 1,
+             minimap2_dir = NULL,
              reference_csv,
              match_barcode = TRUE,
-             config_file = NULL,
-             do_genome_align = TRUE,
-             do_isoform_id = TRUE,
-             do_read_realign = TRUE,
-             do_transcript_quanti = TRUE,
-             gen_raw_isoform = TRUE,
-             has_UMI = FALSE,
-             UMI_LEN = 10,
-             MAX_DIST = 10,
-             MAX_TS_DIST = 100,
-             MAX_SPLICE_MATCH_DIST = 10,
-             min_fl_exon_len = 40,
-             Max_site_per_splice = 3,
-             Min_sup_cnt = 10,
-             Min_cnt_pct = 0.01,
-             Min_sup_pct = 0.2,
-             strand_specific = 1,
-             remove_incomp_reads = 5,
-             use_junctions = TRUE,
-             no_flank = TRUE,
-             use_annotation = TRUE,
-             min_tr_coverage = 0.75,
-             min_read_coverage = 0.75) {
-        checked_args <- check_arguments(annot,
+             config_file = NULL) {
+        checked_args <- check_arguments(
+            annot,
             fastqs,
             in_bams,
             outdir,
             genome_fa,
             minimap2_dir,
-            downsample_ratio,
-            config_file,
-            do_genome_align,
-            do_isoform_id = TRUE,
-            isoform_id_bambu = FALSE,
-            do_read_realign,
-            do_transcript_quanti,
-            gen_raw_isoform,
-            has_UMI,
-            MAX_DIST,
-            MAX_TS_DIST,
-            MAX_SPLICE_MATCH_DIST,
-            min_fl_exon_len,
-            Max_site_per_splice,
-            Min_sup_cnt,
-            Min_cnt_pct,
-            Min_sup_pct,
-            strand_specific,
-            remove_incomp_reads,
-            use_junctions,
-            no_flank,
-            use_annotation,
-            min_tr_coverage,
-            min_read_coverage
+            config_file
         )
 
-        config_file <- checked_args$config
+        config <- checked_args$config
 
         # check fastqs
         if (length(fastqs) == 1) {
@@ -178,8 +133,8 @@ sc_long_multisample_pipeline <-
                     bc_stats[i],
                     infqs[i],
                     reference_csv[i],
-                    MAX_DIST,
-                    UMI_LEN
+                    config$isoform_parameters$MAX_DIST,
+                    config$global_parameters$UMI_LEN
                 )
             }
         } else {
@@ -189,7 +144,6 @@ sc_long_multisample_pipeline <-
 
 
         cat("Running FLAMES pipeline...\n")
-        config <- jsonlite::fromJSON(config_file)
 
         using_bam <- FALSE
         if (!is.null(in_bams)) {
@@ -271,7 +225,7 @@ sc_long_multisample_pipeline <-
                 tss_tes_stat,
                 genome_fa,
                 transcript_fa,
-                downsample_ratio,
+                config$isoform_parameters$downsample_ratio,
                 config,
                 raw_splice_isoform
             )

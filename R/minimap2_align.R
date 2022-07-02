@@ -39,7 +39,7 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2_dir, 
         prefix <- paste0(prefix, "_")
     }
 
-    minimap2_args <- c("-ax", "splice", "-t", threads, "-k14", "--secondary=no", "--seed", config$alignment_parameters$seed)
+    minimap2_args <- c("-ax", "splice", "-t", threads, "-k14", "--secondary=no", "--seed", config$global_parameters$seed)
     if (config$alignment_parameters$no_flank) {
         minimap2_args <- base::append(minimap2_args, "--splice-flank=no")
     }
@@ -65,18 +65,19 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2_dir, 
 
     # /bin/minimap2 -ax splice -t 12 --junc-bed /.../FLAMES_out/tmp_splice_anno.bed12 --junc-bonus 1 -k14 --secondary=no -o /.../FLAMES_datasets/MuSC/FLAMES_out/tmp_align.sam --seed 2022 /.../GRCm38.primary_assembly.genome.fa /.../trimmed_MSC.fastq.gz
     minimap2_status <- base::system2(
-        command = "minimap2",
+        command = file.path(minimap2_dir, "minimap2"),
         args = base::append(minimap2_args, c(fa_file, fq_in, "-o", file.path(outdir, paste0(prefix, "tmp_align.sam"))))
     )
     if (!is.null(base::attr(minimap2_status, "status")) && base::attr(minimap2_status, "status") != 0) {
         stop(paste0("error running minimap2:\n", minimap2_status))
     }
 
-    Rsamtools::asBam(file.path(outdir, paste0(prefix, "tmp_align.sam")), file.path(outdir, paste0(prefix, "tmp_align.bam")))
-    Rsamtools::sortBam(file.path(outdir, paste0(prefix, "tmp_align.bam")), file.path(outdir, paste0(prefix, "align2genome.bam")))
+    Rsamtools::asBam(file.path(outdir, paste0(prefix, "tmp_align.sam")), file.path(outdir, paste0(prefix, "tmp_align")))
+    Rsamtools::sortBam(file.path(outdir, paste0(prefix, "tmp_align.bam")), file.path(outdir, paste0(prefix, "align2genome")))
     Rsamtools::indexBam(file.path(outdir, paste0(prefix, "align2genome.bam")))
     file.remove(file.path(outdir, paste0(prefix, "tmp_align.sam")))
     file.remove(file.path(outdir, paste0(prefix, "tmp_align.bam")))
+    file.remove(file.path(outdir, paste0(prefix, "tmp_align.bam.bai")))
     if (config$alignment_parameters$use_junctions) {
         file.remove(file.path(outdir, "tmp_splice_anno.bed12"))
     }
@@ -113,21 +114,22 @@ minimap2_realign <- function(config, fa_file, fq_in, outdir, minimap2_dir, prefi
         prefix <- paste0(prefix, "_")
     }
 
-    minimap2_args <- c("-ax", "map-ont", "-p", "0.9", "--end-bonus", "10", "-N", "3", "-t", threads, "--seed", config$alignment_parameters$seed)
+    minimap2_args <- c("-ax", "map-ont", "-p", "0.9", "--end-bonus", "10", "-N", "3", "-t", threads, "--seed", config$global_parameters$seed)
     minimap2_status <- base::system2(
-        command = "minimap2",
+        command = file.path(minimap2_dir, "minimap2"),
         args = base::append(minimap2_args, c(fa_file, fq_in, "-o", file.path(outdir, paste0(prefix, "tmp_align.sam"))))
     )
     if (!is.null(base::attr(minimap2_status, "status")) && base::attr(minimap2_status, "status") != 0) {
         stop(paste0("error running minimap2:\n", minimap2_status))
     }
 
-    Rsamtools::asBam(file.path(outdir, paste0(prefix, "tmp_align.sam")), file.path(outdir, paste0(prefix, "tmp_align.bam")))
-    Rsamtools::sortBam(file.path(outdir, paste0(prefix, "tmp_align.bam")), file.path(outdir, paste0(prefix, "realign2transcript.bam")))
+    Rsamtools::asBam(file.path(outdir, paste0(prefix, "tmp_align.sam")), file.path(outdir, paste0(prefix, "tmp_align")))
+    Rsamtools::sortBam(file.path(outdir, paste0(prefix, "tmp_align.bam")), file.path(outdir, paste0(prefix, "realign2transcript")))
     Rsamtools::indexBam(file.path(outdir, paste0(prefix, "realign2transcript.bam")))
 
     file.remove(file.path(outdir, paste0(prefix, "tmp_align.sam")))
     file.remove(file.path(outdir, paste0(prefix, "tmp_align.bam")))
+    file.remove(file.path(outdir, paste0(prefix, "tmp_align.bam.bai")))
     return(NULL)
 }
 

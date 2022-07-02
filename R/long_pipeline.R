@@ -21,33 +21,8 @@ generic_long_pipeline <-
              outdir,
              genome_fa,
              minimap2_dir,
-             seed = NULL,
-             downsample_ratio,
-             config_file,
-             do_genome_align,
-             do_isoform_id = TRUE,
-             isoform_id_bambu = FALSE,
-             do_read_realign,
-             do_transcript_quanti,
-             gen_raw_isoform,
-             has_UMI,
-             MAX_DIST,
-             MAX_TS_DIST,
-             MAX_SPLICE_MATCH_DIST,
-             min_fl_exon_len,
-             Max_site_per_splice,
-             Min_sup_cnt,
-             Min_cnt_pct,
-             Min_sup_pct,
-             strand_specific,
-             remove_incomp_reads,
-             use_junctions,
-             no_flank,
-             use_annotation,
-             min_tr_coverage,
-             min_read_coverage) {
+             config) {
         cat("Running FLAMES pipeline...\n")
-        config <- jsonlite::fromJSON(config_file)
 
         using_bam <- FALSE
         if (!is.null(in_bam)) {
@@ -59,7 +34,7 @@ generic_long_pipeline <-
         }
 
         # setup of internal arguments which hold output files and intermediate files
-        if (do_isoform_id && isoform_id_bambu) {
+        if (config$pipeline_parameters$do_isoform_identification && config$pipeline_parameters$bambu_isoform_identification) {
             isoform_gff3 <- paste(outdir, "isoform_annotated.gtf", sep = "/") # Bambu outputs GTF
         } else {
             isoform_gff3 <- paste(outdir, "isoform_annotated.gff3", sep = "/")
@@ -68,17 +43,11 @@ generic_long_pipeline <-
             sep =
                 "/"
         )
-        FSM_anno_out <- paste(outdir, "isoform_FSM_annotation.csv", sep = "/")
-        raw_splice_isoform <- paste(outdir, "splice_raw.gff3", sep = "/")
-        tss_tes_stat <- paste(outdir, "tss_tes.bedgraph", sep = "/")
         transcript_fa <- paste(outdir, "transcript_assembly.fa", sep = "/")
         transcript_fa_idx <- paste(outdir, "transcript_assembly.fa.fai",
             sep =
                 "/"
         )
-        tmp_bam <- paste(outdir, "tmp_align.bam", sep = "/")
-        tmp_bed <- paste(outdir, "tmp_splice_anno.bed12", sep = "/")
-        tmp_sam <- paste(outdir, "tmp_align.sam", sep = "/")
         genome_bam <- paste(outdir, "align2genome.bam", sep = "/")
         realign_bam <- paste(outdir, "realign2transcript.bam", sep = "/")
         tr_cnt_csv <- paste(outdir, "transcript_count.csv.gz", sep = "/")
@@ -112,14 +81,14 @@ generic_long_pipeline <-
                 outdir,
                 minimap2_dir,
                 prefix = NULL,
-                threads = NULL
+                threads = 12
             )
         } else {
             cat("#### Skip aligning reads to genome\n")
         }
 
         # find isofroms
-        if (isoform_id_bambu) {
+        if (config$pipeline_parameters$bambu_isoform_identification) {
             bambuAnnotations <- bambu::prepareAnnotations(annot)
             # Tmp fix: remove withr if bambu imports seqlengths properly
             # https://github.com/GoekeLab/bambu/issues/255
@@ -141,20 +110,19 @@ generic_long_pipeline <-
                     annot,
                     genome_bam,
                     isoform_gff3,
-                    tss_tes_stat,
+                    file.path(outdir, "tss_tes.bedgraph"),
                     genome_fa,
                     transcript_fa,
-                    downsample_ratio,
+                    config$isoform_parameters$downsample_ratio,
                     config,
-                    raw_splice_isoform
+                    file.path(outdir, "splice_raw.gff3")
                 )
         }
 
         # realign to transcript
-        # if (!using_bam && do_read_realign) {
-        if (do_read_realign) {
+        if (config$pipeline_parameters$do_read_realignment) {
             cat("#### Realign to transcript using minimap2\n")
-            minimap2_realign(config, transcript_fa, fastq, outdir, minimap2_dir, prefix = NULL, threads = NULL)
+            minimap2_realign(config, transcript_fa, fastq, outdir, minimap2_dir, prefix = NULL, threads = 12)
         } else {
             cat("#### Skip read realignment\n")
         }
@@ -188,7 +156,7 @@ generic_long_pipeline <-
                 isoform_gff3,
                 annot,
                 isoform_gff3_f,
-                FSM_anno_out,
+                file.path(outdir, "isoform_FSM_annotation.csv"),
                 tr_cnt,
                 config$isoform_parameters$Min_sup_cnt
             )
@@ -203,16 +171,17 @@ generic_long_pipeline <-
                 "counts" = tr_cnt_csv,
                 "isoform_annotated" = isoform_gff3_f,
                 "transcript_assembly" = transcript_fa,
-                "config" = config_file,
                 "align_bam" = genome_bam,
                 "realign2transcript" = realign_bam,
-                "tss_tes" = tss_tes_stat,
+                "tss_tes" = file.path(outdir, "tss_tes.bedgraph"),
                 "outdir" = outdir
             )
         )
     }
 
 #' @importFrom Matrix tail
+#' @importFrom stringr str_split
+#' @importFrom jsonlite fromJSON
 check_arguments <-
     function(annot,
              fastq,
@@ -220,73 +189,22 @@ check_arguments <-
              outdir,
              genome_fa,
              minimap2_dir,
-             downsample_ratio,
-             config_file,
-             do_genome_align,
-             do_isoform_id = TRUE,
-             isoform_id_bambu = FALSE,
-             do_read_realign,
-             do_transcript_quanti,
-             gen_raw_isoform,
-             has_UMI,
-             MAX_DIST,
-             MAX_TS_DIST,
-             MAX_SPLICE_MATCH_DIST,
-             min_fl_exon_len,
-             Max_site_per_splice,
-             Min_sup_cnt,
-             Min_cnt_pct,
-             Min_sup_pct,
-             strand_specific,
-             remove_incomp_reads,
-             use_junctions,
-             no_flank,
-             use_annotation,
-             min_tr_coverage,
-             min_read_coverage) {
+             config_file) {
         if (!dir.exists(outdir)) {
             cat("Output directory does not exists: one is being created\n")
             dir.create(outdir)
             print(outdir)
         }
 
-        if (!do_isoform_id) {
-            stop(
-                "Isoform Identification is required for FLAMES execution. Change this value in the configuration file or \
-        set the argument as TRUE. If isoform identification is not required, you can manually execute the pipeline by following \
-        the vignette"
-            )
-        }
-
         if (is.null(config_file)) {
-            config_file <- create_config(
-                outdir,
-                do_genome_align,
-                do_isoform_id,
-                do_read_realign,
-                do_transcript_quanti,
-                gen_raw_isoform,
-                has_UMI,
-                MAX_DIST,
-                MAX_TS_DIST,
-                MAX_SPLICE_MATCH_DIST,
-                min_fl_exon_len,
-                Max_site_per_splice,
-                Min_sup_cnt,
-                Min_cnt_pct,
-                Min_sup_pct,
-                strand_specific,
-                remove_incomp_reads,
-                use_junctions,
-                no_flank,
-                use_annotation,
-                min_tr_coverage,
-                min_read_coverage
-            )
+            cat("No config file provided, creating a default config in", outdir, "\n")
+            config_file <- create_config(outdir)
         }
 
         # argument verificiation
-        if (downsample_ratio > 1 || downsample_ratio <= 0) {
+        config <- jsonlite::fromJSON(config_file)
+
+        if (config$isoform_parameters$downsample_ratio > 1 || config$isoform_parameters$downsample_ratio <= 0) {
             stop("downsample_ratio should be between 0 and 1")
         }
         if (!is.null(fastq) &&
@@ -306,17 +224,17 @@ check_arguments <-
             }
         }
 
-        if (do_genome_align || do_read_realign) {
+        if (config$pipeline_parameters$do_genome_alignment || config$pipeline_parameters$do_read_realignment) {
             minimap2_dir <- locate_minimap2_dir(minimap2_dir = minimap2_dir)
         }
 
-        if (isoform_id_bambu) {
-            if (tail(stringr::str_split(annot, "\\.")[[1]], n = 1) != "gtf") {
+        if (config$pipeline_parameters$bambu_isoform_identification) {
+            if (Matrix::tail(stringr::str_split(annot, "\\.")[[1]], n = 1) != "gtf") {
                 stop("Bambu requires GTF format for annotation file.\n")
             }
         }
 
-        return(list(config = config_file))
+        return(list(config = config, minimap2_dir = minimap2_dir))
     }
 
 get_GRangesList <- function(file, gene = NULL) {

@@ -4,30 +4,7 @@
 \alias{create_config}
 \title{Create Configuration File From Arguments}
 \usage{
-create_config(
-  outdir,
-  do_genome_align,
-  do_isoform_id,
-  do_read_realign,
-  do_transcript_quanti,
-  gen_raw_isoform,
-  has_UMI,
-  MAX_DIST,
-  MAX_TS_DIST,
-  MAX_SPLICE_MATCH_DIST,
-  min_fl_exon_len,
-  Max_site_per_splice,
-  Min_sup_cnt,
-  Min_cnt_pct,
-  Min_sup_pct,
-  strand_specific,
-  remove_incomp_reads,
-  use_junctions,
-  no_flank,
-  use_annotation,
-  min_tr_coverage,
-  min_read_coverage
-)
+create_config(outdir, ...)
 }
 \arguments{
 \item{outdir}{the destination directory for the configuratio nfile}
@@ -84,21 +61,14 @@ Create Configuration File From Arguments
 }
 \details{
 Create a list object containing the arguments supplied in a format usable for the FLAMES pipeline.
-Also writes the object to a JSON file, which is located with the prefix 'config_' in the supplied \code{outdir}.
+Also writes the object to a JSON file, which is located with the prefix 'config_' in the supplied \code{outdir}. Default values from \code{extdata/config_sclr_nanopore_5end.json} will be used for unprovided parameters.
 }
 \examples{
 # create the default configuartion file
-output <- tempfile()
+tmp_config <- tempfile()
 \dontrun{
-config <- create_config(
-    tempfile(), TRUE, TRUE,
-    TRUE, TRUE,
-    TRUE, FALSE,
-    10, 100, 10,
-    40, 3, 10,
-    0.01, 0.2, 1, 5,
-    TRUE, TRUE,
-    TRUE, 0.75, 0.75
-)
+tmp_config <- tmpfile()
+config <- create_config(tmp_config, min_read_coverage = 0.1234)
+print(jsonlite::fromJSON(tmp_config))
 }
 }
