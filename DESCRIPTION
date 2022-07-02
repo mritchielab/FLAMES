@@ -57,7 +57,8 @@ Imports:
     withr,
     Biostrings,
     GenomicFeatures,
-    jsonlite
+    jsonlite,
+    parallel
 Suggests: 
     BiocStyle,
     knitr,

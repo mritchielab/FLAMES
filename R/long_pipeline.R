@@ -88,7 +88,7 @@ generic_long_pipeline <-
         )
 
         cat("#### Input parameters:\n")
-        cat(jsonlite::toJSON(config, pretty = TRUE),'\n')
+        cat(jsonlite::toJSON(config, pretty = TRUE), "\n")
         cat("gene annotation:", annot, "\n")
         cat("genome fasta:", genome_fa, "\n")
         if (using_bam) {
@@ -103,30 +103,17 @@ generic_long_pipeline <-
         # if (!using_bam && config$pipeline_parameters$do_genome_alignment) {
         if (config$pipeline_parameters$do_genome_alignment) {
             cat("#### Aligning reads to genome using minimap2\n")
-
-            if (config$alignment_parameters$use_junctions) {
-                gff3_to_bed12(minimap2_dir, annot, tmp_bed)
-            }
+            # minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2_dir, threads = NULL)
             minimap2_align(
-                minimap2_dir,
+                config,
                 genome_fa,
                 fastq,
-                tmp_sam,
-                no_flank = config$alignment_parameters$no_flank,
-                bed12_junc = if (config$alignment_parameters$use_junctions) {
-                    tmp_bed
-                } else {
-                    NULL
-                },
-                seed
+                annot,
+                outdir,
+                minimap2_dir,
+                prefix = NULL,
+                threads = NULL
             )
-            samtools_as_bam(tmp_sam, tmp_bam)
-            samtools_sort_index(tmp_bam, genome_bam)
-            file.remove(tmp_sam)
-            file.remove(tmp_bam)
-            if (config$alignment_parameters$use_junctions) {
-                file.remove(tmp_bed)
-            }
         } else {
             cat("#### Skip aligning reads to genome\n")
         }
@@ -167,11 +154,7 @@ generic_long_pipeline <-
         # if (!using_bam && do_read_realign) {
         if (do_read_realign) {
             cat("#### Realign to transcript using minimap2\n")
-            minimap2_tr_align(minimap2_dir, transcript_fa, fastq, tmp_sam, seed)
-            samtools_as_bam(tmp_sam, tmp_bam)
-            samtools_sort_index(tmp_bam, realign_bam)
-            file.remove(tmp_sam)
-            file.remove(tmp_bam)
+            minimap2_realign(config, transcript_fa, fastq, outdir, minimap2_dir, prefix = NULL, threads = NULL)
         } else {
             cat("#### Skip read realignment\n")
         }
@@ -324,9 +307,7 @@ check_arguments <-
         }
 
         if (do_genome_align || do_read_realign) {
-            if (!minimap2_check_callable(minimap2_dir)) {
-                stop(paste0("minimap2 is not available from the given directory: ", minimap2_dir))
-            }
+            minimap2_dir <- locate_minimap2_dir(minimap2_dir = minimap2_dir)
         }
 
         if (isoform_id_bambu) {

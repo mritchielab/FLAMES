@@ -245,31 +245,18 @@ sc_long_multisample_pipeline <-
         # if (!using_bam && config$pipeline_parameters$do_genome_alignment) {
         if (config$pipeline_parameters$do_genome_alignment) {
             cat("#### Aligning reads to genome using minimap2\n")
-
-            if (config$alignment_parameters$use_junctions) {
-                gff3_to_bed12(minimap2_dir, annot, tmp_bed)
-            }
             for (i in 1:length(samples)) {
                 cat(paste0(c("\tAligning sample ", samples[i], "...\n")))
                 minimap2_align(
-                    minimap2_dir,
+                    config,
                     genome_fa,
                     fastqs[i],
-                    tmp_sams[i],
-                    no_flank = config$alignment_parameters$no_flank,
-                    bed12_junc = if (config$alignment_parameters$use_junctions) {
-                        tmp_bed
-                    } else {
-                        NULL
-                    }
+                    annot,
+                    outdir,
+                    minimap2_dir,
+                    prefix = samples[i],
+                    threads = NULL
                 )
-                samtools_as_bam(tmp_sams[i], tmp_bams[i])
-                samtools_sort_index(tmp_bams[i], genome_bams[i])
-                file.remove(tmp_sams[i])
-                file.remove(tmp_bams[i])
-            }
-            if (config$alignment_parameters$use_junctions) {
-                file.remove(tmp_bed)
             }
         } else {
             cat("#### Skip aligning reads to genome\n")
@@ -295,11 +282,7 @@ sc_long_multisample_pipeline <-
             cat("#### Realign to transcript using minimap2\n")
             for (i in 1:length(samples)) {
                 cat(paste0(c("\tRealigning sample ", samples[i], "...\n")))
-                minimap2_tr_align(minimap2_dir, transcript_fa, fastqs[i], tmp_sams[i])
-                samtools_as_bam(tmp_sams[i], tmp_bams[i])
-                samtools_sort_index(tmp_bams[i], realign_bams[i])
-                file.remove(tmp_sams[i])
-                file.remove(tmp_bams[i])
+                minimap2_realign(config, transcript_fa, fastqs[i], outdir, minimap2_dir, prefix = samples[i], threads = NULL)
             }
         } else {
             cat("#### Skip read realignment\n")
