@@ -91,7 +91,6 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2_dir, 
 #' Uses minimap2 to re-align reads to transcriptome
 #'
 #' @param config Parsed list of FLAMES config file
-#' @param fa_file Path to the transcript assembly (\code{.fasta}) file
 #' @param fq_in File path to the fastq file used as a query sequence file
 #' @param outdir Output folder
 #' @param minimap2_dir Path to the directory containing minimap2
@@ -105,7 +104,7 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2_dir, 
 #' @importFrom parallel detectCores
 #' @importFrom Rsamtools sortBam indexBam asBam
 #' @export
-minimap2_realign <- function(config, fa_file, fq_in, outdir, minimap2_dir, prefix = NULL, threads = NULL) {
+minimap2_realign <- function(config, fq_in, outdir, minimap2_dir, prefix = NULL, threads = NULL) {
     if (is.null(threads)) {
         threads <- parallel::detectCores()
     }
@@ -117,7 +116,12 @@ minimap2_realign <- function(config, fa_file, fq_in, outdir, minimap2_dir, prefi
     minimap2_args <- c("-ax", "map-ont", "-p", "0.9", "--end-bonus", "10", "-N", "3", "-t", threads, "--seed", config$global_parameters$seed)
     minimap2_status <- base::system2(
         command = file.path(minimap2_dir, "minimap2"),
-        args = base::append(minimap2_args, c(fa_file, fq_in, "-o", file.path(outdir, paste0(prefix, "tmp_align.sam"))))
+        args = base::append(minimap2_args, c(
+            file.path(outdir, "transcript_assembly.fa"),
+            fq_in,
+            "-o",
+            file.path(outdir, paste0(prefix, "tmp_align.sam"))
+        ))
     )
     if (!is.null(base::attr(minimap2_status, "status")) && base::attr(minimap2_status, "status") != 0) {
         stop(paste0("error running minimap2:\n", minimap2_status))

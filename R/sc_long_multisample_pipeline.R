@@ -218,7 +218,7 @@ sc_long_multisample_pipeline <-
 
         # find isofroms
         isoform_objects <-
-            find_isoform_multisample(
+            find_isoform_flames_multisample(
                 annot,
                 genome_bams,
                 isoform_gff3,

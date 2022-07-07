@@ -5,9 +5,9 @@
 \title{Generic FLAMES pipeline}
 \usage{
 generic_long_pipeline(
-  annot,
+  annotation,
   fastq,
-  in_bam,
+  genome_bam,
   outdir,
   genome_fa,
   minimap2_dir,
@@ -15,11 +15,9 @@ generic_long_pipeline(
 )
 }
 \arguments{
-\item{annot}{The file path to gene annotations file in gff3  format}
-
 \item{fastq}{The file path to input fastq file}
 
-\item{in_bam}{optional BAM file which replaces fastq directory argument. This skips the genome alignment and
+\item{genome_bam}{optional BAM file which replaces fastq directory argument. This skips the genome alignment and
 realignment steps}
 
 \item{outdir}{The path to directory to store all output files.}

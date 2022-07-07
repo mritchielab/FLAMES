@@ -6,7 +6,6 @@
 \usage{
 minimap2_realign(
   config,
-  fa_file,
   fq_in,
   outdir,
   minimap2_dir,
@@ -16,8 +15,6 @@ minimap2_realign(
 }
 \arguments{
 \item{config}{Parsed list of FLAMES config file}
-
-\item{fa_file}{Path to the transcript assembly (\code{.fasta}) file}
 
 \item{fq_in}{File path to the fastq file used as a query sequence file}
 
