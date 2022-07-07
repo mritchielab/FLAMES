@@ -177,7 +177,7 @@ sc_long_multisample_pipeline <-
                     bc_stats[i],
                     infqs[i],
                     reference_csv[i],
-                    MAX_DIST,
+                    MAX_DIST = 2,
                     UMI_LEN
                 )
             }

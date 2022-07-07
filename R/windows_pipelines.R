@@ -137,7 +137,7 @@ sc_windows_pipeline_setup <-
                     bc_stat,
                     infq,
                     reference_csv,
-                    MAX_DIST,
+                    MAX_DIST = 2,
                     UMI_LEN
                 )
             } else {

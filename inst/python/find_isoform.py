@@ -8,7 +8,7 @@ import sys
 def find_isoform(gff3, genome_bam, isoform_gff3, tss_tes_stat, genomefa,
                  transcript_fa, downsample_ratio, config_dict, raw_splice_isoform):
     # find isoform
-    print("#### Read genne annotations", flush=True)
+    print("#### Read gene annotations", flush=True)
     chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = parse_gff_tree(
         gff3)
 
@@ -47,7 +47,7 @@ def find_isoform_multisample(gff3, genome_bams, isoform_gff3, tss_tes_stat, geno
     Requires a list of bam files (`genome_bams`) instead of only one.
     """
     # find isoform
-    print("#### Read genne annotations", flush=True)
+    print("#### Read gene annotations", flush=True)
     chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = parse_gff_tree(
         gff3)
 

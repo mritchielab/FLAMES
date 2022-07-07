@@ -14,7 +14,7 @@ sc_long_pipeline(
   seed = NULL,
   downsample_ratio = 1,
   reference_csv,
-  match_barcode = TRUE,
+  match_barcode,
   config_file = NULL,
   do_genome_align = TRUE,
   do_isoform_id = TRUE,
