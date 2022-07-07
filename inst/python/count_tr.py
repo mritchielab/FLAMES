@@ -1,5 +1,4 @@
 # quantify transcript
-# import pysam
 import pysam as ps
 import os
 from collections import Counter
@@ -7,6 +6,7 @@ import gzip
 import numpy as np
 import editdistance
 from parse_gene_anno import parse_gff_tree
+from filter_gff import annotate_filter_gff
 from itertools import groupby
 
 
@@ -98,7 +98,7 @@ def query_len(cigar_string, hard_clipping=False):
     return result
 
 
-def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_read_coverage, kwargs):
+def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_read_coverage, bc_file = False):
     """
     """
     fa_idx = dict((it.strip().split()[0], int(
@@ -110,8 +110,8 @@ def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_re
     cnt_stat = Counter()
     bamfile = ps.AlignmentFile(bam_in, "rb")
 
-    if "bc_file" in list(kwargs.keys()):
-        bc_dict = make_bc_dict(kwargs["bc_file"])
+    if bc_file:
+        bc_dict = make_bc_dict(bc_file)
     for rec in bamfile.fetch(until_eof=True):
         if rec.is_unmapped:
             cnt_stat["unmapped"] += 1
@@ -162,7 +162,7 @@ def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_re
             raise ValueError(
                 "Please check if barcode and UMI are delimited by \"_\"")
 
-        if "bc_file" in list(kwargs.keys()):
+        if bc_file:
             bc = bc_dict[bc]
         if len(tmp) == 1 and tmp[0][4] > 0:
             if bc not in bc_tr_count_dict:
@@ -331,6 +331,34 @@ def realigned_bam_coverage(bam_in, fa_idx_f, coverage_dir):
         lhi, _ = np.histogram(gene_pct[i], bins=200, range=(0, 1))
         tr_cov_f.write("{},".format(i)+",".join(str(it) for it in lhi)+"\n")
     tr_cov_f.close()
+
+
+def quantification(config_dict, realign_bam, transcript_fa_idx, tr_cnt_csv, isoform_gff3, annotation, isoform_gff3_f, FSM_anno_out, tr_badcov_cnt_csv, bc_file=False):
+    """
+    tr_badcov_cnt_csv: outdir/transcript_count.bad_coverage.csv.gz
+    tr_cnt_csv: outdir/transcript_count.csv.gz
+    isoform_gff3: outdir/isoform_annotated.gff3
+    isoform_gff3_f: outdir/isoform_annotated.filtered.gff3
+    FSM_anno_out: outdir/isoform_FSM_annotation.csv
+    bc_file: outdir/pseudo_barcode_annotation.csv
+    """
+    bc_tr_count_dict, bc_tr_badcov_count_dict, tr_kept = parse_realigned_bam(
+        realign_bam,
+        transcript_fa_idx,
+        config_dict["isoform_parameters"]["Min_sup_cnt"],
+        config_dict["transcript_counting"]["min_tr_coverage"],
+        config_dict["transcript_counting"]["min_read_coverage"],
+        bc_file)
+            
+    chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = parse_gff_tree(annotation)
+    chr_to_gene_i, transcript_dict_i, gene_to_transcript_i, transcript_to_exon_i = parse_gff_tree(isoform_gff3)
+
+    tr_cnt = wrt_tr_to_csv(bc_tr_count_dict, transcript_dict_i, tr_cnt_csv,
+                           transcript_dict, config_dict["global_parameters"]["has_UMI"])
+    wrt_tr_to_csv(bc_tr_badcov_count_dict, transcript_dict_i, tr_badcov_cnt_csv,
+                  transcript_dict, config_dict["global_parameters"]["has_UMI"])
+    annotate_filter_gff(isoform_gff3, annotation, isoform_gff3_f, FSM_anno_out,
+                        tr_cnt, config_dict["isoform_parameters"]["Min_sup_cnt"])
 
 
 if __name__ == '__main__':

@@ -67,7 +67,7 @@ generic_long_pipeline <-
 
         # find isofroms
         if (config$pipeline_parameters$do_isoform_identification) {
-            isoform_objects <- find_isoform(annotation, genome_fa, genome_bam, outdir, config)
+            find_isoform(annotation, genome_fa, genome_bam, outdir, config)
         }
 
         # realign to transcript
@@ -81,36 +81,7 @@ generic_long_pipeline <-
         # quantification
         if (config$pipeline_parameters$do_transcript_quantification) {
             cat("#### Generating transcript count matrix\n")
-            parse_realign <-
-                parse_realigned_bam(
-                    file.path(outdir, "realign2transcript.bam"),
-                    file.path(outdir, "transcript_assembly.fa.fai"),
-                    config$isoform_parameters$Min_sup_cnt,
-                    config$transcript_counting$min_tr_coverage,
-                    config$transcript_counting$min_read_coverage
-                )
-            tr_cnt <- wrt_tr_to_csv(
-                parse_realign$bc_tr_count_dict,
-                isoform_objects$transcript_dict_i,
-                file.path(outdir, "transcript_count.csv.gz"),
-                isoform_objects$transcript_dict,
-                config$global_parameters$has_UMI
-            )
-            wrt_tr_to_csv(
-                parse_realign$bc_tr_badcov_count_dict,
-                isoform_objects$transcript_dict_i,
-                file.path(outdir, "transcript_count.bad_coverage.csv.gz"),
-                isoform_objects$transcript_dict,
-                config$global_parameters$has_UMI
-            )
-            annotate_filter_gff(
-                file.path(outdir, ifelse(config$pipeline_parameters$bambu_isoform_identification, "isoform_annotated.gtf", "isoform_annotated.gff3")),
-                annotation,
-                file.path(outdir, "isoform_annotated.filtered.gff3"),
-                file.path(outdir, "isoform_FSM_annotation.csv"),
-                tr_cnt,
-                config$isoform_parameters$Min_sup_cnt
-            )
+            flames_quantify(annotation = annotation, outdir = outdir, config = config)
         } else {
             cat("#### Skip transcript quantification\n")
         }

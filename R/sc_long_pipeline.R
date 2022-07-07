@@ -30,7 +30,7 @@
 #'
 #' @param annot The file path to gene annotations file in gff3  format
 #' @param fastq The file path to input fastq file
-#' @param in_bam Optional file path to a bam file to use instead of fastq file (skips initial alignment step)
+#' @param genome_bam Optional file path to a bam file to use instead of fastq file (skips initial alignment step)
 #' @param outdir The path to directory to store all output files.
 #' @param genome_fa The file path to genome fasta file.
 #' @param minimap2_dir Path to the directory containing minimap2, if it is not in PATH. Only required if either or both of
@@ -110,7 +110,7 @@
 sc_long_pipeline <-
     function(annot,
              fastq,
-             in_bam = NULL,
+             genome_bam = NULL,
              outdir,
              genome_fa,
              minimap2_dir = NULL,
@@ -120,7 +120,7 @@ sc_long_pipeline <-
         checked_args <- check_arguments(
             annot,
             fastq,
-            in_bam,
+            genome_bam,
             outdir,
             genome_fa,
             minimap2_dir,
@@ -142,10 +142,8 @@ sc_long_pipeline <-
             if (!file.exists(reference_csv)) {
                 stop("reference_csv must exists.")
             }
-            infq <-
-                paste(outdir, "matched_reads.fastq.gz", sep = "/")
-            bc_stat <-
-                paste(outdir, "matched_barcode_stat", sep = "/")
+            infq <- file.path(outdir, "matched_reads.fastq.gz")
+            bc_stat <- file.path(outdir, "matched_barcode_stat")
             match_cell_barcode_cpp(
                 fastq,
                 bc_stat,
@@ -163,7 +161,7 @@ sc_long_pipeline <-
             generic_long_pipeline(
                 annot,
                 infq,
-                in_bam,
+                genome_bam,
                 outdir,
                 genome_fa,
                 minimap2_dir,

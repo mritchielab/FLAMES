@@ -7,12 +7,12 @@
 sc_long_pipeline(
   annot,
   fastq,
-  in_bam = NULL,
+  genome_bam = NULL,
   outdir,
   genome_fa,
   minimap2_dir = NULL,
   reference_csv,
-  match_barcode = TRUE,
+  match_barcode,
   config_file = NULL
 )
 }
@@ -21,7 +21,7 @@ sc_long_pipeline(
 
 \item{fastq}{The file path to input fastq file}
 
-\item{in_bam}{Optional file path to a bam file to use instead of fastq file (skips initial alignment step)}
+\item{genome_bam}{Optional file path to a bam file to use instead of fastq file (skips initial alignment step)}
 
 \item{outdir}{The path to directory to store all output files.}
 
