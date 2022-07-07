@@ -1,5 +1,6 @@
 # parse gene annotation
 from collections import namedtuple
+import gzip
 
 # Initialized GeneInfo named tuple. Note: namedtuple is immutable
 gffInfoFields = ["seqid", "source", "type", "start",
