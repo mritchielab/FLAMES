@@ -115,7 +115,7 @@ sc_long_pipeline <-
              genome_fa,
              minimap2_dir = NULL,
              reference_csv,
-             match_barcode = TRUE,
+             match_barcode,
              config_file = NULL) {
         checked_args <- check_arguments(
             annot,
@@ -131,6 +131,13 @@ sc_long_pipeline <-
         minimap2_dir <- checked_args$minimap2_dir
 
         infq <- NULL
+        if (missing("match_barcode")) {
+            if (basename(fastq) == "matched_reads.fastq.gz") {
+                match_barcode <- FALSE
+            } else {
+                match_barcode <- TRUE
+            }
+        }
         if (match_barcode) {
             if (!file.exists(reference_csv)) {
                 stop("reference_csv must exists.")
