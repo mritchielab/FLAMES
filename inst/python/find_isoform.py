@@ -5,9 +5,9 @@ import sys
 
 
 def find_isoform(gff3, genome_bam, isoform_gff3, tss_tes_stat, genomefa,
-                 transcript_fa, downsample_ratio, config_dict, raw_splice_isoform):
+                 transcript_fa, downsample_ratio, config_dict, raw_splice_isoform, seed):
     # find isoform
-    print("#### Read genne annotations", flush=True)
+    print("#### Read gene annotations", flush=True)
     chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = parse_gff_tree(
         gff3)
 
@@ -21,7 +21,7 @@ def find_isoform(gff3, genome_bam, isoform_gff3, tss_tes_stat, genomefa,
     print("#### find isoforms", flush=True)
     group_bam2isoform(genome_bam, isoform_gff3, tss_tes_stat, "", chr_to_blocks, gene_dict, transcript_to_junctions, transcript_dict, genomefa,
                       config=config_dict["isoform_parameters"],
-                      downsample_ratio=downsample_ratio, raw_gff3=raw_splice_isoform)
+                      downsample_ratio=downsample_ratio, raw_gff3=raw_splice_isoform, seed=seed)
     # raw_gff3=raw_splice_isoform if config_dict["global_parameters"]["generate_raw_isoform"] else None)
 
     # get fasta
@@ -46,7 +46,7 @@ def find_isoform_multisample(gff3, genome_bams, isoform_gff3, tss_tes_stat, geno
     Requires a list of bam files (`genome_bams`) instead of only one.
     """
     # find isoform
-    print("#### Read genne annotations", flush=True)
+    print("#### Read gene annotations", flush=True)
     chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = parse_gff_tree(
         gff3)
 

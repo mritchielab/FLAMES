@@ -17,7 +17,7 @@ find_isoform_bambu <- function(annotation, genome_fa, genome_bam, outdir, config
     bambu_out <- withr::with_package("GenomeInfoDb", bambu::bambu(reads = genome_bam, annotations = bambuAnnotations, genome = genome_fa, quant = FALSE))
 
     isoform_gtf <- file.path(outdir, "isoform_annotated.gtf") # Bambu outputs GTF
-    bambu::writeToGTF(bambu_out, isoform_gtf) # Does bambu_out include both novel and known isoforms ???
+    bambu::writeToGTF(bambu_out, isoform_gtf) # bambu_out is the extended annotation
 
     # Create transcriptome assembly .fa
     dna_string_set <- Biostrings::readDNAStringSet(genome_fa)
@@ -34,13 +34,13 @@ find_isoform_bambu <- function(annotation, genome_fa, genome_bam, outdir, config
 #' @importFrom reticulate import_from_path
 #' @importFrom Rsamtools indexFa
 find_isoform_flames <- function(annotation, genome_fa, genome_bam, outdir, config) {
-    ret <- callBasilisk(flames_env, function(gff3, genome, iso, tss, fa, tran, ds, conf, raw) {
+    ret <- callBasilisk(flames_env, function(gff3, genome, iso, tss, fa, tran, ds, conf, raw, seed) {
         python_path <- system.file("python", package = "FLAMES")
         find <- reticulate::import_from_path("find_isoform", python_path)
-        ret <- find$find_isoform(gff3, genome, iso, tss, fa, tran, ds, conf, raw)
+        ret <- find$find_isoform(gff3, genome, iso, tss, fa, tran, ds, conf, raw, seed)
         ret
     },
-    gff3 = annotation, genome = genome_bam, iso = file.path(outdir, "isoform_annotated.gff3"), tss = file.path(outdir, "tss_tes.bedgraph"), fa = genome_fa, tran = file.path(outdir, "transcript_assembly.fa"), ds = config$isoform_parameters$downsample_ratio, conf = config, raw = file.path(outdir, "splice_raw.gff3")
+    gff3 = annotation, genome = genome_bam, iso = file.path(outdir, "isoform_annotated.gff3"), tss = file.path(outdir, "tss_tes.bedgraph"), fa = genome_fa, tran = file.path(outdir, "transcript_assembly.fa"), ds = config$isoform_parameters$downsample_ratio, conf = config, raw = ifelse(config$isoform_parameters$generate_raw_isoform, file.path(outdir, "splice_raw.gff3"), FALSE), seed = config$pipeline_parameters$seed
     )
 
     # we then need to use Rsamtools to index transcript_fa

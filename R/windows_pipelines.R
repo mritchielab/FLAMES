@@ -256,7 +256,7 @@ windows_pipeline_setup <-
         )
 
         cat("#### Input parameters:\n")
-        cat(jsonlite::toJSON(config, pretty = TRUE),'\n')
+        cat(jsonlite::toJSON(config, pretty = TRUE), "\n")
         cat("gene annotation:", annot, "\n")
         cat("genome fasta:", genome_fa, "\n")
         if (using_bam) {
@@ -383,14 +383,14 @@ windows_pipeline_quantification <- function(pipeline_vars) {
             pipeline_vars$transcript_dict_i,
             pipeline_vars$tr_cnt_csv,
             pipeline_vars$transcript_dict,
-            pipeline_vars$config$global_parameters$has_UMI
+            pipeline_vars$config$barcode_parameters$has_UMI
         )
         wrt_tr_to_csv(
             parse_realign$bc_tr_badcov_count_dict,
             pipeline_vars$transcript_dict_i,
             pipeline_vars$tr_badcov_cnt_csv,
             pipeline_vars$transcript_dict,
-            pipeline_vars$config$global_parameters$has_UMI
+            pipeline_vars$config$barcode_parameters$has_UMI
         )
         annotate_filter_gff(
             pipeline_vars$isoform_gff3,

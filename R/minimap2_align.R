@@ -39,7 +39,7 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2_dir, 
         prefix <- paste0(prefix, "_")
     }
 
-    minimap2_args <- c("-ax", "splice", "-t", threads, "-k14", "--secondary=no", "--seed", config$global_parameters$seed)
+    minimap2_args <- c("-ax", "splice", "-t", threads, "-k14", "--secondary=no", "--seed", config$pipeline_parameters$seed)
     if (config$alignment_parameters$no_flank) {
         minimap2_args <- base::append(minimap2_args, "--splice-flank=no")
     }
@@ -113,7 +113,7 @@ minimap2_realign <- function(config, fq_in, outdir, minimap2_dir, prefix = NULL,
         prefix <- paste0(prefix, "_")
     }
 
-    minimap2_args <- c("-ax", "map-ont", "-p", "0.9", "--end-bonus", "10", "-N", "3", "-t", threads, "--seed", config$global_parameters$seed)
+    minimap2_args <- c("-ax", "map-ont", "-p", "0.9", "--end-bonus", "10", "-N", "3", "-t", threads, "--seed", config$pipeline_parameters$seed)
     minimap2_status <- base::system2(
         command = file.path(minimap2_dir, "minimap2"),
         args = base::append(minimap2_args, c(

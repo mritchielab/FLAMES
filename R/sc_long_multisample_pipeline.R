@@ -133,8 +133,8 @@ sc_long_multisample_pipeline <-
                     bc_stats[i],
                     infqs[i],
                     reference_csv[i],
-                    config$isoform_parameters$MAX_DIST,
-                    config$global_parameters$UMI_LEN
+                    config$barcode_parameters$max_edit_distance,
+                    config$barcode_parameters$UMI_length
                 )
             }
         } else {
@@ -261,14 +261,14 @@ sc_long_multisample_pipeline <-
                     isoform_objects$transcript_dict_i,
                     tr_cnt_csvs[i],
                     isoform_objects$transcript_dict,
-                    config$global_parameters$has_UMI
+                    config$barcode_parameters$has_UMI
                 )
                 wrt_tr_to_csv(
                     parse_realign$bc_tr_badcov_count_dict,
                     isoform_objects$transcript_dict_i,
                     tr_badcov_cnt_csvs[i],
                     isoform_objects$transcript_dict,
-                    config$global_parameters$has_UMI
+                    config$barcode_parameters$has_UMI
                 )
                 # annotate_filter_gff(
                 #    isoform_gff3,

@@ -149,8 +149,8 @@ sc_long_pipeline <-
                 bc_stat,
                 infq,
                 reference_csv,
-                config$isoform_parameters$MAX_DIST,
-                config$global_parameters$UMI_LEN
+                config$barcode_parameters$max_edit_distance,
+                config$barcode_parameters$UMI_length
             )
         } else {
             infq <- fastq

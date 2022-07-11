@@ -345,7 +345,7 @@ def quantification(config_dict, realign_bam, transcript_fa_idx, tr_cnt_csv, isof
     bc_tr_count_dict, bc_tr_badcov_count_dict, tr_kept = parse_realigned_bam(
         realign_bam,
         transcript_fa_idx,
-        config_dict["isoform_parameters"]["Min_sup_cnt"],
+        config_dict["isoform_parameters"]["min_sup_cnt"],
         config_dict["transcript_counting"]["min_tr_coverage"],
         config_dict["transcript_counting"]["min_read_coverage"],
         bc_file)
@@ -354,11 +354,11 @@ def quantification(config_dict, realign_bam, transcript_fa_idx, tr_cnt_csv, isof
     chr_to_gene_i, transcript_dict_i, gene_to_transcript_i, transcript_to_exon_i = parse_gff_tree(isoform_gff3)
 
     tr_cnt = wrt_tr_to_csv(bc_tr_count_dict, transcript_dict_i, tr_cnt_csv,
-                           transcript_dict, config_dict["global_parameters"]["has_UMI"])
+                           transcript_dict, config_dict["barcode_parameters"]["has_UMI"])
     wrt_tr_to_csv(bc_tr_badcov_count_dict, transcript_dict_i, tr_badcov_cnt_csv,
-                  transcript_dict, config_dict["global_parameters"]["has_UMI"])
+                  transcript_dict, config_dict["barcode_parameters"]["has_UMI"])
     annotate_filter_gff(isoform_gff3, annotation, isoform_gff3_f, FSM_anno_out,
-                        tr_cnt, config_dict["isoform_parameters"]["Min_sup_cnt"])
+                        tr_cnt, config_dict["isoform_parameters"]["min_sup_cnt"])
 
 
 if __name__ == '__main__':

@@ -20,7 +20,7 @@ bulk_long_pipeline(
   do_transcript_quanti = TRUE,
   gen_raw_isoform = TRUE,
   has_UMI = FALSE,
-  MAX_DIST = 10,
+  max_dist = 10,
   MAX_TS_DIST = 100,
   MAX_SPLICE_MATCH_DIST = 10,
   min_fl_exon_len = 40,
@@ -71,8 +71,6 @@ all configuration parameters}
 \item{gen_raw_isoform}{Boolean; specifies whether a gff3 should be generated containing the raw isoform information in the isoform identification step}
 
 \item{has_UMI}{Boolean; specifies if the data contains UMI.}
-
-\item{MAX_DIST}{Real; maximum distance allowed when merging splicing sites in isoform consensus clustering.}
 
 \item{MAX_TS_DIST}{Real; maximum distance allowed when merging transcript start/end position in isoform consensus clustering.}
 

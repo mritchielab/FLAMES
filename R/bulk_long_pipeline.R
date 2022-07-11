@@ -53,7 +53,7 @@ bulk_long_pipeline <-
              do_transcript_quanti = TRUE,
              gen_raw_isoform = TRUE,
              has_UMI = FALSE,
-             MAX_DIST = 10,
+             max_dist = 10,
              MAX_TS_DIST = 100,
              MAX_SPLICE_MATCH_DIST = 10,
              min_fl_exon_len = 40,

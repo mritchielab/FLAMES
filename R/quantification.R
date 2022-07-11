@@ -72,6 +72,7 @@ wrt_tr_to_csv <-
         )
     }
 
+#' @export
 #' @importFrom reticulate import_from_path dict
 flames_quantify <- function(annotation, outdir, bulk, config) {
     if (missing("bulk")) {
