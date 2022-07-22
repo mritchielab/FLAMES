@@ -44,7 +44,7 @@ merge_bulk_fastq <- function(fastq_dir, out_fastq) {
         return(out_fastq)
     }
     fastq_files <- paste(fastq_dir, list.files(fastq_dir), sep = "/")
-    fastq_files <- fastq_files[(endsWith(fastq_files, ".fq") | endsWith(fastq_files, ".fastq")) & utils::file_test("-f", fastq_files)]
+    fastq_files <- fastq_files[grepl("\\.(fastq|fq)(\\.gz)?$", fastq_files) & utils::file_test("-f", fastq_files)]
     merge_bulk_fastq_cpp(fastq_files, out_fastq)
     return(out_fastq)
 }

@@ -158,12 +158,3 @@ check_arguments <-
 
         return(list(config = config, minimap2_dir = minimap2_dir))
     }
-
-get_GRangesList <- function(file, gene = NULL) {
-    isoform_gff <- rtracklayer::import(file, feature.type = c("exon", "utr"))
-    if (is.null("gene")) {
-        isoform_gff <- isoform_gff[isoform_gff$gene_id == gene]
-    }
-    isoform_gff <- S4Vectors::split(isoform_gff, isoform_gff$transcript_id)
-    isoform_gff
-}

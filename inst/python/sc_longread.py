@@ -1118,7 +1118,11 @@ class Isoforms(object):
             return ""
 
 
-def group_bam2isoform(bam_in, out_gff3, out_stat, summary_csv, chr_to_blocks, gene_dict, transcript_to_junctions, transcript_dict, fa_f, config, downsample_ratio, raw_gff3 = None, seed = 2022):
+def group_bam2isoform(bam_in, out_gff3, out_stat, summary_csv, chr_to_blocks, gene_dict, transcript_to_junctions, transcript_dict, fa_f, config, downsample_ratio, raw_gff3 = None):
+    if "seed" in config["pipeline_parameters"] and config["pipeline_parameters"]["seed"] == int:
+        random.seed(config["pipeline_parameters"]["seed"])
+    else:
+        random.seed(2022)
     bamfile = ps.AlignmentFile(bam_in, "rb")
     #csv_out = open(summary_csv,"w")
     iso_annotated = open(out_gff3, "w")
@@ -1140,7 +1144,7 @@ def group_bam2isoform(bam_in, out_gff3, out_stat, summary_csv, chr_to_blocks, ge
             it_region = bamfile.fetch(ch, bl.s, bl.e)
             TSS_TES_site = get_TSS_TES_site(
                 transcript_to_junctions, bl.transcript_list)
-            tmp_isoform = Isoforms(ch, config)
+            tmp_isoform = Isoforms(ch, config["isoform_parameters"])
             for rec in it_region:
                 if 0<downsample_ratio<1 and random.uniform(0, 1)>downsample_ratio:
                     continue   # downsample analysis
@@ -1164,7 +1168,7 @@ def group_bam2isoform(bam_in, out_gff3, out_stat, summary_csv, chr_to_blocks, ge
                 if raw_gff3:
                     splice_raw.write(tmp_isoform.raw_splice_to_gff3())
                 iso_annotated.write(tmp_isoform.isoform_to_gff3(
-                    isoform_pct=config["min_cnt_pct"]))
+                    isoform_pct=config["isoform_parameters"]["min_cnt_pct"]))
         # with open(iso_exact,"w") as out_f:
     #    out_f.write("##gff-version 3\n")
     tss_tes_stat.close()
@@ -1179,10 +1183,10 @@ def group_bam2isoform_multisample(bam_in_list, out_gff3, out_stat, summary_csv, 
     Multisample version of `group_bam2isoform`. 
     Requires a list of bam files (`bam_in_list`) instead of only one.
     """
-    if "random_seed" in list(config.keys()):
-        random.seed(config["random_seed"])
+    if "seed" in config["pipeline_parameters"] and config["pipeline_parameters"]["seed"] == int:
+        random.seed(config["pipeline_parameters"]["seed"])
     else:
-        random.seed(666666)
+        random.seed(2022)
     bamfile_list = [ps.AlignmentFile(bam, "rb") for bam in bam_in_list]
     #csv_out = open(summary_csv,"w")
     iso_annotated = open(out_gff3, "w")
@@ -1205,7 +1209,7 @@ def group_bam2isoform_multisample(bam_in_list, out_gff3, out_stat, summary_csv, 
                 [bamfile.fetch(ch, bl.s, bl.e) for bamfile in bamfile_list])
             TSS_TES_site = get_TSS_TES_site(
                 transcript_to_junctions, bl.transcript_list)
-            tmp_isoform = Isoforms(ch, config)
+            tmp_isoform = Isoforms(ch, config["isoform_parameters"])
             for rec in it_region:
                 # if 0<downsample_ratio<1 and random.uniform(0, 1)>downsample_ratio:
                 #     continue   # downsample analysis
@@ -1229,7 +1233,7 @@ def group_bam2isoform_multisample(bam_in_list, out_gff3, out_stat, summary_csv, 
                 if raw_gff3:
                     splice_raw.write(tmp_isoform.raw_splice_to_gff3())
                 iso_annotated.write(tmp_isoform.isoform_to_gff3(
-                    isoform_pct=config["min_cnt_pct"]))
+                    isoform_pct=config["isoform_parameters"]["min_cnt_pct"]))
         # with open(iso_exact,"w") as out_f:
     #    out_f.write("##gff-version 3\n")
     tss_tes_stat.close()

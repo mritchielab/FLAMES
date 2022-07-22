@@ -117,7 +117,7 @@ sc_long_multisample_pipeline <-
             stop("Please make sure all fastq files exist.")
         }
 
-        samples <- gsub(".fq$", "", gsub(".fastq$", "", basename(fastqs)))
+        samples <- gsub("\\.(fastq|fq)(\\.gz)?$", "", basename(fastqs))
 
         if (match_barcode) {
             if (!all(file.exists(reference_csv)) || length(reference_csv) != length(fastqs)) {

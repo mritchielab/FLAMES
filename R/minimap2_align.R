@@ -81,7 +81,7 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2_dir, 
     if (config$alignment_parameters$use_junctions) {
         file.remove(file.path(outdir, "tmp_splice_anno.bed12"))
     }
-    return(NULL)
+    return(file.path(outdir, paste0(prefix, "align2genome.bam")))
 }
 
 
@@ -134,7 +134,7 @@ minimap2_realign <- function(config, fq_in, outdir, minimap2_dir, prefix = NULL,
     file.remove(file.path(outdir, paste0(prefix, "tmp_align.sam")))
     file.remove(file.path(outdir, paste0(prefix, "tmp_align.bam")))
     file.remove(file.path(outdir, paste0(prefix, "tmp_align.bam.bai")))
-    return(NULL)
+    return(file.path(outdir, paste0(prefix, "realign2transcript.bam")))
 }
 
 #' Locate minimap2
