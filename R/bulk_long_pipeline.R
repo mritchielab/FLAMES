@@ -152,8 +152,7 @@ bulk_long_pipeline <-
         )
         load_genome_anno <- rtracklayer::import(annotation, feature.type = c("exon", "utr"))
 
-        # se <- generate_bulk_summarized(out_files, load_genome_anno = load_genome_anno)
-        # TODO fix setting rowRanges
+        se <- generate_bulk_summarized(out_files, load_genome_anno = load_genome_anno)
         # return the created summarizedexperiment
-        # se
+        se
     }

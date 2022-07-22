@@ -220,6 +220,8 @@ generate_sc_sce <- function(out_files, load_genome_anno = NULL, create_function)
     isoform_gff <- S4Vectors::split(isoform_gff, isoform_gff$transcript_id)
     missing_tr <- !(tr_anno$transcript_id %in% names(isoform_gff))
 
+    rowRanges(tr_sce) <- rep(GRangesList(GRanges(seqnames = NULL, ranges = NULL, strand = NULL, seqinfo = NULL, seqlengths = NULL)), dim(tr_sce)[1])
+
     if (!is.null(load_genome_anno)) {
         genome_anno <- S4Vectors::split(load_genome_anno, load_genome_anno$transcript_id)
         add_from_genome_anno <- (missing_tr & (tr_anno$transcript_id %in% names(genome_anno)))
