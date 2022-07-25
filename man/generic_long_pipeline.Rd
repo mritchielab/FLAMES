@@ -15,6 +15,8 @@ generic_long_pipeline(
 )
 }
 \arguments{
+\item{annotation}{The file path to gene annotations file in gff3  format}
+
 \item{fastq}{The file path to input fastq file}
 
 \item{genome_bam}{optional BAM file which replaces fastq directory argument. This skips the genome alignment and

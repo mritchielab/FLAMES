@@ -5,7 +5,7 @@
 \title{Pipeline for Single Cell Data}
 \usage{
 sc_long_pipeline(
-  annot,
+  annotation,
   fastq,
   genome_bam = NULL,
   outdir,
@@ -17,7 +17,7 @@ sc_long_pipeline(
 )
 }
 \arguments{
-\item{annot}{The file path to gene annotations file in gff3  format}
+\item{annotation}{The file path to gene annotations file in gff3  format}
 
 \item{fastq}{The file path to input fastq file}
 

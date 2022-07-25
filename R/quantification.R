@@ -83,45 +83,14 @@ flames_quantify <- function(annotation, outdir, config, pipeline = "sc_single_sa
         stop("Incorrect number of realignment files found.\n")
     }
 
-    if (pipeline %in% c("sc_single_sample", "bulk")) {
-        callBasilisk(flames_env, function(config_dict, realign_bam, transcript_fa_idx, tr_cnt_csv, isoform_gff3, annotation, isoform_gff3_f, FSM_anno_out, tr_badcov_cnt_csv, pipeline) {
-            python_path <- system.file("python", package = "FLAMES")
-            count <- reticulate::import_from_path("count_tr", python_path)
-            count$quantification(config_dict, realign_bam, transcript_fa_idx, tr_cnt_csv, isoform_gff3, annotation, isoform_gff3_f, FSM_anno_out, tr_badcov_cnt_csv, pipeline)
-        },
-        config_dict = reticulate::dict(config),
-        realign_bam = file.path(outdir, realign_bam),
-        transcript_fa_idx = file.path(outdir, "transcript_assembly.fa.fai"),
-        tr_cnt_csv = file.path(outdir, "transcript_count.csv.gz"),
-        isoform_gff3 = file.path(outdir, ifelse(config$pipeline_parameters$bambu_isoform_identification, "isoform_annotated.gtf", "isoform_annotated.gff3")),
-        annotation = annotation,
-        isoform_gff3_f = file.path(outdir, "isoform_annotated.filtered.gff3"),
-        FSM_anno_out = file.path(outdir, "isoform_FSM_annotation.csv"),
-        tr_badcov_cnt_csv = file.path(outdir, "transcript_count.bad_coverage.csv.gz"),
-        pipeline = pipeline
-        )
-    } else if (pipeline == "sc_multi_sample") {
-        config$isoform_parameters$min_sup_cnt <- 0
-        for (i in realign_bam) {
-            sample <- gsub("_realign2transcript.bam", "", i)
-            callBasilisk(flames_env, function(config_dict, realign_bam, transcript_fa_idx, tr_cnt_csv, isoform_gff3, annotation, isoform_gff3_f, FSM_anno_out, tr_badcov_cnt_csv, pipeline) {
-                python_path <- system.file("python", package = "FLAMES")
-                count <- reticulate::import_from_path("count_tr", python_path)
-                count$quantification(config_dict, realign_bam, transcript_fa_idx, tr_cnt_csv, isoform_gff3, annotation, isoform_gff3_f, FSM_anno_out, tr_badcov_cnt_csv, pipeline)
-            },
-            config_dict = reticulate::dict(config),
-            realign_bam = file.path(outdir, paste0(sample, "_realign2transcript.bam")),
-            transcript_fa_idx = file.path(outdir, "transcript_assembly.fa.fai"),
-            tr_cnt_csv = file.path(outdir, paste0(sample, "_transcript_count.csv.gz")),
-            isoform_gff3 = file.path(outdir, ifelse(config$pipeline_parameters$bambu_isoform_identification, "isoform_annotated.gtf", "isoform_annotated.gff3")),
-            annotation = annotation,
-            isoform_gff3_f = file.path(outdir, paste0(sample, "_isoform_annotated.filtered.gff3")),
-            FSM_anno_out = file.path(outdir, paste0(sample, "_isoform_FSM_annotation.csv")),
-            tr_badcov_cnt_csv = file.path(outdir, paste0(sample, "_transcript_count.bad_coverage.csv.gz")),
-            pipeline = "sc_single_sample"
-            )
-        }
-    } else {
-        stop(paste0("Unknown pipeline type '", pipeline, "'' provided\n"))
-    }
+    callBasilisk(flames_env, function(config_dict, annotation, outdir, pipeline) {
+        python_path <- system.file("python", package = "FLAMES")
+        count <- reticulate::import_from_path("count_tr", python_path)
+        count$quantification(config_dict, annotation, outdir, pipeline)
+    },
+    config_dict = reticulate::dict(config),
+    annotation = annotation,
+    outdir = outdir,
+    pipeline = pipeline
+    )
 }

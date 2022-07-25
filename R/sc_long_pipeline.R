@@ -28,7 +28,7 @@
 #' of up to 2 by default. Most of the parameters, such as the minimal distance to splice site and minimal percentage of transcript coverage
 #' can be modified by the JSON configuration file (\code{config_file}).
 #'
-#' @param annot The file path to gene annotations file in gff3  format
+#' @param annotation The file path to gene annotations file in gff3  format
 #' @param fastq The file path to input fastq file
 #' @param genome_bam Optional file path to a bam file to use instead of fastq file (skips initial alignment step)
 #' @param outdir The path to directory to store all output files.
@@ -108,7 +108,7 @@
 #' @example inst/examples/pipeline_example.R
 #' @export
 sc_long_pipeline <-
-    function(annot,
+    function(annotation,
              fastq,
              genome_bam = NULL,
              outdir,
@@ -118,7 +118,7 @@ sc_long_pipeline <-
              match_barcode,
              config_file = NULL) {
         checked_args <- check_arguments(
-            annot,
+            annotation,
             fastq,
             genome_bam,
             outdir,
@@ -159,7 +159,7 @@ sc_long_pipeline <-
 
         out_files <-
             generic_long_pipeline(
-                annot,
+                annotation,
                 infq,
                 genome_bam,
                 outdir,
@@ -168,7 +168,7 @@ sc_long_pipeline <-
                 config
             )
 
-        load_genome_anno <- rtracklayer::import(annot, feature.type = c("exon", "utr"))
+        load_genome_anno <- rtracklayer::import(annotation, feature.type = c("exon", "utr"))
         sce <- generate_sc_singlecell(out_files, load_genome_anno = load_genome_anno)
 
         sce
@@ -252,11 +252,11 @@ generate_bulk_summarized <- function(out_files, load_genome_anno = NULL) {
 
 #' Create \code{SingleCellExperiment} object from \code{FLAMES} output folder
 #' @param outdir The folder containing \code{FLAMES} output files
-#' @param annot (Optional) the annotation file that was used to produce the output files
+#' @param annotation (Optional) the annotation file that was used to produce the output files
 #' @return a \code{SingleCellExperiment} object
 #' @example inst/examples/pipeline_example.R
 #' @export
-create_sce_from_dir <- function(outdir, annot = NULL) {
+create_sce_from_dir <- function(outdir, annotation = NULL) {
     out_files <- list(
         counts = file.path(outdir, "transcript_count.csv.gz"),
         isoform_annotated = file.path(outdir, "isoform_annotated.gff3"),
@@ -266,9 +266,9 @@ create_sce_from_dir <- function(outdir, annot = NULL) {
         realign2transcript = file.path(outdir, "realign2transcript.bam"),
         tss_tes = file.path(outdir, "tss_tes.bedgraph")
     )
-    if (!is.null(annot)) {
-        out_files[["annot"]] <- annot
-        load_genome_anno <- rtracklayer::import(annot, feature.type = c("exon", "utr"))
+    if (!is.null(annotation)) {
+        out_files[["annotation"]] <- annotation
+        load_genome_anno <- rtracklayer::import(annotation, feature.type = c("exon", "utr"))
         return(generate_sc_singlecell(out_files, load_genome_anno = load_genome_anno))
     } else {
         return(generate_sc_singlecell(out_files))
@@ -277,11 +277,11 @@ create_sce_from_dir <- function(outdir, annot = NULL) {
 
 #' Create \code{SummarizedExperiment} object from \code{FLAMES} output folder
 #' @param outdir The folder containing \code{FLAMES} output files
-#' @param annot (Optional) the annotation file that was used to produce the output files
+#' @param annotation (Optional) the annotation file that was used to produce the output files
 #' @return a \code{SummarizedExperiment} object
 #' @example inst/examples/pipeline_example.R
 #' @export
-create_se_from_dir <- function(outdir, annot) {
+create_se_from_dir <- function(outdir, annotation) {
     out_files <- list(
         counts = file.path(outdir, "transcript_count.csv.gz"),
         isoform_annotated = file.path(outdir, "isoform_annotated.gff3"),
@@ -291,9 +291,9 @@ create_se_from_dir <- function(outdir, annot) {
         realign2transcript = file.path(outdir, "realign2transcript.bam"),
         tss_tes = file.path(outdir, "tss_tes.bedgraph")
     )
-    if (!is.null(annot)) {
-        out_files[["annot"]] <- annot
-        load_genome_anno <- rtracklayer::import(annot, feature.type = c("exon", "utr"))
+    if (!is.null(annotation)) {
+        out_files[["annotation"]] <- annotation
+        load_genome_anno <- rtracklayer::import(annotation, feature.type = c("exon", "utr"))
         return(generate_bulk_summarized(out_files, load_genome_anno = load_genome_anno))
     } else {
         return(generate_bulk_summarized(out_files))

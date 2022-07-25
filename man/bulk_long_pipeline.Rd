@@ -14,6 +14,8 @@ bulk_long_pipeline(
 )
 }
 \arguments{
+\item{annotation}{The file path to gene annotations file in gff3  format}
+
 \item{fastq}{the path to the directory containing the fastq input files to merge into one, \code{merged.fastq.gz}. If \code{merged.fastq.gz} already
 exists, the fastq files are not merged and the existing merged file is used.}
 

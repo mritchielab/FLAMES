@@ -68,7 +68,7 @@ Suggests:
     testthat (>= 3.0.0)
 LinkingTo: Rcpp, Rhtslib, zlibbioc
 SystemRequirements: GNU make, C++11
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.1
 VignetteBuilder: knitr
 URL: https://github.com/OliverVoogd/FLAMES
 Config/testthat/edition: 3

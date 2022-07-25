@@ -4,12 +4,12 @@
 \alias{create_sce_from_dir}
 \title{Create \code{SingleCellExperiment} object from \code{FLAMES} output folder}
 \usage{
-create_sce_from_dir(outdir, annot = NULL)
+create_sce_from_dir(outdir, annotation = NULL)
 }
 \arguments{
 \item{outdir}{The folder containing \code{FLAMES} output files}
 
-\item{annot}{(Optional) the annotation file that was used to produce the output files}
+\item{annotation}{(Optional) the annotation file that was used to produce the output files}
 }
 \value{
 a \code{SingleCellExperiment} object

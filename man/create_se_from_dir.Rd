@@ -4,12 +4,12 @@
 \alias{create_se_from_dir}
 \title{Create \code{SummarizedExperiment} object from \code{FLAMES} output folder}
 \usage{
-create_se_from_dir(outdir, annot)
+create_se_from_dir(outdir, annotation)
 }
 \arguments{
 \item{outdir}{The folder containing \code{FLAMES} output files}
 
-\item{annot}{(Optional) the annotation file that was used to produce the output files}
+\item{annotation}{(Optional) the annotation file that was used to produce the output files}
 }
 \value{
 a \code{SummarizedExperiment} object

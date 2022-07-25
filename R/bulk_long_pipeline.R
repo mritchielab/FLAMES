@@ -117,7 +117,6 @@ bulk_long_pipeline <-
 
         # find isofroms
         if (config$pipeline_parameters$do_isoform_identification) {
-            # TOOO
             find_isoform(annotation, genome_fa, genome_bam, outdir, config)
         }
 
@@ -125,6 +124,7 @@ bulk_long_pipeline <-
         if (config$pipeline_parameters$do_read_realignment) {
             cat("#### Realign to transcript using minimap2\n")
             for (i in 1:length(samples)) {
+                cat(paste0(c("\tRealigning sample ", samples[i], "...\n")))
                 minimap2_realign(config, fastq_files[i], outdir, minimap2_dir, prefix = samples[i], threads = 12)
             }
         } else {
@@ -146,7 +146,7 @@ bulk_long_pipeline <-
             "isoform_annotated" = file.path(outdir, "isoform_annotated.filtered.gff3"),
             "transcript_assembly" = file.path(outdir, "transcript_assembly.fa"),
             "align_bam" = genome_bam,
-            "realign2transcript" = file.path(outdir, "realign2transcript.bam"),
+            "realign2transcript" = file.path(outdir, list.files(outdir))[grepl("realign2transcript\\.bam$", list.files(outdir))],
             "tss_tes" = file.path(outdir, "tss_tes.bedgraph"),
             "outdir" = outdir
         )

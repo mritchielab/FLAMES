@@ -5,9 +5,8 @@
 \title{Pipeline for Multi-sample Single Cell Data}
 \usage{
 sc_long_multisample_pipeline(
-  annot,
+  annotation,
   fastqs,
-  in_bams = NULL,
   outdir,
   genome_fa,
   minimap2_dir = NULL,
@@ -17,13 +16,10 @@ sc_long_multisample_pipeline(
 )
 }
 \arguments{
-\item{annot}{The file path to gene annotations file in gff3  format}
+\item{annotation}{The file path to gene annotations file in gff3  format}
 
 \item{fastqs}{A vector containing the paths to each fastq files. If \code{in_bams} is not provided, this argument can also
 be provided as the path to the folder containing the fastq files. Each fastq file will be treated as a sample.}
-
-\item{in_bams}{Optional vector containing file paths the  bam files to use instead of fastq file (skips initial alignment step).
-The order of the bam files need to mach the order in \code{fastqs}.}
 
 \item{outdir}{The path to directory to store all output files.}
 
@@ -38,6 +34,9 @@ The order of the bam files need to mach the order in \code{fastqs}.}
 
 \item{config_file}{File path to the JSON configuration file. If specified, \code{config_file} overrides
 all configuration parameters}
+
+\item{in_bams}{Optional vector containing file paths the  bam files to use instead of fastq file (skips initial alignment step).
+The order of the bam files need to mach the order in \code{fastqs}.}
 }
 \value{
 \code{sc_long_pipeline} returns a SingleCellExperiment object, containing a count

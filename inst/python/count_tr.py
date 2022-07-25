@@ -6,7 +6,7 @@ import gzip
 import numpy as np
 import editdistance
 from parse_gene_anno import parse_gff_tree
-from filter_gff import annotate_filter_gff
+from filter_gff import annotate_filter_gff, annotate_full_splice_match_all_sample
 from itertools import groupby
 
 
@@ -142,8 +142,8 @@ def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_re
             print("\t" + str(tr), "not in annotation ???")
     tr_kept = dict((tr, tr) for tr in tr_cov_dict if len(
         [it for it in tr_cov_dict[tr] if it > 0.9]) > min_sup_reads)
-    unique_tr_count = Counter(read_dict[r][0][0]
-                              for r in read_dict if read_dict[r][0][2] > 0.9)
+    #unique_tr_count = Counter(read_dict[r][0][0]
+    #                          for r in read_dict if read_dict[r][0][2] > 0.9)
     for r in read_dict:
         tmp = read_dict[r]
         tmp = [it for it in tmp if it[0] in tr_kept]
@@ -236,10 +236,11 @@ def parse_realigned_bam_sc_multi_sample(bam_in, fa_idx_f, min_sup_reads, min_tr_
             if tr not in fa_idx:
                 cnt_stat["not_in_annotation"] += 1
                 print("\t" + str(tr), "not in annotation ???")
+
     tr_kept = dict((tr, tr) for tr in tr_cov_dict if len(
         [it for it in tr_cov_dict[tr] if it > 0.9]) > min_sup_reads)
-    unique_tr_count = Counter(read_dict[r][0][0]
-                              for r in read_dict if read_dict[r][0][2] > 0.9)
+    #unique_tr_count = Counter(read_dict[r][0][0]
+    #                          for r in read_dict if read_dict[r][0][2] > 0.9)
 
     for sample in samples:
 
@@ -248,8 +249,7 @@ def parse_realigned_bam_sc_multi_sample(bam_in, fa_idx_f, min_sup_reads, min_tr_
         bc_tr_count_dicts[sample] = bc_tr_count_dict
         bc_tr_badcov_count_dicts[sample] = bc_tr_badcov_count_dict
 
-        for r in samples[sample]:
-            tmp = read_dict[r]
+        for r, tmp in samples[sample].items():
             tmp = [it for it in tmp if it[0] in tr_kept]
             if len(tmp) > 0:
                 hit = tmp[0]  # transcript_id, pct_ref, pct_reads
@@ -523,16 +523,17 @@ def realigned_bam_coverage(bam_in, fa_idx_f, coverage_dir):
     tr_cov_f.close()
 
 
-def quantification(config_dict, realign_bam, transcript_fa_idx, tr_cnt_csv, isoform_gff3, annotation, isoform_gff3_f, FSM_anno_out, tr_badcov_cnt_csv, pipeline):
-    """
-    tr_badcov_cnt_csv: outdir/transcript_count.bad_coverage.csv.gz
-    tr_cnt_csv: outdir/transcript_count.csv.gz
-    isoform_gff3: outdir/isoform_annotated.gff3
-    isoform_gff3_f: outdir/isoform_annotated.filtered.gff3
-    FSM_anno_out: outdir/isoform_FSM_annotation.csv
-    bc_file: outdir/pseudo_barcode_annotation.csv
-    """
+def quantification(config_dict, annotation, outdir, pipeline):
+
+    transcript_fa_idx = os.path.join(outdir, "transcript_assembly.fa.fai")
+    isoform_gff3 = os.path.join(outdir, "isoform_annotated.gtf" if config_dict["pipeline_parameters"]["bambu_isoform_identification"] else "isoform_annotated.gff3")
+    isoform_gff3_f = os.path.join(outdir, "isoform_annotated.filtered.gff3")
+    FSM_anno_out = os.path.join(outdir, "isoform_FSM_annotation.csv")
+
     if pipeline == "sc_single_sample":
+        realign_bam = os.path.join(outdir, "realign2transcript.bam")
+        tr_cnt_csv = os.path.join(outdir, "transcript_count.csv.gz")
+        tr_badcov_cnt_csv = os.path.join(outdir, "transcript_count.bad_coverage.csv.gz")
         bc_tr_count_dict, bc_tr_badcov_count_dict, tr_kept = parse_realigned_bam(
             realign_bam,
             transcript_fa_idx,
@@ -540,15 +541,38 @@ def quantification(config_dict, realign_bam, transcript_fa_idx, tr_cnt_csv, isof
             config_dict["transcript_counting"]["min_tr_coverage"],
             config_dict["transcript_counting"]["min_read_coverage"],
             bc_file = False)
+
     elif pipeline == "bulk":
+        realign_bam = [os.path.join(outdir, f) for f in os.listdir(outdir) if f[-22:] == "realign2transcript.bam"]
+        tr_cnt_csv = os.path.join(outdir, "transcript_count.csv.gz")
+        tr_badcov_cnt_csv = os.path.join(outdir, "transcript_count.bad_coverage.csv.gz")
         bc_tr_count_dict, bc_tr_badcov_count_dict, tr_kept = parse_realigned_bam_bulk(
             realign_bam,
             transcript_fa_idx,
             config_dict["isoform_parameters"]["min_sup_cnt"],
             config_dict["transcript_counting"]["min_tr_coverage"],
             config_dict["transcript_counting"]["min_read_coverage"])
+
     elif pipeline == "sc_multi_sample":
-        raise NotImplementedError
+        realign_bam = [os.path.join(outdir, f) for f in os.listdir(outdir) if f[-23:] == "_realign2transcript.bam"]
+        bc_tr_count_dicts, bc_tr_badcov_count_dicts, tr_kept = parse_realigned_bam_sc_multi_sample(
+            realign_bam,
+            transcript_fa_idx,
+            config_dict["isoform_parameters"]["min_sup_cnt"],
+            config_dict["transcript_counting"]["min_tr_coverage"],
+            config_dict["transcript_counting"]["min_read_coverage"])
+        chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = parse_gff_tree(annotation)
+        chr_to_gene_i, transcript_dict_i, gene_to_transcript_i, transcript_to_exon_i = parse_gff_tree(isoform_gff3)
+        for sample in [os.path.basename(filename).replace('_realign2transcript.bam','') for filename in realign_bam]:
+            tr_cnt_csv = os.path.join(outdir, sample+ "_"+"transcript_count.csv.gz")
+            tr_badcov_cnt_csv = os.path.join(outdir, sample+ "_"+"transcript_count.bad_coverage.csv.gz")
+            tr_cnt = wrt_tr_to_csv(bc_tr_count_dicts[sample], transcript_dict_i, tr_cnt_csv,
+                                   transcript_dict, config_dict["barcode_parameters"]["has_UMI"])
+            wrt_tr_to_csv(bc_tr_badcov_count_dicts[sample], transcript_dict_i, tr_badcov_cnt_csv,
+                          transcript_dict, config_dict["barcode_parameters"]["has_UMI"])
+        annotate_full_splice_match_all_sample(FSM_anno_out, isoform_gff3, annotation)
+        return
+
     else:
         raise ValueError(f"Unknown pipeline type {pipeline}")
 
