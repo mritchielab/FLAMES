@@ -39,3 +39,14 @@ Every read that could not be matched in the previous step is aligned to the flan
 barcode individually, and barcode matching is done with up to \code{MAX_DIST} levenshtein distances (allowing indels). Reads that are
 matched by this step is reported as the \code{fuzzy match} counts.
 }
+\examples{
+bc_allow <- file.path(outdir, "bc_allow.tsv")
+match_cell_barcode_cpp(
+   fastq_dir = system.file("extdata/fastq", package = "FLAMES"),
+   stats_file = file.path(outdir, "bc_stat"),
+   out_fastq = file.path(outdir, "demultiplexed.fq.gz"),
+   ref_csv = bc_allow,
+   MAX_DIST = 2,
+   UMI_LEN = 10
+)
+}

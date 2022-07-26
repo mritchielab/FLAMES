@@ -17,3 +17,6 @@ Locate the folder containing minimap2, stop if minimap2 is not
 available in the environment or in the user provided folder. If the user provided
  a path to a file, check if it is minimap2 and return its parent folder.
 }
+\examples{
+mm2_dir <- locate_minimap2_dir()
+}

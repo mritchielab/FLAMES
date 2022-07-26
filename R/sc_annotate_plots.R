@@ -61,7 +61,7 @@
 #' @importFrom stats quantile median
 #' @export
 #' @md
-sc_annotate_umap <- function(gene, path, sce_all = NULL, sce_20 = NULL, sce_80 = NULL, n_isoforms = 4, n_pcs = 40, cluster_annotation, dup_bc = NULL, return_sce_all = TRUE,
+sc_annotate_plots <- function(gene, path, sce_all = NULL, sce_20 = NULL, sce_80 = NULL, n_isoforms = 4, n_pcs = 40, cluster_annotation, dup_bc = NULL, return_sce_all = TRUE,
                              heatmap_annotation_colors = "BrBG", isoform_legend_width = 7, heatmap_color_quantile = 0.95, col_low = "#313695", col_mid = "#FFFFBF", col_high = "#A50026") {
   ## dup_bc: cell barcodes found in both lib_20 and lib_80
   ## the pipeline should filter out these cells (not implemented yet)

@@ -54,7 +54,7 @@ def parseGFF3(filename):
     openFunc = gzip.open if filename.endswith(".gz") else open
     attrFunc = parseGTFAttributes if filename.endswith(
         "gtf.gz") or filename.endswith(".gtf") else parseGFFAttributes
-    with openFunc(filename) as infile:
+    with openFunc(filename, "rt") as infile:
         for line in infile:
             if line.startswith("#"):
                 continue
@@ -83,8 +83,9 @@ def parseGFF3(filename):
 
 
 def guess_annotation_source(gff_f):
+    openFunc = gzip.open if gff_f.endswith(".gz") else open
     idx = 0
-    for line in open(gff_f):
+    for line in openFunc(gff_f):
         idx += 1
         if "GENCODE" in line:
             print("parse GENCODE annotation.")

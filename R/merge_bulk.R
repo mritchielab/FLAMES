@@ -1,6 +1,7 @@
-#' Merge FASTQ
+#' Merge FASTQ (deprecated)
 #'
-#' Merges all fastq files in the given folder into a single file.
+#' Merges all fastq files in the given folder into a single file. Deprecated as the pipeline can
+#' now handle multiple fastq files as input.
 #'
 #' @param fastq_dir Path to the folder containing fastq files to merge
 #' @param out_fastq file path to the fastq file which will be created to store all fastq entries. Overwrites existing files
@@ -23,7 +24,7 @@
 #'
 #' # merge the fastq files
 #' out_fastq <- paste0(temp_path, "/outfastq.fastq.gz")
-#' \dontrun{
+#' \donttest{
 #' merge_bulk_fastq(fastq_dir, out_fastq)
 #' }
 #' @importFrom reticulate import_from_path
@@ -49,9 +50,10 @@ merge_bulk_fastq <- function(fastq_dir, out_fastq) {
     return(out_fastq)
 }
 
-#' Merge FASTQ using python. Depreciated
+#' Merge FASTQ using python. (deprecated)
 #'
-#' Merges all fastq files in the given folder into a single file.
+#' Merges all fastq files in the given folder into a single file. Deprecated as the pipeline can
+#' now handle multiple fastq files as input.
 #'
 #' @param fastq_dir Path to the folder containing fastq files to merge
 #' @param out_fastq file path to the fastq file which will be created to store all fastq entries. Overwrites existing files
@@ -74,7 +76,7 @@ merge_bulk_fastq <- function(fastq_dir, out_fastq) {
 #'
 #' # merge the fastq files
 #' out_fastq <- paste0(temp_path, "/outfastq.fastq.gz")
-#' \dontrun{
+#' \donttest{
 #' merge_bulk_fastq(fastq_dir, out_fastq)
 #' }
 #' @importFrom reticulate import_from_path

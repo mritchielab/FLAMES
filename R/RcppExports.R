@@ -22,6 +22,16 @@
 #' @return returns NULL
 #' @import zlibbioc
 #' @useDynLib FLAMES, .registration=TRUE
+#' @examples
+#' bc_allow <- file.path(outdir, "bc_allow.tsv")
+#' match_cell_barcode_cpp(
+#'    fastq_dir = system.file("extdata/fastq", package = "FLAMES"),
+#'    stats_file = file.path(outdir, "bc_stat"),
+#'    out_fastq = file.path(outdir, "demultiplexed.fq.gz"),
+#'    ref_csv = bc_allow,
+#'    MAX_DIST = 2,
+#'    UMI_LEN = 10
+#')
 #' @export
 match_cell_barcode_cpp <- function(fastq_dir, stats_file, out_fastq, ref_csv, MAX_DIST, UMI_LEN = 10L) {
     invisible(.Call(`_FLAMES_match_cell_barcode_cpp`, fastq_dir, stats_file, out_fastq, ref_csv, MAX_DIST, UMI_LEN))

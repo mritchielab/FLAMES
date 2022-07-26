@@ -17,7 +17,7 @@ sc_long_pipeline(
 )
 }
 \arguments{
-\item{annotation}{The file path to gene annotations file in gff3  format}
+\item{annotation}{The file path to the annotation file in GFF3 format}
 
 \item{fastq}{The file path to input fastq file}
 
@@ -36,58 +36,6 @@ sc_long_pipeline(
 
 \item{config_file}{File path to the JSON configuration file. If specified, \code{config_file} overrides
 all configuration parameters}
-
-\item{seed}{Integer or NULL; The random seed for minimap2.}
-
-\item{downsample_ratio}{Integer; downsampling ratio if performing downsampling analysis.}
-
-\item{do_genome_align}{Boolean; specifies whether to run the genome alignment step. \code{TRUE} is recommended}
-
-\item{do_isoform_id}{Boolean; specifies whether to run the isoform identification step. \code{TRUE} is recommended}
-
-\item{isoform_id_bambu}{Boolean; specifies whether to use Bambu for isoform identification.}
-
-\item{do_read_realign}{Boolean; specifies whether to run the read realignment step. \code{TRUE} is recommended}
-
-\item{do_transcript_quanti}{Boolean; specifies whether to run the transcript quantification step. \code{TRUE} is recommended}
-
-\item{gen_raw_isoform}{Boolean; specifies whether a gff3 should be generated containing the raw isoform information in the isoform identification step}
-
-\item{has_UMI}{Boolean; specifies if the data contains UMI.}
-
-\item{MAX_DIST}{Real; maximum distance allowed when merging splicing sites in isoform consensus clustering.}
-
-\item{MAX_TS_DIST}{Real; maximum distance allowed when merging transcript start/end position in isoform consensus clustering.}
-
-\item{MAX_SPLICE_MATCH_DIST}{Real; maximum distance allowed when merging splice site called from the data and the reference annotation.}
-
-\item{min_fl_exon_len}{Real; minimum length for the first exon outside the gene body in reference annotation. This is to correct the alignment artifact}
-
-\item{Max_site_per_splice}{Real; maximum transcript start/end site combinations allowed per splice chain}
-
-\item{Min_sup_cnt}{Real; minimum number of read support an isoform. Decreasing this number will significantly increase the number of isoform detected.}
-
-\item{Min_cnt_pct}{Real; minimum percentage of count for an isoform relative to total count for the same gene.}
-
-\item{Min_sup_pct}{Real; minimum percentage of count for an splice chain that support a given transcript start/end site combination.}
-
-\item{strand_specific}{1, -1 or 0. 1 indicates if reads are in the same
-strand as mRNA, -1 indicates reads are reverse complemented, 0 indicates
-reads are not strand specific.}
-
-\item{remove_incomp_reads}{Real; determines the strength of truncated isoform filtering. Larger number means more stringent filtering.}
-
-\item{use_junctions}{Boolean; determiens whether to use known splice junctions to help correct the alignment results}
-
-\item{no_flank}{Boolean; passed to minimap2 for synthetic spike-in data. Refer to Minimap2 document for more details}
-
-\item{use_annotation}{Boolean; specifies whether to use reference to help annotate known isoforms}
-
-\item{min_tr_coverage}{Real; minimum percentage of isoform coverage for a read to be aligned to that isoform}
-
-\item{min_read_coverage}{Real; minimum percentage of read coverage for a read to be uniquely aligned to that isoform}
-
-\item{UMI_LEN}{Integer; the length of UMI sequence in bases}
 }
 \value{
 \code{sc_long_pipeline} returns a SingleCellExperiment object, containing a count
@@ -145,37 +93,23 @@ strand information being based on reference annotation.}
 }
 }
 \examples{
-# download the two fastq files, move them to a folder to be merged together
-temp_path <- tempfile()
-bfc <- BiocFileCache::BiocFileCache(temp_path, ask=FALSE)
-file_url <- 
-    "https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data"
-# download the required fastq files, and move them to new folder
-fastq1 <- bfc[[names(BiocFileCache::bfcadd(bfc, "Fastq1", paste(file_url, "fastq/sample1.fastq.gz", sep="/")))]]
-fastq2 <- bfc[[names(BiocFileCache::bfcadd(bfc, "Fastq2", paste(file_url, "fastq/sample2.fastq.gz", sep="/")))]]
-fastq_dir <- paste(temp_path, "fastq_dir", sep="/") # the downloaded fastq files need to be in a directory to be merged together
-dir.create(fastq_dir)
-file.copy(c(fastq1, fastq2), fastq_dir)
-unlink(c(fastq1, fastq2)) # the original files can be deleted
-
-\dontrun{
-    # run the FLAMES bulk pipeline, using the downloaded files
-outdir <- tempdir()
-se <- bulk_long_pipeline(annot=system.file("extdata/SIRV_anno.gtf", package="FLAMES"), 
-                   fastq=fastq_dir, outdir=outdir, 
-                   genome_fa=system.file("extdata/SIRV_genomefa.fasta", package="FLAMES"),
-                   config_file=system.file("extdata/SIRV_config_default.json", package="FLAMES"))
-}
-
 \donttest{
-    # create SummarizedExperiment from output folder
-    se_2 <- create_se_from_dir(outdir = outdir, annot = system.file("extdata/SIRV_anno.gtf", package="FLAMES"))
-    # Could also be use to create SummarizedExperiment from the Python FLAMES output folder
-    sce <- create_se_from_dir(outdir = sce_outdir, annot = system.file("extdata/SIRV_anno.gtf", package="FLAMES"))
+outdir <- tempfile()
+dir.create(outdir)
+bc_allow <- file.path(outdir, "bc_allow.tsv")
+genome_fa <- file.path(outdir, "rps24.fa")
+R.utils::gunzip(filename = system.file("extdata/bc_allow.tsv.gz", package = "FLAMES"), destname = bc_allow, remove = FALSE)
+R.utils::gunzip(filename = system.file("extdata/rps24.fa.gz", package = "FLAMES"), destname = genome_fa, remove = FALSE)
+
+sce <- FLAMES::sc_long_pipeline(
+    genome_fa = genome_fa,
+    fastq = system.file("extdata/fastq", package = "FLAMES"),
+    annotation = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),
+    outdir = outdir,
+    match_barcode = T,
+    reference_csv = bc_allow
+)
 }
-# OR
-# run the FLAMES single cell pipeline
-#sce <- sc_long_pipeline(annot, fastq, NULL, outdir, genome_fa, match_barcode=FALSE, config+file=config)
 }
 \seealso{
 \code{\link[=bulk_long_pipeline]{bulk_long_pipeline()}} for bulk long data,

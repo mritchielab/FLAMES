@@ -58,7 +58,8 @@ Imports:
     Biostrings,
     GenomicFeatures,
     jsonlite,
-    parallel
+    parallel,
+    R.utils
 Suggests: 
     BiocStyle,
     knitr,

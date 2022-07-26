@@ -20,6 +20,24 @@
 #' @importFrom parallel detectCores
 #' @importFrom Rsamtools sortBam indexBam asBam
 #' @export
+#' @examples
+#' \donttest{
+#' temp_path <- tempfile()
+#' bfc <- BiocFileCache::BiocFileCache(temp_path, ask = FALSE)
+#' file_url <- "https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data"
+#' fastq1 <- bfc[[names(BiocFileCache::bfcadd(bfc, "Fastq1", paste(file_url, "fastq/sample1.fastq.gz", sep = "/")))]]
+#' genome_fa <- bfc[[names(BiocFileCache::bfcadd(bfc, "genome.fa", paste(file_url, "SIRV_isoforms_multi-fasta_170612a.fasta", sep = "/")))]]
+#' annotation <- bfc[[names(BiocFileCache::bfcadd(bfc, "annot.gtf", paste(file_url, "SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf", sep = "/")))]]
+#' outdir <- tempfile()
+#' dir.create(outdir)
+#' minimap2_align(
+#'     config = jsonlite::fromJSON(system.file("extdata/SIRV_config_default.json", package = "FLAMES")),
+#'     fa_file = genome_fa,
+#'     fq_in = fastq1,
+#'     annot = annotation,
+#'     outdir = outdir
+#' )
+#' }
 minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2_dir, prefix = NULL, threads = NULL) {
     # if (is.null(threads) && base::system("getconf _NPROCESSORS_ONLN", ignore.stderr = TRUE, ignore.stdout = TRUE) == 0) {
     #    available_cores <- base::system2(command = "getconf", args = c("NPROCESSORS_ONLN"), stdout = TRUE, stderr = TRUE)
@@ -37,6 +55,10 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2_dir, 
 
     if (!is.null(prefix)) {
         prefix <- paste0(prefix, "_")
+    }
+
+    if (missing("minimap2_dir")) {
+        minimap2_dir <- locate_minimap2_dir()
     }
 
     minimap2_args <- c("-ax", "splice", "-t", threads, "-k14", "--secondary=no", "--seed", config$pipeline_parameters$seed)
@@ -104,6 +126,23 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2_dir, 
 #' @importFrom parallel detectCores
 #' @importFrom Rsamtools sortBam indexBam asBam
 #' @export
+#' @examples
+#' \donttest{
+#' temp_path <- tempfile()
+#' bfc <- BiocFileCache::BiocFileCache(temp_path, ask = FALSE)
+#' file_url <- "https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data"
+#' fastq1 <- bfc[[names(BiocFileCache::bfcadd(bfc, "Fastq1", paste(file_url, "fastq/sample1.fastq.gz", sep = "/")))]]
+#' genome_fa <- bfc[[names(BiocFileCache::bfcadd(bfc, "genome.fa", paste(file_url, "SIRV_isoforms_multi-fasta_170612a.fasta", sep = "/")))]]
+#' annotation <- bfc[[names(BiocFileCache::bfcadd(bfc, "annot.gtf", paste(file_url, "SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf", sep = "/")))]]
+#' outdir <- tempfile()
+#' dir.create(outdir)
+#' fasta <- annotation_to_fasta(annotation, genome_fa, outdir)
+#' minimap2_realign(
+#'     config = jsonlite::fromJSON(system.file("extdata/SIRV_config_default.json", package = "FLAMES")),
+#'     fq_in = fastq1,
+#'     outdir = outdir
+#' )
+#' }
 minimap2_realign <- function(config, fq_in, outdir, minimap2_dir, prefix = NULL, threads = NULL) {
     if (is.null(threads)) {
         threads <- parallel::detectCores()
@@ -111,6 +150,10 @@ minimap2_realign <- function(config, fq_in, outdir, minimap2_dir, prefix = NULL,
 
     if (!is.null(prefix)) {
         prefix <- paste0(prefix, "_")
+    }
+
+    if (missing("minimap2_dir")) {
+        minimap2_dir <- locate_minimap2_dir()
     }
 
     minimap2_args <- c("-ax", "map-ont", "-p", "0.9", "--end-bonus", "10", "-N", "3", "-t", threads, "--seed", config$pipeline_parameters$seed)
@@ -145,11 +188,21 @@ minimap2_realign <- function(config, fq_in, outdir, minimap2_dir, prefix = NULL,
 #'
 #' @param minimap2_dir User's input for \code{minimap2_dir}
 #' @return Path to folder containing minimap2
+#' @examples
+#' mm2_dir <- locate_minimap2_dir()
 locate_minimap2_dir <- function(minimap2_dir = NULL) {
     if (is.null(minimap2_dir)) {
         which_minimap2 <- base::system2(command = "which", args = c("minimap2"), stdout = TRUE, stderr = TRUE)
         if (!is.null(base::attr(which_minimap2, "status")) && base::attr(which_minimap2, "status") != 0) {
-            stop(paste0("error finding minimap2:\n", which_minimap2))
+            tryCatch(
+                {
+                    x <- base::system(command = "/usr/bin/modulecmd bash load minimap2", intern = TRUE)
+                    minimap2_dir <- dirname(base::system(command = paste0(x, "which minimap2"), intern = TRUE))
+                },
+                error = function(x) {
+                    stop(paste0("error finding minimap2:\n", which_minimap2))
+                }
+            )
         } else {
             minimap2_dir <- dirname(which_minimap2)
         }

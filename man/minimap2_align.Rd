@@ -40,6 +40,25 @@ NULL, BAM file is saved to \code{outdir}
 Uses minimap2 to align sequences agains a reference databse.
 Uses options "-ax splice -t 12 -k14 --secondary=no \code{fa_file} \code{fq_in}"
 }
+\examples{
+\donttest{
+temp_path <- tempfile()
+bfc <- BiocFileCache::BiocFileCache(temp_path, ask = FALSE)
+file_url <- "https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data"
+fastq1 <- bfc[[names(BiocFileCache::bfcadd(bfc, "Fastq1", paste(file_url, "fastq/sample1.fastq.gz", sep = "/")))]]
+genome_fa <- bfc[[names(BiocFileCache::bfcadd(bfc, "genome.fa", paste(file_url, "SIRV_isoforms_multi-fasta_170612a.fasta", sep = "/")))]]
+annotation <- bfc[[names(BiocFileCache::bfcadd(bfc, "annot.gtf", paste(file_url, "SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf", sep = "/")))]]
+outdir <- tempfile()
+dir.create(outdir)
+minimap2_align(
+    config = jsonlite::fromJSON(system.file("extdata/SIRV_config_default.json", package = "FLAMES")),
+    fa_file = genome_fa,
+    fq_in = fastq1,
+    annot = annotation,
+    outdir = outdir
+)
+}
+}
 \seealso{
 [minimap2_realign()]
 }

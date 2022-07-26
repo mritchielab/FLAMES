@@ -28,10 +28,7 @@
 #' of up to 2 by default. Most of the parameters, such as the minimal distance to splice site and minimal percentage of transcript coverage
 #' can be modified by the JSON configuration file (\code{config_file}).
 #'
-#' @param fastqs A vector containing the paths to each fastq files. If \code{in_bams} is not provided, this argument can also
-#' be provided as the path to the folder containing the fastq files. Each fastq file will be treated as a sample.
-#' @param in_bams Optional vector containing file paths the  bam files to use instead of fastq file (skips initial alignment step).
-#' The order of the bam files need to mach the order in \code{fastqs}.
+#' @param fastqs Paths to the folder containing fastq files, or vector of paths to each fastq file.
 #' @inheritParams sc_long_pipeline
 #' @return \code{sc_long_pipeline} returns a SingleCellExperiment object, containing a count
 #' matrix as an assay, gene annotations under metadata, as well as a list of the other

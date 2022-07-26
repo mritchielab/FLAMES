@@ -72,8 +72,35 @@ wrt_tr_to_csv <-
         )
     }
 
-#' @export
+#' Transcript quantification
+#' @description Calculate the transcript count matrix by parsing the re-alignment file.
+#' @param annotation The file path to the annotation file in GFF3 format
+#' @param outdir The path to directory to store all output files.
+#' @param config Parsed FLAMES configurations.
+#' @param pipeline The pipeline type as a character string, either \code{sc_single_sample} (single-cell, single-sample),
+#' \code{bulk} (bulk, single or multi-sample), or \code{sc_multi_sample} (single-cell, multiple samples)
+#' @return The count matrix will be saved in the output folder as \code{transcript_count.csv.gz}.
 #' @importFrom reticulate import_from_path dict
+#' @examples
+#' \donttest{
+#' temp_path <- tempfile()
+#' bfc <- BiocFileCache::BiocFileCache(temp_path, ask = FALSE)
+#' file_url <- "https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data"
+#' fastq1 <- bfc[[names(BiocFileCache::bfcadd(bfc, "Fastq1", paste(file_url, "fastq/sample1.fastq.gz", sep = "/")))]]
+#' genome_fa <- bfc[[names(BiocFileCache::bfcadd(bfc, "genome.fa", paste(file_url, "SIRV_isoforms_multi-fasta_170612a.fasta", sep = "/")))]]
+#' annotation <- bfc[[names(BiocFileCache::bfcadd(bfc, "annot.gtf", paste(file_url, "SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf", sep = "/")))]]
+#' outdir <- tempfile()
+#' dir.create(outdir)
+#' fasta <- annotation_to_fasta(annotation, genome_fa, outdir)
+#' config <- jsonlite::fromJSON(create_config(outdir, bambu_isoform_identification = TRUE, min_tr_coverage = 0.1, min_read_coverage = 0.1, min_sup_cnt = 1))
+#' file.copy(annotation, file.path(outdir, "isoform_annotated.gtf"))
+#' minimap2_realign(
+#'     config = config, outdir = outdir,
+#'     fq_in = fastq1
+#' )
+#' flames_quantify(annotation, outdir, config, pipeline = "bulk")
+#' }
+#' @export
 flames_quantify <- function(annotation, outdir, config, pipeline = "sc_single_sample") {
     realign_bam <- list.files(outdir)[grepl("_?realign2transcript\\.bam$", list.files(outdir))]
     cat("Found realignment file(s): ")

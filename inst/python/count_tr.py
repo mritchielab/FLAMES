@@ -352,7 +352,14 @@ def parse_realigned_bam_bulk(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, m
         # below line creates issue when header line has more than one _.
         # in this case, umi is assumed to be delimited from the barcode by the last _
         # bc, umi = r.split("#")[0].split("_")  # assume cleaned barcode
-        bc, umi = r.split("#")[0].split("_")
+        r_split = r.split("#")[0].split("_")
+        if len(r_split) == 2:
+            bc, umi = r_split
+        elif len(r_split) > 2: # when '_' in file names
+            umi = r_split[-1]
+            bc = "_".join(r_split[:-1])
+        else:
+            raise ValueError("Please check if barcode and UMI are delimited by \"_\":\n" + r_split)
 
         if len(tmp) == 1 and tmp[0][4] > 0:
             if bc not in bc_tr_count_dict:
@@ -526,7 +533,7 @@ def realigned_bam_coverage(bam_in, fa_idx_f, coverage_dir):
 def quantification(config_dict, annotation, outdir, pipeline):
 
     transcript_fa_idx = os.path.join(outdir, "transcript_assembly.fa.fai")
-    isoform_gff3 = os.path.join(outdir, "isoform_annotated.gtf" if config_dict["pipeline_parameters"]["bambu_isoform_identification"] else "isoform_annotated.gff3")
+    isoform_gff3 = os.path.join(outdir, "isoform_annotated.gtf" if os.path.isfile(os.path.join(outdir, "isoform_annotated.gtf")) else "isoform_annotated.gff3")
     isoform_gff3_f = os.path.join(outdir, "isoform_annotated.filtered.gff3")
     FSM_anno_out = os.path.join(outdir, "isoform_FSM_annotation.csv")
 
