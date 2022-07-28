@@ -6,7 +6,6 @@ import itertools
 
 # from: https://techoverflow.net/2013/11/30/a-simple-gff3-parser-in-python/
 from collections import namedtuple, Counter
-import gzip
 from urllib.parse import urlparse
 import os
 import numpy as np
