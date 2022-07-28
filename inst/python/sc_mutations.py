@@ -36,8 +36,7 @@ def sc_mutations(fa_f, bam_short, out_dir, barcode_tsv, gff_f=None, known_positi
                            for i in range(0, len(known_positions), 2)]
 
     assert os.path.isfile(fa_f), "Reference genome (fa_f) not found!"
-    assert (bam_short is None) or (os.path.isfile(bam_short)
-                                   ), "The specified short read bam file could not be found"
+    assert (bam_short is None) or (bam_short is False) or (os.path.isfile(bam_short)), "The specified short read bam file could not be found"
     assert os.path.isfile(barcode_tsv), "barcode file (barcode_tsv) not found!"
     assert len(
         report_pct) == 2, "report_pct should contain 2 numbers, e.g. (0.15, 0.85)"

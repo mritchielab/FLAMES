@@ -56,19 +56,38 @@
 #' @importFrom utils write.csv
 #' @importFrom S4Vectors head
 #' 
+#' @examples 
+#' \donttest{
+#' outdir <- tempfile()
+#' dir.create(outdir)
+#' bc_allow <- file.path(outdir, "bc_allow.tsv")
+#' genome_fa <- file.path(outdir, "rps24.fa")
+#' R.utils::gunzip(filename = system.file("extdata/bc_allow.tsv.gz", package = "FLAMES"), destname = bc_allow, remove = FALSE)
+#' R.utils::gunzip(filename = system.file("extdata/rps24.fa.gz", package = "FLAMES"), destname = genome_fa, remove = FALSE)
+#'
+#' sce <- FLAMES::sc_long_pipeline(
+#'     genome_fa = genome_fa,
+#'     fastq = system.file("extdata/fastq", package = "FLAMES"),
+#'     annotation = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),
+#'     outdir = outdir,
+#'     match_barcode = T,
+#'     reference_csv = bc_allow
+#' )
+#' sc_mutations(sce, barcode_tsv = file.path(outdir, "bc_allow.tsv"), min_cov = 2, report_pct = c(0,1))
+#' }
 #' @export
 sc_mutations <- function(sce, barcode_tsv, bam_short, out_dir, genome_fa, annot, known_positions=NULL, min_cov=100, report_pct=c(0.10, 0.90)) {
 
     cat('\n\n\n\n\n\n')
     if (!missing(sce)) {
         if (missing(annot)) {
-            annot <- sce@mdata$AnnotationFile
+            annot <- sce@metadata$OutputFiles$AnnotationFile
         }
         if (missing(genome_fa)) {
-            genome_fa <- sce@mdata$genome_fa
+            genome_fa <- sce@metadata$OutputFiles$genome_fa
         }
         if (missing(out_dir)) {
-            out_dir <- sce@mdata$outdir
+            out_dir <- sce@metadata$OutputFiles$outdir
         }
     }
 
@@ -76,7 +95,7 @@ sc_mutations <- function(sce, barcode_tsv, bam_short, out_dir, genome_fa, annot,
     callBasilisk(flames_env, function(fa, bam, dir, barcode, gff, positions, mincov, reportpct) {
         convert <- reticulate::import_from_path("sc_mutations", python_path)
         convert$sc_mutations(fa, bam, dir, barcode, gff, positions, mincov, reportpct)
-    }, fa = genome_fa, bam = bam_short, dir = out_dir, barcode = barcode_tsv, gff=annot, positions = known_positions, mincov=min_cov, reportpct=report_pct)
+    }, fa = genome_fa, bam = ifelse(missing("bam_short"), FALSE, bam_short), dir = out_dir, barcode = barcode_tsv, gff=annot, positions = known_positions, mincov=min_cov, reportpct=report_pct)
 
     allele_stat_csv <- file.path(out_dir, 'mutation', 'allele_stat.csv.gz')
     table <- read.csv(allele_stat_csv) 
