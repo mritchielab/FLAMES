@@ -79,7 +79,6 @@
 #' @importFrom utils read.csv read.table
 #'
 #' @examples
-#' \donttest{
 #' outdir <- tempfile()
 #' dir.create(outdir)
 #' bc_allow <- file.path(outdir, "bc_allow.tsv")
@@ -87,14 +86,15 @@
 #' R.utils::gunzip(filename = system.file("extdata/bc_allow.tsv.gz", package = "FLAMES"), destname = bc_allow, remove = FALSE)
 #' R.utils::gunzip(filename = system.file("extdata/rps24.fa.gz", package = "FLAMES"), destname = genome_fa, remove = FALSE)
 #'
-#' sce <- FLAMES::sc_long_pipeline(
-#'     genome_fa = genome_fa,
-#'     fastq = system.file("extdata/fastq", package = "FLAMES"),
-#'     annotation = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),
-#'     outdir = outdir,
-#'     match_barcode = T,
-#'     reference_csv = bc_allow
-#' )
+#' if (is.character(locate_minimap2_dir())) {
+#'     sce <- FLAMES::sc_long_pipeline(
+#'         genome_fa = genome_fa,
+#'         fastq = system.file("extdata/fastq", package = "FLAMES"),
+#'         annotation = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),
+#'         outdir = outdir,
+#'         match_barcode = TRUE,
+#'         reference_csv = bc_allow
+#'     )
 #' }
 #' @export
 sc_long_pipeline <-
@@ -247,7 +247,6 @@ generate_bulk_summarized <- function(out_files, load_genome_anno = NULL) {
 #' @example inst/examples/pipeline_example.R
 #' @export
 #' @examples
-#' \donttest{
 #' outdir <- tempfile()
 #' dir.create(outdir)
 #' bc_allow <- file.path(outdir, "bc_allow.tsv")
@@ -260,11 +259,10 @@ generate_bulk_summarized <- function(out_files, load_genome_anno = NULL) {
 #'     fastq = system.file("extdata/fastq", package = "FLAMES"),
 #'     annotation = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),
 #'     outdir = outdir,
-#'     match_barcode = T,
+#'     match_barcode = TRUE,
 #'     reference_csv = bc_allow
 #' )
 #' sce_2 <- create_sce_from_dir(outdir, annotation)
-#' }
 create_sce_from_dir <- function(outdir, annotation = NULL) {
     out_files <- list(
         counts = file.path(outdir, "transcript_count.csv.gz"),

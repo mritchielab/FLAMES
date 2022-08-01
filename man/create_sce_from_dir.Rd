@@ -35,13 +35,14 @@ unlink(c(fastq1, fastq2)) # the original files can be deleted
 
 outdir <- tempfile()
 dir.create(outdir)
-se <- bulk_long_pipeline(
-  annotation = annotation, fastq = fastq_dir, outdir = outdir, genome_fa = genome_fa,
-  config_file = system.file("extdata/SIRV_config_default.json", package = "FLAMES")
-)
+if (is.character(locate_minimap2_dir())) {
+  se <- bulk_long_pipeline(
+    annotation = annotation, fastq = fastq_dir, outdir = outdir, genome_fa = genome_fa,
+    config_file = system.file("extdata/SIRV_config_default.json", package = "FLAMES")
+  )
+}
 
 se_2 <- create_se_from_dir(outdir = outdir, annotation = annotation)
-\donttest{
 outdir <- tempfile()
 dir.create(outdir)
 bc_allow <- file.path(outdir, "bc_allow.tsv")
@@ -54,9 +55,8 @@ sce <- FLAMES::sc_long_pipeline(
     fastq = system.file("extdata/fastq", package = "FLAMES"),
     annotation = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),
     outdir = outdir,
-    match_barcode = T,
+    match_barcode = TRUE,
     reference_csv = bc_allow
 )
 sce_2 <- create_sce_from_dir(outdir, annotation)
-}
 }

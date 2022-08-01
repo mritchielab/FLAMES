@@ -28,7 +28,10 @@
 //' @import zlibbioc
 //' @useDynLib FLAMES, .registration=TRUE
 //' @examples
+//' outdir <- tempfile()
+//' dir.create(outdir)
 //' bc_allow <- file.path(outdir, "bc_allow.tsv")
+//' R.utils::gunzip(filename = system.file("extdata/bc_allow.tsv.gz", package = "FLAMES"), destname = bc_allow, remove = FALSE)
 //' match_cell_barcode_cpp(
 //'    fastq_dir = system.file("extdata/fastq", package = "FLAMES"),
 //'    stats_file = file.path(outdir, "bc_stat"),

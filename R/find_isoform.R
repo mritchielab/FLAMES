@@ -11,7 +11,6 @@
 #' \code{transcript_assembly.fa} respectively.
 #' @export
 #' @examples
-#' \donttest{
 #' temp_path <- tempfile()
 #' bfc <- BiocFileCache::BiocFileCache(temp_path, ask = FALSE)
 #' file_url <- "https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data"
@@ -20,19 +19,20 @@
 #' annotation <- bfc[[names(BiocFileCache::bfcadd(bfc, "annot.gtf", paste(file_url, "SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf", sep = "/")))]]
 #' outdir <- tempfile()
 #' dir.create(outdir)
-#' config <- jsonlite::fromJSON(system.file("extdata/SIRV_config_default.json", package = "FLAMES"))
-#' minimap2_align(
-#'     config = config,
-#'     fa_file = genome_fa,
-#'     fq_in = fastq1,
-#'     annot = annotation,
-#'     outdir = outdir
-#' )
-#' find_isoform(
-#'     annotation = annotation, genome_fa = genome_fa,
-#'     genome_bam = file.path(outdir, "align2genome.bam"),
-#'     outdir = outdir, config = config
-#' )
+#' if (is.character(locate_minimap2_dir())) {
+#'     config <- jsonlite::fromJSON(system.file("extdata/SIRV_config_default.json", package = "FLAMES"))
+#'     minimap2_align(
+#'         config = config,
+#'         fa_file = genome_fa,
+#'         fq_in = fastq1,
+#'         annot = annotation,
+#'         outdir = outdir
+#'     )
+#'     find_isoform(
+#'         annotation = annotation, genome_fa = genome_fa,
+#'         genome_bam = file.path(outdir, "align2genome.bam"),
+#'         outdir = outdir, config = config
+#'     )
 #' }
 find_isoform <- function(annotation, genome_fa, genome_bam, outdir, config) {
     # pipeline types: singe_cell, single_cell_multisample, bulk

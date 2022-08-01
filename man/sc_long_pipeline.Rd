@@ -93,7 +93,6 @@ strand information being based on reference annotation.}
 }
 }
 \examples{
-\donttest{
 outdir <- tempfile()
 dir.create(outdir)
 bc_allow <- file.path(outdir, "bc_allow.tsv")
@@ -101,14 +100,15 @@ genome_fa <- file.path(outdir, "rps24.fa")
 R.utils::gunzip(filename = system.file("extdata/bc_allow.tsv.gz", package = "FLAMES"), destname = bc_allow, remove = FALSE)
 R.utils::gunzip(filename = system.file("extdata/rps24.fa.gz", package = "FLAMES"), destname = genome_fa, remove = FALSE)
 
-sce <- FLAMES::sc_long_pipeline(
-    genome_fa = genome_fa,
-    fastq = system.file("extdata/fastq", package = "FLAMES"),
-    annotation = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),
-    outdir = outdir,
-    match_barcode = T,
-    reference_csv = bc_allow
-)
+if (is.character(locate_minimap2_dir())) {
+    sce <- FLAMES::sc_long_pipeline(
+        genome_fa = genome_fa,
+        fastq = system.file("extdata/fastq", package = "FLAMES"),
+        annotation = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),
+        outdir = outdir,
+        match_barcode = TRUE,
+        reference_csv = bc_allow
+    )
 }
 }
 \seealso{

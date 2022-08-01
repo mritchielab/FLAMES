@@ -58,14 +58,15 @@ Imports:
     Biostrings,
     GenomicFeatures,
     jsonlite,
-    parallel,
-    R.utils
+    parallel
 Suggests: 
     BiocStyle,
     knitr,
     rmarkdown,
     markdown,
     BiocFileCache,
+    R.utils,
+    ShortRead,
     testthat (>= 3.0.0)
 LinkingTo: Rcpp, Rhtslib, zlibbioc
 SystemRequirements: GNU make, C++11

@@ -55,8 +55,7 @@
 #' @importFrom utils write.csv
 #' @importFrom stats chisq.test
 #' @export
-#' @examples 
-#' \donttest{
+#' @examples
 #' outdir <- tempfile()
 #' dir.create(outdir)
 #' bc_allow <- file.path(outdir, "bc_allow.tsv")
@@ -64,17 +63,18 @@
 #' R.utils::gunzip(filename = system.file("extdata/bc_allow.tsv.gz", package = "FLAMES"), destname = bc_allow, remove = FALSE)
 #' R.utils::gunzip(filename = system.file("extdata/rps24.fa.gz", package = "FLAMES"), destname = genome_fa, remove = FALSE)
 #'
-#' sce <- FLAMES::sc_long_pipeline(
+#' if (is.character(locate_minimap2_dir())) {
+#'   sce <- FLAMES::sc_long_pipeline(
 #'     genome_fa = genome_fa,
 #'     fastq = system.file("extdata/fastq", package = "FLAMES"),
 #'     annotation = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),
 #'     outdir = outdir,
-#'     match_barcode = T,
+#'     match_barcode = TRUE,
 #'     reference_csv = bc_allow
-#' )
-#' group_anno <- data.frame(barcode_seq = colnames(sce), groups = counts(sce)["ENSMUST00000169826.2",] > 1)
-#' write.csv(group_anno, file.path(outdir, "cluster_annotation.csv"), row.names = FALSE)
-#' sc_DTU_analysis(sce, outdir, min_count = 1)
+#'   )
+#'   group_anno <- data.frame(barcode_seq = colnames(sce), groups = SingleCellExperiment::counts(sce)["ENSMUST00000169826.2", ] > 1)
+#'   write.csv(group_anno, file.path(outdir, "cluster_annotation.csv"), row.names = FALSE)
+#'   sc_DTU_analysis(sce, outdir, min_count = 1)
 #' }
 sc_DTU_analysis <- function(sce, path, min_count = 15) {
 

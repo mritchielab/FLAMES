@@ -70,7 +70,29 @@
 #' @importFrom utils read.csv read.table file_test
 #' @importFrom jsonlite fromJSON
 #'
-#' @example inst/examples/pipeline_example.R
+#' @examples
+#' reads <- ShortRead::readFastq(system.file("extdata/fastq/musc_rps24.fastq.gz", package = "FLAMES"))
+#' outdir <- tempfile()
+#' dir.create(outdir)
+#' dir.create(file.path(outdir, "fastq"))
+#' bc_allow <- file.path(outdir, "bc_allow.tsv")
+#' genome_fa <- file.path(outdir, "rps24.fa")
+#' R.utils::gunzip(filename = system.file("extdata/bc_allow.tsv.gz", package = "FLAMES"), destname = bc_allow, remove = FALSE)
+#' R.utils::gunzip(filename = system.file("extdata/rps24.fa.gz", package = "FLAMES"), destname = genome_fa, remove = FALSE)
+#' ShortRead::writeFastq(sample(reads, size = 500, replace = TRUE), file.path(outdir, "fastq/sample1.fq.gz"), mode = "w", full = FALSE)
+#' ShortRead::writeFastq(sample(reads, size = 500, replace = TRUE), file.path(outdir, "fastq/sample2.fq.gz"), mode = "w", full = FALSE)
+#' ShortRead::writeFastq(sample(reads, size = 500, replace = TRUE), file.path(outdir, "fastq/sample3.fq.gz"), mode = "w", full = FALSE)
+#'
+#' if (is.character(locate_minimap2_dir())) {
+#'     sce_list <- FLAMES::sc_long_multisample_pipeline(
+#'         annotation = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),
+#'         fastqs = file.path(outdir, "fastq", list.files(file.path(outdir, "fastq"))),
+#'         outdir = outdir,
+#'         genome_fa = genome_fa,
+#'         reference_csv = rep(bc_allow, 3)
+#'     )
+#' }
+#'
 #' @export
 sc_long_multisample_pipeline <-
     function(annotation,
@@ -99,7 +121,7 @@ sc_long_multisample_pipeline <-
                 stop("Only one fastq file provided, did you meant to used the single-sample pipeline (FLAMES::sc_long_pipeline) ?")
             }
 
-            fastqs <- file.path(fastqs, list.files(fastqs))[grepl("\\.(fq|fastq)$", list.files(fastqs))]
+            fastqs <- file.path(fastqs, list.files(fastqs))[grepl("\\.(fq|fastq)(\\.gz)?$", list.files(fastqs))]
             cat("Fastq files found:\n")
             cat(paste0(fastqs, sep = "\n"))
 
@@ -128,7 +150,7 @@ sc_long_multisample_pipeline <-
             }
             infqs <- file.path(outdir, paste(samples, "matched_reads.fastq.gz", sep = "_"))
             bc_stats <- file.path(outdir, paste(samples, "matched_barcode_stat", sep = "_"))
-            for (i in length(fastqs)) {
+            for (i in 1:length(fastqs)) {
                 match_cell_barcode_cpp(
                     fastqs[i],
                     bc_stats[i],
@@ -166,7 +188,7 @@ sc_long_multisample_pipeline <-
         if (using_bam) {
             cat("input bam:", paste0(genome_bam, sep = "\n"), "\n")
         }
-        cat("input fastqs:", paste0(fastqs, sep = "\n"), "\n")
+        cat("input fastqs:", paste0(infqs, sep = "\n"), "\n")
         cat("output directory:", outdir, "\n")
         cat("directory containing minimap2:", minimap2_dir, "\n")
 
@@ -179,7 +201,7 @@ sc_long_multisample_pipeline <-
                 minimap2_align(
                     config,
                     genome_fa,
-                    fastqs[i],
+                    infqs[i],
                     annotation,
                     outdir,
                     minimap2_dir,
@@ -201,7 +223,7 @@ sc_long_multisample_pipeline <-
             cat("#### Realign to transcript using minimap2\n")
             for (i in 1:length(samples)) {
                 cat(paste0(c("\tRealigning sample ", samples[i], "...\n")))
-                minimap2_realign(config, fastqs[i], outdir, minimap2_dir, prefix = samples[i], threads = NULL)
+                minimap2_realign(config, infqs[i], outdir, minimap2_dir, prefix = samples[i], threads = NULL)
             }
         } else {
             cat("#### Skip read realignment\n")

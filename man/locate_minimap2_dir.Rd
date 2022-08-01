@@ -2,21 +2,20 @@
 % Please edit documentation in R/minimap2_align.R
 \name{locate_minimap2_dir}
 \alias{locate_minimap2_dir}
-\title{Locate minimap2}
+\title{locate parent folder of minimap2}
 \usage{
 locate_minimap2_dir(minimap2_dir = NULL)
 }
 \arguments{
-\item{minimap2_dir}{User's input for \code{minimap2_dir}}
+\item{minimap2_dir}{(Optional) folder that includes minimap2}
 }
 \value{
-Path to folder containing minimap2
+Path to the parent folder of minimap2 if available, or
+FALSE if minimap2 could not be found.
 }
 \description{
-Locate the folder containing minimap2, stop if minimap2 is not
-available in the environment or in the user provided folder. If the user provided
- a path to a file, check if it is minimap2 and return its parent folder.
+locate minimap2, or validate that minimap2 exists under minimap2_dir
 }
 \examples{
-mm2_dir <- locate_minimap2_dir()
+locate_minimap2_dir()
 }
