@@ -70,20 +70,29 @@ void Isoforms::add_isoform(Junctions junctions, bool is_reversed) {
 			// there's stuff in junction_dict
 			// check to see if there's an exact match
 			if (this->junction_dict.count(junctions.junctions) > 0) {
-				// the key is not present in the dict yet
-				// just add it
+				// the key is present in the dict,
+				// so update the existing entry
 				this->update_one(junctions, junctions.junctions, is_reversed);
 			} else {
+
 				// the key is not directly present in the dict
 				// check for similar keys
 				bool found = false;
+				const std::vector<int> *most_similar_key;
+				unsigned int most_similar_distance = -1;
 				for (auto & [current_key, _] : this->junction_dict) {
 					if (junctions.junctions.size() == current_key.size()) {
 						// they are the same size. see if they are similar
-						// instead of comparing
+						// instead of accepting the first best 'similar' key,
+						// collect the one which is the most similar (least distance away)
 						bool similar = true;
+						unsigned int distance = 0;
 						for (int i = 0; i < (int)current_key.size(); i++) {
-							if (std::abs(current_key[i] - junctions.junctions[i]) >= this->parameters.MAX_DIST) {
+							// calculate the distance at this postion, and break if it's further than max
+							// otherwise we should track the distance
+							int dif = std::abs(current_key[i] - junctions.junctions[i]);
+							distance += (unsigned int) dif;
+							if (dif >= this->parameters.MAX_DIST) {
 								// they are too far apart
 								similar = false;
 								break;
@@ -91,16 +100,27 @@ void Isoforms::add_isoform(Junctions junctions, bool is_reversed) {
 						}
 
 						if (similar) {
+							// if we've found a simlar key, determine if it's more similar than our
+							// last similar keys
 							// if they are still similar,
 							// then we have found an entry that is close enough
-							this->update_one(junctions, current_key, is_reversed);
-							found = true;
-							break;
+							// this->update_one(junctions, current_key, is_reversed);
+							// found = true;
+							// break;
+
+							// compare the similarity against the current most similar
+							if (distance < most_similar_distance) {
+								most_similar_distance = distance;
+								most_similar_key = &current_key;
+								found = true;
+							}
 						}
 					}
 				}
-				
-				if (!found) {
+
+				if (found) {
+					this->update_one(junctions, *most_similar_key, is_reversed);
+				} else {
 					// we went through and found nothing similar enough
 					// so just add it to the dict
 					this->add_one(junctions, is_reversed);
@@ -196,6 +216,7 @@ void Isoforms::update_all_splice() {
 			// produce a new key from the most common
 			// junction at each position in the vector of junction vectors
 			std::vector<int> newKey = mostCommonEachCell(junction_vec, key.size());
+
 			int newStrandValue = mostCommon<int>(strand_counts_tmp.at(key));
 
 			this->junction_dict[newKey] = junction_vec;

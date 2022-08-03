@@ -121,6 +121,8 @@ static inline std::vector<T>
 mostCommonEachCell(const std::vector<std::vector<T>> &values, int maxSize) {
 	std::vector<T> newValue;
 	for (int i = 0; i < maxSize; i++) {
+		// thisPosValueCounts is a map of every value in the column we're inspecting
+		// with it's corresponding appearance count.
 		std::unordered_map<T, int> thisPosValueCounts;
 		for (int j = 0, size = values.size(); j < size; j++) {
 			thisPosValueCounts[values[j][i]]++;

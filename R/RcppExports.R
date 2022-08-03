@@ -57,3 +57,7 @@ test_group_bam2isoform <- function() {
     invisible(.Call(`_FLAMES_test_group_bam2isoform`))
 }
 
+iso <- function() {
+    invisible(.Call(`_FLAMES_iso`))
+}
+

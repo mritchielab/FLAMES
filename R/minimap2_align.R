@@ -47,7 +47,8 @@ minimap2_align <-
              fq_in,
              sam_out,
              no_flank = FALSE,
-             bed12_junc = NULL) {
+             bed12_junc = NULL,
+             seed = "") {
     if (is.null(bed12_junc)) {
         junc_cmd <- paste0("--junc-bed ", bed12_junc, " --junc-bonus 1")
     } else {
@@ -59,10 +60,15 @@ minimap2_align <-
     } else {
         no_flank_cmd <- ""
     }
+
+
+    if (seed != "") {
+        seed <- paste0("--seed ", seed)
+    }
     #align_cmd = "{_prog} -ax splice -t 12 {_others} -k14 --secondary=no {_index} {_fq} | samtools view -bS -@ 4 -m 2G -o {_out} -  ".format(\
     align_cmd <- paste0(minimap2_prog_path, "minimap2", " -ax splice -t 12 ",
                         paste(junc_cmd, no_flank_cmd), 
-                        " -k14 --secondary=no ", fa_file, " ",
+                        " -k14 --secondary=no ", seed, " ", fa_file, " ",
                         fq_in, " -o ", sam_out)
 
     output <- system(command = align_cmd, intern = TRUE)
@@ -70,10 +76,14 @@ minimap2_align <-
 }
 
 #' @importFrom reticulate import_from_path
-minimap2_tr_align <- function(mm2_prog_path, fa_file, fq_in, sam_out) {
+minimap2_tr_align <- function(mm2_prog_path, fa_file, fq_in, sam_out, seed =" ") {
+    if (seed != "") {
+        seed <- paste0("--seed", seed)
+    }
+    
     align_cmd <- paste0(mm2_prog_path, "minimap2",
                         " -ax map-ont -p 0.9 --end-bonus 10 - N 3 -t 12 ",
-                        fa_file, " ", fq_in, " -o ", sam_out)
+                        seed, " ", fa_file, " ", fq_in, " -o ", sam_out)
     output <- system(command = align_cmd, intern = TRUE)
 
     cat(output, "\n")
