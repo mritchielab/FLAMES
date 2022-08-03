@@ -117,7 +117,7 @@ sc_long_pipeline <-
              seed = NULL,
              downsample_ratio = 1,
              reference_csv,
-             match_barcode = TRUE,
+             match_barcode,
              config_file = NULL,
              do_genome_align = TRUE,
              do_isoform_id = TRUE,
@@ -178,6 +178,13 @@ sc_long_pipeline <-
         config_file <- checked_args$config
 
         infq <- NULL
+        if (missing("match_barcode")) {
+            if (basename(fastq) == "matched_reads.fastq.gz") {
+                match_barcode <- FALSE
+            } else {
+                match_barcode <- TRUE
+            }
+        }
         if (match_barcode) {
             if (!file.exists(reference_csv)) {
                 stop("reference_csv must exists.")
@@ -191,7 +198,7 @@ sc_long_pipeline <-
                 bc_stat,
                 infq,
                 reference_csv,
-                MAX_DIST,
+                MAX_DIST = 2,
                 UMI_LEN
             )
         } else {
@@ -247,6 +254,7 @@ generate_sc_sce <- function(out_files, load_genome_anno = NULL, create_function)
     )
 
     transcript_count <- read.csv(out_files$counts, stringsAsFactors = FALSE)
+    transcript_count <- transcript_count[order(transcript_count$transcript_id), ]
     if ("fsm_annotation" %in% names(out_files)) {
         isoform_FSM_annotation <- read.csv(out_files$fsm_annotation, stringsAsFactors = FALSE)
     } else {
