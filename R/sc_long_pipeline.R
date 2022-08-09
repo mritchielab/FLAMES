@@ -171,12 +171,12 @@ generate_sc_sce <- function(out_files, load_genome_anno = NULL, create_function)
     )
 
     transcript_count <- read.csv(out_files$counts, stringsAsFactors = FALSE)
-    transcript_count <- transcript_count[order(transcript_count$transcript_id), ]
     if ("fsm_annotation" %in% names(out_files)) {
         isoform_FSM_annotation <- read.csv(out_files$fsm_annotation, stringsAsFactors = FALSE)
     } else {
         isoform_FSM_annotation <- read.csv(file.path(out_files$outdir, "isoform_FSM_annotation.csv"), stringsAsFactors = FALSE)
     }
+    transcript_count <- transcript_count[transcript_count$transcript_id %in% isoform_FSM_annotation$transcript_id, ]
 
     isoform_FSM_annotation <- isoform_FSM_annotation[match(transcript_count$transcript_id, isoform_FSM_annotation$transcript_id), ]
     # transcript_count <- transcript_count[match(isoform_FSM_annotation$transcript_id, transcript_count$transcript_id), ]
@@ -200,7 +200,7 @@ generate_sc_sce <- function(out_files, load_genome_anno = NULL, create_function)
         assays = list(counts = as.matrix(mer_tmp[, -1])),
         metadata = mdata
     )
-    rownames(tr_sce) <- mer_tmp$FSM_match
+    # rownames(tr_sce) <- mer_tmp$FSM_match
 
     isoform_gff <- rtracklayer::import.gff3(out_files$isoform_annotated)
     isoform_gff$Parent <- as.character(isoform_gff$Parent)
@@ -227,6 +227,7 @@ generate_sc_sce <- function(out_files, load_genome_anno = NULL, create_function)
 
 
     rowData(tr_sce) <- DataFrame(tr_anno)
+    rownames(tr_sce) <- rowData(tr_sce)$FSM_match
     # return the created singlecellexperiment
     return(tr_sce)
 }

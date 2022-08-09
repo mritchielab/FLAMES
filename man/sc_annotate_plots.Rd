@@ -6,14 +6,10 @@
 \usage{
 sc_annotate_plots(
   gene,
-  path,
-  sce_all = NULL,
-  sce_20 = NULL,
-  sce_80 = NULL,
+  sce_all,
+  cluster_annotation,
   n_isoforms = 4,
   n_pcs = 40,
-  cluster_annotation,
-  dup_bc = NULL,
   return_sce_all = TRUE,
   heatmap_annotation_colors = "BrBG",
   isoform_legend_width = 7,
@@ -26,24 +22,13 @@ sc_annotate_plots(
 \arguments{
 \item{gene}{The gene symbol of interest.}
 
-\item{path}{The path to the folder containing outputs of \code{sc_long_pipeline}.}
+\item{sce_all}{The combined \code{SingleCellExperiment} object from \code{combine_sce()}.}
 
-\item{sce_all}{The \code{SingleCellExperiment} object containing gene counts assay for the combined library.
-Require \code{sce_all$lib} to specify the library of each cell, either "\code{lib20}" or "\code{lib80}".
-Alternatively, provide \code{sce_20} \code{sce_80} and the function will create \code{sce_all} using \code{BiocGenerics::cbind}.}
-
-\item{sce_20}{The \code{SingleCellExperiment} object containing gene counts assay for the smaller (10\% ~ 20\%) library.}
-
-\item{sce_80}{The \code{SingleCellExperiment} object containing gene counts assay for the larger (80\% ~ 90\%) library.}
+\item{cluster_annotation}{Path to the cluster annotation CSV (required for heatmap, if \code{cluster_annotation.csv} is not in \code{path} and \code{sce_all$cell_type} does not exist)}
 
 \item{n_isoforms}{The number of expressed isoforms to keep.}
 
 \item{n_pcs}{The number of principal components to generate.}
-
-\item{cluster_annotation}{Path to the cluster annotation CSV (required for heatmap, if \code{cluster_annotation.csv} is not in \code{path} and \code{sce_all$cell_type} does not exist)}
-
-\item{dup_bc}{Cell barcodes found both in the larger and smaller library, will be used to filter cells in the long-read
-data. (Filtering long-read data will be implemented in the main pipeline soon)}
 
 \item{return_sce_all}{Whether to return the processed \code{SingleCellExperiment} object.}
 
@@ -74,4 +59,7 @@ This function takes the short-read data (as \code{SingleCellExperiment} objects)
 and the larger libraries to generate a combined UMAP, the expression levels of isoforms (using long read data)
 are then overlayed on top of the UMAP. SNN inference based on gene counts were performed to impute isoform expression
 for cells in the larger library.
+}
+\seealso{
+\code{\link[=combine_sce]{combine_sce()}} for combining gene count \code{SingleCellExperiment} object with transcript counts.
 }
