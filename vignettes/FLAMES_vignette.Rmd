@@ -25,7 +25,7 @@ The FLAMES package provides a framework for performing single-cell and bulk read
 This R package was created to simplify installation and execution of the FLAMES python module, which supports the article *Comprehensive characterization of single cell full-length isoforms in human and mouse with long-read sequencing* by Tian et al. [-@flames].
 
 ```{r workflow, echo=FALSE, fig.align='center', fig.cap='FLAMES pipeline workflow summary'}
-knitr::include_graphics(system.file("images/FLAMESpipeline-01.png", package="FLAMES"))
+knitr::include_graphics(system.file("images/FLAMESpipeline-01.png", package = "FLAMES"))
 ```
 
 Input to FLAMES are fastq files generated from the long-read platform. Using the cell barcode annotation obtained from short-read data as the reference, the pipeline identifies and trims cell barcodes/UMI sequences from the long reads. After barcode assignment, all reads are aligned to the relevant genome to obtain a draft read alignment. The draft alignment is then polished and grouped to generate a consensus transcript assembly. All reads are aligned again using the transcript assembly as the reference and quantified. 
@@ -51,30 +51,31 @@ The single cell pipeline can demultiplex the input data before running, if requi
 For this example, the required files are downloaded from GitHub using [BiocFileCache](http://bioconductor.org/packages/release/bioc/html/BiocFileCache.html) [@biocfilecache].
 ```{r eval=TRUE, echo=TRUE}
 temp_path <- tempfile()
-bfc <- BiocFileCache::BiocFileCache(temp_path, ask=FALSE)
-file_url <- 
-  "https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data"
-annot <- bfc[[names(BiocFileCache::bfcadd(bfc, "Annotation", 
-                                          paste(file_url, 
-                                                "gencodeshortened.gtf", 
-                                                sep="/")))]]
-genome_fa <- bfc[[names(BiocFileCache::bfcadd(bfc, 
-                                              "Genomefa", 
-                                              paste(file_url, 
-                                                    "GRCh38shortened.fa", 
-                                                    sep="/")))]]
+bfc <- BiocFileCache::BiocFileCache(temp_path, ask = FALSE)
 
-fastq <- bfc[[names(BiocFileCache::bfcadd(bfc, "Fastq", paste(file_url, "sc_align2genome.sample.fastq.gz", sep="/")))]]
+file_url <-
+  "https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data"
+
+annot <- bfc[[names(BiocFileCache::bfcadd(
+  bfc, "Annotation",
+  file.path(file_url, "gencodeshortened.gtf")
+))]]
+
+genome_fa <- bfc[[names(BiocFileCache::bfcadd(
+  bfc,
+  "Genomefa",
+  file.path(file_url, "GRCh38shortened.fa")
+))]]
+
+fastq <- bfc[[names(BiocFileCache::bfcadd(bfc, "Fastq", file.path(file_url, "sc_align2genome.sample.fastq.gz")))]]
 
 # setup other environment variables
-config_file <- FLAMES::get_default_config_file()
-outdir <- tempfile() 
-if (!dir.exists(outdir)) {
-    dir.create(outdir)
-}
+outdir <- tempfile()
+dir.create(outdir)
+config_file <- FLAMES::create_config(outdir)
 ```
 
-The optional argument `config_file` can be given to both `bulk_long_pipeline()` and `sc_long_pipeline()` in order to customise the execution of the pipelines. It is expected to be a JSON file, and an example can be found by calling `FLAMES::get_default_config_file`, which returns the path to the default JSON configuration file. This JSON file is used in absence of both the argument `config_file` and any alteration of the other optional pipeline arguments.
+The optional argument `config_file` can be given to both `bulk_long_pipeline()` and `sc_long_pipeline()` in order to customise the execution of the pipelines. It is expected to be a JSON file, and an example can be found by calling `FLAMES::create_config`, which returns the path to a copy of the default JSON configuration file. This JSON file is used in absence of both the argument `config_file` and any alteration of the other optional pipeline arguments.
 
 If `config_file` is not given, the pipeline can instead be customised by altering any of the optional arguments the pipeline allows. These customisations are then stored in a JSON file saved in the specified out directory, which allows for easier reproduction of pipeline execution. More information on the optional arguments at the contents of the JSON configuration file can be found by running `?create_config` and `?bulk_long_pipeline`.
 
@@ -85,7 +86,7 @@ This vignette uses the default configuration file.
 Once the initial variables have been setup, the pipeline can be run using:
 ```{r, eval=FALSE}
 library(FLAMES)
-sce <- sc_long_pipeline(annot=annot, fastq=fastq, genome_fa=genome_fa, outdir=outdir, config_file=config_file, match_barcode=FALSE)
+sce <- sc_long_pipeline(annotation = annot, fastq = fastq, genome_fa = genome_fa, outdir = outdir, config_file = config_file, match_barcode = FALSE)
 ```
 
 As stated above, the example dataset has already been demultiplexed, so `match_barcode=FALSE` should be set to skip the preprocessing of the barcodes.
@@ -117,42 +118,44 @@ To get started, the pipeline needs access to a gene annotation file in GFF3 or G
 For this example, these files are downloaded from GitHub using [BiocFileCache](http://bioconductor.org/packages/release/bioc/html/BiocFileCache.html) [@biocfilecache].
 ```{r eval=TRUE, echo=TRUE}
 temp_path <- tempfile()
-bfc <- BiocFileCache::BiocFileCache(temp_path, ask=FALSE)
-file_url <- 
+bfc <- BiocFileCache::BiocFileCache(temp_path, ask = FALSE)
+
+file_url <-
   "https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data"
-annot <- bfc[[names(BiocFileCache::bfcadd(bfc, "Annotation", 
-                                          paste(file_url, 
-                                                "SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf", 
-                                                sep="/")))]]
-genome_fa <- bfc[[names(BiocFileCache::bfcadd(bfc, 
-                                              "Genomefa", 
-                                              paste(file_url, 
-                                                    "SIRV_isoforms_multi-fasta_170612a.fasta", 
-                                                    sep="/")))]]
+
+annot <- bfc[[names(BiocFileCache::bfcadd(
+  bfc, "Annotation",
+  file.path(file_url, "SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf")
+))]]
+
+genome_fa <- bfc[[names(BiocFileCache::bfcadd(
+  bfc, "Genomefa",
+  file.path(file_url, "SIRV_isoforms_multi-fasta_170612a.fasta")
+))]]
 
 # download the two fastq files, move them to a folder to be merged together
-fastq1 <- bfc[[names(BiocFileCache::bfcadd(bfc, "Fastq1", paste(file_url, "fastq/sample1.fastq.gz", sep="/")))]]
-fastq2 <- bfc[[names(BiocFileCache::bfcadd(bfc, "Fastq2", paste(file_url, "fastq/sample2.fastq.gz", sep="/")))]]
-fastq_dir <- paste(temp_path, "fastq_dir", sep="/") # the downloaded fastq files need to be in a directory to be merged together
+fastq1 <- bfc[[names(BiocFileCache::bfcadd(bfc, "Fastq1", file.path(file_url, "fastq", "sample1.fastq.gz")))]]
+fastq2 <- bfc[[names(BiocFileCache::bfcadd(bfc, "Fastq2", file.path(file_url, "fastq", "sample2.fastq.gz")))]]
+fastq_dir <- file.path(temp_path, "fastq_dir") # the downloaded fastq files need to be in a directory to be merged together
 dir.create(fastq_dir)
 file.copy(c(fastq1, fastq2), fastq_dir)
 unlink(c(fastq1, fastq2)) # the original files can be deleted
 
 # setup other environment variables
-config_file <- FLAMES::get_default_config_file()
 outdir <- tempfile()
-if (!dir.exists(outdir)) {
-    dir.create(outdir)
-}
+dir.create(outdir)
+config_file <- FLAMES::create_config(outdir)
 ```
 
 ### FLAMES execution
 Once the environment has been setup, the pipeline can be executed by running:
 ```{r eval=FALSE}
 library(FLAMES)
-summarizedExperiment <- bulk_long_pipeline(annot=annot, fastq=fastq_dir, outdir=temp_path, 
-                                           genome_fa=genome_fa, minimap2_dir=mm2_dir,
-                                           config_file = config_file)
+summarizedExperiment <- bulk_long_pipeline(
+  annot = annot, fastq = fastq_dir, outdir = temp_path,
+  genome_fa = genome_fa, minimap2_dir = mm2_dir,
+  config_file = config_file
+)
 ```
 
 ### FLAMES termination

@@ -9,18 +9,11 @@
 #' are then overlayed on top of the UMAP. SNN inference based on gene counts were performed to impute isoform expression
 #' for cells in the larger library.
 #'
-#' @param sce_all The \code{SingleCellExperiment} object containing gene counts assay for the combined library.
-#' Require \code{sce_all$lib} to specify the library of each cell, either "\code{lib20}" or "\code{lib80}".
-#' Alternatively, provide \code{sce_20} \code{sce_80} and the function will create \code{sce_all} using \code{BiocGenerics::cbind}.
-#' @param sce_80 The \code{SingleCellExperiment} object containing gene counts assay for the larger (80% ~ 90%) library.
-#' @param sce_20 The \code{SingleCellExperiment} object containing gene counts assay for the smaller (10% ~ 20%) library.
-#' @param path The path to the folder containing outputs of \code{sc_long_pipeline}.
+#' @param sce_all The combined \code{SingleCellExperiment} object from \code{combine_sce()}.
 #' @param gene The gene symbol of interest.
 #' @param n_isoforms The number of expressed isoforms to keep.
 #' @param n_pcs The number of principal components to generate.
 #' @param cluster_annotation Path to the cluster annotation CSV (required for heatmap, if \code{cluster_annotation.csv} is not in \code{path} and \code{sce_all$cell_type} does not exist)
-#' @param dup_bc Cell barcodes found both in the larger and smaller library, will be used to filter cells in the long-read
-#' data. (Filtering long-read data will be implemented in the main pipeline soon)
 #' @param return_sce_all Whether to return the processed \code{SingleCellExperiment} object.
 #' @param heatmap_annotation_colors Name of color palette to use for cell group annotation in heatmaps, see [RColorBrewer::brewer.pal()] \cr
 #' available diverging palettes are:\cr
@@ -34,12 +27,14 @@
 #' Expression levels lower than 1 - \code{heatmap_color_quantile} will all be shown with \code{col_low};
 #'
 #' @return a list containing the combined UMAP, the isoform exon alignments and the UMAP with isoform expression levels.
+#' @seealso
+#' [combine_sce()] for combining gene count \code{SingleCellExperiment} object with transcript counts.
 #'
 #' @importFrom dplyr group_by summarise_at slice_max filter
 #' @importFrom tidyr gather pivot_wider
 #' @importFrom magrittr "%>%"
 #' @importFrom S4Vectors DataFrame
-#' @importFrom SingleCellExperiment SingleCellExperiment reducedDimNames logcounts
+#' @importFrom SingleCellExperiment SingleCellExperiment reducedDimNames logcounts altExp altExp<-
 #' @importFrom SummarizedExperiment rowData colData rowData<- colData<-
 #' @importFrom scuttle addPerCellQC addPerFeatureQC isOutlier logNormCounts
 #' @importFrom scran getTopHVGs fixedPCA buildSNNGraph modelGeneVar
@@ -61,128 +56,25 @@
 #' @importFrom stats quantile median
 #' @export
 #' @md
-sc_annotate_umap <- function(gene, path, sce_all = NULL, sce_20 = NULL, sce_80 = NULL, n_isoforms = 4, n_pcs = 40, cluster_annotation, dup_bc = NULL, return_sce_all = TRUE,
-                             heatmap_annotation_colors = "BrBG", isoform_legend_width = 7, heatmap_color_quantile = 0.95, col_low = "#313695", col_mid = "#FFFFBF", col_high = "#A50026") {
-  ## dup_bc: cell barcodes found in both lib_20 and lib_80
-  ## the pipeline should filter out these cells (not implemented yet)
-  ## this parameter will need to be removed after implementing filtering in the pipeline
+sc_annotate_plots <- function(gene, sce_all, cluster_annotation, n_isoforms = 4, n_pcs = 40, return_sce_all = TRUE,
+                              heatmap_annotation_colors = "BrBG", isoform_legend_width = 7, heatmap_color_quantile = 0.95, col_low = "#313695", col_mid = "#FFFFBF", col_high = "#A50026") {
 
   # Check args
-  if (missing(path) || missing(gene)) {
-    stop("arguments path and gene are required\n")
-  }
-
-  if ((missing(sce_20) || missing(sce_80)) && missing(sce_all)) {
-    stop("Please provide sce_all, or both sce_20 and sce_80\n")
-  }
-
-  if (!is.null(sce_all) && (is.null(sce_all$lib) || !all(sce_all$lib %in% c("lib20", "lib80")))) {
-    stop("Please provide sce_all$lib to specify the library of each cell\n
-          Values of sce_all$lib should be either \"lib20\" or \"lib80\".\n")
+  if (is.null(colData(sce_all)$Lib_large) || is.null(colData(sce_all)$Lib_small)) {
+    stop("Please provide colData(sce_all)$Lib_large and colData(sce_all)$Lib_large
+          to specify the library of each cell
+          Values should be either TRUE or FALSE.\n")
   }
 
   outputs <- list()
 
-  # Process short reads SCE
-  if (is.null(sce_all)) {
-    cat("Creating sce_all from sce_20 and sce_80 ...\n")
-    rowData(sce_20) <- rowData(sce_20)[!(names(rowData(sce_20)) %in% c("mean", "detected"))]
-    rowData(sce_80) <- rowData(sce_80)[!(names(rowData(sce_80)) %in% c("mean", "detected"))]
-    sce_all <- cbind(sce_80, sce_20)
-    sce_all$lib <- c(rep("lib80", dim(sce_80)[2]), rep("lib20", dim(sce_20)[2]))
-  } else {
-    cat("Creating sce_20 and sce_80 from sce_all ... \n")
-    sce_20 <- sce_all[, sce_all$lib == "lib20"]
-    sce_80 <- sce_all[, sce_all$lib == "lib80"]
-  }
-
-  # Process barcodes from short reads
-  for (sce in list(sce_20, sce_80, sce_all)) {
-    if (is.null((colnames(sce))) && is.null(colData(sce)@listData$Barcode)) {
-      stop("Please add barcodes to SCEs, as colnames or colData(sce)@listData$Barcode)")
-    } else if (is.null((colnames(sce))) && !is.null(colData(sce)@listData$Barcode)) {
-      colnames(sce) <- colData(sce)@listData$Barcode
-    }
-    if (!all(grepl("-1$", colnames(sce)))) {
-      cat("Trimming \"-1\" from colnames\n")
-      colnames(sce) <- gsub("-1$", "", colnames(sce))
-    }
-  }
-
-  # SCE from long reads
-  ### Transcrips counts from long read data
-  cat("Loading long read data ...\n")
-  transcript_count <- read.csv(file.path(path, "transcript_count.csv.gz"), stringsAsFactors = FALSE)
-  isoform_FSM_annotation <- read.csv(file.path(path, "isoform_FSM_annotation.csv"), stringsAsFactors = FALSE)
-  isoform_gff <- rtracklayer::import.gff3(file.path(path, "isoform_annotated.filtered.gff3"))
-
-  transcript_count <- transcript_count[match(isoform_FSM_annotation$transcript_id, transcript_count$transcript_id), ]
-  transcript_count$FSM_match <- isoform_FSM_annotation$FSM_match
-  cell_bcs <- colnames(transcript_count)[!(colnames(transcript_count) %in% c("transcript_id", "gene_id", "FSM_match"))]
-  tr_anno <- transcript_count[, c("transcript_id", "gene_id", "FSM_match")]
-
-  fsm_csv <- file.path(path, "FSM_count.csv.gz")
-  if (file.exists(fsm_csv)) {
-    mer_tmp <- read.csv(fsm_csv)
-  } else {
-    # sum transcript (FSM) counts
-    cat("Creating FSM_count.csv.gz ...\n")
-    mer_tmp <- transcript_count %>%
-      group_by(FSM_match) %>%
-      summarise_at(cell_bcs, sum)
-    write.csv(mer_tmp, file = gzfile(fsm_csv), row.names = FALSE)
-    cat(paste0(c(fsm_csv, "saved.\n")))
-  }
-
-  # Create long read SCE
-  tr_anno <- tr_anno[match(mer_tmp$FSM_match, tr_anno$FSM_match), ]
-  tr_sce <- SingleCellExperiment(assays = list(counts = as.matrix(mer_tmp[, -1])))
-  rownames(tr_sce) <- mer_tmp$FSM_match
-  rowData(tr_sce) <- DataFrame(tr_anno)
-
-  # QC for long read SCE
-  tr_sce <- tr_sce[, !(colnames(tr_sce) %in% dup_bc)]
-  tr_sce <- addPerCellQC(tr_sce)
-  tr_sce <- addPerFeatureQC(tr_sce)
-  keep.hi <- isOutlier(tr_sce$sum, type = "higher", log = TRUE)
-  keep.low <- isOutlier(tr_sce$sum, type = "lower", log = TRUE)
-  tr_sce <- tr_sce[, (!keep.hi) & (!keep.low)]
-
-  # Handle barcodes
-  n_rm <- dim(tr_sce)[2]
-  tr_sce <- tr_sce[, colnames(tr_sce) %in% colnames(sce_all)]
-  n_rm <- n_rm - dim(tr_sce)[2]
-  if (n_rm != 0) {
-    message(paste0(c(n_rm, " barcode(s) from long reads are not found in any short read library, they are removed from analysis\n")))
-  }
-
-  n_rm <- dim(tr_sce)[2]
-  tr_sce <- tr_sce[, colnames(tr_sce) %in% colnames(sce_20)]
-  n_rm <- n_rm - dim(tr_sce)[2]
-  if (n_rm != 0) {
-    message(paste0(c(
-      n_rm, " barcode(s) from long reads are assigned to the 80% ~ 90% library (in short read SCEs), they are removed from analysis\n",
-      "Please consider revising short read libraries\n"
-    )))
-  }
-
-  n_rm <- dim(sce_20)[2]
-  sce_20 <- sce_20[, colnames(sce_20) %in% colnames(tr_sce)]
-  n_rm <- n_rm - dim(sce_20)[2]
-  if (n_rm != 0) {
-    message(paste0(c(n_rm, " barcode(s) from the 10% ~ 20% library are not found in long reads, removing ... \n")))
-    sce_all <- sce_all[, colnames(sce_all) %in% c(colnames(sce_80), colnames(sce_20))]
-  }
-
-
   ### Process SCEs
+  tr_sce <- altExp(sce_all, "transcript")[, colData(sce_all)$found_long_reads]
+  flames_outdir <- tr_sce@metadata$OutputFiles$outdir
   tr_sce <- logNormCounts(tr_sce)
-  rowData(tr_sce)$gene_id <- gsub("\\..*", "", rowData(tr_sce)$gene_id)
-  # gene_name = mapIds(org.Hs.eg.db,
-  #                   keys=rowData(tr_sce)$gene_id,
-  #                   column="SYMBOL",
-  #                   keytype="ENSEMBL",
-  #                   multiVals="first")
+  if (!"mean" %in% names(rowData(tr_sce))) {
+    tr_sce <- addPerFeatureQC(tr_sce) # needed for sorting
+  }
 
   if (!("PCA" %in% reducedDimNames(sce_all)) || dim(sce_all@int_colData$reducedDims$PCA)[2] < n_pcs) {
     cat("Running PCA for sce_all ...\n")
@@ -213,11 +105,14 @@ sc_annotate_umap <- function(gene, path, sce_all = NULL, sce_20 = NULL, sce_80 =
     cat("Skipping runUMAP...\n")
   }
 
+  sample_lib <- factor(sce_all$Lib_large)
+  levels(sample_lib) <- gsub("FALSE", "small", gsub("TRUE", "large", levels(sample_lib)))
+
   plot_umap <- ggplot() +
     geom_point(aes(
       x = sce_all@int_colData$reducedDims$UMAP[, 1],
       y = sce_all@int_colData$reducedDims$UMAP[, 2],
-      col = factor(sce_all$lib)
+      col = sample_lib
     ),
     size = 0.02
     ) +
@@ -232,34 +127,27 @@ sc_annotate_umap <- function(gene, path, sce_all = NULL, sce_20 = NULL, sce_80 =
 
 
   # Select transcript with alternative isoforms
-  cat("Finding transcript with alternative isoforms...\n")
-  tr_sce_multi <- tr_sce[rowData(tr_sce)$gene_id %in% names(table(rowData(tr_sce)$gene_id)[table(rowData(tr_sce)$gene_id) > 1]), ]
+  # cat("Finding transcript with alternative isoforms...\n")
+  # tr_sce_multi <- tr_sce[rowData(tr_sce)$gene_id %in% names(table(rowData(tr_sce)$gene_id)[table(rowData(tr_sce)$gene_id) > 1]), ]
 
   # row_meta columns: "transcript_id", "gene_id", "FSM_match", "mean", "detected", "gene_name"
   # rows: transcript_id
-  row_meta <- as.data.frame(rowData(tr_sce_multi))
+  row_meta <- as.data.frame(rowData(tr_sce))
   row_meta <- row_meta %>%
     dplyr::filter(gene_id == gene) %>%
     slice_max(n = n_isoforms, order_by = mean) # keep top n isoforms per gene
   if (dim(row_meta)[1] < 2) {
     stop(paste0("Alternative isoform not found for the given gene: ", gene))
   }
-  tr_sce_multi <- tr_sce_multi[rowData(tr_sce_multi)$transcript_id %in% row_meta$transcript_id, ] # apply top n to sce
+  tr_sce_multi <- tr_sce[rowData(tr_sce)$transcript_id %in% row_meta$transcript_id, ] # apply top n to sce
   if (n_isoforms > nrow(row_meta)) {
     n_isoforms <- nrow(row_meta)
     message(paste0(c("Only ", n_isoforms, " isoforms found for this gene.\n")))
   }
 
   # Alignment info
-  isoform_gff$Parent <- as.character(isoform_gff$Parent)
-  isoform_gff$transcript_id <- unlist(lapply(strsplit(isoform_gff$Parent, split = ":"), function(x) {
-    x[2]
-  }))
-
-  isoform_sel <- isoform_gff[isoform_gff$transcript_id %in% rowData(tr_sce_multi)[, "transcript_id"], ]
-  isoform_sel <- S4Vectors::split(isoform_sel, isoform_sel$transcript_id) # Split isoforms into a list
-  names(isoform_sel) <- row_meta$FSM_match[match(names(isoform_sel), row_meta$transcript_id)] # Set names to FSM
-  isoform_sel <- isoform_sel[row_meta$FSM_match] # Order by expression levels
+  isoform_sel <- rowRanges(tr_sce[row_meta$FSM_match, ])
+  # isoform_sel <- isoform_sel[row_meta$FSM_match] # Order by expression levels
   if (length(isoform_sel) == 2) {
     fill_by_isoform <- c(rep(col_low, length(isoform_sel[[1]])), rep(col_high, length(isoform_sel[[2]])))
     plot_isoforms <- ggbio::autoplot(isoform_sel, label = TRUE, fill = fill_by_isoform) +
@@ -326,9 +214,9 @@ sc_annotate_umap <- function(gene, path, sce_all = NULL, sce_20 = NULL, sce_80 =
   expr_all <- t(apply(expr_all, 1, reduce_quantile))
 
   # Expressions without imputation (Lib_20)
-  expr_20 <- matrix(0, nrow(expr), ncol(sce_20))
+  expr_20 <- matrix(0, nrow(expr), sum(sce_all$Lib_small))
   rownames(expr_20) <- rownames(expr)
-  colnames(expr_20) <- colnames(sce_20)
+  colnames(expr_20) <- colnames(sce_all[, sce_all$Lib_small])
   expr_20[, colnames(expr)] <- expr
   expr_20 <- scale(expr_20)
   expr_20 <- t(apply(expr_20, 1, reduce_quantile))
@@ -341,10 +229,10 @@ sc_annotate_umap <- function(gene, path, sce_all = NULL, sce_20 = NULL, sce_80 =
   umap_all <- as.data.frame(sce_all@int_colData$reducedDims$UMAP)
   colnames(umap_all) <- c("x", "y")
 
-  umap_80 <- umap_all[sce_all$lib == "lib80", ]
+  umap_80 <- umap_all[sce_all$Lib_large, ]
   colnames(umap_80) <- c("x", "y")
 
-  umap_20 <- umap_all[sce_all$lib == "lib20", ]
+  umap_20 <- umap_all[sce_all$Lib_small, ]
   colnames(umap_20) <- c("x", "y")
 
   if (n_isoforms == 2) {
@@ -458,10 +346,10 @@ sc_annotate_umap <- function(gene, path, sce_all = NULL, sce_20 = NULL, sce_80 =
   }
 
   #  Cluster info
-  if (file.exists(file.path(path, "cluster_annotation.csv")) || (!missing(cluster_annotation) && file.exists(cluster_annotation)) || !is.null(sce_all$cell_type)) {
+  if (file.exists(file.path(flames_outdir, "cluster_annotation.csv")) || (!missing(cluster_annotation) && file.exists(cluster_annotation)) || !is.null(sce_all$cell_type)) {
     cat("Plotting heatmaps ...\n")
-    if (file.exists(file.path(path, "cluster_annotation.csv"))) {
-      cluster_barcode <- read.csv(file.path(path, "cluster_annotation.csv"), stringsAsFactors = FALSE)
+    if (file.exists(file.path(flames_outdir, "cluster_annotation.csv"))) {
+      cluster_barcode <- read.csv(file.path(flames_outdir, "cluster_annotation.csv"), stringsAsFactors = FALSE)
       cluster_barcode <- cluster_barcode[, c("barcode_seq", "groups")]
     } else if (!missing(cluster_annotation) && file.exists(cluster_annotation)) {
       cluster_barcode <- read.csv(cluster_annotation, stringsAsFactors = FALSE)
@@ -587,4 +475,118 @@ sc_annotate_umap <- function(gene, path, sce_all = NULL, sce_20 = NULL, sce_80 =
   }
 
   return(outputs)
+}
+
+#' Combine SCE
+#'
+#' Combine long- and short-read SingleCellExperiment objects
+#'
+#' @details Takes the long-read SCE object from the long-read pipeline and attach it as \code{altExpress} of
+#' the short-read SCE object. Cell that are not sampled for long-read sequencing are left with zero expressions.
+#' Cells with duplicated barcodes are removed from the larger library.
+#' Cell barcodes only found in long-read sequencing are removed.
+#'
+#' @param short_read_large The SCE object, or path to the HDF5 file, or folder containing the matrix file,
+#' corresponding to the larger short-read sample
+#' @param short_read_small The SCE object, or path to the HDF5 file, or folder containing the matrix file,
+#' corresponding to the smaller short-read sample
+#' @param short_read_all (Optional) The combined short-read SCE object. When this is provided, \code{short_read_large} and
+#' \code{short_read_small} will be ignored.
+#' @param long_read_sce The SCE object of the transcript counts, from the long-read pipelines.
+#' @param remove_duplicates determines whether cells with duplicated barcodes aer kept in the smaller library (
+#' they are always removed from the larger library)
+#'
+#' @return A \code{SingleCellExperiment} object, with the transcript counts attached.
+#'
+#' @examples
+#' library(SingleCellExperiment)
+#' a <- SingleCellExperiment(assays = list(counts = matrix(rpois(100, 5), ncol = 10)))
+#' b <- SingleCellExperiment(assays = list(counts = matrix(rpois(100, 5), ncol = 10)))
+#' long_read <- SingleCellExperiment(assays = list(counts = matrix(rpois(100, 5), ncol = 10)))
+#' colData(a)$Barcode <- paste0(1:10, "-1")
+#' colData(b)$Barcode <- paste0(8:17, "-1")
+#' colnames(long_read) <- as.character(2:11)
+#' rownames(a) <- as.character(101:110)
+#' rownames(b) <- as.character(103:112)
+#' rownames(long_read) <- as.character(1001:1010)
+#' combine_sce(short_read_large = a, short_read_small = b, long_read_sce = long_read)
+#'
+#' @importFrom BiocGenerics cbind colnames rownames
+#' @importFrom SingleCellExperiment SingleCellExperiment altExp altExp<- counts counts<-
+#' @importFrom SummarizedExperiment rowData colData rowData<- colData<- rowRanges rowRanges<-
+#' @importFrom DropletUtils read10xCounts
+#' @export
+combine_sce <- function(short_read_large, short_read_small, short_read_all, long_read_sce, remove_duplicates = TRUE) {
+  # TODO: replace short_read_large, short_read_small, short_read_all with ellipsis (...)
+  # short_read_80: sce / path
+  if (missing("short_read_all")) {
+    if (is.character(short_read_large)) {
+      short_read_large <- read10xCounts(short_read_large)
+    }
+    stopifnot(is(short_read_large, "SingleCellExperiment"))
+    if (is.character(short_read_small)) {
+      short_read_small <- read10xCounts(short_read_small)
+    }
+    stopifnot(is(short_read_small, "SingleCellExperiment"))
+    # short_read_large <-  read10xCounts("/stornext/General/data/user_managed/grpu_mritchie_1/Changqing/MuSC_cellranger/MuSC_lib90/outs/filtered_feature_bc_matrix")
+    # short_read_small <-  read10xCounts("/stornext/General/data/user_managed/grpu_mritchie_1/Changqing/MuSC_cellranger/MuSC_lib10/outs/filtered_feature_bc_matrix")
+
+    if (is.null(colnames(short_read_large)) || is.null(colnames(short_read_small))) {
+      if ("Barcode" %in% names(colData(short_read_large)) &&
+        "Barcode" %in% names(colData(short_read_small))) {
+        colnames(short_read_large) <- gsub("-1$", "", colData(short_read_large)$Barcode)
+        colnames(short_read_small) <- gsub("-1$", "", colData(short_read_small)$Barcode)
+      } else {
+        stop("Error getting cell barcode.")
+      }
+    }
+
+    # Always remove cells with duplicated barcodes from the larger library
+    # remove_duplicates determines whether they aer kept in the smaller library
+    dup_bc <- colnames(short_read_small[, colnames(short_read_small) %in% colnames(short_read_large)])
+    short_read_large <- short_read_large[, !(colnames(short_read_large) %in% dup_bc)]
+    if (remove_duplicates) {
+      short_read_small <- short_read_small[, !(colnames(short_read_small) %in% dup_bc)]
+    }
+
+    gene_intersection <- intersect(rownames(short_read_large), rownames(short_read_small))
+    short_read_all <- cbind(short_read_large[gene_intersection, ], short_read_small[gene_intersection, ])
+
+    colData(short_read_all)$Lib_small <- colnames(short_read_all) %in% colnames(short_read_small)
+    colData(short_read_all)$Lib_large <- !colData(short_read_all)$Lib_small
+  } else {
+    stopifnot(is(short_read_all, "SingleCellExperiment"))
+  }
+  # empty_matrix <- new("dgRMatrix")
+  # empty_matrix@Dim <- dim(short_read_all)
+  # empty_matrix@p <- integer(dim(long_read_sce)[1]+1L)
+  transcript_sce <- SingleCellExperiment(
+    assays = list(counts = matrix(NA,
+      ncol = dim(short_read_all)[2],
+      nrow = dim(long_read_sce)[1]
+    )),
+    metadata = long_read_sce@metadata
+  )
+  # NA valued matrix is not sparse, filling zeros is not fool-proof
+  # Create a class consisting of multiple SCE objects?
+  colnames(transcript_sce) <- colnames(short_read_all)
+  rownames(transcript_sce) <- rownames(long_read_sce)
+
+  # Cell barcodes only found in long-read sequencing are removed.
+  long_read_sce <- long_read_sce[, colnames(long_read_sce) %in% colnames(short_read_all)]
+  counts(transcript_sce[rownames(long_read_sce), colnames(long_read_sce)]) <- counts(long_read_sce)
+  rowData(transcript_sce) <- rowData(long_read_sce)
+  rowRanges(transcript_sce) <- rowRanges(long_read_sce)
+  altExp(short_read_all, "transcript") <- transcript_sce
+
+  # todo:
+  colData(short_read_all)$found_long_reads <- colnames(short_read_all) %in% colnames(long_read_sce)
+  bc_diff <- sum(colData(short_read_all)$found_long_reads & colData(short_read_all)$Lib_large)
+  if (bc_diff > 0) {
+    cat(bc_diff, "cell barcodes are found in both the long-read SCE and in the short-read SCE of the larger sub-sample.
+    , consider removing them as quality control. You can remove them with
+    SCE <- SCE[, !(colData(SCE)$found_long_reads & colData(SCE)$Lib_large)]\n")
+  }
+
+  return(short_read_all)
 }

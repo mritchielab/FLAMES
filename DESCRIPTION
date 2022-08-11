@@ -56,15 +56,22 @@ Imports:
     GenomeInfoDb,
     withr,
     Biostrings,
-    GenomicFeatures
+    GenomicFeatures,
+    jsonlite,
+    parallel,
+    DropletUtils
 Suggests: 
     BiocStyle,
     knitr,
     rmarkdown,
     markdown,
-    BiocFileCache
+    BiocFileCache,
+    R.utils,
+    ShortRead,
+    testthat (>= 3.0.0)
 LinkingTo: Rcpp, Rhtslib, zlibbioc
 SystemRequirements: GNU make, C++11
 RoxygenNote: 7.2.1
 VignetteBuilder: knitr
 URL: https://github.com/OliverVoogd/FLAMES
+Config/testthat/edition: 3

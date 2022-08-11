@@ -1,77 +1,134 @@
-#' @importFrom reticulate import_from_path
-#' @importFrom Rsamtools indexFa
-find_isoform <- function(gff3,
-                         genome_bam,
-                         isoform_gff3,
-                         tss_tes_stat,
-                         genomefa,
-                         transcript_fa,
-                         downsample_ratio,
-                         config,
-                         raw) {
-    ret <- callBasilisk(flames_env, function(gff3,
-                                             genome,
-                                             iso,
-                                             tss,
-                                             fa,
-                                             tran,
-                                             ds,
-                                             conf,
-                                             raw) {
-        python_path <- system.file("python", package = "FLAMES")
-
-        find <-
-            reticulate::import_from_path("find_isoform", python_path)
-        ret <-
-            find$find_isoform(gff3, genome, iso, tss, fa, tran, ds, conf, raw)
-
-        ret
-    },
-    gff3 = gff3, genome = genome_bam, iso = isoform_gff3, tss = tss_tes_stat,
-    fa = genomefa, tran = transcript_fa, ds = downsample_ratio, conf =
-        config, raw = raw
-    )
-
-    # we then need to use Rsamtools to index transcript_fa
-    Rsamtools::indexFa(transcript_fa) # index the output fa file
-
-    ret
+#' Isoform identification
+#' @description Long-read isoform identification with FLAMES or bambu.
+#' @param annotation Path to annotation file. If configured to use bambu, the annotation
+#' must be provided as GTF file.
+#' @param genome_fa The file path to genome fasta file.
+#' @param genome_bam File path to BAM alignment file. Multiple files could be provided.
+#' @param outdir The path to directory to store all output files.
+#' @param config Parsed FLAMES configurations.
+#' @return The updated annotation and the transcriptome assembly will be saved in the
+#' output folder as \code{isoform_annotated.gff3} (GTF if bambu is selected) and
+#' \code{transcript_assembly.fa} respectively.
+#' @export
+#' @examples
+#' temp_path <- tempfile()
+#' bfc <- BiocFileCache::BiocFileCache(temp_path, ask = FALSE)
+#' file_url <- "https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data"
+#' fastq1 <- bfc[[names(BiocFileCache::bfcadd(bfc, "Fastq1", paste(file_url, "fastq/sample1.fastq.gz", sep = "/")))]]
+#' genome_fa <- bfc[[names(BiocFileCache::bfcadd(bfc, "genome.fa", paste(file_url, "SIRV_isoforms_multi-fasta_170612a.fasta", sep = "/")))]]
+#' annotation <- bfc[[names(BiocFileCache::bfcadd(bfc, "annot.gtf", paste(file_url, "SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf", sep = "/")))]]
+#' outdir <- tempfile()
+#' dir.create(outdir)
+#' if (is.character(locate_minimap2_dir())) {
+#'     config <- jsonlite::fromJSON(system.file("extdata/SIRV_config_default.json", package = "FLAMES"))
+#'     minimap2_align(
+#'         config = config,
+#'         fa_file = genome_fa,
+#'         fq_in = fastq1,
+#'         annot = annotation,
+#'         outdir = outdir
+#'     )
+#'     find_isoform(
+#'         annotation = annotation, genome_fa = genome_fa,
+#'         genome_bam = file.path(outdir, "align2genome.bam"),
+#'         outdir = outdir, config = config
+#'     )
+#' }
+find_isoform <- function(annotation, genome_fa, genome_bam, outdir, config) {
+    # pipeline types: singe_cell, single_cell_multisample, bulk
+    if (config$pipeline_parameters$bambu_isoform_identification) {
+        find_isoform_bambu(annotation, genome_fa, genome_bam, outdir, config)
+    } else {
+        find_isoform_flames(annotation, genome_fa, genome_bam, outdir, config)
+    }
 }
 
-find_isoform_multisample <- function(gff3,
-                                     genome_bams,
-                                     isoform_gff3,
-                                     tss_tes_stat,
-                                     genomefa,
-                                     transcript_fa,
-                                     downsample_ratio,
-                                     config,
-                                     raw) {
-    ret <- callBasilisk(flames_env, function(gff3,
-                                             genomes,
-                                             iso,
-                                             tss,
-                                             fa,
-                                             tran,
-                                             ds,
-                                             conf,
-                                             raw) {
-        python_path <- system.file("python", package = "FLAMES")
+#' @importFrom bambu writeToGTF prepareAnnotations bambu
+#' @importFrom withr with_package
+find_isoform_bambu <- function(annotation, genome_fa, genome_bam, outdir, config) {
+    bambuAnnotations <- bambu::prepareAnnotations(annotation)
+    # Tmp fix: remove withr if bambu imports seqlengths properly
+    # https://github.com/GoekeLab/bambu/issues/255
+    bambu_out <- withr::with_package("GenomeInfoDb", bambu::bambu(reads = genome_bam, annotations = bambuAnnotations, genome = genome_fa, quant = FALSE))
 
-        find <-
-            reticulate::import_from_path("find_isoform", python_path)
-        ret <-
-            find$find_isoform_multisample(gff3, genomes, iso, tss, fa, tran, ds, conf, raw)
+    isoform_gtf <- file.path(outdir, "isoform_annotated.gtf") # Bambu outputs GTF
+    bambu::writeToGTF(bambu_out, isoform_gtf) # bambu_out is the extended annotation
+    annotation_to_fasta(isoform_gtf, genome_fa, outdir)
 
-        ret
-    },
-    gff3 = gff3, genomes = genome_bams, iso = isoform_gff3, tss = tss_tes_stat,
-    fa = genomefa, tran = transcript_fa, ds = downsample_ratio, conf =
-        config, raw = raw
-    )
+    # isoform_objects <- list(transcript_dict = NULL, transcript_dict_i = parse_gff_tree(isoform_gtf)$transcript_dict)
+    # isoform_objects
+}
 
+#' @importFrom reticulate import_from_path
+#' @importFrom Rsamtools indexFa
+find_isoform_flames <- function(annotation, genome_fa, genome_bam, outdir, config) {
+    if (length(genome_bam) == 1) {
+        ret <- callBasilisk(flames_env, function(gff3, genome, iso, tss, fa, tran, ds, conf, raw) {
+            python_path <- system.file("python", package = "FLAMES")
+            find <- reticulate::import_from_path("find_isoform", python_path)
+            ret <- find$find_isoform(gff3, genome, iso, tss, fa, tran, ds, conf, raw)
+            ret
+        },
+        gff3 = annotation, genome = genome_bam, iso = file.path(outdir, "isoform_annotated.gff3"), tss = file.path(outdir, "tss_tes.bedgraph"), fa = genome_fa, tran = file.path(outdir, "transcript_assembly.fa"), ds = config$isoform_parameters$downsample_ratio, conf = config, raw = ifelse(config$isoform_parameters$generate_raw_isoform, file.path(outdir, "splice_raw.gff3"), FALSE)
+        )
+    } else {
+        ret <- callBasilisk(flames_env, function(gff3, genome, iso, tss, fa, tran, ds, conf, raw) {
+            python_path <- system.file("python", package = "FLAMES")
+            find <- reticulate::import_from_path("find_isoform", python_path)
+            ret <- find$find_isoform_multisample(gff3, genome, iso, tss, fa, tran, ds, conf, raw)
+            ret
+        },
+        gff3 = annotation, genome = genome_bam, iso = file.path(outdir, "isoform_annotated.gff3"), tss = file.path(outdir, "tss_tes.bedgraph"), fa = genome_fa, tran = file.path(outdir, "transcript_assembly.fa"), ds = config$isoform_parameters$downsample_ratio, conf = config, raw = ifelse(config$isoform_parameters$generate_raw_isoform, file.path(outdir, "splice_raw.gff3"), FALSE)
+        )
+    }
     # we then need to use Rsamtools to index transcript_fa
-    Rsamtools::indexFa(transcript_fa) # index the output fa file
+    Rsamtools::indexFa(file.path(outdir, "transcript_assembly.fa")) # index the output fa file
+}
 
-    ret
+#' GTF/GFF to FASTA conversion
+#' @description convert the transcript annotation to transcriptome assembly as FASTA file.
+#' @param isoform_annotation Path to the annotation file (GTF/GFF3)
+#' @param genome_fa The file path to genome fasta file.
+#' @param outdir The path to directory to store the transcriptome as \code{transcript_assembly.fa}.
+#' @return Path to the outputted transcriptome assembly
+#'
+#' @importFrom Biostrings readDNAStringSet writeXStringSet
+#' @importFrom GenomicFeatures extractTranscriptSeqs
+#' @importFrom Rsamtools indexFa
+#'
+#' @examples
+#' fasta <- annotation_to_fasta(system.file("extdata/rps24.gtf.gz", package = "FLAMES"), system.file("extdata/rps24.fa.gz", package = "FLAMES"), tempdir())
+#' cat(readChar(fasta, nchars = 1e3))
+#'
+#' @export
+annotation_to_fasta <- function(isoform_annotation, genome_fa, outdir) {
+    #    if (!missing(outdir) && !missing(out_file) && out_file != file.path(outdir, "transcript_assembly.fa")) {
+    #        stop("Please specify only one of 'outdir' and 'out_file'.")
+    #    }
+    #    if (missing(out_file)) {
+    out_file <- file.path(outdir, "transcript_assembly.fa")
+    #    }
+
+    dna_string_set <- Biostrings::readDNAStringSet(genome_fa)
+    names(dna_string_set) <- gsub(" .*$", "", names(dna_string_set))
+    tr_string_set <- GenomicFeatures::extractTranscriptSeqs(dna_string_set, get_GRangesList(isoform_annotation))
+    Biostrings::writeXStringSet(tr_string_set, out_file)
+    Rsamtools::indexFa(out_file)
+
+    return(out_file)
+}
+
+get_GRangesList <- function(file) {
+    isoform_gr <- rtracklayer::import(file, feature.type = c("exon", "utr"))
+    if (grepl("\\.gff3(\\.gz)?$", file)) {
+        isoform_gr$Parent <- as.character(isoform_gr$Parent)
+        isoform_gr$transcript_id <- unlist(lapply(strsplit(isoform_gr$Parent, split = ":"), function(x) {
+            x[2]
+        }))
+    }
+    #    if (!is.null("gene")) {
+    #        isoform_gr <- isoform_gr[isoform_gr$gene_id == gene]
+    #    }
+    isoform_grl <- S4Vectors::split(isoform_gr, isoform_gr$transcript_id)
+    return(isoform_grl)
 }

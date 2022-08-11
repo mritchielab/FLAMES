@@ -7,10 +7,10 @@
 sc_DTU_analysis(sce, path, min_count = 15)
 }
 \arguments{
-\item{sce}{The \code{SingleCellExperiment} object from \code{sc_long_pipeline}, an additional \code{cluster_annotation.csv} 
+\item{sce}{The \code{SingleCellExperiment} object from \code{sc_long_pipeline}, an additional \code{cluster_annotation.csv}
 file is required under the output folder of the SCE object.}
 
-\item{path}{The path to the output folder of \code{sc_long_pipeline} 
+\item{path}{The path to the output folder of \code{sc_long_pipeline}
 the folder needs to contain:
 \itemize{
  \item{transcript_count.csv.gz}{ - the transcript count matrix }
@@ -42,10 +42,32 @@ A cluster annotation file \code{cluster_annotation.csv} is required, please prov
 output folder of \code{sc_long_pipeline}.
 }
 \details{
-This function will search for genes that have at least two isoforms, each with more than \code{min_count} UMI counts. 
-For each gene, the per cell transcript counts were merged by group to generate pseudo bulk samples. 
-Grouping is specified by the \code{cluster_annotation.csv} file. 
-The top 2 highly expressed transcripts for each group were selected and a UMI count matrix where 
-the rows are selected transcripts and columns are groups was used as input to a chi-square test of independence (chisq.test). 
+This function will search for genes that have at least two isoforms, each with more than \code{min_count} UMI counts.
+For each gene, the per cell transcript counts were merged by group to generate pseudo bulk samples.
+Grouping is specified by the \code{cluster_annotation.csv} file.
+The top 2 highly expressed transcripts for each group were selected and a UMI count matrix where
+the rows are selected transcripts and columns are groups was used as input to a chi-square test of independence (chisq.test).
 Adjusted P-values were calculated by Benjamini–Hochberg correction.
+}
+\examples{
+outdir <- tempfile()
+dir.create(outdir)
+bc_allow <- file.path(outdir, "bc_allow.tsv")
+genome_fa <- file.path(outdir, "rps24.fa")
+R.utils::gunzip(filename = system.file("extdata/bc_allow.tsv.gz", package = "FLAMES"), destname = bc_allow, remove = FALSE)
+R.utils::gunzip(filename = system.file("extdata/rps24.fa.gz", package = "FLAMES"), destname = genome_fa, remove = FALSE)
+
+if (is.character(locate_minimap2_dir())) {
+  sce <- FLAMES::sc_long_pipeline(
+    genome_fa = genome_fa,
+    fastq = system.file("extdata/fastq", package = "FLAMES"),
+    annotation = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),
+    outdir = outdir,
+    match_barcode = TRUE,
+    reference_csv = bc_allow
+  )
+  group_anno <- data.frame(barcode_seq = colnames(sce), groups = SingleCellExperiment::counts(sce)["ENSMUST00000169826.2", ] > 1)
+  write.csv(group_anno, file.path(outdir, "cluster_annotation.csv"), row.names = FALSE)
+  sc_DTU_analysis(sce, outdir, min_count = 1)
+}
 }

@@ -20,10 +20,6 @@
 #'  \item{tss_tes.bedgraph}{ - TSS TES enrichment for all reads (for QC)}
 #' }
 #'
-#' @param fastq the path to the directory containing the fastq input files to merge into one, `merged.fastq.gz`. If `merged.fastq.gz` already
-#' exists, the fastq files are not merged and the existing merged file is used.
-#' @param in_bam optional BAM file path which replaces fastq directory argument. This skips the genome alignment and
-#' realignment steps
 #' @inheritParams sc_long_pipeline
 #'
 #' @seealso
@@ -36,77 +32,27 @@
 #' @importFrom dplyr group_by summarise_at slice_max filter
 #' @importFrom magrittr "%>%"
 #' @importFrom BiocGenerics cbind colnames rownames start end
+#' @importFrom Rsamtools indexBam
 #' @export
 bulk_long_pipeline <-
-    function(annot,
+    function(annotation,
              fastq,
-             in_bam = NULL,
              outdir,
              genome_fa,
-             minimap2_dir = "",
-             downsample_ratio = 1,
-             config_file = NULL,
-             do_genome_align = TRUE,
-             do_isoform_id = TRUE,
-             isoform_id_bambu = FALSE,
-             do_read_realign = TRUE,
-             do_transcript_quanti = TRUE,
-             gen_raw_isoform = TRUE,
-             has_UMI = FALSE,
-             MAX_DIST = 10,
-             MAX_TS_DIST = 100,
-             MAX_SPLICE_MATCH_DIST = 10,
-             min_fl_exon_len = 40,
-             Max_site_per_splice = 3,
-             Min_sup_cnt = 10,
-             Min_cnt_pct = 0.01,
-             Min_sup_pct = 0.2,
-             strand_specific = 1,
-             remove_incomp_reads = 5,
-             use_junctions = TRUE,
-             no_flank = TRUE,
-             use_annotation = TRUE,
-             min_tr_coverage = 0.75,
-             min_read_coverage = 0.75) {
-        # filenames for internal steps
-        merged_fq <- paste(outdir, "merged.fastq.gz", sep = "/")
-        # bc_file <- paste(outdir, "pseudo_barcode_annotation.csv", sep="/")
-
-
-        check_return <- check_arguments(
-            annot,
+             minimap2_dir = NULL,
+             config_file = NULL) {
+        checked_args <- check_arguments(
+            annotation,
             fastq,
-            in_bam,
+            genome_bam = NULL,
             outdir,
             genome_fa,
             minimap2_dir,
-            downsample_ratio,
-            config_file,
-            do_genome_align,
-            do_isoform_id,
-            isoform_id_bambu,
-            do_read_realign,
-            do_transcript_quanti,
-            gen_raw_isoform,
-            has_UMI,
-            MAX_DIST,
-            MAX_TS_DIST,
-            MAX_SPLICE_MATCH_DIST,
-            min_fl_exon_len,
-            Max_site_per_splice,
-            Min_sup_cnt,
-            Min_cnt_pct,
-            Min_sup_pct,
-            strand_specific,
-            remove_incomp_reads,
-            use_junctions,
-            no_flank,
-            use_annotation,
-            min_tr_coverage,
-            min_read_coverage
+            config_file
         )
 
-        config_file <- check_return$config
+        config <- checked_args$config
+        minimap2_dir <- checked_args$minimap2_dir
 
         # create output directory if one doesn't exist
         if (!dir.exists(outdir)) {
@@ -115,52 +61,94 @@ bulk_long_pipeline <-
             print(outdir)
         }
 
-        if (file.exists(merged_fq)) {
-            cat(merged_fq, " already exists, no need to merge fastq files\n")
+        if (file_test("-d", fastq)) {
+            fastq_files <- file.path(fastq, list.files(fastq))
+            fastq_files <- fastq_files[grepl("\\.(fastq|fq)(\\.gz)?$", fastq_files) & utils::file_test("-f", fastq_files)]
+        } else if (file_test("-f", fastq)) {
+            fastq_files <- fastq
         } else {
-            # this preprocessing needs only be done if we are using a fastq_dir, instead
-            # of a bam file for reads,
-            cat("Preprocessing bulk fastqs...\n")
-            # run the merge_bulk_fastq function as preprocessing
-            merge_bulk_fastq(fastq, merged_fq)
+            stop("fastq must be a valid path to a folder or a FASTQ file")
+        }
+        samples <- gsub("\\.(fastq|fq)(\\.gz)?$", "", basename(fastq_files))
+
+        using_bam <- FALSE
+        genome_bam <- file.path(outdir, paste0(samples, "_", "align2genome.bam"))
+        if (all(utils::file_test("-f", genome_bam))) {
+            cat("Found all corresponding '[sample]_align2genome.bam' files, will skip initial alignment.\n")
+            using_bam <- TRUE
+            config$pipeline_parameters$do_genome_alignment <- FALSE
+            if (!all(utils::file_test("-f", file.path(outdir, paste0(samples, "_", "align2genome.bam.bai"))))) {
+                for (bam in genome_bam) {
+                    Rsamtools::indexBam(bam)
+                }
+            }
         }
 
-        out_files <-
-            generic_long_pipeline(
-                annot,
-                merged_fq,
-                in_bam,
-                outdir,
-                genome_fa,
-                minimap2_dir,
-                downsample_ratio,
-                config_file,
-                do_genome_align,
-                do_isoform_id,
-                do_read_realign,
-                do_transcript_quanti,
-                gen_raw_isoform,
-                has_UMI,
-                MAX_DIST,
-                MAX_TS_DIST,
-                MAX_SPLICE_MATCH_DIST,
-                min_fl_exon_len,
-                Max_site_per_splice,
-                Min_sup_cnt,
-                Min_cnt_pct,
-                Min_sup_pct,
-                strand_specific,
-                remove_incomp_reads,
-                use_junctions,
-                no_flank,
-                use_annotation,
-                min_tr_coverage,
-                min_read_coverage
-            )
+        cat("#### Input parameters:\n")
+        cat(jsonlite::toJSON(config, pretty = TRUE), "\n")
+        cat("gene annotation:", annotation, "\n")
+        cat("genome fasta:", genome_fa, "\n")
+        cat("input fastq files:", gsub("$", "\n", fastq_files))
+        cat("output directory:", outdir, "\n")
+        cat("directory containing minimap2:", minimap2_dir, "\n")
 
-        load_genome_anno <- rtracklayer::import(annot, feature.type = c("exon", "utr"))
+        if (config$pipeline_parameters$do_genome_alignment) {
+            cat("#### Aligning reads to genome using minimap2\n")
+            for (i in 1:length(samples)) {
+                cat(paste0(c("\tAligning sample ", samples[i], "...\n")))
+                minimap2_align(
+                    config,
+                    genome_fa,
+                    fastq_files[i],
+                    annotation,
+                    outdir,
+                    minimap2_dir,
+                    prefix = samples[i],
+                    threads = NULL
+                )
+            }
+        } else {
+            cat("#### Skip aligning reads to genome\n")
+        }
+
+        # find isofroms
+        if (config$pipeline_parameters$do_isoform_identification) {
+            find_isoform(annotation, genome_fa, genome_bam, outdir, config)
+        }
+
+        # realign to transcript
+        if (config$pipeline_parameters$do_read_realignment) {
+            cat("#### Realign to transcript using minimap2\n")
+            for (i in 1:length(samples)) {
+                cat(paste0(c("\tRealigning sample ", samples[i], "...\n")))
+                minimap2_realign(config, fastq_files[i], outdir, minimap2_dir, prefix = samples[i], threads = 12)
+            }
+        } else {
+            cat("#### Skip read realignment\n")
+        }
+
+        # quantification
+        if (config$pipeline_parameters$do_transcript_quantification) {
+            cat("#### Generating transcript count matrix\n")
+            quantify(annotation = annotation, outdir = outdir, config = config, pipeline = "bulk")
+        } else {
+            cat("#### Skip transcript quantification\n")
+        }
+
+        out_files <- list(
+            "annotation" = annotation,
+            "genome_fa" = genome_fa,
+            "counts" = file.path(outdir, "transcript_count.csv.gz"),
+            "isoform_annotated" = file.path(outdir, "isoform_annotated.filtered.gff3"),
+            "transcript_assembly" = file.path(outdir, "transcript_assembly.fa"),
+            "align_bam" = genome_bam,
+            "realign2transcript" = file.path(outdir, list.files(outdir))[grepl("realign2transcript\\.bam$", list.files(outdir))],
+            "tss_tes" = file.path(outdir, "tss_tes.bedgraph"),
+            "outdir" = outdir
+        )
+        load_genome_anno <- rtracklayer::import(annotation, feature.type = c("exon", "utr"))
+
         se <- generate_bulk_summarized(out_files, load_genome_anno = load_genome_anno)
-
         # return the created summarizedexperiment
         se
     }

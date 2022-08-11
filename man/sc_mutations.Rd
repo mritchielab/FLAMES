@@ -69,3 +69,23 @@ and allele frequency range.
 Takes the \code{SingleCellExperiment} object from \code{sc_long_pipeline} and the cell barcodes as \code{barcode}.
 Alternatively, input can also be provided as \code{out_dir}, \code{genome_fa}, \code{annot}, \code{barcode}.
 }
+\examples{
+outdir <- tempfile()
+dir.create(outdir)
+bc_allow <- file.path(outdir, "bc_allow.tsv")
+genome_fa <- file.path(outdir, "rps24.fa")
+R.utils::gunzip(filename = system.file("extdata/bc_allow.tsv.gz", package = "FLAMES"), destname = bc_allow, remove = FALSE)
+R.utils::gunzip(filename = system.file("extdata/rps24.fa.gz", package = "FLAMES"), destname = genome_fa, remove = FALSE)
+
+if (is.character(locate_minimap2_dir())) {
+    sce <- FLAMES::sc_long_pipeline(
+        genome_fa = genome_fa,
+        fastq = system.file("extdata/fastq", package = "FLAMES"),
+        annotation = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),
+        outdir = outdir,
+        match_barcode = TRUE,
+        reference_csv = bc_allow
+    )
+    sc_mutations(sce, barcode_tsv = file.path(outdir, "bc_allow.tsv"), min_cov = 2, report_pct = c(0, 1))
+}
+}

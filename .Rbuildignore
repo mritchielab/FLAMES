@@ -2,6 +2,8 @@
 ^\.Rproj\.user$
 ^\.vscode$
 ^\.gitignore$
+^\.git$
+^\.github$
 ^inst/data$
 ^doc$
 ^Meta$

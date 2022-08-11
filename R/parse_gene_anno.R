@@ -17,9 +17,7 @@
 #' file_url <-
 #'     "https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data"
 #' gff <- bfc[[names(BiocFileCache::bfcadd(bfc, "GFF", paste(file_url, "SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf", sep = "/")))]]
-#' \dontrun{
 #' parsed_gff <- parse_gff_tree(gff)
-#' }
 #' @export
 parse_gff_tree <- function(gff_file) {
     ret <- callBasilisk(flames_env, function(args) {

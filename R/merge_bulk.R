@@ -1,6 +1,7 @@
-#' Merge FASTQ
+#' Merge FASTQ (deprecated)
 #'
-#' Merges all fastq files in the given folder into a single file.
+#' Merges all fastq files in the given folder into a single file. Deprecated as the pipeline can
+#' now handle multiple fastq files as input.
 #'
 #' @param fastq_dir Path to the folder containing fastq files to merge
 #' @param out_fastq file path to the fastq file which will be created to store all fastq entries. Overwrites existing files
@@ -23,9 +24,7 @@
 #'
 #' # merge the fastq files
 #' out_fastq <- paste0(temp_path, "/outfastq.fastq.gz")
-#' \dontrun{
 #' merge_bulk_fastq(fastq_dir, out_fastq)
-#' }
 #' @importFrom reticulate import_from_path
 #' @export
 merge_bulk_fastq <- function(fastq_dir, out_fastq) {
@@ -44,14 +43,15 @@ merge_bulk_fastq <- function(fastq_dir, out_fastq) {
         return(out_fastq)
     }
     fastq_files <- paste(fastq_dir, list.files(fastq_dir), sep = "/")
-    fastq_files <- fastq_files[(endsWith(fastq_files, ".fq") | endsWith(fastq_files, ".fastq")) & utils::file_test("-f", fastq_files)]
+    fastq_files <- fastq_files[grepl("\\.(fastq|fq)(\\.gz)?$", fastq_files) & utils::file_test("-f", fastq_files)]
     merge_bulk_fastq_cpp(fastq_files, out_fastq)
     return(out_fastq)
 }
 
-#' Merge FASTQ using python. Depreciated
+#' Merge FASTQ using python. (deprecated)
 #'
-#' Merges all fastq files in the given folder into a single file.
+#' Merges all fastq files in the given folder into a single file. Deprecated as the pipeline can
+#' now handle multiple fastq files as input.
 #'
 #' @param fastq_dir Path to the folder containing fastq files to merge
 #' @param out_fastq file path to the fastq file which will be created to store all fastq entries. Overwrites existing files
@@ -74,9 +74,7 @@ merge_bulk_fastq <- function(fastq_dir, out_fastq) {
 #'
 #' # merge the fastq files
 #' out_fastq <- paste0(temp_path, "/outfastq.fastq.gz")
-#' \dontrun{
 #' merge_bulk_fastq(fastq_dir, out_fastq)
-#' }
 #' @importFrom reticulate import_from_path
 #' @export
 merge_bulk_fastq_python <- function(fastq_dir, out_fastq) {

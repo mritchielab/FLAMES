@@ -2,7 +2,7 @@
 % Please edit documentation in R/merge_bulk.R
 \name{merge_bulk_fastq}
 \alias{merge_bulk_fastq}
-\title{Merge FASTQ}
+\title{Merge FASTQ (deprecated)}
 \usage{
 merge_bulk_fastq(fastq_dir, out_fastq)
 }
@@ -15,7 +15,8 @@ merge_bulk_fastq(fastq_dir, out_fastq)
 file path to the created merged fastq file `out_fastq`
 }
 \description{
-Merges all fastq files in the given folder into a single file.
+Merges all fastq files in the given folder into a single file. Deprecated as the pipeline can
+now handle multiple fastq files as input.
 }
 \examples{
 # download the fastq files to merge
@@ -33,7 +34,5 @@ unlink(c(fastq1, fastq2)) # the original files can be deleted
 
 # merge the fastq files
 out_fastq <- paste0(temp_path, "/outfastq.fastq.gz")
-\dontrun{
 merge_bulk_fastq(fastq_dir, out_fastq)
-}
 }

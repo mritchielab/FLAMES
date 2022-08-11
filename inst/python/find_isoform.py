@@ -1,7 +1,6 @@
 from parse_gene_anno import parse_gff_tree
 from sc_longread import blocks_to_junctions, remove_similar_tr, get_gene_blocks, get_gene_flat, group_bam2isoform, group_bam2isoform_multisample
 from gff3_to_fa import get_transcript_seq
-from parse_config import parse_json_config
 import sys
 
 
@@ -21,12 +20,10 @@ def find_isoform(gff3, genome_bam, isoform_gff3, tss_tes_stat, genomefa,
     # finding isoforms are required
     print("#### find isoforms", flush=True)
     group_bam2isoform(genome_bam, isoform_gff3, tss_tes_stat, "", chr_to_blocks, gene_dict, transcript_to_junctions, transcript_dict, genomefa,
-                      config=config_dict["isoform_parameters"],
+                      config=config_dict,
                       downsample_ratio=downsample_ratio, raw_gff3=raw_splice_isoform)
-    # raw_gff3=raw_splice_isoform if config_dict["global_parameters"]["generate_raw_isoform"] else None)
 
     # get fasta
-    # print "### generate transcript fasta file", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     chr_to_gene_i, transcript_dict_i, gene_to_transcript_i, transcript_to_exon_i = parse_gff_tree(
         isoform_gff3)
     ref_dict = {"chr_to_gene": chr_to_gene, "transcript_dict": transcript_dict,
@@ -60,7 +57,7 @@ def find_isoform_multisample(gff3, genome_bams, isoform_gff3, tss_tes_stat, geno
     # finding isoforms are required
     print("#### find isoforms", flush=True)
     group_bam2isoform_multisample(genome_bams, isoform_gff3, tss_tes_stat, "", chr_to_blocks, gene_dict, transcript_to_junctions, transcript_dict, genomefa,
-                                  config=config_dict["isoform_parameters"],
+                                  config=config_dict,
                                   downsample_ratio=downsample_ratio, raw_gff3=raw_splice_isoform)
 
     chr_to_gene_i, transcript_dict_i, gene_to_transcript_i, transcript_to_exon_i = parse_gff_tree(

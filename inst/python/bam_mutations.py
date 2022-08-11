@@ -271,7 +271,7 @@ def get_all_SNV_table(bam_in, chr_to_blocks, transcript_to_exon, fa_f, out_dir, 
     for c in get_fa(fa_f):
         fa_dict[c[0]] = c[1]
     bamfile = pysam.AlignmentFile(bam_in, "rb")
-    if bam_short is not None:
+    if bam_short:
         bam_s = pysam.AlignmentFile(bam_short, "rb")
     cb_corr_cnt = Counter()
     for ch in chr_to_blocks:
@@ -304,7 +304,7 @@ def get_all_SNV_table(bam_in, chr_to_blocks, transcript_to_exon, fa_f, out_dir, 
                         alt_freq = cov[c2i[ALT]][i]/tot
                         if (report_pct[0] < alt_freq < report_pct[1]) or ((ch, v_pos) in known_positions):
                             tmp_atcg_set = {}
-                            if bam_short is not None:
+                            if bam_short:
                                 try:
                                     cov_s = bam_s.count_coverage(
                                         ch, v_pos, v_pos+1, quality_threshold=20)

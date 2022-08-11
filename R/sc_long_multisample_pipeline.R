@@ -28,10 +28,7 @@
 #' of up to 2 by default. Most of the parameters, such as the minimal distance to splice site and minimal percentage of transcript coverage
 #' can be modified by the JSON configuration file (\code{config_file}).
 #'
-#' @param fastqs A vector containing the paths to each fastq files. If \code{in_bams} is not provided, this argument can also
-#' be provided as the path to the folder containing the fastq files. Each fastq file will be treated as a sample.
-#' @param in_bams Optional vector containing file paths the  bam files to use instead of fastq file (skips initial alignment step).
-#' The order of the bam files need to mach the order in \code{fastqs}.
+#' @param fastqs Paths to the folder containing fastq files, or vector of paths to each fastq file.
 #' @inheritParams sc_long_pipeline
 #' @return \code{sc_long_pipeline} returns a SingleCellExperiment object, containing a count
 #' matrix as an assay, gene annotations under metadata, as well as a list of the other
@@ -71,75 +68,52 @@
 #' @importFrom SummarizedExperiment rowData colData rowData<- colData<- rowRanges rowRanges<-
 #' @importFrom BiocGenerics cbind colnames rownames start end
 #' @importFrom utils read.csv read.table file_test
+#' @importFrom jsonlite fromJSON
 #'
-#' @example inst/examples/pipeline_example.R
+#' @examples
+#' reads <- ShortRead::readFastq(system.file("extdata/fastq/musc_rps24.fastq.gz", package = "FLAMES"))
+#' outdir <- tempfile()
+#' dir.create(outdir)
+#' dir.create(file.path(outdir, "fastq"))
+#' bc_allow <- file.path(outdir, "bc_allow.tsv")
+#' genome_fa <- file.path(outdir, "rps24.fa")
+#' R.utils::gunzip(filename = system.file("extdata/bc_allow.tsv.gz", package = "FLAMES"), destname = bc_allow, remove = FALSE)
+#' R.utils::gunzip(filename = system.file("extdata/rps24.fa.gz", package = "FLAMES"), destname = genome_fa, remove = FALSE)
+#' ShortRead::writeFastq(sample(reads, size = 500, replace = TRUE), file.path(outdir, "fastq/sample1.fq.gz"), mode = "w", full = FALSE)
+#' ShortRead::writeFastq(sample(reads, size = 500, replace = TRUE), file.path(outdir, "fastq/sample2.fq.gz"), mode = "w", full = FALSE)
+#' ShortRead::writeFastq(sample(reads, size = 500, replace = TRUE), file.path(outdir, "fastq/sample3.fq.gz"), mode = "w", full = FALSE)
+#'
+#' if (is.character(locate_minimap2_dir())) {
+#'     sce_list <- FLAMES::sc_long_multisample_pipeline(
+#'         annotation = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),
+#'         fastqs = file.path(outdir, "fastq", list.files(file.path(outdir, "fastq"))),
+#'         outdir = outdir,
+#'         genome_fa = genome_fa,
+#'         reference_csv = rep(bc_allow, 3)
+#'     )
+#' }
+#'
 #' @export
 sc_long_multisample_pipeline <-
-    function(annot,
+    function(annotation,
              fastqs,
-             in_bams = NULL,
              outdir,
              genome_fa,
-             minimap2_dir = "",
-             downsample_ratio = 1,
+             minimap2_dir = NULL,
              reference_csv,
              match_barcode = TRUE,
-             config_file = NULL,
-             do_genome_align = TRUE,
-             do_isoform_id = TRUE,
-             do_read_realign = TRUE,
-             do_transcript_quanti = TRUE,
-             gen_raw_isoform = TRUE,
-             has_UMI = FALSE,
-             UMI_LEN = 10,
-             MAX_DIST = 10,
-             MAX_TS_DIST = 100,
-             MAX_SPLICE_MATCH_DIST = 10,
-             min_fl_exon_len = 40,
-             Max_site_per_splice = 3,
-             Min_sup_cnt = 10,
-             Min_cnt_pct = 0.01,
-             Min_sup_pct = 0.2,
-             strand_specific = 1,
-             remove_incomp_reads = 5,
-             use_junctions = TRUE,
-             no_flank = TRUE,
-             use_annotation = TRUE,
-             min_tr_coverage = 0.75,
-             min_read_coverage = 0.75) {
-        checked_args <- check_arguments(annot,
+             config_file = NULL) {
+        checked_args <- check_arguments(
+            annotation,
             fastqs,
-            in_bams,
+            genome_bam = NULL,
             outdir,
             genome_fa,
             minimap2_dir,
-            downsample_ratio,
-            config_file,
-            do_genome_align,
-            do_isoform_id = TRUE,
-            isoform_id_bambu = FALSE,
-            do_read_realign,
-            do_transcript_quanti,
-            gen_raw_isoform,
-            has_UMI,
-            MAX_DIST,
-            MAX_TS_DIST,
-            MAX_SPLICE_MATCH_DIST,
-            min_fl_exon_len,
-            Max_site_per_splice,
-            Min_sup_cnt,
-            Min_cnt_pct,
-            Min_sup_pct,
-            strand_specific,
-            remove_incomp_reads,
-            use_junctions,
-            no_flank,
-            use_annotation,
-            min_tr_coverage,
-            min_read_coverage
+            config_file
         )
 
-        config_file <- checked_args$config
+        config <- checked_args$config
 
         # check fastqs
         if (length(fastqs) == 1) {
@@ -147,38 +121,43 @@ sc_long_multisample_pipeline <-
                 stop("Only one fastq file provided, did you meant to used the single-sample pipeline (FLAMES::sc_long_pipeline) ?")
             }
 
-            fastqs <- file.path(fastqs, list.files(fastqs))
-            fastqs <- fastqs[endsWith(fastqs, ".fq") | endsWith(fastqs, ".fastq")]
-            if (length(fastqs) == 0) {
-                stop("No .fq or .fastq files found")
-            }
+            fastqs <- file.path(fastqs, list.files(fastqs))[grepl("\\.(fq|fastq)(\\.gz)?$", list.files(fastqs))]
             cat("Fastq files found:\n")
             cat(paste0(fastqs, sep = "\n"))
+
+            if (length(fastqs) <= 1) {
+                stop(length(fastqs), " .fq or .fastq file(s) found\n")
+            }
+
             if (match_barcode) {
-                stop("If \"match_barcode\" set to TRUE, argument \"fastqs\" must be a list of fastq files, with the same order in \"reference_csv\"")
+                stop("If \"match_barcode\" set to TRUE, argument \"fastqs\" must be a list of fastq files, with the same order in \"reference_csv\"\nYou can also demultiplex the reads with \"FLAMES::match_cell_barcode_cpp\"")
             }
         } else if (any(!file.exists(fastqs))) {
             stop("Please make sure all fastq files exist.")
         }
 
-        samples <- gsub(".fq$", "", gsub(".fastq$", "", basename(fastqs)))
+        samples <- gsub("\\.(fastq|fq)(\\.gz)?$", "", basename(fastqs))
 
-        if (match_barcode) {
-            if (!all(file.exists(reference_csv)) || length(reference_csv) != length(fastqs)) {
-                stop("A reference_csv must exists for every fastq file.")
+        if (match_barcode && length(reference_csv) >= 1) {
+            if (!all(file.exists(reference_csv))) {
+                stop("Please make sure all reference_csv file exists.\n")
             }
-
-            # speed up with lapply?
+            if (length(reference_csv) == 1) {
+                reference_csv <- rep(reference_csv, length(fastqs))
+            }
+            if (length(reference_csv) != length(fastqs)) {
+                stop(length(reference_csv), " barcode allow-lists provided while there are ", length(fastqs), "fastq file. Please either provide one allow-list per sample, or one allow-list for all samples.")
+            }
             infqs <- file.path(outdir, paste(samples, "matched_reads.fastq.gz", sep = "_"))
             bc_stats <- file.path(outdir, paste(samples, "matched_barcode_stat", sep = "_"))
-            for (i in length(fastqs)) {
+            for (i in 1:length(fastqs)) {
                 match_cell_barcode_cpp(
                     fastqs[i],
                     bc_stats[i],
                     infqs[i],
                     reference_csv[i],
-                    MAX_DIST = 2,
-                    UMI_LEN
+                    config$barcode_parameters$max_edit_distance,
+                    config$barcode_parameters$UMI_length
                 )
             }
         } else {
@@ -186,119 +165,65 @@ sc_long_multisample_pipeline <-
         } # requesting to not match barcodes implies `fastq` has already been run through the
         # function in a previous FLAMES call
 
-
         cat("Running FLAMES pipeline...\n")
-        config <- parse_json_config(config_file)
 
         using_bam <- FALSE
-        if (!is.null(in_bams)) {
-            if (any(!file.exists(in_bams))) {
-                stop("Please make sure all BAM file exist")
-            }
-            if (!all(file.exists(paste0(in_bams, ".bai")) | file.exists(paste0(in_bams, ".csi")))) {
-                stop("Please make sure every BAM file is indexed")
-            } else if (length(in_bams) != length(fastqs)) {
-                stop("Please make sure a BAM file exists for every fastq file")
-            }
+        genome_bam <- file.path(outdir, paste0(samples, "_", "align2genome.bam"))
+        if (all(utils::file_test("-f", genome_bam))) {
+            cat("Found all corresponding '[sample]_align2genome.bam' files, will skip initial alignment.\n")
             using_bam <- TRUE
             config$pipeline_parameters$do_genome_alignment <- FALSE
+            if (!all(utils::file_test("-f", file.path(outdir, paste0(samples, "_", "align2genome.bam.bai"))))) {
+                for (bam in genome_bam) {
+                    Rsamtools::indexBam(bam)
+                }
+            }
         }
 
-        # setup of internal arguments which hold output files and intermediate files
-        isoform_gff3 <- paste(outdir, "isoform_annotated.gff3", sep = "/")
-        isoform_gff3_f <- paste(outdir, "isoform_annotated.filtered.gff3",
-            sep =
-                "/"
-        )
-        FSM_anno_out <- paste(outdir, "isoform_FSM_annotation.csv", sep = "/")
-        raw_splice_isoform <- paste(outdir, "splice_raw.gff3", sep = "/")
-        tss_tes_stat <- paste(outdir, "tss_tes.bedgraph", sep = "/")
-        transcript_fa <- paste(outdir, "transcript_assembly.fa", sep = "/")
-        transcript_fa_idx <- paste(outdir, "transcript_assembly.fa.fai",
-            sep =
-                "/"
-        )
-        tmp_bed <- paste(outdir, "tmp_splice_anno.bed12", sep = "/")
-
-
-        tr_badcov_cnt_csvs <- paste(outdir, paste(samples, "transcript_count.bad_coverage.csv.gz", sep = "_"), sep = "/")
-        tr_cnt_csvs <- paste(outdir, paste(samples, "transcript_count.csv.gz", sep = "_"), sep = "/")
-        tmp_bams <- paste(outdir, paste(samples, "tmp_align.bam", sep = "_"), sep = "/")
-        tmp_sams <- paste(outdir, paste(samples, "tmp_align.sam", sep = "_"), sep = "/")
-        genome_bams <- paste(outdir, paste(samples, "align2genome.bam", sep = "_"), sep = "/")
-        realign_bams <- paste(outdir, paste(samples, "realign2transcript.bam", sep = "_"), sep = "/")
 
         cat("#### Input parameters:\n")
-        print_config(config)
-        cat("\tgene annotation:", annot, "\n")
-        cat("\tgenome fasta:", genome_fa, "\n")
+        cat(jsonlite::toJSON(config, pretty = TRUE))
+        cat("gene annotation:", annotation, "\n")
+        cat("genome fasta:", genome_fa, "\n")
         if (using_bam) {
-            cat("\tinput bam:", paste0(in_bams, sep = "\n"), "\n")
-            genome_bams <- in_bams
+            cat("input bam:", paste0(genome_bam, sep = "\n"), "\n")
         }
-        cat("\tinput fastqs:", paste0(fastqs, sep = "\n"), "\n")
-        cat("\toutput directory:", outdir, "\n")
-        cat("\tdirectory containing minimap2:", minimap2_dir, "\n")
+        cat("input fastqs:", paste0(infqs, sep = "\n"), "\n")
+        cat("output directory:", outdir, "\n")
+        cat("directory containing minimap2:", minimap2_dir, "\n")
 
         # align reads to genome
         # if (!using_bam && config$pipeline_parameters$do_genome_alignment) {
         if (config$pipeline_parameters$do_genome_alignment) {
             cat("#### Aligning reads to genome using minimap2\n")
-
-            if (config$alignment_parameters$use_junctions) {
-                gff3_to_bed12(minimap2_dir, annot, tmp_bed)
-            }
             for (i in 1:length(samples)) {
                 cat(paste0(c("\tAligning sample ", samples[i], "...\n")))
                 minimap2_align(
-                    minimap2_dir,
+                    config,
                     genome_fa,
-                    fastqs[i],
-                    tmp_sams[i],
-                    no_flank = config$alignment_parameters$no_flank,
-                    bed12_junc = if (config$alignment_parameters$use_junctions) {
-                        tmp_bed
-                    } else {
-                        NULL
-                    }
+                    infqs[i],
+                    annotation,
+                    outdir,
+                    minimap2_dir,
+                    prefix = samples[i],
+                    threads = NULL
                 )
-                samtools_as_bam(tmp_sams[i], tmp_bams[i])
-                samtools_sort_index(tmp_bams[i], genome_bams[i])
-                file.remove(tmp_sams[i])
-                file.remove(tmp_bams[i])
-            }
-            if (config$alignment_parameters$use_junctions) {
-                file.remove(tmp_bed)
             }
         } else {
             cat("#### Skip aligning reads to genome\n")
         }
 
         # find isofroms
-        isoform_objects <-
-            find_isoform_multisample(
-                annot,
-                genome_bams,
-                isoform_gff3,
-                tss_tes_stat,
-                genome_fa,
-                transcript_fa,
-                downsample_ratio,
-                config,
-                raw_splice_isoform
-            )
+        if (config$pipeline_parameters$do_isoform_identification) {
+            find_isoform(annotation, genome_fa, genome_bam, outdir, config)
+        }
 
         # realign to transcript
-        # if (!using_bam && do_read_realign) {
-        if (do_read_realign) {
+        if (config$pipeline_parameters$do_read_realignment) {
             cat("#### Realign to transcript using minimap2\n")
             for (i in 1:length(samples)) {
                 cat(paste0(c("\tRealigning sample ", samples[i], "...\n")))
-                minimap2_tr_align(minimap2_dir, transcript_fa, fastqs[i], tmp_sams[i])
-                samtools_as_bam(tmp_sams[i], tmp_bams[i])
-                samtools_sort_index(tmp_bams[i], realign_bams[i])
-                file.remove(tmp_sams[i])
-                file.remove(tmp_bams[i])
+                minimap2_realign(config, infqs[i], outdir, minimap2_dir, prefix = samples[i], threads = NULL)
             }
         } else {
             cat("#### Skip read realignment\n")
@@ -308,61 +233,27 @@ sc_long_multisample_pipeline <-
         # TODO: implement filtering in R
         if (config$pipeline_parameters$do_transcript_quantification) {
             cat("#### Generating transcript count matrix\n")
-            for (i in 1:length(samples)) {
-                parse_realign <-
-                    parse_realigned_bam(
-                        realign_bams[i],
-                        transcript_fa_idx,
-                        # config$isoform_parameters$Min_sup_cnt,
-                        1,
-                        config$transcript_counting$min_tr_coverage,
-                        config$transcript_counting$min_read_coverage
-                    )
-                tr_cnt <- wrt_tr_to_csv(
-                    parse_realign$bc_tr_count_dict,
-                    isoform_objects$transcript_dict_i,
-                    tr_cnt_csvs[i],
-                    isoform_objects$transcript_dict,
-                    config$global_parameters$has_UMI
-                )
-                wrt_tr_to_csv(
-                    parse_realign$bc_tr_badcov_count_dict,
-                    isoform_objects$transcript_dict_i,
-                    tr_badcov_cnt_csvs[i],
-                    isoform_objects$transcript_dict,
-                    config$global_parameters$has_UMI
-                )
-                # annotate_filter_gff(
-                #    isoform_gff3,
-                #    annot,
-                #    isoform_gff3_f,
-                #    FSM_anno_out,
-                #    tr_cnt,
-                #    config$isoform_parameters$Min_sup_cnt
-                # )
-            }
-            annotate_full_splice_match_all_sample(FSM_anno_out, isoform_gff3, annot)
+            quantify(annotation = annotation, outdir = outdir, config = config, pipeline = "sc_multi_sample")
         } else {
             cat("#### Skip transcript quantification\n")
         }
 
         sce_list <- as.list(1:length(samples))
         names(sce_list) <- samples
-        load_genome_anno <- rtracklayer::import(annot, feature.type = c("exon", "utr"))
+        load_genome_anno <- rtracklayer::import(annotation, feature.type = c("exon", "utr"))
 
         for (i in 1:length(samples)) {
             out_files <- list(
-                "annot" = annot,
+                "annotation" = annotation,
                 "genome_fa" = genome_fa,
-                "counts" = tr_cnt_csvs[i],
-                "isoform_annotated" = isoform_gff3,
-                "transcript_assembly" = transcript_fa,
-                "config" = config_file,
-                "align_bam" = genome_bams[i],
-                "realign2transcript" = realign_bams[i],
-                "tss_tes" = tss_tes_stat,
+                "counts" = file.path(outdir, paste0(samples[i], "_transcript_count.csv.gz")),
+                "isoform_annotated" = file.path(outdir, "isoform_annotated.gff3"),
+                "transcript_assembly" = file.path(outdir, "transcript_assembly.fa"),
+                "config" = config,
+                "align_bam" = genome_bam[i],
+                "realign2transcript" = file.path(outdir, paste0(samples[i], "_realign2transcript.bam")),
                 "outdir" = outdir,
-                "fsm_annotation" = FSM_anno_out
+                "fsm_annotation" = file.path(outdir, "isoform_FSM_annotation.csv")
             )
             sce_list[[i]] <- generate_sc_singlecell(out_files, load_genome_anno = load_genome_anno)
         }

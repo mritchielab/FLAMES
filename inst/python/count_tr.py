@@ -1,5 +1,4 @@
 # quantify transcript
-# import pysam
 import pysam as ps
 import os
 from collections import Counter
@@ -7,6 +6,7 @@ import gzip
 import numpy as np
 import editdistance
 from parse_gene_anno import parse_gff_tree
+from filter_gff import annotate_filter_gff, annotate_full_splice_match_all_sample
 from itertools import groupby
 
 
@@ -98,7 +98,7 @@ def query_len(cigar_string, hard_clipping=False):
     return result
 
 
-def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_read_coverage, kwargs):
+def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_read_coverage, bc_file = False):
     """
     """
     fa_idx = dict((it.strip().split()[0], int(
@@ -110,8 +110,8 @@ def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_re
     cnt_stat = Counter()
     bamfile = ps.AlignmentFile(bam_in, "rb")
 
-    if "bc_file" in list(kwargs.keys()):
-        bc_dict = make_bc_dict(kwargs["bc_file"])
+    if bc_file:
+        bc_dict = make_bc_dict(bc_file)
     for rec in bamfile.fetch(until_eof=True):
         if rec.is_unmapped:
             cnt_stat["unmapped"] += 1
@@ -142,8 +142,8 @@ def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_re
             print("\t" + str(tr), "not in annotation ???")
     tr_kept = dict((tr, tr) for tr in tr_cov_dict if len(
         [it for it in tr_cov_dict[tr] if it > 0.9]) > min_sup_reads)
-    unique_tr_count = Counter(read_dict[r][0][0]
-                              for r in read_dict if read_dict[r][0][2] > 0.9)
+    #unique_tr_count = Counter(read_dict[r][0][0]
+    #                          for r in read_dict if read_dict[r][0][2] > 0.9)
     for r in read_dict:
         tmp = read_dict[r]
         tmp = [it for it in tmp if it[0] in tr_kept]
@@ -162,8 +162,205 @@ def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_re
             raise ValueError(
                 "Please check if barcode and UMI are delimited by \"_\"")
 
-        if "bc_file" in list(kwargs.keys()):
+        if bc_file:
             bc = bc_dict[bc]
+        if len(tmp) == 1 and tmp[0][4] > 0:
+            if bc not in bc_tr_count_dict:
+                bc_tr_count_dict[bc] = {}
+            bc_tr_count_dict[bc].setdefault(hit[0], []).append(umi)
+            cnt_stat["counted_reads"] += 1
+        elif len(tmp) > 1 and tmp[0][1] == tmp[1][1] and tmp[0][3] == tmp[1][3]:
+            if hit[1] > 0.8:
+                if bc not in bc_tr_count_dict:
+                    bc_tr_count_dict[bc] = {}
+                bc_tr_count_dict[bc].setdefault(hit[0], []).append(umi)
+                cnt_stat["counted_reads"] += 1
+            else:
+                cnt_stat["ambigious_reads"] += 1
+                if bc not in bc_tr_badcov_count_dict:
+                    bc_tr_badcov_count_dict[bc] = {}
+                bc_tr_badcov_count_dict[bc].setdefault(hit[0], []).append(umi)
+        elif hit[2] < min_tr_coverage or hit[3] < min_read_coverage:
+            cnt_stat["not_enough_coverage"] += 1
+            if bc not in bc_tr_badcov_count_dict:
+                bc_tr_badcov_count_dict[bc] = {}
+            bc_tr_badcov_count_dict[bc].setdefault(hit[0], []).append(umi)
+        else:
+            if bc not in bc_tr_count_dict:
+                bc_tr_count_dict[bc] = {}
+            bc_tr_count_dict[bc].setdefault(hit[0], []).append(umi)
+            cnt_stat["counted_reads"] += 1
+    print(("\t" + str(cnt_stat)))
+    return bc_tr_count_dict, bc_tr_badcov_count_dict, tr_kept
+
+def parse_realigned_bam_sc_multi_sample(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_read_coverage):
+    """
+    """
+    fa_idx = dict((it.strip().split()[0], int(
+        it.strip().split()[1])) for it in open(fa_idx_f))
+    tr_cov_dict = {}
+    cnt_stat = Counter()
+    bamfiles = [ps.AlignmentFile(i, "rb") for i in bam_in]
+    samples = {}
+    bc_tr_count_dicts = {}
+    bc_tr_badcov_count_dicts = {}
+
+    for bamfile in bamfiles:
+        read_dict = {}
+        samples[os.path.basename(bamfile.filename.decode()).replace('_realign2transcript.bam','')] = read_dict
+        for rec in bamfile.fetch(until_eof=True):
+            if rec.is_unmapped:
+                cnt_stat["unmapped"] += 1
+                continue
+            map_st = rec.reference_start
+            map_en = rec.reference_end
+            tr = rec.reference_name
+            tr_cov = float(map_en-map_st)/fa_idx[tr]
+            tr_cov_dict.setdefault(tr, []).append(tr_cov)
+            if rec.query_name not in read_dict:
+                read_dict.setdefault(rec.query_name, []).append((tr, rec.get_tag("AS"), tr_cov, float(
+                    rec.query_alignment_length)/rec.infer_read_length(), rec.mapping_quality))
+            else:
+                if rec.get_tag("AS") > read_dict[rec.query_name][0][1]:
+                    read_dict[rec.query_name].insert(0, (tr, rec.get_tag("AS"), tr_cov, float(
+                        rec.query_alignment_length)/rec.infer_read_length(), rec.mapping_quality))
+                # same aligned sequence
+                elif rec.get_tag("AS") == read_dict[rec.query_name][0][1] and float(rec.query_alignment_length)/rec.infer_read_length() == read_dict[rec.query_name][0][3]:
+                    # choose the one with higher transcript coverage, might be internal TSS
+                    if tr_cov > read_dict[rec.query_name][0][2]:
+                        read_dict[rec.query_name].insert(0, (tr, rec.get_tag("AS"), tr_cov, float(
+                            rec.query_alignment_length)/rec.infer_read_length(), rec.mapping_quality))
+                else:
+                    read_dict[rec.query_name].append((tr, rec.get_tag("AS"), tr_cov, float(
+                        rec.query_alignment_length)/rec.infer_read_length(), rec.mapping_quality))
+            if tr not in fa_idx:
+                cnt_stat["not_in_annotation"] += 1
+                print("\t" + str(tr), "not in annotation ???")
+
+    tr_kept = dict((tr, tr) for tr in tr_cov_dict if len(
+        [it for it in tr_cov_dict[tr] if it > 0.9]) > min_sup_reads)
+    #unique_tr_count = Counter(read_dict[r][0][0]
+    #                          for r in read_dict if read_dict[r][0][2] > 0.9)
+
+    for sample in samples:
+
+        bc_tr_count_dict = {}
+        bc_tr_badcov_count_dict = {}
+        bc_tr_count_dicts[sample] = bc_tr_count_dict
+        bc_tr_badcov_count_dicts[sample] = bc_tr_badcov_count_dict
+
+        for r, tmp in samples[sample].items():
+            tmp = [it for it in tmp if it[0] in tr_kept]
+            if len(tmp) > 0:
+                hit = tmp[0]  # transcript_id, pct_ref, pct_reads
+            else:
+                cnt_stat["no_good_match"] += 1
+                continue
+            # below line creates issue when header line has more than one _.
+            # in this case, umi is assumed to be delimited from the barcode by the last _
+            # bc, umi = r.split("#")[0].split("_")  # assume cleaned barcode
+            try:
+                bc, umi = r.split("#")[0].split("_")  # assume cleaned barcode
+            except ValueError as ve:
+                print(ve, ": ", ve.args, ".")
+                raise ValueError(
+                    "Please check if barcode and UMI are delimited by \"_\"")
+
+            if len(tmp) == 1 and tmp[0][4] > 0:
+                if bc not in bc_tr_count_dict:
+                    bc_tr_count_dict[bc] = {}
+                bc_tr_count_dict[bc].setdefault(hit[0], []).append(umi)
+                cnt_stat["counted_reads"] += 1
+            elif len(tmp) > 1 and tmp[0][1] == tmp[1][1] and tmp[0][3] == tmp[1][3]:
+                if hit[1] > 0.8:
+                    if bc not in bc_tr_count_dict:
+                        bc_tr_count_dict[bc] = {}
+                    bc_tr_count_dict[bc].setdefault(hit[0], []).append(umi)
+                    cnt_stat["counted_reads"] += 1
+                else:
+                    cnt_stat["ambigious_reads"] += 1
+                    if bc not in bc_tr_badcov_count_dict:
+                        bc_tr_badcov_count_dict[bc] = {}
+                    bc_tr_badcov_count_dict[bc].setdefault(hit[0], []).append(umi)
+            elif hit[2] < min_tr_coverage or hit[3] < min_read_coverage:
+                cnt_stat["not_enough_coverage"] += 1
+                if bc not in bc_tr_badcov_count_dict:
+                    bc_tr_badcov_count_dict[bc] = {}
+                bc_tr_badcov_count_dict[bc].setdefault(hit[0], []).append(umi)
+            else:
+                if bc not in bc_tr_count_dict:
+                    bc_tr_count_dict[bc] = {}
+                bc_tr_count_dict[bc].setdefault(hit[0], []).append(umi)
+                cnt_stat["counted_reads"] += 1
+    print(("\t" + str(cnt_stat)))
+    return bc_tr_count_dicts, bc_tr_badcov_count_dicts, tr_kept
+
+def parse_realigned_bam_bulk(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_read_coverage):
+    """
+    """
+    print("Inputs: ", bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_read_coverage)
+    fa_idx = dict((it.strip().split()[0], int(
+        it.strip().split()[1])) for it in open(fa_idx_f))
+    bc_tr_count_dict = {}
+    bc_tr_badcov_count_dict = {}
+    tr_cov_dict = {}
+    read_dict = {}
+    cnt_stat = Counter()
+    bamfiles = [ps.AlignmentFile(i, "rb") for i in bam_in]
+
+    for bamfile in bamfiles:
+        sample_name = os.path.basename(bamfile.filename.decode()).replace('_realign2transcript.bam','')
+        for rec in bamfile.fetch(until_eof=True):
+            if rec.is_unmapped:
+                cnt_stat["unmapped"] += 1
+                continue
+            map_st = rec.reference_start
+            map_en = rec.reference_end
+            tr = rec.reference_name
+            tr_cov = float(map_en-map_st)/fa_idx[tr]
+            tr_cov_dict.setdefault(tr, []).append(tr_cov)
+            if sample_name + "_" + rec.query_name not in read_dict:
+                read_dict.setdefault(sample_name + "_" + rec.query_name, []).append((tr, rec.get_tag("AS"), tr_cov, float(
+                    rec.query_alignment_length)/rec.infer_read_length(), rec.mapping_quality))
+            else:
+                if rec.get_tag("AS") > read_dict[sample_name + "_" + rec.query_name][0][1]:
+                    read_dict[sample_name + "_" + rec.query_name].insert(0, (tr, rec.get_tag("AS"), tr_cov, float(
+                        rec.query_alignment_length)/rec.infer_read_length(), rec.mapping_quality))
+                # same aligned sequence
+                elif rec.get_tag("AS") == read_dict[sample_name + "_" + rec.query_name][0][1] and float(rec.query_alignment_length)/rec.infer_read_length() == read_dict[sample_name + "_" + rec.query_name][0][3]:
+                    # choose the one with higher transcript coverage, might be internal TSS
+                    if tr_cov > read_dict[sample_name + "_" + rec.query_name][0][2]:
+                        read_dict[sample_name + "_" + rec.query_name].insert(0, (tr, rec.get_tag("AS"), tr_cov, float(
+                            rec.query_alignment_length)/rec.infer_read_length(), rec.mapping_quality))
+                else:
+                    read_dict[sample_name + "_" + rec.query_name].append((tr, rec.get_tag("AS"), tr_cov, float(
+                        rec.query_alignment_length)/rec.infer_read_length(), rec.mapping_quality))
+            if tr not in fa_idx:
+                cnt_stat["not_in_annotation"] += 1
+                print("\t" + str(tr), "not in annotation ???")
+    tr_kept = dict((tr, tr) for tr in tr_cov_dict if len(
+        [it for it in tr_cov_dict[tr] if it > 0.9]) > min_sup_reads)
+    #unique_tr_count = Counter(read_dict[r][0][0]
+    #                          for r in read_dict if read_dict[r][0][2] > 0.9)
+    for r, v in read_dict.items():
+        tmp = [it for it in v if it[0] in tr_kept]
+        if len(tmp) > 0:
+            hit = tmp[0]  # transcript_id, pct_ref, pct_reads
+        else:
+            cnt_stat["no_good_match"] += 1
+            continue
+        # below line creates issue when header line has more than one _.
+        # in this case, umi is assumed to be delimited from the barcode by the last _
+        # bc, umi = r.split("#")[0].split("_")  # assume cleaned barcode
+        r_split = r.split("#")[0].split("_")
+        if len(r_split) == 2:
+            bc, umi = r_split
+        elif len(r_split) > 2: # when '_' in file names
+            umi = r_split[-1]
+            bc = "_".join(r_split[:-1])
+        else:
+            raise ValueError("Please check if barcode and UMI are delimited by \"_\":\n" + r_split)
+
         if len(tmp) == 1 and tmp[0][4] > 0:
             if bc not in bc_tr_count_dict:
                 bc_tr_count_dict[bc] = {}
@@ -331,6 +528,72 @@ def realigned_bam_coverage(bam_in, fa_idx_f, coverage_dir):
         lhi, _ = np.histogram(gene_pct[i], bins=200, range=(0, 1))
         tr_cov_f.write("{},".format(i)+",".join(str(it) for it in lhi)+"\n")
     tr_cov_f.close()
+
+
+def quantification(config_dict, annotation, outdir, pipeline):
+
+    transcript_fa_idx = os.path.join(outdir, "transcript_assembly.fa.fai")
+    isoform_gff3 = os.path.join(outdir, "isoform_annotated.gtf" if os.path.isfile(os.path.join(outdir, "isoform_annotated.gtf")) else "isoform_annotated.gff3")
+    isoform_gff3_f = os.path.join(outdir, "isoform_annotated.filtered.gff3")
+    FSM_anno_out = os.path.join(outdir, "isoform_FSM_annotation.csv")
+
+    if pipeline == "sc_single_sample":
+        realign_bam = os.path.join(outdir, "realign2transcript.bam")
+        tr_cnt_csv = os.path.join(outdir, "transcript_count.csv.gz")
+        tr_badcov_cnt_csv = os.path.join(outdir, "transcript_count.bad_coverage.csv.gz")
+        bc_tr_count_dict, bc_tr_badcov_count_dict, tr_kept = parse_realigned_bam(
+            realign_bam,
+            transcript_fa_idx,
+            config_dict["isoform_parameters"]["min_sup_cnt"],
+            config_dict["transcript_counting"]["min_tr_coverage"],
+            config_dict["transcript_counting"]["min_read_coverage"],
+            bc_file = False)
+
+    elif pipeline == "bulk":
+        realign_bam = [os.path.join(outdir, f) for f in os.listdir(outdir) if f[-22:] == "realign2transcript.bam"]
+        tr_cnt_csv = os.path.join(outdir, "transcript_count.csv.gz")
+        tr_badcov_cnt_csv = os.path.join(outdir, "transcript_count.bad_coverage.csv.gz")
+        bc_tr_count_dict, bc_tr_badcov_count_dict, tr_kept = parse_realigned_bam_bulk(
+            realign_bam,
+            transcript_fa_idx,
+            config_dict["isoform_parameters"]["min_sup_cnt"],
+            config_dict["transcript_counting"]["min_tr_coverage"],
+            config_dict["transcript_counting"]["min_read_coverage"])
+
+    elif pipeline == "sc_multi_sample":
+        realign_bam = [os.path.join(outdir, f) for f in os.listdir(outdir) if f[-23:] == "_realign2transcript.bam"]
+        bc_tr_count_dicts, bc_tr_badcov_count_dicts, tr_kept = parse_realigned_bam_sc_multi_sample(
+            realign_bam,
+            transcript_fa_idx,
+            config_dict["isoform_parameters"]["min_sup_cnt"],
+            config_dict["transcript_counting"]["min_tr_coverage"],
+            config_dict["transcript_counting"]["min_read_coverage"])
+        chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = parse_gff_tree(annotation)
+        chr_to_gene_i, transcript_dict_i, gene_to_transcript_i, transcript_to_exon_i = parse_gff_tree(isoform_gff3)
+        for sample in [os.path.basename(filename).replace('_realign2transcript.bam','') for filename in realign_bam]:
+            tr_cnt_csv = os.path.join(outdir, sample+ "_"+"transcript_count.csv.gz")
+            tr_badcov_cnt_csv = os.path.join(outdir, sample+ "_"+"transcript_count.bad_coverage.csv.gz")
+            tr_cnt = wrt_tr_to_csv(bc_tr_count_dicts[sample], transcript_dict_i, tr_cnt_csv,
+                                   transcript_dict, config_dict["barcode_parameters"]["has_UMI"])
+            wrt_tr_to_csv(bc_tr_badcov_count_dicts[sample], transcript_dict_i, tr_badcov_cnt_csv,
+                          transcript_dict, config_dict["barcode_parameters"]["has_UMI"])
+        annotate_full_splice_match_all_sample(FSM_anno_out, isoform_gff3, annotation)
+        return
+
+    else:
+        raise ValueError(f"Unknown pipeline type {pipeline}")
+
+            
+    chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = parse_gff_tree(annotation)
+    chr_to_gene_i, transcript_dict_i, gene_to_transcript_i, transcript_to_exon_i = parse_gff_tree(isoform_gff3)
+
+    tr_cnt = wrt_tr_to_csv(bc_tr_count_dict, transcript_dict_i, tr_cnt_csv,
+                           transcript_dict, config_dict["barcode_parameters"]["has_UMI"])
+    wrt_tr_to_csv(bc_tr_badcov_count_dict, transcript_dict_i, tr_badcov_cnt_csv,
+                  transcript_dict, config_dict["barcode_parameters"]["has_UMI"])
+    annotate_filter_gff(isoform_gff3, annotation, isoform_gff3_f, FSM_anno_out,
+                        tr_cnt, config_dict["isoform_parameters"]["min_sup_cnt"])
+    return
 
 
 if __name__ == '__main__':

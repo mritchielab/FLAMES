@@ -83,8 +83,9 @@ def parseGFF3(filename):
 
 
 def guess_annotation_source(gff_f):
+    openFunc = gzip.open if gff_f.endswith(".gz") else open
     idx = 0
-    for line in open(gff_f):
+    for line in openFunc(gff_f):
         idx += 1
         if "GENCODE" in line:
             print("parse GENCODE annotation.")
