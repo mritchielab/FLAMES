@@ -130,7 +130,7 @@ bulk_long_pipeline <-
         # quantification
         if (config$pipeline_parameters$do_transcript_quantification) {
             cat("#### Generating transcript count matrix\n")
-            flames_quantify(annotation = annotation, outdir = outdir, config = config, pipeline = "bulk")
+            quantify(annotation = annotation, outdir = outdir, config = config, pipeline = "bulk")
         } else {
             cat("#### Skip transcript quantification\n")
         }

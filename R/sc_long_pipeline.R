@@ -77,6 +77,7 @@
 #' @importFrom SummarizedExperiment rowData colData rowData<- colData<- rowRanges rowRanges<-
 #' @importFrom BiocGenerics cbind colnames rownames start end
 #' @importFrom utils read.csv read.table
+#' @importFrom GenomeInfoDb seqlengths
 #'
 #' @examples
 #' outdir <- tempfile()
@@ -129,6 +130,7 @@ sc_long_pipeline <-
             }
         }
         if (match_barcode) {
+            cat("Matching cell barcodes...\n")
             if (!file.exists(reference_csv)) {
                 stop("reference_csv must exists.")
             }
@@ -147,15 +149,80 @@ sc_long_pipeline <-
         } # requesting to not match barcodes implies `fastq` has already been run through the
         # function in a previous FLAMES call
 
-        out_files <-
-            generic_long_pipeline(
-                annotation,
-                infq,
-                genome_bam,
-                outdir,
+        cat("Running FLAMES pipeline...\n")
+
+        using_bam <- FALSE
+        if (!is.null(genome_bam)) {
+            if (!file.exists(paste0(genome_bam, ".bai")) && !file.exists(paste0(genome_bam, ".csi"))) {
+                stop("Please make sure the BAM file is indexed")
+            }
+            using_bam <- TRUE
+            config$pipeline_parameters$do_genome_alignment <- FALSE
+        }
+
+        cat("#### Input parameters:\n")
+        cat(jsonlite::toJSON(config, pretty = TRUE), "\n")
+        cat("gene annotation:", annotation, "\n")
+        cat("genome fasta:", genome_fa, "\n")
+        if (using_bam) {
+            cat("input bam:", genome_bam, "\n")
+        } else {
+            genome_bam <- file.path(outdir, "align2genome.bam")
+        }
+        cat("input fastq:", infq, "\n")
+        cat("output directory:", outdir, "\n")
+        cat("directory containing minimap2:", minimap2_dir, "\n")
+
+        # align reads to genome
+        # if (!using_bam && config$pipeline_parameters$do_genome_alignment) {
+        if (config$pipeline_parameters$do_genome_alignment) {
+            cat("#### Aligning reads to genome using minimap2\n")
+            # minimap2_align <- function(config, fa_file, fq_in, annotation, outdir, minimap2_dir, threads = NULL)
+            minimap2_align(
+                config,
                 genome_fa,
+                infq,
+                annotation,
+                outdir,
                 minimap2_dir,
-                config
+                prefix = NULL,
+                threads = 12
+            )
+        } else {
+            cat("#### Skip aligning reads to genome\n")
+        }
+
+        # find isofroms
+        if (config$pipeline_parameters$do_isoform_identification) {
+            find_isoform(annotation, genome_fa, genome_bam, outdir, config)
+        }
+
+        # realign to transcript
+        if (config$pipeline_parameters$do_read_realignment) {
+            cat("#### Realign to transcript using minimap2\n")
+            minimap2_realign(config, infq, outdir, minimap2_dir, prefix = NULL, threads = 12)
+        } else {
+            cat("#### Skip read realignment\n")
+        }
+
+        # quantification
+        if (config$pipeline_parameters$do_transcript_quantification) {
+            cat("#### Generating transcript count matrix\n")
+            quantify(annotation = annotation, outdir = outdir, config = config)
+        } else {
+            cat("#### Skip transcript quantification\n")
+        }
+
+        out_files <- list(
+                "annotation" = annotation,
+                "genome_fa" = genome_fa,
+                "counts" = file.path(outdir, "transcript_count.csv.gz"),
+                "isoform_annotated" = file.path(outdir, "isoform_annotated.filtered.gff3"),
+                "transcript_assembly" = file.path(outdir, "transcript_assembly.fa"),
+                "align_bam" = genome_bam,
+                "realign2transcript" = file.path(outdir, "realign2transcript.bam"),
+                "tss_tes" = file.path(outdir, "tss_tes.bedgraph"),
+                "outdir" = outdir
             )
 
         load_genome_anno <- rtracklayer::import(annotation, feature.type = c("exon", "utr"))

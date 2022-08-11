@@ -233,7 +233,7 @@ sc_long_multisample_pipeline <-
         # TODO: implement filtering in R
         if (config$pipeline_parameters$do_transcript_quantification) {
             cat("#### Generating transcript count matrix\n")
-            flames_quantify(annotation = annotation, outdir = outdir, config = config, pipeline = "sc_multi_sample")
+            quantify(annotation = annotation, outdir = outdir, config = config, pipeline = "sc_multi_sample")
         } else {
             cat("#### Skip transcript quantification\n")
         }

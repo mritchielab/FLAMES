@@ -68,3 +68,61 @@ create_config <- function(outdir, ...) {
 
     return(config_file_path)
 }
+
+#' @importFrom Matrix tail
+#' @importFrom stringr str_split
+#' @importFrom jsonlite fromJSON
+check_arguments <-
+    function(annotation,
+             fastq,
+             genome_bam,
+             outdir,
+             genome_fa,
+             minimap2_dir,
+             config_file) {
+        if (!dir.exists(outdir)) {
+            cat("Output directory does not exists: one is being created\n")
+            dir.create(outdir)
+            print(outdir)
+        }
+
+        if (is.null(config_file)) {
+            cat("No config file provided, creating a default config in", outdir, "\n")
+            config_file <- create_config(outdir)
+        }
+
+        # argument verificiation
+        config <- jsonlite::fromJSON(config_file)
+
+        if (config$isoform_parameters$downsample_ratio > 1 || config$isoform_parameters$downsample_ratio <= 0) {
+            stop("downsample_ratio should be between 0 and 1")
+        }
+        if (!is.null(fastq) &&
+            any(!file.exists(fastq))) {
+            stop(paste0("Make sure ", fastq, " exists."))
+        }
+        if (!file.exists(annotation)) {
+            stop(paste0("Make sure ", annotation, " exists."))
+        }
+        if (!file.exists(genome_fa)) {
+            stop(paste0("Make sure ", genome_fa, " exists."))
+        }
+
+        if (!is.null(genome_bam)) {
+            if (any(!file.exists(genome_bam))) {
+                stop("Make sure genome_bam exists")
+            }
+        }
+
+        if (config$pipeline_parameters$do_genome_alignment || config$pipeline_parameters$do_read_realignment) {
+            minimap2_dir <- locate_minimap2_dir(minimap2_dir = minimap2_dir)
+        }
+
+        if (config$pipeline_parameters$bambu_isoform_identification) {
+            if (Matrix::tail(stringr::str_split(annotation, "\\.")[[1]], n = 1) != "gtf") {
+                stop("Bambu requires GTF format for annotation file.\n")
+            }
+        }
+
+        return(list(config = config, minimap2_dir = minimap2_dir))
+    }

@@ -98,10 +98,10 @@ wrt_tr_to_csv <-
 #'         config = config, outdir = outdir,
 #'         fq_in = fastq1
 #'     )
-#'     flames_quantify(annotation, outdir, config, pipeline = "bulk")
+#'     quantify(annotation, outdir, config, pipeline = "bulk")
 #' }
 #' @export
-flames_quantify <- function(annotation, outdir, config, pipeline = "sc_single_sample") {
+quantify <- function(annotation, outdir, config, pipeline = "sc_single_sample") {
     realign_bam <- list.files(outdir)[grepl("_?realign2transcript\\.bam$", list.files(outdir))]
     cat("Found realignment file(s): ")
     cat(paste0("\t", paste(realign_bam, collapse = "\n\t"), "\n"))
