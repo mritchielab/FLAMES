@@ -20,6 +20,7 @@ if (is.character(locate_minimap2_dir())) {
     annotation = annotation, fastq = fastq_dir, outdir = outdir, genome_fa = genome_fa,
     config_file = system.file("extdata/SIRV_config_default.json", package = "FLAMES")
   )
+
+  se_2 <- create_se_from_dir(outdir = outdir, annotation = annotation)
 }
 
-se_2 <- create_se_from_dir(outdir = outdir, annotation = annotation)

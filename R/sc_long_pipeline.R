@@ -214,16 +214,16 @@ sc_long_pipeline <-
         }
 
         out_files <- list(
-                "annotation" = annotation,
-                "genome_fa" = genome_fa,
-                "counts" = file.path(outdir, "transcript_count.csv.gz"),
-                "isoform_annotated" = file.path(outdir, "isoform_annotated.filtered.gff3"),
-                "transcript_assembly" = file.path(outdir, "transcript_assembly.fa"),
-                "align_bam" = genome_bam,
-                "realign2transcript" = file.path(outdir, "realign2transcript.bam"),
-                "tss_tes" = file.path(outdir, "tss_tes.bedgraph"),
-                "outdir" = outdir
-            )
+            "annotation" = annotation,
+            "genome_fa" = genome_fa,
+            "counts" = file.path(outdir, "transcript_count.csv.gz"),
+            "isoform_annotated" = file.path(outdir, "isoform_annotated.filtered.gff3"),
+            "transcript_assembly" = file.path(outdir, "transcript_assembly.fa"),
+            "align_bam" = genome_bam,
+            "realign2transcript" = file.path(outdir, "realign2transcript.bam"),
+            "tss_tes" = file.path(outdir, "tss_tes.bedgraph"),
+            "outdir" = outdir
+        )
 
         load_genome_anno <- rtracklayer::import(annotation, feature.type = c("exon", "utr"))
         sce <- generate_sc_singlecell(out_files, load_genome_anno = load_genome_anno)
@@ -312,7 +312,6 @@ generate_bulk_summarized <- function(out_files, load_genome_anno = NULL) {
 #' @param outdir The folder containing \code{FLAMES} output files
 #' @param annotation (Optional) the annotation file that was used to produce the output files
 #' @return a \code{SingleCellExperiment} object
-#' @example inst/examples/pipeline_example.R
 #' @export
 #' @examples
 #' outdir <- tempfile()
@@ -322,15 +321,17 @@ generate_bulk_summarized <- function(out_files, load_genome_anno = NULL) {
 #' R.utils::gunzip(filename = system.file("extdata/bc_allow.tsv.gz", package = "FLAMES"), destname = bc_allow, remove = FALSE)
 #' R.utils::gunzip(filename = system.file("extdata/rps24.fa.gz", package = "FLAMES"), destname = genome_fa, remove = FALSE)
 #'
-#' sce <- FLAMES::sc_long_pipeline(
-#'     genome_fa = genome_fa,
-#'     fastq = system.file("extdata/fastq", package = "FLAMES"),
-#'     annotation = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),
-#'     outdir = outdir,
-#'     match_barcode = TRUE,
-#'     reference_csv = bc_allow
-#' )
-#' sce_2 <- create_sce_from_dir(outdir, annotation)
+#' if (is.character(locate_minimap2_dir())) {
+#'     sce <- FLAMES::sc_long_pipeline(
+#'         genome_fa = genome_fa,
+#'         fastq = system.file("extdata/fastq", package = "FLAMES"),
+#'         annotation = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),
+#'         outdir = outdir,
+#'         match_barcode = TRUE,
+#'         reference_csv = bc_allow
+#'     )
+#'     sce_2 <- create_sce_from_dir(outdir, annotation)
+#' }
 create_sce_from_dir <- function(outdir, annotation = NULL) {
     out_files <- list(
         counts = file.path(outdir, "transcript_count.csv.gz"),
