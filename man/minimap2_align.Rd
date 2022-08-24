@@ -34,7 +34,7 @@ minimap2_align(
 FLAMES will try to detect cores if this parameter is not provided.}
 }
 \value{
-NULL, BAM file is saved to \code{outdir}
+Path to the alignment file
 }
 \description{
 Uses minimap2 to align sequences agains a reference databse.

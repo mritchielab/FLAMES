@@ -10,9 +10,9 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// match_cell_barcode_cpp
-void match_cell_barcode_cpp(Rcpp::String fastq_dir, Rcpp::String stats_file, Rcpp::String out_fastq, Rcpp::String ref_csv, int MAX_DIST, int UMI_LEN);
-RcppExport SEXP _FLAMES_match_cell_barcode_cpp(SEXP fastq_dirSEXP, SEXP stats_fileSEXP, SEXP out_fastqSEXP, SEXP ref_csvSEXP, SEXP MAX_DISTSEXP, SEXP UMI_LENSEXP) {
+// find_barcode
+void find_barcode(Rcpp::String fastq_dir, Rcpp::String stats_file, Rcpp::String out_fastq, Rcpp::String ref_csv, int MAX_DIST, int UMI_LEN);
+RcppExport SEXP _FLAMES_find_barcode(SEXP fastq_dirSEXP, SEXP stats_fileSEXP, SEXP out_fastqSEXP, SEXP ref_csvSEXP, SEXP MAX_DISTSEXP, SEXP UMI_LENSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::String >::type fastq_dir(fastq_dirSEXP);
@@ -21,7 +21,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::String >::type ref_csv(ref_csvSEXP);
     Rcpp::traits::input_parameter< int >::type MAX_DIST(MAX_DISTSEXP);
     Rcpp::traits::input_parameter< int >::type UMI_LEN(UMI_LENSEXP);
-    match_cell_barcode_cpp(fastq_dir, stats_file, out_fastq, ref_csv, MAX_DIST, UMI_LEN);
+    find_barcode(fastq_dir, stats_file, out_fastq, ref_csv, MAX_DIST, UMI_LEN);
     return R_NilValue;
 END_RCPP
 }
@@ -38,7 +38,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_FLAMES_match_cell_barcode_cpp", (DL_FUNC) &_FLAMES_match_cell_barcode_cpp, 6},
+    {"_FLAMES_find_barcode", (DL_FUNC) &_FLAMES_find_barcode, 6},
     {"_FLAMES_merge_bulk_fastq_cpp", (DL_FUNC) &_FLAMES_merge_bulk_fastq_cpp, 2},
     {NULL, NULL, 0}
 };

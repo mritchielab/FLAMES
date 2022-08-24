@@ -32,7 +32,7 @@ sc_long_pipeline(
 
 \item{reference_csv}{The file path to the reference csv used for demultiplexing}
 
-\item{match_barcode}{Boolean; specifies if demultiplexing should be performed using \code{FLAMES::match_cell_barcode_cpp}}
+\item{match_barcode}{Boolean; specifies if demultiplexing should be performed using \code{FLAMES::find_barcode}}
 
 \item{config_file}{File path to the JSON configuration file. If specified, \code{config_file} overrides
 all configuration parameters}

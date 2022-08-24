@@ -5,6 +5,11 @@
 #' Default values from \code{extdata/config_sclr_nanopore_5end.json} will be used for unprovided parameters.
 #'
 #' @param outdir the destination directory for the configuratio nfile
+#' @param type use an example config, available values:
+#' \itemize{
+#'  \item{"sc_5end"}{ - config for 5' end ONT reads}
+#'  \item{"SIRV"}{ - config for the SIRV example reads}
+#' }
 #' @param ... Configuration parameters.
 #' \itemize{
 #'  \item{do_genome_align}{ - Boolean. Specifies whether to run the genome alignment step. \code{TRUE} is recommended}
@@ -40,8 +45,14 @@
 #' @importFrom utils modifyList
 #' @importFrom stats setNames
 #' @export
-create_config <- function(outdir, ...) {
-    config <- jsonlite::fromJSON(system.file("extdata/config_sclr_nanopore_5end.json", package = "FLAMES"))
+create_config <- function(outdir, type = "sc_5end", ...) {
+    if (type == "sc_5end") {
+        config <- jsonlite::fromJSON(system.file("extdata/config_sclr_nanopore_5end.json", package = "FLAMES"))
+    } else if (type == "SIRV") {
+        config <- jsonlite::fromJSON(system.file("extdata/SIRV_config_default.json", package = "FLAMES"))
+    } else {
+        stop("Unrecognised config type ", type)
+    }
     updates <- list(...)
 
     if (length(updates) > 0) {

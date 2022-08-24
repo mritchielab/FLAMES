@@ -59,6 +59,7 @@ Imports:
     GenomicFeatures,
     jsonlite,
     parallel,
+    GEOquery,
     DropletUtils
 Suggests: 
     BiocStyle,
@@ -68,6 +69,7 @@ Suggests:
     BiocFileCache,
     R.utils,
     ShortRead,
+    uwot,
     testthat (>= 3.0.0)
 LinkingTo: Rcpp, Rhtslib, zlibbioc
 SystemRequirements: GNU make, C++11

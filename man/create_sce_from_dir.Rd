@@ -4,7 +4,7 @@
 \alias{create_sce_from_dir}
 \title{Create \code{SingleCellExperiment} object from \code{FLAMES} output folder}
 \usage{
-create_sce_from_dir(outdir, annotation = NULL)
+create_sce_from_dir(outdir, annotation)
 }
 \arguments{
 \item{outdir}{The folder containing \code{FLAMES} output files}
@@ -24,12 +24,13 @@ bc_allow <- file.path(outdir, "bc_allow.tsv")
 genome_fa <- file.path(outdir, "rps24.fa")
 R.utils::gunzip(filename = system.file("extdata/bc_allow.tsv.gz", package = "FLAMES"), destname = bc_allow, remove = FALSE)
 R.utils::gunzip(filename = system.file("extdata/rps24.fa.gz", package = "FLAMES"), destname = genome_fa, remove = FALSE)
+annotation <- system.file("extdata/rps24.gtf.gz", package = "FLAMES")
 
 if (is.character(locate_minimap2_dir())) {
     sce <- FLAMES::sc_long_pipeline(
         genome_fa = genome_fa,
         fastq = system.file("extdata/fastq", package = "FLAMES"),
-        annotation = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),
+        annotation = annotation,
         outdir = outdir,
         match_barcode = TRUE,
         reference_csv = bc_allow

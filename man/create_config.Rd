@@ -4,10 +4,16 @@
 \alias{create_config}
 \title{Create Configuration File From Arguments}
 \usage{
-create_config(outdir, ...)
+create_config(outdir, type = "sc_5end", ...)
 }
 \arguments{
 \item{outdir}{the destination directory for the configuratio nfile}
+
+\item{type}{use an example config, available values:
+\itemize{
+ \item{"sc_5end"}{ - config for 5' end ONT reads}
+ \item{"SIRV"}{ - config for the SIRV example reads}
+}}
 
 \item{...}{Configuration parameters.
 \itemize{

@@ -14,7 +14,7 @@
 #' @param threads Integer, threads for minimap2 to use, see minimap2 documentation for details,
 #' FLAMES will try to detect cores if this parameter is not provided.
 #'
-#' @return NULL, BAM file is saved to \code{outdir}
+#' @return Path to the alignment file
 #' @seealso [minimap2_realign()]
 #'
 #' @importFrom parallel detectCores
@@ -49,7 +49,7 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2_dir, 
     # } else {
     #    threads <- 12
     # }
-    if (is.null(threads)) {
+    if (missing("threads") || is.null(threads)) {
         threads <- parallel::detectCores()
     }
 
@@ -137,7 +137,7 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2_dir, 
 #' @param threads Integer, threads for minimap2 to use, see minimap2 documentation for details,
 #' FLAMES will try to detect cores if this parameter is not provided.
 #'
-#' @return NULL, BAM file is saved to \code{outdir}
+#' @return Path to the alignment file
 #' @seealso [minimap2_align()]
 #'
 #' @importFrom parallel detectCores
@@ -161,7 +161,7 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2_dir, 
 #'     )
 #' }
 minimap2_realign <- function(config, fq_in, outdir, minimap2_dir, prefix = NULL, threads = NULL) {
-    if (is.null(threads)) {
+    if (missing("threads") || is.null(threads)) {
         threads <- parallel::detectCores()
     }
 

@@ -139,7 +139,7 @@ sc_annotate_plots <- function(gene, sce_all, cluster_annotation, n_isoforms = 4,
   if (dim(row_meta)[1] < 2) {
     stop(paste0("Alternative isoform not found for the given gene: ", gene))
   }
-  tr_sce_multi <- tr_sce[rowData(tr_sce)$transcript_id %in% row_meta$transcript_id, ] # apply top n to sce
+  tr_sce_multi <- tr_sce[rownames(row_meta), ] # apply top n to sce
   if (n_isoforms > nrow(row_meta)) {
     n_isoforms <- nrow(row_meta)
     message(paste0(c("Only ", n_isoforms, " isoforms found for this gene.\n")))
@@ -193,7 +193,7 @@ sc_annotate_plots <- function(gene, sce_all, cluster_annotation, n_isoforms = 4,
 
   ### impute transcript counts
   cat("Imputing transcript counts ...\n")
-  expr <- logcounts(tr_sce_multi)[row_meta$FSM_match, ]
+  expr <- logcounts(tr_sce_multi)
   expr_all <- matrix(0, nrow(expr), ncol(sce_all)) # dim: transcripts x cells, initialised to 0
   rownames(expr_all) <- rownames(expr)
   colnames(expr_all) <- colnames(sce_all)
@@ -346,7 +346,9 @@ sc_annotate_plots <- function(gene, sce_all, cluster_annotation, n_isoforms = 4,
   }
 
   #  Cluster info
-  if (file.exists(file.path(flames_outdir, "cluster_annotation.csv")) || (!missing(cluster_annotation) && file.exists(cluster_annotation)) || !is.null(sce_all$cell_type)) {
+  if ((!is.null(flames_outdir) && file.exists(file.path(flames_outdir, "cluster_annotation.csv"))) ||
+    (!missing(cluster_annotation) && file.exists(cluster_annotation)) ||
+    !is.null(sce_all$cell_type)) {
     cat("Plotting heatmaps ...\n")
     if (file.exists(file.path(flames_outdir, "cluster_annotation.csv"))) {
       cluster_barcode <- read.csv(file.path(flames_outdir, "cluster_annotation.csv"), stringsAsFactors = FALSE)
@@ -561,7 +563,7 @@ combine_sce <- function(short_read_large, short_read_small, short_read_all, long
   # empty_matrix@Dim <- dim(short_read_all)
   # empty_matrix@p <- integer(dim(long_read_sce)[1]+1L)
   transcript_sce <- SingleCellExperiment(
-    assays = list(counts = matrix(NA,
+    assays = list(counts = matrix(0,
       ncol = dim(short_read_all)[2],
       nrow = dim(long_read_sce)[1]
     )),
@@ -574,9 +576,9 @@ combine_sce <- function(short_read_large, short_read_small, short_read_all, long
 
   # Cell barcodes only found in long-read sequencing are removed.
   long_read_sce <- long_read_sce[, colnames(long_read_sce) %in% colnames(short_read_all)]
-  counts(transcript_sce[rownames(long_read_sce), colnames(long_read_sce)]) <- counts(long_read_sce)
   rowData(transcript_sce) <- rowData(long_read_sce)
   rowRanges(transcript_sce) <- rowRanges(long_read_sce)
+  counts(transcript_sce[rownames(long_read_sce), colnames(long_read_sce)]) <- as.matrix(counts(long_read_sce))
   altExp(short_read_all, "transcript") <- transcript_sce
 
   # todo:

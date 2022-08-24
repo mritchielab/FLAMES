@@ -27,7 +27,7 @@
 #' dir.create(outdir)
 #' bc_allow <- file.path(outdir, "bc_allow.tsv")
 #' R.utils::gunzip(filename = system.file("extdata/bc_allow.tsv.gz", package = "FLAMES"), destname = bc_allow, remove = FALSE)
-#' match_cell_barcode_cpp(
+#' find_barcode(
 #'    fastq_dir = system.file("extdata/fastq", package = "FLAMES"),
 #'    stats_file = file.path(outdir, "bc_stat"),
 #'    out_fastq = file.path(outdir, "demultiplexed.fq.gz"),
@@ -36,8 +36,8 @@
 #'    UMI_LEN = 10
 #')
 #' @export
-match_cell_barcode_cpp <- function(fastq_dir, stats_file, out_fastq, ref_csv, MAX_DIST, UMI_LEN = 10L) {
-    invisible(.Call(`_FLAMES_match_cell_barcode_cpp`, fastq_dir, stats_file, out_fastq, ref_csv, MAX_DIST, UMI_LEN))
+find_barcode <- function(fastq_dir, stats_file, out_fastq, ref_csv, MAX_DIST, UMI_LEN = 10L) {
+    invisible(.Call(`_FLAMES_find_barcode`, fastq_dir, stats_file, out_fastq, ref_csv, MAX_DIST, UMI_LEN))
 }
 
 #' @useDynLib FLAMES, .registration=TRUE

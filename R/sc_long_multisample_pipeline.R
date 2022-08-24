@@ -130,7 +130,7 @@ sc_long_multisample_pipeline <-
             }
 
             if (match_barcode) {
-                stop("If \"match_barcode\" set to TRUE, argument \"fastqs\" must be a list of fastq files, with the same order in \"reference_csv\"\nYou can also demultiplex the reads with \"FLAMES::match_cell_barcode_cpp\"")
+                stop("If \"match_barcode\" set to TRUE, argument \"fastqs\" must be a list of fastq files, with the same order in \"reference_csv\"\nYou can also demultiplex the reads with \"FLAMES::find_barcode\"")
             }
         } else if (any(!file.exists(fastqs))) {
             stop("Please make sure all fastq files exist.")
@@ -151,7 +151,7 @@ sc_long_multisample_pipeline <-
             infqs <- file.path(outdir, paste(samples, "matched_reads.fastq.gz", sep = "_"))
             bc_stats <- file.path(outdir, paste(samples, "matched_barcode_stat", sep = "_"))
             for (i in 1:length(fastqs)) {
-                match_cell_barcode_cpp(
+                find_barcode(
                     fastqs[i],
                     bc_stats[i],
                     infqs[i],

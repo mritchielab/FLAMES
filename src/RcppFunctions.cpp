@@ -32,7 +32,7 @@
 //' dir.create(outdir)
 //' bc_allow <- file.path(outdir, "bc_allow.tsv")
 //' R.utils::gunzip(filename = system.file("extdata/bc_allow.tsv.gz", package = "FLAMES"), destname = bc_allow, remove = FALSE)
-//' match_cell_barcode_cpp(
+//' find_barcode(
 //'    fastq_dir = system.file("extdata/fastq", package = "FLAMES"),
 //'    stats_file = file.path(outdir, "bc_stat"),
 //'    out_fastq = file.path(outdir, "demultiplexed.fq.gz"),
@@ -43,7 +43,7 @@
 //' @export
 // [[Rcpp::export]]
 void
-match_cell_barcode_cpp
+find_barcode
 (
     Rcpp::String fastq_dir, 
     Rcpp::String stats_file, 

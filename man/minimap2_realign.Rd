@@ -28,7 +28,7 @@ minimap2_realign(
 FLAMES will try to detect cores if this parameter is not provided.}
 }
 \value{
-NULL, BAM file is saved to \code{outdir}
+Path to the alignment file
 }
 \description{
 Uses minimap2 to re-align reads to transcriptome
