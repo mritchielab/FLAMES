@@ -76,13 +76,13 @@ minimap2_align <-
 }
 
 #' @importFrom reticulate import_from_path
-minimap2_tr_align <- function(mm2_prog_path, fa_file, fq_in, sam_out, seed =" ") {
+minimap2_tr_align <- function(mm2_prog_path, fa_file, fq_in, sam_out, seed ="") {
     if (seed != "") {
         seed <- paste0("--seed", seed)
     }
     
     align_cmd <- paste0(mm2_prog_path, "minimap2",
-                        " -ax map-ont -p 0.9 --end-bonus 10 - N 3 -t 12 ",
+                        " -ax map-ont -p 0.9 --end-bonus 10 -N 3 -t 12 ",
                         seed, " ", fa_file, " ", fq_in, " -o ", sam_out)
     output <- system(command = align_cmd, intern = TRUE)
 

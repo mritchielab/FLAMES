@@ -182,6 +182,18 @@ generic_long_pipeline_cpp <-
         )
 }
 
+#' Generic FLAMES pipeline
+#'
+#' Generic implementation of the flames pipeline. Used for both bulk reads and
+#' single cell reads.
+#'
+#' @inheritParams sc_long_pipeline
+#' @param in_bam optional BAM file which replaces fastq directory argument. This skips the genome alignment and
+#' realignment steps
+#' @return This generic function returns a named list containing the output file names of the provided output files
+#' in the given `outdir` directory. These files are loaded into R in either
+#' a SummarizedExperiment or SingleCellExperiment object by the callers to this
+#' function, `sc_long_pipeline()` and `bulk_long_pipeline()` respectively.
 #' useDynLib(FLAMES, .registration = TRUE)
 generic_long_pipeline <-
     function(annot,

@@ -10,7 +10,8 @@ minimap2_align(
   fq_in,
   sam_out,
   no_flank = FALSE,
-  bed12_junc = NULL
+  bed12_junc = NULL,
+  seed = ""
 )
 }
 \arguments{

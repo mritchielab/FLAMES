@@ -25,3 +25,4 @@ vignettes/.build.timestamp
 vignettes/FLAMES_vignette.md
 **/.smbdelete*
 **/#.tmp
+*.gff
