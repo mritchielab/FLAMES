@@ -88,56 +88,56 @@ get_blocks(const BAMRecord &record) {
     return blocks;
 }
 
-void
-minimal_group_bam2isoform(
-    std::string bam_in, 
-    std::string out_gff3, 
-    std::string out_stat, 
-    std::unordered_map<std::string, std::vector<GeneBlocks>>    * chr_to_blocks, 
-    std::unordered_map<std::string, std::vector<StartEndPair>>  * gene_dict, 
-    std::unordered_map<std::string, Junctions>                  * transcript_to_junctions,
-    std::unordered_map<std::string, Pos>                        * transcript_dict,
-    std::string fa_f,
-    IsoformParameters isoform_parameters,
-    std::string raw_gff3)
-{
-    // read a bamfile
-    bamFile bam = bam_open(bam_in.c_str(), "r"); // bam.h
-    bam_index_t *bam_index = bam_index_load(bam_in.c_str());
-    bam_header_t *header = bam_header_read(bam); // bam.h
+// void
+// minimal_group_bam2isoform(
+//     std::string bam_in, 
+//     std::string out_gff3, 
+//     std::string out_stat, 
+//     std::unordered_map<std::string, std::vector<GeneBlocks>>    * chr_to_blocks, 
+//     std::unordered_map<std::string, std::vector<StartEndPair>>  * gene_dict, 
+//     std::unordered_map<std::string, Junctions>                  * transcript_to_junctions,
+//     std::unordered_map<std::string, Pos>                        * transcript_dict,
+//     std::string fa_f,
+//     IsoformParameters isoform_parameters,
+//     std::string raw_gff3)
+// {
+//     // read a bamfile
+//     bamFile bam = bam_open(bam_in.c_str(), "r"); // bam.h
+//     bam_index_t *bam_index = bam_index_load(bam_in.c_str());
+//     bam_header_t *header = bam_header_read(bam); // bam.h
 
 
-    std::vector<BAMRecord>
-    records = {};
-    Rcpp::Rcout << "\tmade records\n";
-    DataStruct data = {header, &records};
+//     std::vector<BAMRecord>
+//     records = {};
+//     Rcpp::Rcout << "\tmade records\n";
+//     DataStruct data = {header, &records};
 
 
-    Rcpp::Rcout << "made it to the big for\n";
-    for (const auto & [chr, blocks] : (*chr_to_blocks)) {
-        Rcpp::Rcout << "started loop with " << chr << "\n";
-        int tid = bam_get_tid(header, chr.c_str());
+//     Rcpp::Rcout << "made it to the big for\n";
+//     for (const auto & [chr, blocks] : (*chr_to_blocks)) {
+//         Rcpp::Rcout << "started loop with " << chr << "\n";
+//         int tid = bam_get_tid(header, chr.c_str());
 
-        for (const auto & block : blocks) {
-            Rcpp::Rcout << "started inner loop with " << block.start << ", " << block.end << "\n";
-            // if (block.start == 8208472) {
-            //     Rcpp::Rcout << "!! SKIPPING the danger zone !!\n";
-            //     continue;
-            // }
-            Rcpp::Rcout << "\tcleared records";
-            // extract this from the bam file
+//         for (const auto & block : blocks) {
+//             Rcpp::Rcout << "started inner loop with " << block.start << ", " << block.end << "\n";
+//             // if (block.start == 8208472) {
+//             //     Rcpp::Rcout << "!! SKIPPING the danger zone !!\n";
+//             //     continue;
+//             // }
+//             Rcpp::Rcout << "\tcleared records";
+//             // extract this from the bam file
 
-            Rcpp::Rcout << "\tabout to bamfetch\n";
+//             Rcpp::Rcout << "\tabout to bamfetch\n";
 
-            // auto it = bam_fetch(bam, bam_index, tid, block.start, block.end, &data, &fetch_function);
-            bam_fetch(bam, bam_index, tid, block.start, block.end, &data, &fetch_function);
-			Rcpp::Rcout << "bam_fetch done\n";
-        }
-    }
+//             // auto it = bam_fetch(bam, bam_index, tid, block.start, block.end, &data, &fetch_function);
+//             bam_fetch(bam, bam_index, tid, block.start, block.end, &data, &fetch_function);
+// 			Rcpp::Rcout << "bam_fetch done\n";
+//         }
+//     }
 
 
-    bam_close(bam);
-}
+//     bam_close(bam);
+// }
 
 bool
 group_bam2isoform (
@@ -197,6 +197,9 @@ group_bam2isoform (
         int tid = bam_get_tid(header, chr.c_str());
 
 		int inner = 0;
+		// we could parralellize this loop, so each block gets it's own thread.
+		// this would require making a lock on the output file, 
+		// would we need to lock the bam file? I think reading a file is thread safe
         for (const auto & block : blocks) {
 			inner++;
 			Isoforms tmp_isoform(chr, isoform_parameters);
