@@ -26,4 +26,11 @@ merge_bulk_fastq
     String out_fastq
 );
 
+void
+merge_bulk_fastq_parallel
+(
+	StringVector fastq_files,
+	String out_fastq
+);
+
 #endif

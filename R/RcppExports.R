@@ -45,6 +45,10 @@ merge_bulk_fastq_cpp <- function(fastq_files, out_fastq) {
     invisible(.Call(`_FLAMES_merge_bulk_fastq_cpp`, fastq_files, out_fastq))
 }
 
+merge_bulk_fastq_cpp_parallel <- function(fastq_files, out_fastq) {
+    invisible(.Call(`_FLAMES_merge_bulk_fastq_cpp_parallel`, fastq_files, out_fastq))
+}
+
 quantification_cpp <- function(config_list, realign_bam, transcript_fa_idx, isoform_objects_list, tr_cnt_csv, tr_badcov_cnt_csv, isoform_gff3, annot, isoform_gff3_f, FSM_anno_out) {
     invisible(.Call(`_FLAMES_quantification_cpp`, config_list, realign_bam, transcript_fa_idx, isoform_objects_list, tr_cnt_csv, tr_badcov_cnt_csv, isoform_gff3, annot, isoform_gff3_f, FSM_anno_out))
 }

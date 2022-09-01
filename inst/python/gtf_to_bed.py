@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import csv
 import os
-
+import sys
 
 def gtf_to_bed(in_gtf, out_bed, chrom_sizes_file=None):
     try:

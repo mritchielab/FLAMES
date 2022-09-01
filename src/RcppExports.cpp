@@ -99,6 +99,17 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// merge_bulk_fastq_cpp_parallel
+void merge_bulk_fastq_cpp_parallel(Rcpp::StringVector fastq_files, Rcpp::String out_fastq);
+RcppExport SEXP _FLAMES_merge_bulk_fastq_cpp_parallel(SEXP fastq_filesSEXP, SEXP out_fastqSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::StringVector >::type fastq_files(fastq_filesSEXP);
+    Rcpp::traits::input_parameter< Rcpp::String >::type out_fastq(out_fastqSEXP);
+    merge_bulk_fastq_cpp_parallel(fastq_files, out_fastq);
+    return R_NilValue;
+END_RCPP
+}
 // quantification_cpp
 void quantification_cpp(Rcpp::List config_list, std::string realign_bam, std::string transcript_fa_idx, Rcpp::List isoform_objects_list, std::string tr_cnt_csv, std::string tr_badcov_cnt_csv, std::string isoform_gff3, std::string annot, std::string isoform_gff3_f, std::string FSM_anno_out);
 RcppExport SEXP _FLAMES_quantification_cpp(SEXP config_listSEXP, SEXP realign_bamSEXP, SEXP transcript_fa_idxSEXP, SEXP isoform_objects_listSEXP, SEXP tr_cnt_csvSEXP, SEXP tr_badcov_cnt_csvSEXP, SEXP isoform_gff3SEXP, SEXP annotSEXP, SEXP isoform_gff3_fSEXP, SEXP FSM_anno_outSEXP) {
@@ -157,6 +168,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_FLAMES_find_isoform_cpp", (DL_FUNC) &_FLAMES_find_isoform_cpp, 9},
     {"_FLAMES_match_cell_barcode_cpp", (DL_FUNC) &_FLAMES_match_cell_barcode_cpp, 6},
     {"_FLAMES_merge_bulk_fastq_cpp", (DL_FUNC) &_FLAMES_merge_bulk_fastq_cpp, 2},
+    {"_FLAMES_merge_bulk_fastq_cpp_parallel", (DL_FUNC) &_FLAMES_merge_bulk_fastq_cpp_parallel, 2},
     {"_FLAMES_quantification_cpp", (DL_FUNC) &_FLAMES_quantification_cpp, 10},
     {"_FLAMES_test_fi", (DL_FUNC) &_FLAMES_test_fi, 0},
     {"_FLAMES_test_group_bam2isoform", (DL_FUNC) &_FLAMES_test_group_bam2isoform, 0},

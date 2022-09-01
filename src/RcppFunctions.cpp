@@ -176,6 +176,13 @@ merge_bulk_fastq_cpp(Rcpp::StringVector fastq_files, Rcpp::String out_fastq)
     return merge_bulk_fastq(fastq_files, out_fastq);
 }
 
+// [[Rcpp::export]]
+void 
+merge_bulk_fastq_cpp_parallel(Rcpp::StringVector fastq_files, Rcpp::String out_fastq) 
+{
+    return merge_bulk_fastq_parallel(fastq_files, out_fastq);
+}
+
 /*****************************************************************************/
 
 #include "main-functions/quantification.h"
