@@ -6,10 +6,14 @@
 
 #include <Rcpp.h>
 #include <R.h>
+#include <thread>
+#include <mutex>
+#include <vector>
 #include "zlib.h"
 #include "htslib/kseq.h"
 
 #include "../utility/fastq_utils.h"
+
 
 const char * shorten_filename(const char *file_name, int length, int &out_length) {
     int slash = -1;
@@ -24,8 +28,104 @@ const char * shorten_filename(const char *file_name, int length, int &out_length
     return short_name;
 }
 
-// This has the potential to be parralellized if time allows.
-// create a thread per file, and process to the one out file using a file handler object with mutex lock on file
+class FastqOut {
+public:
+	FastqOut(Rcpp::String out_fastq, size_t numFastqFiles) {
+		o_stream_gz = gzopen(out_fastq.get_cstring(), "wb2");
+		read_counts = (unsigned int *)malloc(numFastqFiles * sizeof(unsigned));
+		for (unsigned i = 0; i < numFastqFiles; i++) {
+			read_counts[i] = 0;
+		}
+	}
+	void close() {
+		free(read_counts);
+    	gzclose(o_stream_gz);
+	}
+
+	void fastq_write(kseq_t *seq, short unsigned int fastqIdx) {
+		std::lock_guard<std::mutex> lock(_m);
+		fq_gz_write(o_stream_gz, seq);
+		read_counts[fastqIdx]++;
+	}
+
+	unsigned int getReadCount(short unsigned int fastqIdx) {
+		return read_counts[fastqIdx];
+	}
+private:
+	std::mutex _m;
+	gzFile o_stream_gz;
+	unsigned int * read_counts;
+};
+
+class ThreadFunc {
+public:
+	ThreadFunc(std::string fastqName, short unsigned int fastqIDX, std::string separator, std::shared_ptr<FastqOut> out) {
+		fqName = fastqName;
+		fastqIdx = fastqIDX;
+		sep = separator;
+		output = out;
+	}
+
+	void operator() (){
+		const char *c_file_name = fqName.c_str();
+		const char *separator = sep.c_str();
+		gzFile fp = gzopen(c_file_name, "r");
+		kseq_t *seq = kseq_init(fp);
+
+		int file_name_length = fqName.size();
+		//shorten the file name to only include local name (not full path name)
+		c_file_name = shorten_filename(c_file_name, file_name_length, file_name_length);
+		// c_file_name and file_name_length are now both for the shortened versions
+
+		int offset = file_name_length + 5;
+		int l;
+		while ((l = kseq_read(seq)) >= 0) {
+			// reallocate name block to expand for {filename}_NNN#{seq->name.s}
+			seq->name.s = (char *)realloc(seq->name.s, offset + seq->name.l);
+
+			// move name along, and insert file name
+			char *const seq_name = seq->name.s;
+			memmove(seq_name + offset, seq_name, (seq->name.l + 1) * sizeof(char));
+			memcpy(seq_name, c_file_name, file_name_length);
+			memcpy(seq_name + file_name_length, separator, 5);
+
+			output->fastq_write(seq, fastqIdx);
+		}
+
+		kseq_destroy(seq);
+		gzclose(fp);
+	}
+
+private:
+	std::string fqName;
+	short unsigned int fastqIdx;
+	std::string sep;
+	std::shared_ptr<FastqOut> output;
+};
+
+void merge_bulk_fastq_parallel(Rcpp::StringVector fastq_files, Rcpp::String out_fastq) {
+	std::shared_ptr<FastqOut> fqOut = std::make_shared<FastqOut>(out_fastq, fastq_files.size());
+	const char *separator = "_NNN#"; // separator string between new read name and old read name
+
+	std::vector<std::thread> threads;
+	for (short unsigned int i = 0; i < fastq_files.size(); i++) {
+		Rcpp::String fName = fastq_files(i);
+		ThreadFunc tf (fName.get_cstring(), i, separator, fqOut);
+		threads.push_back(std::thread(tf));
+		Rcpp::Rcout << "Started thread " << i << "\n";
+	}
+
+	// rejoin the threads once completed
+	for (size_t i = 0; i < fastq_files.size(); i++) {
+		Rcpp::Rcout << "Waiting on thread: " << i << "\n";
+		threads[i].join();
+
+		Rcpp::Rcout << fastq_files(i) << ": " << fqOut->getReadCount(i) << "\n";
+	}
+
+	fqOut->close();
+}
+
 //' Merge Bulk Fastq Files
 //' 
 //' @description Merge all fastq files into a single fastq
