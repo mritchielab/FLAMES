@@ -102,6 +102,10 @@ wrt_tr_to_csv <-
 #' }
 #' @export
 quantify <- function(annotation, outdir, config, pipeline = "sc_single_sample") {
+    if (grepl("\\.gff3?(\\.gz)?$", annotation)) {
+        warning("Annotation in GFF format may cause errors. Please consider using GTF formats.\n")
+    }
+
     realign_bam <- list.files(outdir)[grepl("_?realign2transcript\\.bam$", list.files(outdir))]
     cat("Found realignment file(s): ")
     cat(paste0("\t", paste(realign_bam, collapse = "\n\t"), "\n"))

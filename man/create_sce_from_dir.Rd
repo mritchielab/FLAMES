@@ -12,7 +12,8 @@ create_sce_from_dir(outdir, annotation)
 \item{annotation}{(Optional) the annotation file that was used to produce the output files}
 }
 \value{
-a \code{SingleCellExperiment} object
+a list of \code{SingleCellExperiment} objects if multiple transcript matrices were
+found in the output folder, or a \code{SingleCellExperiment} object if only one were found
 }
 \description{
 Create \code{SingleCellExperiment} object from \code{FLAMES} output folder

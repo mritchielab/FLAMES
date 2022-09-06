@@ -83,7 +83,10 @@ Once the initial variables have been setup, the pipeline can be run using:
 ```{r, eval=TRUE, echo=TRUE}
 library(FLAMES)
 if (is.character(locate_minimap2_dir())) { # do not run if minimap2 cannot be found
-  sce <- sc_long_pipeline(annotation = annot, fastq = fastq, genome_fa = genome_fa, outdir = outdir, config_file = config_file, match_barcode = FALSE)
+  sce <- sc_long_pipeline(
+    annotation = annot, fastq = fastq, genome_fa = genome_fa,
+    outdir = outdir, config_file = config_file, match_barcode = FALSE
+  )
 }
 ```
 
@@ -200,9 +203,38 @@ if (is.character(locate_minimap2_dir())) {
 ### FLAMES termination
 After the bulk pipeline has completed, the output directory contains the same files as the single cell pipeline produces. `bulk_long_pipeline` also returns a [SummarizedExperiment](https://bioconductor.org/packages/release/bioc/html/SummarizedExperiment.html) object, containing the same data as the [SingleCellExperiment](https://bioconductor.org/packages/release/bioc/html/SingleCellExperiment.html) as above [@singlecellexperiment] [@summarizedexperiment].
 
+## Running with Slurm
+Since the barcode demultiplexing step, isoform identification step and quantification step is currently single threaded, job scheduler (such as Slurm) users may want to allocate different resources for each step. This can be achieved by calling the individual functions (`find_isoform`, `minimap2_realign` etc.) sequentially, or by changing the configuration file. The `Bash` script below demonstrates how this can be done with a single `R` script calling the pipeline function.
+
+```{bash eval=FALSE}
+#!/bin/bash -x
+
+sed -i '/"do_/s/true/false/' config_sclr_nanopore_5end.json # set all steps to false
+sed -i '/do_genome_alignment/s/false/true/' config_sclr_nanopore_5end.json # set do_genome_alignment to true
+srun -c 20 --mem 64GB Rscript flames_pipeline.R && \
+
+sed -i '/"do_/s/true/false/' config_sclr_nanopore_5end.json && \
+sed -i '/do_isoform_identification/s/false/true/' config_sclr_nanopore_5end.json && \
+srun -c 1 --mem 64GB --ntasks=1 Rscript flames_pipeline.R  && \
+
+sed -i '/"do_/s/true/false/' config_sclr_nanopore_5end.json && \
+sed -i '/do_read_realignment/s/false/true/' config_sclr_nanopore_5end.json && \
+srun -c 20 --mem 64GB --ntasks=1 Rscript flames_pipeline.R && \
+
+sed -i '/"do_/s/true/false/' config_sclr_nanopore_5end.json && \
+sed -i '/do_transcript_quantification/s/false/true/' config_sclr_nanopore_5end.json && \
+srun -c 1 --mem 64GB --ntasks=1 Rscript flames_pipeline.R && \
+
+echo "Pipeline finished"
+```
+
+The `Bash` script can then be executed inside a tmux or screen session with:
+```{bash eval=FALSE}
+./flames.sh | tee -a bash.log; tail bash.log | mail -s "flames pipeline ended" user@example.com
+```
 
 ## FLAMES on Windows
-VDue to FLAMES requiring minimap2 and pysam, FLAMES is currently unavaliable on Windows.
+Due to FLAMES requiring minimap2 and pysam, FLAMES is currently unavaliable on Windows.
 
 # Session Info
 ``` {r echo=FALSE}

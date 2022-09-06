@@ -216,6 +216,11 @@ def annotate_full_splice_match_all_sample(anno_out, isoform_gff, ref_gff):
         splice_dict.setdefault(tmp, []).append(tr)
         splice_gene_dict.setdefault(tmp, []).append(
             transcript_dict_ref[tr].parent_id)
+        ## Inconsistent id and transcript id in gff3 annotation will cause key error
+        ## e.g. ENST00000431238.7_PAR_Y in gencode.v33.annotation.gff3
+        ## chrY	HAVANA	transcript ... ID=ENST00000431238.7_PAR_Y; ... transcript_id=ENST00000431238.7;
+        ## ENST00000431238.7_PAR_Y in transcript_to_exon_ref but not in transcript_dict_ref
+        ## see _parse_gff_tree
         splice_dict_ref.setdefault(tmp, []).append(tr)
     for s in splice_gene_dict:
         if len(set(splice_gene_dict[s])) > 1:
