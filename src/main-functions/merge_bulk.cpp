@@ -9,6 +9,7 @@
 #include <thread>
 #include <mutex>
 #include <vector>
+#include <memory>
 #include "zlib.h"
 #include "htslib/kseq.h"
 
