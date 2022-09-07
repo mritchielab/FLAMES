@@ -32,7 +32,7 @@ quantification
     std::cout << "#### Generating transcript count matrix\n";
     
     GFFData tmp = parseGeneAnno(isoform_gff3);
-    tmp.log("before_quant_cpp.gff");
+    // tmp.log("before_quant_cpp.gff");
 
     GFFData gene_anno = parseGeneAnno(annot);
     auto transcript_to_exon = gene_anno.transcript_to_exon;
