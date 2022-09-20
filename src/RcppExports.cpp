@@ -157,6 +157,15 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// test1
+void test1();
+RcppExport SEXP _FLAMES_test1() {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    test1();
+    return R_NilValue;
+END_RCPP
+}
 
 RcppExport SEXP run_testthat_tests(SEXP);
 
@@ -173,6 +182,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_FLAMES_test_fi", (DL_FUNC) &_FLAMES_test_fi, 0},
     {"_FLAMES_test_group_bam2isoform", (DL_FUNC) &_FLAMES_test_group_bam2isoform, 0},
     {"_FLAMES_iso", (DL_FUNC) &_FLAMES_iso, 0},
+    {"_FLAMES_test1", (DL_FUNC) &_FLAMES_test1, 0},
     {"run_testthat_tests", (DL_FUNC) &run_testthat_tests, 1},
     {NULL, NULL, 0}
 };

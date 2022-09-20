@@ -27,7 +27,7 @@ B   BAM_CBACK   9
 */
 struct CigarPair
 {
-    int op;     // which operation to perform, ranged 0 to 4
+    int op;     // which operation to perform, ranged 0 to 9
     int len;    // length of operation
 
 	inline bool operator==(const CigarPair &a) const {

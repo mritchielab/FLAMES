@@ -91,3 +91,5 @@ read_flag(int);
 
 BAMRecord
 read_record(const bam1_t*, const bam_header_t*);
+
+int calculate_length_from_cigar(const std::vector<CigarPair> &cigartuples, bool queryLength);

@@ -29,11 +29,11 @@ struct RealignedBamData {
 };
 
 struct ReadDictEntry {
-    std::string tr;
-    float       AS_tag;
-    float       tr_cov;
-    float       length;
-    int         quality;
+    std::string tr; // 0
+    float       AS_tag; // 1
+    float       tr_cov; // 2
+    float       length; // 3
+    int         quality; // 4
 };
 
 std::unordered_map<std::string, int>

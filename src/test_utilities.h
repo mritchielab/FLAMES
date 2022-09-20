@@ -87,6 +87,14 @@ inline bool compare_map(const std::map<T, std::vector<U>> &a, const std::map<T, 
 	}
 	return true;
 }
+// compare two unordered maps of single values
+template <typename T, typename U>
+inline bool compare_map(const std::unordered_map<T, U> &a, const std::unordered_map<T, U> &b) {
+	for (const auto &[key, value] : a) {
+		if (value != b.at(key)) return false;
+	}
+	return true;
+}
 
 // Compare two iterable streams, expecting values to be in the same order
 template <class Iter>

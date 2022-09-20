@@ -8,7 +8,8 @@
 #include <functional>
 #include <algorithm>
 #include <set>
-
+#include <utility>
+#include <cctype>
 #include "../classes/Pos.h"
 #include "../classes/StartEndPair.h"
 
@@ -201,6 +202,27 @@ static inline countUnique(const std::vector<T> &vec) {
 		counts[it]++;
 	}
 	return counts;
+}
+
+std::pair<std::string, std::string>
+static inline parseSpace(const std::string &s) {
+	// parse a string until delim, and return the parsed string and the rest of the string
+	for (int i = 0; i < s.size(); i++) {
+		if (isspace(s[i])) {
+			return {s.substr(0, i), s.substr(i+1, std::string::npos)};
+		}
+	}
+	return {};
+}
+
+std::pair<std::string, std::string>
+static inline parseDelim(const std::string &s, const char &delim) {
+	for (size_t i = 0; i < s.size(); i++) {
+		if (s[i] == delim) {
+			return {s.substr(0, i), s.substr(i+1, std::string::npos)};
+		}
+	}
+	return {};
 }
 
 #endif // UTILITY_H

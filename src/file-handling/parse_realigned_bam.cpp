@@ -1,5 +1,18 @@
 #include "parse_realigned_bam.h"
 
+#include <unordered_map>
+#include <string>
+#include <fstream>
+#include <vector>
+#include <sstream>
+#include <iostream>
+
+#include "../classes/BamRecord.h"
+
+#include "../utility/bam.h"
+#include "../utility/utility.h"
+#include "../main-functions/group_bam2isoform.h"
+
 std::unordered_map<std::string, int>
 file_to_map(std::string filename)
 {
@@ -9,31 +22,19 @@ file_to_map(std::string filename)
             word 4
             dhgukrahgk 10
     */
-    std::unordered_map<std::string, int>
-    map;
+    std::unordered_map<std::string, int> map;
 
-    std::ifstream
-    file(filename);
+    std::ifstream file(filename);
 
     std::string line;
     int lines = 0;
     while (std::getline(file, line)) {
         lines++;
-        std::stringstream
-        linestream (line);
+        
+		std::pair<std::string, std::string> parsed = parseSpace(line);
+		std::pair<std::string, std::string> intParsed = parseSpace(parsed.second);
 
-        // break each line into words
-        std::vector<std::string> words;
-        std::string word;
-        while (std::getline(linestream, word, ' ')) {
-            words.push_back(word);
-        }
-
-        if (words.size() < 2) {
-            continue;
-        } 
-
-        map[words[0]] = atoi(words[1].c_str());
+		map[parsed.first] = stoi(intParsed.first);
     }
 
     return map;
@@ -76,48 +77,6 @@ read_entire_bam
     bam_close(bam);
 }
 
-int
-query_len(std::string cigar_string, bool hard_clipping)
-{
-    /*
-        https://stackoverflow.com/questions/39710796/infer-the-length-of-a-sequence-using-the-cigar
-        Given a CIGAR string, return the number of bases consumed from the
-        query sequence.
-        CIGAR is a sequence of the form <operations><operator> such that operations is an integer giving 
-        the number of times the operator is used
-        M = match
-        I = Insertion
-        S = Soft clipping
-        = = sequence match
-        X = sequence mismatch
-    */
-
-   // set up which operations should consume a read
-   std::vector<char> read_consuming_ops;
-   if (!hard_clipping) {
-       read_consuming_ops = {'M', 'I', 'S', '=', 'X'};
-   } else {
-       read_consuming_ops = {'M', 'I', 'S', 'H', '=', 'X'};
-   }
-
-   int result = 0;
-   int this_len = 0;
-   for (const auto & c : cigar_string) {
-       if (isdigit(c)) {
-           // if it's an int, update the len
-           this_len = int(c);
-       } else {
-           // check if it's in the read_consuming_ops
-           if (std::count(read_consuming_ops.begin(), read_consuming_ops.end(), c) > 0) {
-               // if so we have to add it
-               result += this_len;
-           }
-       }
-   }
-
-   return result;
-}
-
 RealignedBamData
 parse_realigned_bam
 (
@@ -146,9 +105,17 @@ parse_realigned_bam
     std::unordered_map<std::string, std::vector<ReadDictEntry>>
     read_dict;
     
-    std::unordered_map<std::string, int>
-    count_stat = {};
-
+    // std::unordered_map<std::string, int>
+    // count_stat = {};
+	// {
+	// 	unmapped: 0, 
+	// 	not enough coverage: 1, 
+	// 	no good match: 2, 
+	// 	counted reads: 3, 
+	// 	ambiguous reads: 4, 
+	// 	not in annotation: 5
+	// }
+	std::vector<int> count_stat = {0, 0, 0, 0, 0, 0};
 
     std::unordered_map<std::string, std::string>
     bc_dict = {};
@@ -161,9 +128,6 @@ parse_realigned_bam
     //bam_index_t *bam_index = bam_index_load(bam_in.c_str());
     bam_header_t *header = bam_header_read(bam); // bam.h
 
-    // produce and populate a records file
-    std::vector<BAMRecord>
-    records = {};
     // iterate over every entry in the bam
     bam1_t *b = bam_init1();
     while (bam_read1(bam, b) >= 0) {
@@ -171,38 +135,26 @@ parse_realigned_bam
             continue;
         }
         BAMRecord rec = read_record(b, header);
-        records.push_back(rec);
-    }
     
-    bam_close(bam);
-
-    for (const auto & rec : records) {
         // if it's unmapped, just update the count and continue
         if (rec.flag.read_unmapped) {
-            count_stat["unmapped"] += 1;
+            count_stat[0] += 1;
             continue;
         }
 
-        int
-        map_start = rec.reference_start;
-        int
-        map_end = rec.reference_end;
+        int map_start = rec.reference_start;
+        int map_end = rec.reference_end;
 
-        std::string
-        tr = rec.reference_name;
-        
-        
-        float
-        tr_cov = (float)(map_end - map_start)/fa_idx[tr];
+        std::string tr = rec.reference_name;
+
+        float tr_cov = float(map_end - map_start) / float(fa_idx[tr]);
+
         // if there is no dictionary entry for this tr_cov, create one
-        if (tr_cov_dict.count(tr) == 0) {
-            tr_cov_dict[tr] = {};
-        }
         // then add the new cov
         tr_cov_dict[tr].push_back(tr_cov);
 
-        int inferred_read_length = query_len(rec.cigar_string);
-        float tr_length = (float)(rec.query_alignment_length)/inferred_read_length;
+        float inferred_read_length = calculate_length_from_cigar(rec.cigar, true);
+		float tr_length = float(rec.query_alignment_length) / inferred_read_length;
 
         // set up the entry we're about to add to the dictionary
         ReadDictEntry new_read_entry = {
@@ -215,8 +167,6 @@ parse_realigned_bam
 
         // create a dictionary entry if there isn't already one
         if (read_dict.count(rec.read_name) == 0) {
-            read_dict[rec.read_name] = {};
-            
             read_dict[rec.read_name].push_back(new_read_entry);
         } else {
             if (rec.AS_tag > read_dict[rec.read_name][0].AS_tag) {
@@ -233,19 +183,20 @@ parse_realigned_bam
 
         // see if tr is in the fa_idx, if not then log it as "not in annotation"
         if (fa_idx.count(tr) == 0) {
-            count_stat["not in annotation"] += 1;
+            count_stat[5] += 1;
         }
     }
 
+	bam_close(bam);
+
     // build up a new dict of only the tr entries that have sufficient coverage
     // (at least 90% coverage on at least min_sup_reads)
-    std::vector<std::string>
-    tr_kept;
+    std::vector<std::string> tr_kept;
     for (const auto & [tr, covs] : tr_cov_dict) {
-        // count up how many of the coverages are above the acceptable value of 90%
+		// count up how many of the coverages are above the acceptable value of 90%
         int sup_read_count = 0;
         for (const auto & cov : covs) {
-            if (cov > 0.9) {
+            if (cov > 0.9f) {
                 sup_read_count++;
             }
         }
@@ -256,21 +207,16 @@ parse_realigned_bam
         }
     }
 
-    std::unordered_map<std::string, int>
-    unique_tr_count;
+    std::unordered_map<std::string, int> unique_tr_count;
     for (const auto & [read_name, entries] : read_dict) {
         if (entries[0].tr_cov > 0.9) {
-            if (unique_tr_count.count(entries[0].tr) == 0) {
-                unique_tr_count[entries[0].tr] = 0;
-            }
             unique_tr_count[entries[0].tr]++;
         }
     }
 
     for (const auto & [read_name, entries] : read_dict) {
         // collect the entries from the read_dict that have enough coverage to have been retained
-        std::vector<ReadDictEntry>
-        tmp;
+        std::vector<ReadDictEntry> tmp;
         for (const auto & entry : entries) {
             if (std::count(tr_kept.begin(), tr_kept.end(), entry.tr) > 0) {
                 tmp.push_back(entry);
@@ -280,102 +226,54 @@ parse_realigned_bam
         ReadDictEntry hit;
         if (tmp.size() > 0) {
             hit = tmp[0];
-        } else { // if there are none left, just update "no good match" and skip it
-            count_stat["no good match"] += 1;
+        } else { // if there are none left, just update 2 and skip it
+            count_stat[2] += 1;
             continue;
         }
 
-        std::vector<std::string>
-        read_name_split;
+		// shoud we implement safety checking on this split?
+        std::pair<std::string, std::string> bc_umi_split = 
+			parseDelim(parseDelim(read_name, '#').first, '_');
 
-        std::string current_split = ""; 
-        for (const auto & c : read_name) {
-            if (c != '#' &&
-                c != '_') {
-                // just add the character
-                current_split += c;
-            } else {
-                // or add it to the end and reset the current string
-                read_name_split.push_back(current_split);
-                current_split = "";
-            }
-
-            if (c == '#') {
-                // if we find one of these, also terminate the loop
-                break;
-            }
-        }
-
-        std::string
-        bc = read_name_split[read_name_split.size() - 2];
-        std::string
-        umi = read_name_split[read_name_split.size() - 1];
+        std::string bc = bc_umi_split.first;
+        std::string umi = bc_umi_split.second;
 
         if (kwargs.count("bc_file")) {
             bc = bc_dict[bc];
         }
 
-        if (tmp.size() == 1 &&
-            tmp[0].quality > 0) {
-            // initialise the dictionary entries if necesary
-            if (bc_tr_count_dict.count(bc) == 0) {
-                bc_tr_count_dict[bc] = {};
-            }
-            if (bc_tr_count_dict[bc].count(hit.tr) == 0) {
-                bc_tr_count_dict[bc][hit.tr] = {};
-            }
+        if (tmp.size() == 1 && tmp[0].quality > 0) {
             // and then add the umi
             bc_tr_count_dict[bc][hit.tr].push_back(umi);
-            count_stat["counted_reads"] += 1;
+            count_stat[3] += 1;
         } else if (tmp.size() > 1 &&
             tmp[0].AS_tag == tmp[1].AS_tag &&
-            tmp[0].tr_cov == tmp[1].tr_cov) {
+            tmp[0].length == tmp[1].length) {
             if (hit.AS_tag > 0.8) {
-                if (bc_tr_count_dict.count(bc) == 0) {
-                    bc_tr_count_dict[bc] = {};
-                }
-                if (bc_tr_count_dict[bc].count(hit.tr) == 0) {
-                    bc_tr_count_dict[bc][hit.tr] = {};
-                }
-
                 bc_tr_count_dict[bc][hit.tr].push_back(umi);
-                count_stat["counted_reads"] += 1;
+                count_stat[3] += 1;
             } else {
-                count_stat["ambiguous_reads"] += 1;
-                if (bc_tr_badcov_count_dict.count(bc) == 0) {
-                    bc_tr_badcov_count_dict[bc] = {};
-                }
-                if (bc_tr_badcov_count_dict[bc].count(hit.tr) == 0) {
-                    bc_tr_badcov_count_dict[bc][hit.tr] = {};
-                }
-                bc_tr_badcov_count_dict[bc][hit.tr].push_back(umi);
+				bc_tr_badcov_count_dict[bc][hit.tr].push_back(umi);
+                count_stat[4] += 1;
             }
         } else if (hit.tr_cov < min_tr_coverage ||
             hit.length < min_read_coverage) {
-            count_stat["not_enough_coverage"] += 1;
-            if (bc_tr_badcov_count_dict.count(bc) == 0) {
-                bc_tr_badcov_count_dict[bc] = {};
-            }
-            if (bc_tr_badcov_count_dict[bc].count(hit.tr) == 0) {
-                bc_tr_badcov_count_dict[bc][hit.tr] = {};
-            }
             bc_tr_badcov_count_dict[bc][hit.tr].push_back(umi);
+			count_stat[1] += 1;
         } else {
-            if (bc_tr_count_dict.count(bc) == 0) {
-                bc_tr_badcov_count_dict[bc] = {};
-            }
-            if (bc_tr_count_dict[bc].count(hit.tr) == 0) {
-                bc_tr_badcov_count_dict[bc][hit.tr] = {};
-            }
             bc_tr_count_dict[bc][hit.tr].push_back(umi);
-            count_stat["counted_reads"] += 1;
+            count_stat[3] += 1;
         }
     }
     
-    std::cout << "Mapping counts:" << "\n";
-    for (const auto & [key, val] : count_stat) {
-        std::cout << "\t" << key << ": " << val << "\n";
-    }
+	Rcpp::Rcout 
+		<< "\tMapping counts:\n"
+		<< "\t\tUnmapped: " << count_stat[0]
+		<< "\n\t\tNot enough coverage: " << count_stat[1]
+		<< "\n\t\tNo good match: " << count_stat[2]
+		<< "\n\t\tCounted reads: " << count_stat[3]
+		<< "\n\t\tAmbiguous reads: " << count_stat[4]
+		<< "\n\t\tNot in annotation: " << count_stat[5] << "\n";
     return RealignedBamData {bc_tr_count_dict, bc_tr_badcov_count_dict, tr_kept};
 }
 

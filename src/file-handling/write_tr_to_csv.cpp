@@ -50,34 +50,6 @@ edit_distance(std::string s1, std::string s2)
     return dp[m][n];
 }
 
-// [[Rcpp::export]]
-void xx() {
-	std::vector<std::pair<std::string, std::string>> ps {
-			{"AATGC", "AAGGC"},
-			{"AAGGGGC", "AATGA"},
-			{"GTCGAGATCGA", "AGATCGTAGC"},
-			{"GGGGGGGTGGGCG", "GGGGGGGGGGGAAG"},
-			{"AAAAA", "AAAAA"}
-		};
-	std::vector<int> res = {
-		1,
-		4,
-		7,
-		3,
-		0
-	};
-
-	std::string x1, x2;
-	for (int i = 0; i < (int)res.size(); i++) {
-		x1 = ps[i].first;
-		x2 = ps[i].second;
-		Rcpp::Rcout << "String 1 : " << x1 << " String 2 : " << x2 << "\n";
-
-		Rcpp::Rcout << edit_distance(x1, x2) << "\n";
-	}
-
-}
-
 int
 umi_dedup (std::vector<std::string> l, bool has_UMI)
 {
@@ -155,12 +127,16 @@ write_tr_to_csv_cpp
 
     std::unordered_map<std::string, int> tr_count;
     // get a sum of the number of unique (non-duplicate) UMIs for each tr 
+	bool flag = false;
     for (const auto & tr : all_tr) {
+		flag = (tr.compare("SIRV601") == 0);
+			
         std::vector<int> count_l = {};
         for (auto & [bc, tr_count_dict] : bc_tr_count_dict) {
             if (tr_count_dict.count(tr) > 0) {
-                count_l.push_back(umi_dedup(tr_count_dict[tr], has_UMI)); 
-                tr_count[tr] += count_l.back();
+                int count = umi_dedup(tr_count_dict[tr], has_UMI);
+				count_l.push_back(count); 
+                tr_count[tr] += count;
             } else {
                 count_l.push_back(0);
             }

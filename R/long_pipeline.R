@@ -112,14 +112,6 @@ generic_long_pipeline_cpp <-
         }
 
         # find isofroms
-        cat("annot:",annot,"\n")
-        cat("genome_bam:",genome_bam,"\n")
-        cat("isoform_gff3:",isoform_gff3,"\n")
-        cat("tss_tes_stat:",tss_tes_stat,"\n")
-        cat("genome_fa:",genome_fa,"\n")
-        cat("transcript_fa:",transcript_fa,"\n")
-        cat("downsample_ratio:",downsample_ratio,"\n")
-        cat("raw:",raw_splice_isoform,"\n")
         isoform_objects <- find_isoform_cpp(
             annot,
             genome_bam,

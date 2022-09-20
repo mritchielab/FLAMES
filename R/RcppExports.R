@@ -65,3 +65,7 @@ iso <- function() {
     invisible(.Call(`_FLAMES_iso`))
 }
 
+test1 <- function() {
+    invisible(.Call(`_FLAMES_test1`))
+}
+

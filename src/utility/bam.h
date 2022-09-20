@@ -43,14 +43,8 @@ Get the 0-based leftmost coordinate of an alignment
 @param b bam1_t pointer to an alignment
 @return int32_t pos
 */
-#define bam_alignment_start(b) (b->core.pos)
+#define bam_reference_start(b) (b->core.pos)
 
-/*
-Get the rightmost coordinate of an alignment 
-@param b bam1_t pointer to an alignment
-@return int32_t pos
-*/
-#define bam_alignment_end(b) ((b->core.pos) + (b->core.l_qseq))
 /*
 Convert the uint8_t aux value to a string
 Shorter version of htslib/sam.h bam_aux2Z
