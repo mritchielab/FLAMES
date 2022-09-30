@@ -270,11 +270,15 @@ generate_sc_sce <- function(out_files, load_genome_anno = NULL, create_function)
     )
     # rownames(tr_sce) <- mer_tmp$FSM_match
 
-    isoform_gff <- rtracklayer::import.gff3(out_files$isoform_annotated)
-    isoform_gff$Parent <- as.character(isoform_gff$Parent)
-    isoform_gff$transcript_id <- unlist(lapply(strsplit(isoform_gff$Parent, split = ":"), function(x) {
-        x[2]
-    }))
+    if (grepl("\\.gff3$", out_files$isoform_annotated)) {
+      isoform_gff <- rtracklayer::import.gff3(out_files$isoform_annotated)
+      isoform_gff$Parent <- as.character(isoform_gff$Parent)
+      isoform_gff$transcript_id <- unlist(lapply(strsplit(isoform_gff$Parent, split = ":"), function(x) {
+          x[2]
+      }))
+    } else {
+      isoform_gff <- rtracklayer::import(out_files$isoform_annotated)
+    }
     isoform_gff <- S4Vectors::split(isoform_gff, isoform_gff$transcript_id)
     missing_tr <- !(tr_anno$transcript_id %in% names(isoform_gff))
 
@@ -341,19 +345,27 @@ create_sce_from_dir <- function(outdir, annotation) {
         stop("Cannot find transcript_count.csv.gz file in", outdir)
     }
     sce_list <- list()
+    if (file.exists(file.path(outdir, "isoform_annotated.gtf"))) {
+      isoform_annotated <- file.path(outdir, "isoform_annotated.gtf")
+    } else if (file.exists(file.path(outdir, "isoform_annotated.gff3"))) {
+      isoform_annotated <- file.path(outdir, "isoform_annotated.gff3")
+    } else {
+      stop("Missing isoform_annotated.gff3/gtf file")
+    }
+
     for (i in 1:length(samples)) {
         out_files <- list(
             counts = file.path(outdir, samples[i]),
-            isoform_annotated = file.path(outdir, "isoform_annotated.gff3"),
+            isoform_annotated = isoform_annotated,
             outdir = outdir,
             transcript_assembly = file.path(outdir, "transcript_assembly.fa")
         )
         if (!missing("annotation") && !is.null(annotation)) {
             out_files[["annotation"]] <- annotation
             load_genome_anno <- rtracklayer::import(annotation, feature.type = c("exon", "utr"))
-            sce_list[[i]] <- generate_sc_singlecell(out_files, load_genome_anno = load_genome_anno)
+            sce_list[[samples[i]]] <- generate_sc_singlecell(out_files, load_genome_anno = load_genome_anno)
         } else {
-            sce_list[[i]] <- generate_sc_singlecell(out_files)
+            sce_list[[samples[i]]] <- generate_sc_singlecell(out_files)
         }
     }
     if (length(samples) == 1) {
@@ -369,9 +381,16 @@ create_sce_from_dir <- function(outdir, annotation) {
 #' @example inst/examples/pipeline_example.R
 #' @export
 create_se_from_dir <- function(outdir, annotation) {
+    if (file.exists(file.path(outdir, "isoform_annotated.gtf"))) {
+      isoform_annotated <- file.path(outdir, "isoform_annotated.gtf")
+    } else if (file.exists(file.path(outdir, "isoform_annotated.gff3"))) {
+      isoform_annotated <- file.path(outdir, "isoform_annotated.gff3")
+    } else {
+      stop("Missing isoform_annotated.gff3/gtf file")
+    }
     out_files <- list(
         counts = file.path(outdir, "transcript_count.csv.gz"),
-        isoform_annotated = file.path(outdir, "isoform_annotated.gff3"),
+        isoform_annotated = isoform_annotated,
         outdir = outdir,
         transcript_assembly = file.path(outdir, "transcript_assembly.fa"),
         align_bam = file.path(outdir, "align2genome.bam"),

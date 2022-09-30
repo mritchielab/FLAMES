@@ -234,7 +234,7 @@ sc_long_multisample_pipeline <-
                     "annotation" = annotation,
                     "genome_fa" = genome_fa,
                     "counts" = file.path(outdir, paste0(samples[i], "_transcript_count.csv.gz")),
-                    "isoform_annotated" = file.path(outdir, "isoform_annotated.gff3"),
+                    "isoform_annotated" = file.path(outdir, ifelse(config$pipeline_parameters$bambu_isoform_identification, "isoform_annotated.gtf", "isoform_annotated.gff3")),
                     "transcript_assembly" = file.path(outdir, "transcript_assembly.fa"),
                     "config" = config,
                     "align_bam" = genome_bam[i],
