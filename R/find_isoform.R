@@ -53,7 +53,7 @@ find_isoform_bambu <- function(annotation, genome_fa, genome_bam, outdir, config
     bambu_out <- withr::with_package("GenomeInfoDb", bambu::bambu(reads = genome_bam, annotations = bambuAnnotations, genome = genome_fa, quant = TRUE, discovery = TRUE , opt.discovery = list(min.readCount = config$isoform_parameters$min_sup_cnt)))
     bambu::writeToGTF(SummarizedExperiment::rowRanges(bambu_out), file.path(outdir, "isoform_annotated_unfiltered.gtf")) 
     if (is.null(config$isoform_parameters$bambu_trust_reference) || config$isoform_parameters$bambu_trust_reference) {
-        bambu_out <- bambu_out[base::rowSums(SummarizedExperiment::assays(bambu_out)$counts)>1,]
+        bambu_out <- bambu_out[base::rowSums(SummarizedExperiment::assays(bambu_out)$counts)>=1,]
     } else {
         bambu_out <- bambu_out[base::rowSums(SummarizedExperiment::assays(bambu_out)$counts)>=config$isoform_parameters$min_sup_cn,]
     }
@@ -115,10 +115,13 @@ annotation_to_fasta <- function(isoform_annotation, genome_fa, outdir) {
     #    if (missing(out_file)) {
     out_file <- file.path(outdir, "transcript_assembly.fa")
     #    }
+    if (is.character(isoform_annotation)) {
+        isoform_annotation <- get_GRangesList(isoform_annotation)
+    }
 
     dna_string_set <- Biostrings::readDNAStringSet(genome_fa)
     names(dna_string_set) <- gsub(" .*$", "", names(dna_string_set))
-    tr_string_set <- GenomicFeatures::extractTranscriptSeqs(dna_string_set, get_GRangesList(isoform_annotation))
+    tr_string_set <- GenomicFeatures::extractTranscriptSeqs(dna_string_set, isoform_annotation)
     Biostrings::writeXStringSet(tr_string_set, out_file)
     Rsamtools::indexFa(out_file)
 

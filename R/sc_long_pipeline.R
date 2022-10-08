@@ -270,16 +270,7 @@ generate_sc_sce <- function(out_files, load_genome_anno = NULL, create_function)
     )
     # rownames(tr_sce) <- mer_tmp$FSM_match
 
-    if (grepl("\\.gff3$", out_files$isoform_annotated)) {
-      isoform_gff <- rtracklayer::import.gff3(out_files$isoform_annotated)
-      isoform_gff$Parent <- as.character(isoform_gff$Parent)
-      isoform_gff$transcript_id <- unlist(lapply(strsplit(isoform_gff$Parent, split = ":"), function(x) {
-          x[2]
-      }))
-    } else {
-      isoform_gff <- rtracklayer::import(out_files$isoform_annotated)
-    }
-    isoform_gff <- S4Vectors::split(isoform_gff, isoform_gff$transcript_id)
+    isoform_gff <- get_GRangesList(out_files$isoform_annotated)
     missing_tr <- !(tr_anno$transcript_id %in% names(isoform_gff))
 
     rowRanges(tr_sce) <- rep(GRangesList(GRanges(seqnames = NULL, ranges = NULL, strand = NULL, seqinfo = NULL, seqlengths = NULL)), dim(tr_sce)[1])
