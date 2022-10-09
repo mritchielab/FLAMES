@@ -121,25 +121,34 @@ if (is.character(minimap2_dir)) { # do not run if minimap2 cannot be found
 ```
 
 ## Visulisation
+The `combine_sce()` and `sc_annotate_plots()` can be used for visulisation with experiment designs similar to `FLT-seq`. The `combine_sce()` function combines the `SingleCellExperiment` objects of 1) the short-read gene counts from the larger subsample, 2) the short-read gene counts from the smaller subsample and 3) the transcript counts from the larger subsample into a `MultiAssayExperiment` object. The `sc_annotate_plots()` function can then use it to produce annotated plots.
 ```{r, eval=TRUE, message=FALSE, warning=FALSE}
 library(FLAMES)
+library(MultiAssayExperiment)
  # load scm_lib80, scm_lib80 and scm_lib20
 source(system.file("examples/scmixology1.R", package = "FLAMES"))
-unfiltered <- combine_sce(short_read_large = scm_lib80,
-                          short_read_small = scm_lib20,
-                          long_read_sce = scm_lib20_transcripts,
-                          remove_duplicates = FALSE)
+scm_lib80 <- scuttle::addPerCellQC(scm_lib80)
+scm_lib20 <- scuttle::addPerCellQC(scm_lib20)
+qc_80 <- scuttle::quickPerCellQC(colData(scm_lib80))
+qc_20 <- scuttle::quickPerCellQC(colData(scm_lib20))
+qc_80$discard[scm_lib80$sum < 10000] <- TRUE
+qc_20$discard[scm_lib20$sum < 20000] <- TRUE
 
-unfiltered <- scuttle::addPerCellQC(unfiltered, use.altexps = FALSE)
-qc <- scuttle::quickPerCellQC(colData(unfiltered), batch = unfiltered$Lib_small)
-qc$discard[unfiltered$Lib_small & unfiltered$sum < 20000] <- TRUE
-qc$discard[(!unfiltered$Lib_small) & unfiltered$sum < 10000] <- TRUE
-combined_sce <- unfiltered[, !qc$discard]
+combined_sce <- combine_sce(
+    short_read_large = scm_lib80[,!qc_80$discard],
+    short_read_small = scm_lib20[,!qc_20$discard],
+    long_read_sce = scm_lib20_transcripts,
+    remove_duplicates = FALSE)
+
 plots <- sc_annotate_plots(gene = "ENSG00000108107",
-                           sce_all = scuttle::quickPerCellQC(combined_sce))
-scater::plotReducedDim(plots[["sce_all"]],
-                       dimred = "PCA",
-                       colour_by = "Lib_small")
+                           multiAssay = combined_sce)
+
+scater::plotReducedDim(
+    experiments(plots[["multiAssay"]])$gene_counts,
+    dimred = "PCA",
+    colour_by = colData(plots[["multiAssay"]]
+        [,,"gene_counts"])[,"Lib_small",drop=FALSE])
+
 plots[["plot_umap"]]
 plots[["combined_isoform_plot"]]
 ```

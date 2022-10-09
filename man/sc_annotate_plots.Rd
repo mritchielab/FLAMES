@@ -6,11 +6,11 @@
 \usage{
 sc_annotate_plots(
   gene,
-  sce_all,
+  multiAssay,
   cluster_annotation,
   n_isoforms = 4,
   n_pcs = 40,
-  return_sce_all = TRUE,
+  return_multiAssay = TRUE,
   heatmap_annotation_colors = "BrBG",
   isoform_legend_width = 7,
   heatmap_color_quantile = 0.95,
@@ -22,15 +22,15 @@ sc_annotate_plots(
 \arguments{
 \item{gene}{The gene symbol of interest.}
 
-\item{sce_all}{The combined \code{SingleCellExperiment} object from \code{combine_sce()}.}
+\item{multiAssay}{The \code{MultiAssayExperiment} object from \code{combine_sce()}.}
 
-\item{cluster_annotation}{Path to the cluster annotation CSV (required for heatmap, if \code{cluster_annotation.csv} is not in \code{path} and \code{sce_all$cell_type} does not exist)}
+\item{cluster_annotation}{Path to the cluster annotation CSV (required for heatmap, if \code{cluster_annotation.csv} is not in \code{path} and \code{multiAssay$cell_type} does not exist)}
 
 \item{n_isoforms}{The number of expressed isoforms to keep.}
 
 \item{n_pcs}{The number of principal components to generate.}
 
-\item{return_sce_all}{Whether to return the processed \code{SingleCellExperiment} object.}
+\item{return_multiAssay}{Whether to return the processed \code{MultiAssayExperiment} object.}
 
 \item{heatmap_annotation_colors}{Name of color palette to use for cell group annotation in heatmaps, see \code{\link[RColorBrewer:ColorBrewer]{RColorBrewer::brewer.pal()}} \cr
 available diverging palettes are:\cr
@@ -55,10 +55,12 @@ a list containing the combined UMAP, the isoform exon alignments and the UMAP wi
 Plot isoform exons alignments for a given gene, along with UMAP showing expression levels.
 }
 \details{
-This function takes the short-read data (as \code{SingleCellExperiment} objects) from both the smaller
-and the larger libraries to generate a combined UMAP, the expression levels of isoforms (using long read data)
+This function takes a combined \code{MultiAssayExperiment} object containing "gene_counts" and "transcript_counts" experiments
+to generate a combined UMAP, the expression levels of isoforms (using long read data)
 are then overlayed on top of the UMAP. SNN inference based on gene counts were performed to impute isoform expression
-for cells in the larger library.
+for cells in the larger library. The \code{MultiAssayExperiment} object should have a boolean columen named "Lib_small" in
+its columen data file to idicate which subsample the cells are in. The \code{MultiAssayExperiment} object can be created using
+the \code{combine_sce} function.
 }
 \seealso{
 \code{\link[=combine_sce]{combine_sce()}} for combining gene count \code{SingleCellExperiment} object with transcript counts.
