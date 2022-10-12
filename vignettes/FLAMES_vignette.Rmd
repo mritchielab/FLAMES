@@ -65,7 +65,8 @@ genome_fa <- bfc[[names(BiocFileCache::bfcadd(
   file.path(file_url, "GRCh38shortened.fa")
 ))]]
 
-fastq <- bfc[[names(BiocFileCache::bfcadd(bfc, "Fastq", file.path(file_url, "sc_align2genome.sample.fastq.gz")))]]
+fastq <- bfc[[names(BiocFileCache::bfcadd(
+  bfc, "Fastq", file.path(file_url, "sc_align2genome.sample.fastq.gz")))]]
 
 # setup other environment variables
 outdir <- tempfile()
@@ -82,7 +83,8 @@ This vignette uses the default configuration file created for SIRV reads.
 Once the initial variables have been setup, the pipeline can be run using:
 ```{r, eval=TRUE, echo=TRUE}
 library(FLAMES)
-if (is.character(locate_minimap2_dir())) { # do not run if minimap2 cannot be found
+# do not run if minimap2 cannot be found
+if (is.character(locate_minimap2_dir())) { 
   sce <- sc_long_pipeline(
     annotation = annot, fastq = fastq, genome_fa = genome_fa,
     outdir = outdir, config_file = config_file, match_barcode = FALSE
@@ -119,16 +121,34 @@ if (is.character(minimap2_dir)) { # do not run if minimap2 cannot be found
 ```
 
 ## Visulisation
-```{r, eval=TRUE, echo=TRUE}
-source(system.file("examples/scmixology1.R", package = "FLAMES")) # load scm_lib80, scm_lib80 and scm_lib20
-unfiltered <- combine_sce(short_read_large = scm_lib80, short_read_small = scm_lib20, long_read_sce = scm_lib20_transcripts, remove_duplicates = FALSE)
-unfiltered <- scuttle::addPerCellQC(unfiltered, use.altexps = FALSE)
-qc <- scuttle::quickPerCellQC(colData(unfiltered), batch = unfiltered$Lib_small)
-qc$discard[unfiltered$Lib_small & unfiltered$sum < 20000] <- TRUE
-qc$discard[(!unfiltered$Lib_small) & unfiltered$sum < 10000] <- TRUE
-combined_sce <- unfiltered[, !qc$discard]
-plots <- sc_annotate_plots(gene = "ENSG00000108107", sce_all = scuttle::quickPerCellQC(combined_sce))
-scater::plotReducedDim(plots[["sce_all"]], dimred = "PCA", colour_by = "Lib_small")
+The `combine_sce()` and `sc_annotate_plots()` can be used for visulisation with experiment designs similar to `FLT-seq`. The `combine_sce()` function combines the `SingleCellExperiment` objects of 1) the short-read gene counts from the larger subsample, 2) the short-read gene counts from the smaller subsample and 3) the transcript counts from the larger subsample into a `MultiAssayExperiment` object. The `sc_annotate_plots()` function can then use it to produce annotated plots.
+```{r, eval=TRUE, message=FALSE, warning=FALSE}
+library(FLAMES)
+library(MultiAssayExperiment)
+ # load scm_lib80, scm_lib80 and scm_lib20
+source(system.file("examples/scmixology1.R", package = "FLAMES"))
+scm_lib80 <- scuttle::addPerCellQC(scm_lib80)
+scm_lib20 <- scuttle::addPerCellQC(scm_lib20)
+qc_80 <- scuttle::quickPerCellQC(colData(scm_lib80))
+qc_20 <- scuttle::quickPerCellQC(colData(scm_lib20))
+qc_80$discard[scm_lib80$sum < 10000] <- TRUE
+qc_20$discard[scm_lib20$sum < 20000] <- TRUE
+
+combined_sce <- combine_sce(
+    short_read_large = scm_lib80[,!qc_80$discard],
+    short_read_small = scm_lib20[,!qc_20$discard],
+    long_read_sce = scm_lib20_transcripts,
+    remove_duplicates = FALSE)
+
+plots <- sc_annotate_plots(gene = "ENSG00000108107",
+                           multiAssay = combined_sce)
+
+scater::plotReducedDim(
+    experiments(plots[["multiAssay"]])$gene_counts,
+    dimred = "PCA",
+    colour_by = colData(plots[["multiAssay"]]
+        [,,"gene_counts"])[,"Lib_small",drop=FALSE])
+
 plots[["plot_umap"]]
 plots[["combined_isoform_plot"]]
 ```
@@ -174,9 +194,13 @@ genome_fa <- bfc[[names(BiocFileCache::bfcadd(
 ))]]
 
 # download the two fastq files, move them to a folder to be merged together
-fastq1 <- bfc[[names(BiocFileCache::bfcadd(bfc, "Fastq1", file.path(file_url, "fastq", "sample1.fastq.gz")))]]
-fastq2 <- bfc[[names(BiocFileCache::bfcadd(bfc, "Fastq2", file.path(file_url, "fastq", "sample2.fastq.gz")))]]
-fastq_dir <- file.path(temp_path, "fastq_dir") # the downloaded fastq files need to be in a directory to be merged together
+fastq1 <- bfc[[names(BiocFileCache::bfcadd(bfc, "Fastq1", 
+                file.path(file_url, "fastq", "sample1.fastq.gz")))]]
+fastq2 <- bfc[[names(BiocFileCache::bfcadd(bfc, "Fastq2",
+                file.path(file_url, "fastq", "sample2.fastq.gz")))]]
+
+# the downloaded fastq files need to be in a directory to be merged together
+fastq_dir <- file.path(temp_path, "fastq_dir") 
 dir.create(fastq_dir)
 file.copy(c(fastq1, fastq2), fastq_dir)
 unlink(c(fastq1, fastq2)) # the original files can be deleted
@@ -209,28 +233,42 @@ Since the barcode demultiplexing step, isoform identification step and quantific
 ```{bash eval=FALSE}
 #!/bin/bash -x
 
-sed -i '/"do_/s/true/false/' config_sclr_nanopore_5end.json # set all steps to false
-sed -i '/do_genome_alignment/s/false/true/' config_sclr_nanopore_5end.json # set do_genome_alignment to true
-srun -c 20 --mem 64GB Rscript flames_pipeline.R && \
+# set all steps to false
+sed -i '/"do_/s/true/false/' config_sclr_nanopore_5end.json 
+# set do_genome_alignment to true
+sed -i '/do_genome_alignment/s/false/true/' \
+        config_sclr_nanopore_5end.json 
+srun -c 20 --mem 64GB \
+        Rscript flames_pipeline.R && \
 
-sed -i '/"do_/s/true/false/' config_sclr_nanopore_5end.json && \
-sed -i '/do_isoform_identification/s/false/true/' config_sclr_nanopore_5end.json && \
-srun -c 1 --mem 64GB --ntasks=1 Rscript flames_pipeline.R  && \
+sed -i '/"do_/s/true/false/' \
+        config_sclr_nanopore_5end.json && \
+sed -i '/do_isoform_identification/s/false/true/' \
+        config_sclr_nanopore_5end.json && \
+srun -c 1 --mem 64GB --ntasks=1 \
+        Rscript flames_pipeline.R  && \
 
-sed -i '/"do_/s/true/false/' config_sclr_nanopore_5end.json && \
-sed -i '/do_read_realignment/s/false/true/' config_sclr_nanopore_5end.json && \
-srun -c 20 --mem 64GB --ntasks=1 Rscript flames_pipeline.R && \
+sed -i '/"do_/s/true/false/' \
+        config_sclr_nanopore_5end.json && \
+sed -i '/do_read_realignment/s/false/true/' \
+        config_sclr_nanopore_5end.json && \
+srun -c 20 --mem 64GB --ntasks=1 \
+        Rscript flames_pipeline.R && \
 
-sed -i '/"do_/s/true/false/' config_sclr_nanopore_5end.json && \
-sed -i '/do_transcript_quantification/s/false/true/' config_sclr_nanopore_5end.json && \
-srun -c 1 --mem 64GB --ntasks=1 Rscript flames_pipeline.R && \
+sed -i '/"do_/s/true/false/' \
+        config_sclr_nanopore_5end.json && \
+sed -i '/do_transcript_quantification/s/false/true/' \
+        config_sclr_nanopore_5end.json && \
+srun -c 1 --mem 64GB --ntasks=1 \
+        Rscript flames_pipeline.R && \
 
 echo "Pipeline finished"
 ```
 
 The `Bash` script can then be executed inside a tmux or screen session with:
 ```{bash eval=FALSE}
-./flames.sh | tee -a bash.log; tail bash.log | mail -s "flames pipeline ended" user@example.com
+./flames.sh | tee -a bash.log; tail bash.log \
+        | mail -s "flames pipeline ended" user@example.com
 ```
 
 ## FLAMES on Windows

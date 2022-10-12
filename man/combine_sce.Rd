@@ -7,9 +7,8 @@
 combine_sce(
   short_read_large,
   short_read_small,
-  short_read_all,
   long_read_sce,
-  remove_duplicates = TRUE
+  remove_duplicates = FALSE
 )
 }
 \arguments{
@@ -19,25 +18,21 @@ corresponding to the larger short-read sample}
 \item{short_read_small}{The SCE object, or path to the HDF5 file, or folder containing the matrix file,
 corresponding to the smaller short-read sample}
 
-\item{short_read_all}{(Optional) The combined short-read SCE object. When this is provided, \code{short_read_large} and
-\code{short_read_small} will be ignored.}
-
 \item{long_read_sce}{The SCE object of the transcript counts, from the long-read pipelines.}
 
 \item{remove_duplicates}{determines whether cells with duplicated barcodes aer kept in the smaller library (
 they are always removed from the larger library)}
 }
 \value{
-A \code{SingleCellExperiment} object, with the transcript counts attached.
+A \code{MultiAssayExperiment} object, with "gene_counts" and "transcript_counts" experiments.
 }
 \description{
 Combine long- and short-read SingleCellExperiment objects
 }
 \details{
-Takes the long-read SCE object from the long-read pipeline and attach it as \code{altExpress} of
-the short-read SCE object. Cell that are not sampled for long-read sequencing are left with zero expressions.
+Takes the long-read SCE object from the long-read pipeline and the short-read SCE object,
+creates a \code{MultiAssayExperiment} object with the two \code{SingleCellExperiment} objects.
 Cells with duplicated barcodes are removed from the larger library.
-Cell barcodes only found in long-read sequencing are removed.
 }
 \examples{
 library(SingleCellExperiment)

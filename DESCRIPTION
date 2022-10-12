@@ -27,6 +27,7 @@ Imports:
     reticulate,
     SingleCellExperiment,
     SummarizedExperiment,
+    MultiAssayExperiment,
     Rsamtools,
     utils,
     zlibbioc,
@@ -59,10 +60,10 @@ Imports:
     GenomicFeatures,
     jsonlite,
     parallel,
-    GEOquery,
     DropletUtils
 Suggests: 
     BiocStyle,
+    GEOquery,
     knitr,
     rmarkdown,
     markdown,

@@ -23,6 +23,7 @@
         "min_sup_cnt": 5,
         "min_cnt_pct": 0.001,
         "min_sup_pct": 0.2,
+        "bambu_trust_reference": true,
         "strand_specific": 0,
         "remove_incomp_reads": 4,
         "downsample_ratio": 1
