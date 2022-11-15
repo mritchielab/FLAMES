@@ -157,6 +157,7 @@ annotation_to_fasta <- function(isoform_annotation, genome_fa, outdir) {
 #'     )
 #'     grlist <- get_GRangesList(file = file.path(outdir, "isoform_annotated.gff3"))
 #' }
+#' @importFrom rtracklayer import
 #' @export
 get_GRangesList <- function(file) {
     isoform_gr <- rtracklayer::import(file, feature.type = c("exon", "utr"))
