@@ -13,6 +13,9 @@ demultiplex_sockeye(fastq_dir, sockeye_tsv, out_fq)
 
 \item{out_fq}{The output FASTQ file.}
 }
+\value{
+returns NULL
+}
 \description{
 Demultiplex reads using the \code{cell_umi_gene.tsv} file from Sockeye.
 }

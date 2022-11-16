@@ -3,7 +3,7 @@
 #' @param fastq_dir The folder containing FASTQ files from Sockeye's output under \code{ingest/chunked_fastqs}.
 #' @param sockeye_tsv The \code{cell_umi_gene.tsv} file from Sockeye.
 #' @param out_fq The output FASTQ file.
-#' @return NULL
+#' @return returns NULL
 #' @export
 #' @importFrom reticulate import_from_path
 demultiplex_sockeye <- function(fastq_dir, sockeye_tsv, out_fq) {
