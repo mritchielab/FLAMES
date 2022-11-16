@@ -1,7 +1,7 @@
 Package: FLAMES
 Type: Package
 Title: FLAMES: Full Length Analysis of Mutations and Splicing in long read RNA-seq data
-Version: 1.4.0
+Version: 1.5.1
 Date: 2022-4-21
 Authors@R: c(person("Tian", "Luyi", role=c("aut"),
                     email="tian.l@wehi.edu.au"),
@@ -74,7 +74,7 @@ Suggests:
     testthat (>= 3.0.0)
 LinkingTo: Rcpp, Rhtslib, zlibbioc
 SystemRequirements: GNU make, C++11
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.2
 VignetteBuilder: knitr
 URL: https://github.com/OliverVoogd/FLAMES
 Config/testthat/edition: 3

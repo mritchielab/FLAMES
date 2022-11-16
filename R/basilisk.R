@@ -14,7 +14,7 @@
 flames_env <- BasiliskEnvironment(
     envname = "flames_env", pkgname = "FLAMES",
     packages = c(
-        "python>=3.7",
+        "python==3.7",
         # "minimap2==2.17",
         "numpy==1.16.5",
         "editdistance==0.5.3",
