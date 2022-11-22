@@ -36,6 +36,7 @@
 #' }
 find_isoform <- function(annotation, genome_fa, genome_bam, outdir, config) {
     # pipeline types: singe_cell, single_cell_multisample, bulk
+    cat(format(Sys.time(), "%X %a %b %d %Y"), "find_isoform\n")
     if (config$pipeline_parameters$bambu_isoform_identification) {
         find_isoform_bambu(annotation, genome_fa, genome_bam, outdir, config)
     } else {

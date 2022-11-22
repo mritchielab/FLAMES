@@ -102,6 +102,8 @@ wrt_tr_to_csv <-
 #' }
 #' @export
 quantify <- function(annotation, outdir, config, pipeline = "sc_single_sample") {
+    cat(format(Sys.time(), "%X %a %b %d %Y"), "quantify\n")
+
     if (grepl("\\.gff3?(\\.gz)?$", annotation)) {
         warning("Annotation in GFF format may cause errors. Please consider using GTF formats.\n")
     }

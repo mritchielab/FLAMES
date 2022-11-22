@@ -39,16 +39,8 @@
 #'     )
 #' }
 minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2_dir, prefix = NULL, threads = NULL) {
-    # if (is.null(threads) && base::system("getconf _NPROCESSORS_ONLN", ignore.stderr = TRUE, ignore.stdout = TRUE) == 0) {
-    #    available_cores <- base::system2(command = "getconf", args = c("NPROCESSORS_ONLN"), stdout = TRUE, stderr = TRUE)
-    #    if (length(available_cores) == 1 && base::grepl("^[0-9]*$", available_cores)) {
-    #        threads <- as.integer(available_cores)
-    #    } else {
-    #        threads <- 12
-    #    }
-    # } else {
-    #    threads <- 12
-    # }
+    cat(format(Sys.time(), "%X %a %b %d %Y"), "minimap2_align\n")
+
     if (missing("threads") || is.null(threads)) {
         threads <- parallel::detectCores()
     }
@@ -162,6 +154,8 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2_dir, 
 #'     )
 #' }
 minimap2_realign <- function(config, fq_in, outdir, minimap2_dir, prefix = NULL, threads = NULL) {
+    cat(format(Sys.time(), "%X %a %b %d %Y"), "minimap2_realign\n")
+
     if (missing("threads") || is.null(threads)) {
         threads <- parallel::detectCores()
     }
