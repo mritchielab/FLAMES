@@ -5,8 +5,6 @@
 #include <fstream>
 #include <string>
 
-#include <Rcpp.h>
-#include <R.h>
 #include "zlib.h"
 #include "htslib/kseq.h"
 

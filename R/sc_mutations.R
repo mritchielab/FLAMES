@@ -51,8 +51,6 @@
 #'      \item{freq_summary.csv}
 #' }
 #'
-#' @importFrom reticulate import_from_path
-#' @importFrom stats p.adjust
 #' @importFrom utils write.csv
 #' @importFrom S4Vectors head
 #'
@@ -64,6 +62,7 @@
 #' R.utils::gunzip(filename = system.file("extdata/bc_allow.tsv.gz", package = "FLAMES"), destname = bc_allow, remove = FALSE)
 #' R.utils::gunzip(filename = system.file("extdata/rps24.fa.gz", package = "FLAMES"), destname = genome_fa, remove = FALSE)
 #'
+#' \dontrun{
 #' if (is.character(locate_minimap2_dir())) {
 #'     sce <- FLAMES::sc_long_pipeline(
 #'         genome_fa = genome_fa,
@@ -74,6 +73,7 @@
 #'         reference_csv = bc_allow
 #'     )
 #'     sc_mutations(sce, barcode_tsv = file.path(outdir, "bc_allow.tsv"), min_cov = 2, report_pct = c(0, 1))
+#' }
 #' }
 #' @export
 sc_mutations <- function(sce, barcode_tsv, bam_short, out_dir, genome_fa, annot, known_positions = NULL, min_cov = 100, report_pct = c(0.10, 0.90)) {

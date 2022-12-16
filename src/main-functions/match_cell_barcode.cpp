@@ -13,11 +13,13 @@
 #include <cassert>
 #include <fstream>
 
+#include <Rcpp.h>
+#include <R.h>
+
 #include "../utility/edit_dist.h"
 #include "../utility/ssw/ssw_cpp.h"
 #include "../utility/fastq_utils.h"
 
-using namespace Rcpp;
 
 //static const int MAX_DIST = 2;
 static const int BC_LEN = 16;
@@ -428,9 +430,10 @@ int get_hm_idx(std::string &q_seq, std::vector<std::string> &barcode_list, int m
   }
 }
 
-
+//' @importFrom Rcpp Rprintf
+//'
 // [[Rcpp::export]]
-void match_cell_barcode(String fastq_dir, String stats_file, String out_fastq, String ref_csv, int MAX_DIST, int UMI_LEN = 10)
+void match_cell_barcode(Rcpp::String fastq_dir, Rcpp::String stats_file, Rcpp::String out_fastq, Rcpp::String ref_csv, int MAX_DIST, int UMI_LEN = 10)
 {
   // "usage: <1.fastq folder> <2.output cell barcode statistics file> <3.fastq output reads that matched cell barcode> <4.barcode reference from short read 10X data> <5.max edit distance> [6. UMI length (default: 10)]"
 

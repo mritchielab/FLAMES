@@ -93,12 +93,14 @@ wrt_tr_to_csv <-
 #' fasta <- annotation_to_fasta(annotation, genome_fa, outdir)
 #' config <- jsonlite::fromJSON(create_config(outdir, bambu_isoform_identification = TRUE, min_tr_coverage = 0.1, min_read_coverage = 0.1, min_sup_cnt = 1))
 #' file.copy(annotation, file.path(outdir, "isoform_annotated.gtf"))
+#' \dontrun{
 #' if (is.character(locate_minimap2_dir())) {
 #'     minimap2_realign(
 #'         config = config, outdir = outdir,
 #'         fq_in = fastq1
 #'     )
 #'     quantify(annotation, outdir, config, pipeline = "bulk")
+#' }
 #' }
 #' @export
 quantify <- function(annotation, outdir, config, pipeline = "sc_single_sample") {

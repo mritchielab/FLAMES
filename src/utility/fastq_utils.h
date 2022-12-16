@@ -3,12 +3,9 @@
 
 #include <string>
 
-#include <Rcpp.h>
-#include <R.h>
 #include "zlib.h"
 #include "htslib/kseq.h"
 
-using namespace Rcpp;
 
 #ifndef INIT_KSEQ
 #define INIT_KSEQ
