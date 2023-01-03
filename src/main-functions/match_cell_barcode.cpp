@@ -325,12 +325,12 @@ std::pair<int, int> get_bc_range(std::string fqn, int max_reads, const std::stri
 
   for (int ix = 0; ix < 20; ix++)
   {
-    Rcpp::Rcout << "forward flanking end: " << vect[ix].first << "\t" <<vect[ix].second << "\n";
+    Rcpp::Rcout << "forward flanking end: " << vect[ix].first << "\t" << vect[ix].second << "\n";
     //std::cout << "forward flanking end: " << vect[ix].first << "\t"<<vect[ix].second << std::endl;
   }
   for (int ix = 0; ix < 20; ix++)
   {
-    Rcpp::Rcout << "reverse comp flanking end: " << vect_rev[ix].first << "\t" << vect_rev[ix].second) << "\n";
+    Rcpp::Rcout << "reverse comp flanking end: " << vect_rev[ix].first << "\t" << vect_rev[ix].second << "\n";
     //std::cout << "reverse comp flanking end: " << vect_rev[ix].first << "\t"<<vect_rev[ix].second << std::endl;
   }
 
@@ -495,7 +495,7 @@ void match_cell_barcode(Rcpp::String fastq_dir, Rcpp::String stats_file, Rcpp::S
 
   std::pair<int, int> bc_range = get_bc_range(join_path(std::string(fastq_dir.get_cstring()), seed_file).c_str(), 30000, ref_left, MAX_DIST);
   //std::cout << bc_range.first <<" @@@@@@ " <<  bc_range.second << std::endl;
-  Rcpp::Rcout <<  bc_range.first < " @@@@@@ " << bc_range.second << "\n";
+  Rcpp::Rcout <<  bc_range.first << " @@@@@@ " << bc_range.second << "\n";
   for (auto &it : files)
   {
     Rcpp::Rcout << it.c_str() << "\n";
