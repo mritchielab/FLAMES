@@ -44,10 +44,12 @@ if (is.character(locate_minimap2_dir())) {
         annot = annotation,
         outdir = outdir
     )
+\dontrun{
     find_isoform(
         annotation = annotation, genome_fa = genome_fa,
         genome_bam = file.path(outdir, "align2genome.bam"),
         outdir = outdir, config = config
     )
+}
 }
 }

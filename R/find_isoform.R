@@ -28,7 +28,7 @@
 #'         annot = annotation,
 #'         outdir = outdir
 #'     )
-#' dontrun{
+#' \dontrun{
 #'     find_isoform(
 #'         annotation = annotation, genome_fa = genome_fa,
 #'         genome_bam = file.path(outdir, "align2genome.bam"),
