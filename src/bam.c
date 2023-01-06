@@ -30,7 +30,8 @@
 #include <errno.h>
 #include "bam.h"
 #include <htslib/kstring.h>
-#include "sam_header.h"
+
+// #include "sam_header.h"
 
 char *bam_format1(const bam_header_t *header, const bam1_t *b)
 {

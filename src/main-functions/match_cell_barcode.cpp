@@ -10,7 +10,7 @@
 #include <unordered_map>
 #include <algorithm>
 #include <string>
-#include <cassert>
+// #include <cassert> // used for assert, which would terminate R, so cannot be used as per BiocCheck
 #include <fstream>
 
 #include <Rcpp.h>
@@ -97,7 +97,8 @@ char complement(char n)
   case 'N':
     return 'N';
   }
-  assert(false);
+  // assert(false);
+  Rcpp::stop("Character given to complement is not one of A,T,G,C or N.");
   return ' ';
 }
 
