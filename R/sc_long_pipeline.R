@@ -226,7 +226,7 @@ sc_long_pipeline <-
         sce
     }
 
-
+#' @export
 sc_long_pipeline_cpp <-
     function(annot,
              fastq,
