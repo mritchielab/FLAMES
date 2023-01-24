@@ -11,6 +11,7 @@ minimap2_align(
   annot,
   outdir,
   minimap2_dir,
+  samtools = NULL,
   prefix = NULL,
   threads = NULL
 )
@@ -27,6 +28,8 @@ minimap2_align(
 \item{outdir}{Output folder}
 
 \item{minimap2_dir}{Path to the directory containing minimap2}
+
+\item{samtools}{path to the samtools binary, required for large datasets since \code{Rsamtools} does not support \code{CSI} indexing}
 
 \item{prefix}{String, the prefix (e.g. sample name) for the outputted BAM file}
 

@@ -96,8 +96,6 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2_dir, 
         }
         sort_status <- base::system2(command = samtools, args = c("sort", file.path(outdir, paste0(prefix, "tmp_align.bam")), "-o", file.path(outdir, paste0(prefix, "align2genome.bam"))))
         index_status <- base::system2(command = samtools, args = c("index", file.path(outdir, paste0(prefix, "align2genome.bam"))))
-        message(sort_status)
-        message(index_status)
     } else {
         minimap2_status <- base::system2(
             command = file.path(minimap2_dir, "minimap2"),
@@ -186,8 +184,6 @@ minimap2_realign <- function(config, fq_in, outdir, minimap2_dir, prefix = NULL,
         }
         sort_status <- base::system2(command = samtools, args = c("sort", file.path(outdir, paste0(prefix, "tmp_align.bam")), "-o", file.path(outdir, paste0(prefix, "realign2transcript.bam"))))
         index_status <- base::system2(command = samtools, args = c("index", file.path(outdir, paste0(prefix, "realign2transcript.bam"))))
-        message(sort_status)
-        message(index_status)
     } else {
         minimap2_status <- base::system2(
             command = file.path(minimap2_dir, "minimap2"),

@@ -290,7 +290,7 @@ generate_sc_sce <- function(out_files, load_genome_anno = NULL, create_function)
 
 
     rowData(tr_sce) <- DataFrame(tr_anno)
-    rownames(tr_sce) <- rowData(tr_sce)$FSM_match
+    rownames(tr_sce) <- tr_anno$FSM_match
     # return the created singlecellexperiment
     return(tr_sce)
 }
@@ -388,7 +388,7 @@ create_se_from_dir <- function(outdir, annotation) {
         realign2transcript = file.path(outdir, "realign2transcript.bam"),
         tss_tes = file.path(outdir, "tss_tes.bedgraph")
     )
-    if (!is.null(annotation)) {
+    if (!missing("annotation") && !is.null(annotation)) {
         out_files[["annotation"]] <- annotation
         load_genome_anno <- rtracklayer::import(annotation, feature.type = c("exon", "utr"))
         return(generate_bulk_summarized(out_files, load_genome_anno = load_genome_anno))
