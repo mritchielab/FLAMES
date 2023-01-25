@@ -8,8 +8,6 @@
 #include "zlib.h"
 #include "htslib/kseq.h"
 
-using namespace Rcpp;
-
 #ifndef INIT_KSEQ
 #define INIT_KSEQ
 KSEQ_INIT(gzFile, gzread)
