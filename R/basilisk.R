@@ -1,4 +1,3 @@
-#' @importFrom basilisk BasiliskEnvironment
 # flames_nopysam_env <- BasiliskEnvironment(
 #    envname = "flames_nopysam_env", pkgname = "FLAMES",
 #    packages = c(
@@ -11,6 +10,7 @@
 #    channels = c("bioconda", "conda-forge")
 # )
 
+#' @importFrom basilisk BasiliskEnvironment
 flames_env <- BasiliskEnvironment(
     envname = "flames_env", pkgname = "FLAMES",
     packages = c(

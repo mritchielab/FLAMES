@@ -25,21 +25,9 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
-// merge_bulk_fastq_cpp
-void merge_bulk_fastq_cpp(Rcpp::StringVector fastq_files, Rcpp::String out_fastq);
-RcppExport SEXP _FLAMES_merge_bulk_fastq_cpp(SEXP fastq_filesSEXP, SEXP out_fastqSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::StringVector >::type fastq_files(fastq_filesSEXP);
-    Rcpp::traits::input_parameter< Rcpp::String >::type out_fastq(out_fastqSEXP);
-    merge_bulk_fastq_cpp(fastq_files, out_fastq);
-    return R_NilValue;
-END_RCPP
-}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_FLAMES_find_barcode", (DL_FUNC) &_FLAMES_find_barcode, 6},
-    {"_FLAMES_merge_bulk_fastq_cpp", (DL_FUNC) &_FLAMES_merge_bulk_fastq_cpp, 2},
     {NULL, NULL, 0}
 };
 

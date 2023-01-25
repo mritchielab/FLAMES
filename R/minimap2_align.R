@@ -13,6 +13,7 @@
 #' @param prefix String, the prefix (e.g. sample name) for the outputted BAM file
 #' @param threads Integer, threads for minimap2 to use, see minimap2 documentation for details,
 #' FLAMES will try to detect cores if this parameter is not provided.
+#' @param samtools path to the samtools binary, required for large datasets since \code{Rsamtools} does not support \code{CSI} indexing
 #'
 #' @return Path to the alignment file
 #' @seealso [minimap2_realign()]
@@ -38,17 +39,9 @@
 #'         outdir = outdir
 #'     )
 #' }
-minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2_dir, prefix = NULL, threads = NULL) {
-    # if (is.null(threads) && base::system("getconf _NPROCESSORS_ONLN", ignore.stderr = TRUE, ignore.stdout = TRUE) == 0) {
-    #    available_cores <- base::system2(command = "getconf", args = c("NPROCESSORS_ONLN"), stdout = TRUE, stderr = TRUE)
-    #    if (length(available_cores) == 1 && base::grepl("^[0-9]*$", available_cores)) {
-    #        threads <- as.integer(available_cores)
-    #    } else {
-    #        threads <- 12
-    #    }
-    # } else {
-    #    threads <- 12
-    # }
+minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2_dir, samtools = NULL, prefix = NULL, threads = NULL) {
+    cat(format(Sys.time(), "%X %a %b %d %Y"), "minimap2_align\n")
+
     if (missing("threads") || is.null(threads)) {
         threads <- parallel::detectCores()
     }
@@ -61,7 +54,9 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2_dir, 
         minimap2_dir <- locate_minimap2_dir()
     }
 
-    samtools <- locate_samtools()
+    if (is.null(samtools)) {
+        samtools <- locate_samtools()
+    }
 
     minimap2_args <- c("-ax", "splice", "-t", threads, "-k14", "--secondary=no", "--seed", config$pipeline_parameters$seed)
     if (config$alignment_parameters$no_flank) {
@@ -99,8 +94,8 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2_dir, 
         if (!is.null(base::attr(minimap2_status, "status")) && base::attr(minimap2_status, "status") != 0) {
             stop(paste0("error running minimap2:\n", minimap2_status))
         }
-        Rsamtools::sortBam(file.path(outdir, paste0(prefix, "tmp_align.bam")), file.path(outdir, paste0(prefix, "align2genome")))
-        Rsamtools::indexBam(file.path(outdir, paste0(prefix, "align2genome.bam")))
+        sort_status <- base::system2(command = samtools, args = c("sort", file.path(outdir, paste0(prefix, "tmp_align.bam")), "-o", file.path(outdir, paste0(prefix, "align2genome.bam"))))
+        index_status <- base::system2(command = samtools, args = c("index", file.path(outdir, paste0(prefix, "align2genome.bam"))))
     } else {
         minimap2_status <- base::system2(
             command = file.path(minimap2_dir, "minimap2"),
@@ -116,7 +111,6 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2_dir, 
         file.remove(file.path(outdir, paste0(prefix, "tmp_align.sam")))
     }
     file.remove(file.path(outdir, paste0(prefix, "tmp_align.bam")))
-    file.remove(file.path(outdir, paste0(prefix, "tmp_align.bam.bai")))
 
     if (config$alignment_parameters$use_junctions) {
         file.remove(file.path(outdir, "tmp_splice_anno.bed12"))
@@ -162,6 +156,8 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2_dir, 
 #'     )
 #' }
 minimap2_realign <- function(config, fq_in, outdir, minimap2_dir, prefix = NULL, threads = NULL) {
+    cat(format(Sys.time(), "%X %a %b %d %Y"), "minimap2_realign\n")
+
     if (missing("threads") || is.null(threads)) {
         threads <- parallel::detectCores()
     }
@@ -186,8 +182,8 @@ minimap2_realign <- function(config, fq_in, outdir, minimap2_dir, prefix = NULL,
         if (!is.null(base::attr(minimap2_status, "status")) && base::attr(minimap2_status, "status") != 0) {
             stop(paste0("error running minimap2:\n", minimap2_status))
         }
-        Rsamtools::sortBam(file.path(outdir, paste0(prefix, "tmp_align.bam")), file.path(outdir, paste0(prefix, "realign2transcript")))
-        Rsamtools::indexBam(file.path(outdir, paste0(prefix, "realign2transcript.bam")))
+        sort_status <- base::system2(command = samtools, args = c("sort", file.path(outdir, paste0(prefix, "tmp_align.bam")), "-o", file.path(outdir, paste0(prefix, "realign2transcript.bam"))))
+        index_status <- base::system2(command = samtools, args = c("index", file.path(outdir, paste0(prefix, "realign2transcript.bam"))))
     } else {
         minimap2_status <- base::system2(
             command = file.path(minimap2_dir, "minimap2"),
@@ -209,7 +205,6 @@ minimap2_realign <- function(config, fq_in, outdir, minimap2_dir, prefix = NULL,
         file.remove(file.path(outdir, paste0(prefix, "tmp_align.sam")))
     }
     file.remove(file.path(outdir, paste0(prefix, "tmp_align.bam")))
-    file.remove(file.path(outdir, paste0(prefix, "tmp_align.bam.bai")))
 
     return(file.path(outdir, paste0(prefix, "realign2transcript.bam")))
 }

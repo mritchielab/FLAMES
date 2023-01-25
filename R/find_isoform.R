@@ -28,14 +28,17 @@
 #'         annot = annotation,
 #'         outdir = outdir
 #'     )
+#' \dontrun{
 #'     find_isoform(
 #'         annotation = annotation, genome_fa = genome_fa,
 #'         genome_bam = file.path(outdir, "align2genome.bam"),
 #'         outdir = outdir, config = config
 #'     )
 #' }
+#' }
 find_isoform <- function(annotation, genome_fa, genome_bam, outdir, config) {
     # pipeline types: singe_cell, single_cell_multisample, bulk
+    cat(format(Sys.time(), "%X %a %b %d %Y"), "find_isoform\n")
     if (config$pipeline_parameters$bambu_isoform_identification) {
         find_isoform_bambu(annotation, genome_fa, genome_bam, outdir, config)
     } else {

@@ -1,7 +1,7 @@
 Package: FLAMES
 Type: Package
 Title: FLAMES: Full Length Analysis of Mutations and Splicing in long read RNA-seq data
-Version: 1.4.1
+Version: 1.4.2
 Date: 2022-4-21
 Authors@R: c(person("Tian", "Luyi", role=c("aut"),
                     email="tian.l@wehi.edu.au"),
@@ -24,43 +24,43 @@ License: GPL (>= 2)
 Encoding: UTF-8
 Imports: 
     basilisk,
+    bambu,
+    Biostrings,
+    BiocGenerics,
+    circlize,
+    ComplexHeatmap,
+    cowplot,
+    dplyr,
+    DropletUtils,
+    GenomicRanges,
+    GenomicFeatures,
+    GenomeInfoDb,
+    ggplot2,
+    ggbio,
+    grid,
+    gridExtra,
+    igraph,
+    jsonlite,
+    magrittr,
+    Matrix,
+    parallel,
     reticulate,
+    Rsamtools,
+    rtracklayer,
+    RColorBrewer,
     SingleCellExperiment,
     SummarizedExperiment,
-    MultiAssayExperiment,
-    Rsamtools,
-    utils,
-    zlibbioc,
     scater,
-    dplyr,
-    tidyr,
-    magrittr,
     S4Vectors,
     scuttle,
     stats,
-    rtracklayer,
-    igraph,
-    ggbio,
-    GenomicRanges,
-    Matrix,
-    BiocGenerics,
-    ggplot2,
     scran,
-    ComplexHeatmap,
-    RColorBrewer,
-    circlize,
-    grid,
-    gridExtra,
-    cowplot,
     stringr,
-    bambu,
-    GenomeInfoDb,
+    MultiAssayExperiment,
+    tidyr,
+    utils,
     withr,
-    Biostrings,
-    GenomicFeatures,
-    jsonlite,
-    parallel,
-    DropletUtils
+    zlibbioc,
 Suggests: 
     BiocStyle,
     GEOquery,
@@ -74,7 +74,7 @@ Suggests:
     testthat (>= 3.0.0)
 LinkingTo: Rcpp, Rhtslib, zlibbioc
 SystemRequirements: GNU make, C++11
-RoxygenNote: 7.2.2
+RoxygenNote: 7.2.3
 VignetteBuilder: knitr
 URL: https://github.com/OliverVoogd/FLAMES
 Config/testthat/edition: 3

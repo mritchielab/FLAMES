@@ -1,15 +1,12 @@
 #ifndef MATCH_CELL_BARCODE_H
 #define MATCH_CELL_BARCODE_H
 
-#include <sys/types.h>
-#include <dirent.h>
-#include <errno.h>
 #include <vector>
 #include <utility>
 #include <unordered_map>
-#include <algorithm>
 #include <string>
-#include <cassert>
+
+#include <Rcpp.h>
 
 #include "../utility/edit_dist.h"
 #include "../utility/ssw/ssw_cpp.h"

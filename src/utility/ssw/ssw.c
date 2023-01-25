@@ -1,6 +1,6 @@
 /* The MIT License
 
-   Copyright (c) 2012-1015 Boston College.
+   Copyright (c) 2012-2015 Boston College.
 
    Permission is hereby granted, free of charge, to any person obtaining
    a copy of this software and associated documentation files (the
@@ -23,27 +23,64 @@
    SOFTWARE.
 */
 
-/* Contact: Mengyao Zhao <zhangmp@bc.edu> */
+/* The 2-clause BSD License
+
+   Copyright 2006 Michael Farrar.  
+
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions are
+   met:
+   
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+   
+   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+   "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+   LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+   A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+   HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+   SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+   LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+   DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+   THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 
 /*
  *  ssw.c
  *
  *  Created by Mengyao Zhao on 6/22/10.
  *  Copyright 2010 Boston College. All rights reserved.
- *	Version 1.2.3
- *	Last revision by Mengyao Zhao on 2017-06-26.
+ *	Version 1.2.4
+ *	Last revision by Mengyao Zhao on 2022-Apr-17.
  *
+ *  The lazy-F loop implementation was derived from SWPS3, which is
+ *  MIT licensed under ETH Zürich, Institute of Computational Science.
+ *
+ *  The core SW loop referenced the swsse2 implementation, which is
+ *  BSD licensed under Micharl Farrar.
  */
 
-//#include <nmmintrin.h>
-#include <emmintrin.h>
+// #include <Rcpp.h>
+
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include <R.h>
 #include "ssw.h"
+
+#ifdef __ARM_NEON // (M1)
+#include "sse2neon.h"
+#else // x86 (Intel)
+#include <emmintrin.h>
+#endif
+
 
 #ifdef __GNUC__
 #define LIKELY(x) __builtin_expect((x),1)
@@ -173,8 +210,8 @@ static alignment_end* sw_sse2_byte (const int8_t* ref,
 	 						 uint8_t bias,  /* Shift 0 point to a positive value. */
 							 int32_t maskLen) {
 
-// Put the largest number of the 16 numbers in vm into m.
-#define max16(m, vm) (vm) = _mm_max_epu8((vm), _mm_srli_si128((vm), 8)); \
+    // Put the largest number of the 16 numbers in vm into m.
+    #define max16(m, vm) (vm) = _mm_max_epu8((vm), _mm_srli_si128((vm), 8)); \
 					  (vm) = _mm_max_epu8((vm), _mm_srli_si128((vm), 4)); \
 					  (vm) = _mm_max_epu8((vm), _mm_srli_si128((vm), 2)); \
 					  (vm) = _mm_max_epu8((vm), _mm_srli_si128((vm), 1)); \
@@ -199,7 +236,7 @@ static alignment_end* sw_sse2_byte (const int8_t* ref,
 	__m128i* pvE = (__m128i*) calloc(segLen, sizeof(__m128i));
 	__m128i* pvHmax = (__m128i*) calloc(segLen, sizeof(__m128i));
 
-	int32_t i, j;
+	int32_t i, j, k;
 	/* 16 byte insertion begin vector */
 	__m128i vGapO = _mm_set1_epi8(weight_gapO);
 
@@ -263,40 +300,21 @@ static alignment_end* sw_sse2_byte (const int8_t* ref,
 			vH = _mm_load_si128(pvHLoad + j);
 		}
 
-		/* Lazy_F loop: has been revised to disallow adjecent insertion and then deletion, so don't update E(i, j), learn from SWPS3 */
-        /* reset pointers to the start of the saved data */
-        j = 0;
-        vH = _mm_load_si128 (pvHStore + j);
+        /* Lazy_F loop: has been revised to disallow adjecent insertion and then deletion, so don't update E(i, j), learn from SWPS3 */
+		for (k = 0; LIKELY(k < 16); ++k) {
+			vF = _mm_slli_si128 (vF, 1);
+			for (j = 0; LIKELY(j < segLen); ++j) {
+				vH = _mm_load_si128(pvHStore + j);
+				vH = _mm_max_epu8(vH, vF);
+	    		vMaxColumn = _mm_max_epu8(vMaxColumn, vH);	// newly added line
+				_mm_store_si128(pvHStore + j, vH);
+				vH = _mm_subs_epu8(vH, vGapO);
+				vF = _mm_subs_epu8(vF, vGapE);
+				if (UNLIKELY(! _mm_movemask_epi8(_mm_cmpgt_epi8(vF, vH)))) goto end;
+			}
+		}
 
-        /*  the computed vF value is for the given column.  since */
-        /*  we are at the end, we need to shift the vF value over */
-        /*  to the next column. */
-        vF = _mm_slli_si128 (vF, 1);
-        vTemp = _mm_subs_epu8 (vH, vGapO);
-		vTemp = _mm_subs_epu8 (vF, vTemp);
-		vTemp = _mm_cmpeq_epi8 (vTemp, vZero);
-		cmp  = _mm_movemask_epi8 (vTemp);
-
-        while (cmp != 0xffff)
-        {
-            vH = _mm_max_epu8 (vH, vF);
-			vMaxColumn = _mm_max_epu8(vMaxColumn, vH);
-            _mm_store_si128 (pvHStore + j, vH);
-            vF = _mm_subs_epu8 (vF, vGapE);
-            j++;
-            if (j >= segLen)
-            {
-                j = 0;
-                vF = _mm_slli_si128 (vF, 1);
-            }
-            vH = _mm_load_si128 (pvHStore + j);
-
-            vTemp = _mm_subs_epu8 (vH, vGapO);
-            vTemp = _mm_subs_epu8 (vF, vTemp);
-            vTemp = _mm_cmpeq_epi8 (vTemp, vZero);
-            cmp  = _mm_movemask_epi8 (vTemp);
-        }
-
+end:		
 		vMaxScore = _mm_max_epu8(vMaxScore, vMaxColumn);
 		vTemp = _mm_cmpeq_epi8(vMaxMark, vMaxScore);
 		cmp = _mm_movemask_epi8(vTemp);
@@ -581,11 +599,12 @@ static cigar* banded_sw (const int8_t* ref,
 				 int32_t n) {
 
 	uint32_t *c = (uint32_t*)malloc(16 * sizeof(uint32_t)), *c1;
-	int32_t i, j, e, f, temp1, temp2, s = 16, s1 = 8, l, max = 0;
+	int32_t i, j, e, f, temp1, temp2, s = 16, s1 = 8, l, max = 0, len;
 	int64_t s2 = 1024;
 	char op, prev_op;
 	int32_t width, width_d, *h_b, *e_b, *h_c;
 	int8_t *direction, *direction_line;
+    len = refLen > readLen ? refLen : readLen;
 	cigar* result = (cigar*)malloc(sizeof(cigar));
 	h_b = (int32_t*)malloc(s1 * sizeof(int32_t));
 	e_b = (int32_t*)malloc(s1 * sizeof(int32_t));
@@ -601,14 +620,9 @@ static cigar* banded_sw (const int8_t* ref,
 			e_b = (int32_t*)realloc(e_b, s1 * sizeof(int32_t));
 			h_c = (int32_t*)realloc(h_c, s1 * sizeof(int32_t));
 		}
-		while (width_d * readLen * 3 >= s2) {
+		while (width_d * readLen * 3 >= s2) {   // width_d*readLen* overflow before s2
 			++s2;
 			kroundup32(s2);
-			if (s2 < 0) {
-				//fprintf(stderr, "Alignment score and position are not consensus.\n");
-				Rprintf("Alignment score and position are not consensus.\n");
-				//Rcpp::stop("Alignment score and position are not consensus.\n");
-			}
 			direction = (int8_t*)realloc(direction, s2 * sizeof(int8_t));
 		}
 		direction_line = direction;
@@ -631,6 +645,7 @@ static cigar* banded_sw (const int8_t* ref,
 
 				temp1 = i == 0 ? -weight_gapO : h_b[e] - weight_gapO;
 				temp2 = i == 0 ? -weight_gapE : e_b[e] - weight_gapE;
+                //fprintf(stderr, "e_b length: %d, u: %d\n", s1, u);
 				e_b[u] = temp1 > temp2 ? temp1 : temp2;
 				direction_line[de] = temp1 > temp2 ? 3 : 2;
 
@@ -653,7 +668,7 @@ static cigar* banded_sw (const int8_t* ref,
 			for (j = 1; j <= u; j ++) h_b[j] = h_c[j];
 		}
 		band_width *= 2;
-	} while (LIKELY(max < score));
+	} while (max < score && band_width <= len); // 2022-Apr-08
 	band_width /= 2;
 
 	// trace back
@@ -663,7 +678,7 @@ static cigar* banded_sw (const int8_t* ref,
 	l = 0;	// record length of current cigar
 	op = prev_op = 'M';
 	temp2 = 2;	// h
-	while (LIKELY(i > 0)) {
+    while (LIKELY(i >= 0 && j > 0)) {
 		set_d(temp1, band_width, i, j, temp2);
 		switch (direction_line[temp1]) {
 			case 1:
@@ -696,14 +711,13 @@ static cigar* banded_sw (const int8_t* ref,
 				op = 'D';
 				break;
 			default:
-				//fprintf(stderr, "Trace back error: %d.\n", direction_line[temp1 - 1]);
-				Rprintf("Trace back error: %d.\n", direction_line[temp1-1]);
+				// Rcpp::warning("Trace back error: %d.\n", direction_line[temp1 - 1]);
 				free(direction);
 				free(h_c);
 				free(e_b);
 				free(h_b);
 				free(c);
-				free(result);
+				free(result); 
 				return 0;
 		}
 		if (op == prev_op) ++e;
@@ -821,9 +835,9 @@ s_align* ssw_align (const s_profile* prof,
 	r->read_begin1 = -1;
 	r->cigar = 0;
 	r->cigarLen = 0;
+    r->flag = 0;
 	if (maskLen < 15) {
-		Rprintf("When maskLen < 15, the function ssw_align doesn't return 2nd best alignment information\n");
-		//fprintf(stderr, "When maskLen < 15, the function ssw_align doesn't return 2nd best alignment information.\n");
+		// Rcpp::warning("When maskLen < 15, the function ssw_align doesn't return 2nd best alignment information.\n");
 	}
 
 	// Find the alignment scores and ending positions
@@ -834,8 +848,7 @@ s_align* ssw_align (const s_profile* prof,
 			bests = sw_sse2_word(ref, 0, refLen, readLen, weight_gapO, weight_gapE, prof->profile_word, -1, maskLen);
 			word = 1;
 		} else if (bests[0].score == 255) {
-			Rprintf("Please set 2 to the score_size parameter of the function ssw_init, otherwise the alignment results will be incorrect.\n");
-			//fprintf(stderr, "Please set 2 to the score_size parameter of the function ssw_init, otherwise the alignment results will be incorrect.\n");
+			// Rcpp::warning("Please set 2 to the score_size parameter of the function ssw_init, otherwise the alignment results will be incorrect.\n");
 			free(r);
 			return NULL;
 		}
@@ -843,14 +856,13 @@ s_align* ssw_align (const s_profile* prof,
 		bests = sw_sse2_word(ref, 0, refLen, readLen, weight_gapO, weight_gapE, prof->profile_word, -1, maskLen);
 		word = 1;
 	}else {
-		Rprintf("Please call the function ssw_init before ssw_align.\n");
-		//fprintf(stderr, "Please call the function ssw_init before ssw_align.\n");
+		// Rcpp::warning("Please call the function ssw_init before ssw_align.\n");
 		free(r);
 		return NULL;
 	}
 	r->score1 = bests[0].score;
-	r->ref_end1 = bests[0].ref;
-	r->read_end1 = bests[0].read;
+	r->ref_end1 = bests[0].ref; // 0_based, always count from the input seq begin
+	r->read_end1 = bests[0].read;   // 0_based, count from the alignment begin (aligned length of the read)
 	if (maskLen >= 15) {
 		r->score2 = bests[1].score;
 		r->ref_end2 = bests[1].ref;
@@ -874,7 +886,13 @@ s_align* ssw_align (const s_profile* prof,
 	free(read_reverse);
 	r->ref_begin1 = bests_reverse[0].ref;
 	r->read_begin1 = r->read_end1 - bests_reverse[0].read;
-	free(bests_reverse);
+
+    if (UNLIKELY(r->score1 > bests_reverse[0].score)) { // banded_sw result will miss a small part
+		// Rcpp::warning("Warning: The alignment path of one pair of sequences may miss a small part. [ssw.c ssw_align]\n");
+        r->flag = 2;  
+    }
+    free(bests_reverse);
+
 	if ((7&flag) == 0 || ((2&flag) != 0 && r->score1 < filters) || ((4&flag) != 0 && (r->ref_end1 - r->ref_begin1 > filterd || r->read_end1 - r->read_begin1 > filterd))) goto end;
 
 	// Generate cigar.
@@ -882,11 +900,18 @@ s_align* ssw_align (const s_profile* prof,
 	readLen = r->read_end1 - r->read_begin1 + 1;
 	band_width = abs(refLen - readLen) + 1;
 	path = banded_sw(ref + r->ref_begin1, prof->read + r->read_begin1, refLen, readLen, r->score1, weight_gapO, weight_gapE, band_width, prof->mat, prof->n);
-	if (path == 0) {
-		free(r);
-		r = NULL;
-	}
-	else {
+
+/*int32_t i, length;
+    char op;
+	for (i = 0; i < path->length; ++i) {
+		op = cigar_int_to_op(path->seq[i]);
+		length = cigar_int_to_len(path->seq[i]);
+        fprintf(stderr, "%d%c", length, op);
+    }
+    fprintf(stderr, "\n");*/
+
+    if (path == 0) r->flag = 1;    // banded_sw is failed.
+    else {
 		r->cigar = path->seq;
 		r->cigarLen = path->length;
 		free(path);

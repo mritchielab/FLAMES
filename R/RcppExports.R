@@ -40,8 +40,3 @@ find_barcode <- function(fastq_dir, stats_file, out_fastq, ref_csv, MAX_DIST, UM
     invisible(.Call(`_FLAMES_find_barcode`, fastq_dir, stats_file, out_fastq, ref_csv, MAX_DIST, UMI_LEN))
 }
 
-#' @useDynLib FLAMES, .registration=TRUE
-merge_bulk_fastq_cpp <- function(fastq_files, out_fastq) {
-    invisible(.Call(`_FLAMES_merge_bulk_fastq_cpp`, fastq_files, out_fastq))
-}
-

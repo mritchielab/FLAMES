@@ -77,6 +77,7 @@ genome_fa <- file.path(outdir, "rps24.fa")
 R.utils::gunzip(filename = system.file("extdata/bc_allow.tsv.gz", package = "FLAMES"), destname = bc_allow, remove = FALSE)
 R.utils::gunzip(filename = system.file("extdata/rps24.fa.gz", package = "FLAMES"), destname = genome_fa, remove = FALSE)
 
+\dontrun{
 if (is.character(locate_minimap2_dir())) {
     sce <- FLAMES::sc_long_pipeline(
         genome_fa = genome_fa,
@@ -87,5 +88,6 @@ if (is.character(locate_minimap2_dir())) {
         reference_csv = bc_allow
     )
     sc_mutations(sce, barcode_tsv = file.path(outdir, "bc_allow.tsv"), min_cov = 2, report_pct = c(0, 1))
+}
 }
 }
