@@ -24,7 +24,7 @@ corresponding to the smaller short-read sample}
 they are always removed from the larger library)}
 }
 \value{
-A \code{MultiAssayExperiment} object, with "gene_counts" and "transcript_counts" experiments.
+A \code{MultiAssayExperiment} object, with 'gene_counts' and 'transcript_counts' experiments.
 }
 \description{
 Combine long- and short-read SingleCellExperiment objects
@@ -39,8 +39,8 @@ library(SingleCellExperiment)
 a <- SingleCellExperiment(assays = list(counts = matrix(rpois(100, 5), ncol = 10)))
 b <- SingleCellExperiment(assays = list(counts = matrix(rpois(100, 5), ncol = 10)))
 long_read <- SingleCellExperiment(assays = list(counts = matrix(rpois(100, 5), ncol = 10)))
-colData(a)$Barcode <- paste0(1:10, "-1")
-colData(b)$Barcode <- paste0(8:17, "-1")
+colData(a)$Barcode <- paste0(1:10, '-1')
+colData(b)$Barcode <- paste0(8:17, '-1')
 colnames(long_read) <- as.character(2:11)
 rownames(a) <- as.character(101:110)
 rownames(b) <- as.character(103:112)

@@ -52,13 +52,13 @@ Expression levels lower than 1 - \code{heatmap_color_quantile} will all be shown
 a list containing the combined UMAP, the isoform exon alignments and the UMAP with isoform expression levels.
 }
 \description{
-Plot isoform exons alignments for a given gene, along with UMAP showing expression levels.
+(deprecated) Plot isoform exons alignments for a given gene, along with UMAP showing expression levels. Superseded by \code{sc_umap_expression} and \code{sc_heatmap_expression}.
 }
 \details{
-This function takes a combined \code{MultiAssayExperiment} object containing "gene_counts" and "transcript_counts" experiments
+This function takes a combined \code{MultiAssayExperiment} object containing 'gene_counts' and 'transcript_counts' experiments
 to generate a combined UMAP, the expression levels of isoforms (using long read data)
 are then overlayed on top of the UMAP. SNN inference based on gene counts were performed to impute isoform expression
-for cells in the larger library. The \code{MultiAssayExperiment} object should have a boolean columen named "Lib_small" in
+for cells in the larger library. The \code{MultiAssayExperiment} object should have a boolean columen named 'Lib_small' in
 its columen data file to idicate which subsample the cells are in. The \code{MultiAssayExperiment} object can be created using
 the \code{combine_sce} function.
 }
