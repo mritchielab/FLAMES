@@ -11,9 +11,10 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // find_barcode
-void find_barcode(Rcpp::String fastq_dir, Rcpp::String stats_file, Rcpp::String out_fastq, Rcpp::String ref_csv, int MAX_DIST, int UMI_LEN);
+Rcpp::List find_barcode(Rcpp::String fastq_dir, Rcpp::String stats_file, Rcpp::String out_fastq, Rcpp::String ref_csv, int MAX_DIST, int UMI_LEN);
 RcppExport SEXP _FLAMES_find_barcode(SEXP fastq_dirSEXP, SEXP stats_fileSEXP, SEXP out_fastqSEXP, SEXP ref_csvSEXP, SEXP MAX_DISTSEXP, SEXP UMI_LENSEXP) {
 BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::String >::type fastq_dir(fastq_dirSEXP);
     Rcpp::traits::input_parameter< Rcpp::String >::type stats_file(stats_fileSEXP);
@@ -21,8 +22,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::String >::type ref_csv(ref_csvSEXP);
     Rcpp::traits::input_parameter< int >::type MAX_DIST(MAX_DISTSEXP);
     Rcpp::traits::input_parameter< int >::type UMI_LEN(UMI_LENSEXP);
-    find_barcode(fastq_dir, stats_file, out_fastq, ref_csv, MAX_DIST, UMI_LEN);
-    return R_NilValue;
+    rcpp_result_gen = Rcpp::wrap(find_barcode(fastq_dir, stats_file, out_fastq, ref_csv, MAX_DIST, UMI_LEN));
+    return rcpp_result_gen;
 END_RCPP
 }
 

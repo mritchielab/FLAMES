@@ -37,6 +37,6 @@
 #')
 #' @export
 find_barcode <- function(fastq_dir, stats_file, out_fastq, ref_csv, MAX_DIST, UMI_LEN = 10L) {
-    invisible(.Call(`_FLAMES_find_barcode`, fastq_dir, stats_file, out_fastq, ref_csv, MAX_DIST, UMI_LEN))
+    .Call(`_FLAMES_find_barcode`, fastq_dir, stats_file, out_fastq, ref_csv, MAX_DIST, UMI_LEN)
 }
 

@@ -81,7 +81,7 @@ get_hm_idx
     int max_dist
 );
 
-void
+Rcpp::List
 match_cell_barcode
 (
     Rcpp::String fastq_dir, 

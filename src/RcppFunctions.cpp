@@ -42,7 +42,7 @@
 //')
 //' @export
 // [[Rcpp::export]]
-void
+Rcpp::List
 find_barcode
 (
     Rcpp::String fastq_dir, 

@@ -326,11 +326,19 @@ std::pair<int, int> get_bc_range(std::string fqn, int max_reads, const std::stri
 
   for (int ix = 0; ix < 20; ix++)
   {
+    if (ix + 1 > vect.size()) 
+    {
+      break;
+    }
     Rcpp::Rcout << "forward flanking end: " << vect[ix].first << "\t" << vect[ix].second << "\n";
     //std::cout << "forward flanking end: " << vect[ix].first << "\t"<<vect[ix].second << std::endl;
   }
   for (int ix = 0; ix < 20; ix++)
   {
+    if (ix + 1 > vect_rev.size()) 
+    {
+      break;
+    }
     Rcpp::Rcout << "reverse comp flanking end: " << vect_rev[ix].first << "\t" << vect_rev[ix].second << "\n";
     //std::cout << "reverse comp flanking end: " << vect_rev[ix].first << "\t"<<vect_rev[ix].second << std::endl;
   }
@@ -433,7 +441,7 @@ int get_hm_idx(std::string &q_seq, std::vector<std::string> &barcode_list, int m
 
 //'
 // [[Rcpp::export]]
-void match_cell_barcode(Rcpp::String fastq_dir, Rcpp::String stats_file, Rcpp::String out_fastq, Rcpp::String ref_csv, int MAX_DIST, int UMI_LEN = 10)
+Rcpp::List match_cell_barcode(Rcpp::String fastq_dir, Rcpp::String stats_file, Rcpp::String out_fastq, Rcpp::String ref_csv, int MAX_DIST, int UMI_LEN = 10)
 {
   // "usage: <1.fastq folder> <2.output cell barcode statistics file> <3.fastq output reads that matched cell barcode> <4.barcode reference from short read 10X data> <5.max edit distance> [6. UMI length (default: 10)]"
 
@@ -728,4 +736,12 @@ void match_cell_barcode(Rcpp::String fastq_dir, Rcpp::String stats_file, Rcpp::S
   //std::cout << "###barcode fuzzy match: " << do_match <<std::endl;
   //std::cout << "###barcode not match: " << not_match <<std::endl;
   //std::cout << "###too short: " << too_short <<std::endl;
+  return Rcpp::List::create(
+    Rcpp::Named("total") = total_cnt,
+    Rcpp::Named("hm_match") = do_match_hm,
+    Rcpp::Named("fuzzy_match") = do_match,
+    Rcpp::Named("too_short") = too_short
+    //Rcpp::Named("flanking_pos") = found_cnt,
+    //Rcpp::Named("flanking_rev") = found_cnt_rev,
+  );
 }
