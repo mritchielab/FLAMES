@@ -23,6 +23,11 @@
 //' @param ref_csv NEEDED
 //' @param MAX_DIST int; maximum edit distance
 //' @param UMI_LEN int; length of UMI sequences
+//' @param left_seq String; sequence that appears at the left of the barcode
+//' @param min_length int; minimum read length to be filtered after timming barcodes
+//' @param reverse_complement boolean; whether to check the reverse complement of the reads
+//' @param fixed_range boolean; deprecated, whether to skip finding flanking sequence by infering
+//' its position from previous reads
 //'
 //' @return returns NULL
 //' @import zlibbioc
@@ -50,15 +55,21 @@ find_barcode
     Rcpp::String out_fastq, 
     Rcpp::String ref_csv, 
     int MAX_DIST, 
-    int UMI_LEN = 10
-)
-{
+    int UMI_LEN = 10,
+    Rcpp::String left_seq = "CTACACGACGCTCTTCCGATCT",
+    int min_length = 20,
+    bool reverse_complement = true,
+    bool fixed_range = false){
     return match_cell_barcode(
         fastq_dir,
         stats_file,
         out_fastq,
         ref_csv,
         MAX_DIST,
-        UMI_LEN
+        UMI_LEN,
+        left_seq,
+        min_length,
+        reverse_complement,
+        fixed_range
     );
 }

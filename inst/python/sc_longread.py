@@ -13,6 +13,7 @@ import numpy as np
 import bisect
 import random
 import copy
+import gzip
 
 from parse_gene_anno import parse_gff_tree
 
@@ -44,7 +45,8 @@ def exon_overlap(exons1, exons2):
 def get_fa(fn):
     ch = ""
     seq = []
-    for line in open(fn):
+    openFunc = gzip.open if fn.endswith(".gz") else open
+    for line in openFunc(fn, "rt"):
         if line[0] == ">":
             if ch != "":
                 yield ch, "".join(seq)

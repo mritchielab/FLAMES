@@ -10,7 +10,11 @@ find_barcode(
   out_fastq,
   ref_csv,
   MAX_DIST,
-  UMI_LEN = 10L
+  UMI_LEN = 10L,
+  left_seq = "CTACACGACGCTCTTCCGATCT",
+  min_length = 20L,
+  reverse_complement = TRUE,
+  fixed_range = FALSE
 )
 }
 \arguments{
@@ -25,6 +29,15 @@ find_barcode(
 \item{MAX_DIST}{int; maximum edit distance}
 
 \item{UMI_LEN}{int; length of UMI sequences}
+
+\item{left_seq}{String; sequence that appears at the left of the barcode}
+
+\item{min_length}{int; minimum read length to be filtered after timming barcodes}
+
+\item{reverse_complement}{boolean; whether to check the reverse complement of the reads}
+
+\item{fixed_range}{boolean; deprecated, whether to skip finding flanking sequence by infering
+its position from previous reads}
 }
 \value{
 returns NULL

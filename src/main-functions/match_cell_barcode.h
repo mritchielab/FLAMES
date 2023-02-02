@@ -89,7 +89,11 @@ match_cell_barcode
     Rcpp::String out_fastq, 
     Rcpp::String ref_csv, 
     int MAX_DIST, 
-    int UMI_LEN
+    int UMI_LEN,
+    Rcpp::String left_seq,
+    int min_length,
+    bool reverse_complement,
+    bool fixed_range
 );
 
 #endif // MATCH_CELL_BARCODE_H

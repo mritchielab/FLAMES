@@ -18,6 +18,11 @@
 #' @param ref_csv NEEDED
 #' @param MAX_DIST int; maximum edit distance
 #' @param UMI_LEN int; length of UMI sequences
+#' @param left_seq String; sequence that appears at the left of the barcode
+#' @param min_length int; minimum read length to be filtered after timming barcodes
+#' @param reverse_complement boolean; whether to check the reverse complement of the reads
+#' @param fixed_range boolean; deprecated, whether to skip finding flanking sequence by infering
+#' its position from previous reads
 #'
 #' @return returns NULL
 #' @import zlibbioc
@@ -36,7 +41,7 @@
 #'    UMI_LEN = 10
 #')
 #' @export
-find_barcode <- function(fastq_dir, stats_file, out_fastq, ref_csv, MAX_DIST, UMI_LEN = 10L) {
-    .Call(`_FLAMES_find_barcode`, fastq_dir, stats_file, out_fastq, ref_csv, MAX_DIST, UMI_LEN)
+find_barcode <- function(fastq_dir, stats_file, out_fastq, ref_csv, MAX_DIST, UMI_LEN = 10L, left_seq = "CTACACGACGCTCTTCCGATCT", min_length = 20L, reverse_complement = TRUE, fixed_range = FALSE) {
+    .Call(`_FLAMES_find_barcode`, fastq_dir, stats_file, out_fastq, ref_csv, MAX_DIST, UMI_LEN, left_seq, min_length, reverse_complement, fixed_range)
 }
 
