@@ -621,7 +621,7 @@ Rcpp::List match_cell_barcode(Rcpp::String fastq_dir, Rcpp::String stats_file,
     // break;
   }
   std::ofstream ofile(stats_file.get_cstring());
-  ofile << "cell_id,count\n";
+  ofile << "cell_barcode,reads_demultiplexed\n";
   for (auto &it : barcode_res) {
     if (it.second > 0) {
       ofile << it.first << "," << it.second << "\n";

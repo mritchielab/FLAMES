@@ -103,10 +103,10 @@ minimap2_dir <- locate_minimap2_dir()
 if (is.character(minimap2_dir)) { # do not run if minimap2 cannot be found
   config <- jsonlite::fromJSON(config_file)
   # find_barcode(...)
-  genome_bam <- minimap2_align(
+  genome_bam <- rownames(minimap2_align(
     config = config, fa_file = genome_fa, fq_in = fastq, annot = annot,
     outdir = outdir, minimap2_dir = minimap2_dir
-  )
+  ))
   find_isoform(
     annotation = annot, genome_fa = genome_fa,
     genome_bam = genome_bam, outdir = outdir, config = config
