@@ -62,10 +62,10 @@ bulk_long_pipeline <-
             print(outdir)
         }
 
-        if (file_test("-d", fastq)) {
+        if (utils::file_test("-d", fastq)) {
             fastq_files <- file.path(fastq, list.files(fastq))
             fastq_files <- fastq_files[grepl("\\.(fastq|fq)(\\.gz)?$", fastq_files) & utils::file_test("-f", fastq_files)]
-        } else if (file_test("-f", fastq)) {
+        } else if (utils::file_test("-f", fastq)) {
             fastq_files <- fastq
         } else {
             stop("fastq must be a valid path to a folder or a FASTQ file")
@@ -78,7 +78,9 @@ bulk_long_pipeline <-
             cat("Found all corresponding '[sample]_align2genome.bam' files, will skip initial alignment.\n")
             using_bam <- TRUE
             config$pipeline_parameters$do_genome_alignment <- FALSE
-            if (!all(utils::file_test("-f", file.path(outdir, paste0(samples, "_", "align2genome.bam.bai"))) || utils::file_test("-f", file.path(outdir, paste0(samples, "_", "align2genome.bam.csi"))))) {
+            if (!all(
+                utils::file_test("-f", file.path(outdir, paste0(samples, "_", "align2genome.bam.bai"))) |
+                utils::file_test("-f", file.path(outdir, paste0(samples, "_", "align2genome.bam.csi"))))) {
                 for (bam in genome_bam) {
                     Rsamtools::indexBam(bam)
                 }
