@@ -129,3 +129,13 @@ quantify <- function(annotation, outdir, config, pipeline = "sc_single_sample") 
     pipeline = pipeline
     )
 }
+
+# example for Rsamtools
+#' @importFrom Rsamtools BamFile  scanBam isIncomplete
+#quantify_tmp <- function(bamFileName) {
+#    bf <- Rsamtools::BamFile(bamFileName, yieldSize=100)
+#    while (Rsamtools::isIncomplete(bf)) {
+#        print(Rsamtools::scanBam(bf)[[1]][[1]])
+#        Sys.sleep(3)
+#    }
+#}
