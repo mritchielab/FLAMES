@@ -6,12 +6,15 @@ agrep_demultiplex_ <- function(fastq_file, bc.list, out.file = "out.fq.gz", stru
   trim.after = "CTGTCTCTTATACACATCTCCGAGCCCACGAGAC", strands = c("-", "+"), pattern.max.distance = 3,
   bc.max.distance = 2) {
 
+  cat(fastq_file, "\n")
   strm <- FastqStreamer(fastq_file)
   nreads <- 0
   while (length(res <- yield(strm))) {
     nreads <- nreads + length(res)
 
-    match.idx <- sapply(strands, function(x){NULL})
+    match.idx <- sapply(strands, function(x) {
+      NULL
+    })
     for (strand in sort(strands, decreasing = TRUE)) {
       if (strand == "-") {
         res <- reverseComplement(res)
@@ -24,13 +27,16 @@ agrep_demultiplex_ <- function(fastq_file, bc.list, out.file = "out.fq.gz", stru
       })
       res.matched <- res[match.idx[[strand]]]
       m <- m[match.idx[[strand]]]
+      if (!length(m)) {
+        next
+      }
 
       if ("barcode" %in% names(structure)) {
         bc <- sapply(regmatches(sread(res.matched), m), function(x) {
-          x[which("barcode" == names(structure))]
+          x[which("barcode" == names(structure)) + 1]
         })
-        if (bc.max.distance >= 1) {
           bc.exact <- bc %in% bc.list
+        if (bc.max.distance >= 1 && length(bc[!bc.exact])) {
           bc.dists <- sapply(bc[!bc.exact], function(x) {
           adist(x, bc.list)
           })
@@ -43,26 +49,26 @@ agrep_demultiplex_ <- function(fastq_file, bc.list, out.file = "out.fq.gz", stru
           bc.matched <- bc.exact
           bc.matched[!bc.exact][bc.fuzzy != -1] <- TRUE
         } else {
-          bc.matched <- bc %in% bc.list
+          bc.matched <- bc.exact
         }
         match.idx[[strand]][match.idx[[strand]]][!bc.matched] <- FALSE
         readseq <- DNAStringSet(sapply(regmatches(sread(res.matched), m),
           function(x) {
-          x[which("seq" == names(structure))]
+          x[which("seq" == names(structure)) + 1]
           }))[bc.matched]
         readid <- BStringSet(paste(bc, id(res.matched), sep = "#"))[bc.matched]
         readqual <- sapply(regmatches(quality(res.matched), m), function(x) {
-          x[which("seq" == names(structure))]
+          x[which("seq" == names(structure)) + 1]
         })[bc.matched]
 
       } else {
         readseq <- DNAStringSet(sapply(regmatches(sread(res.matched), m),
           function(x) {
-          x[which("seq" == names(structure))]
+          x[which("seq" == names(structure)) + 1]
           }))
         readid <- id(res.matched)
         readqual <- sapply(regmatches(quality(res.matched), m), function(x) {
-          x[which("seq" == names(structure))]
+          x[which("seq" == names(structure)) + 1]
         })
       }
 
@@ -79,6 +85,10 @@ agrep_demultiplex_ <- function(fastq_file, bc.list, out.file = "out.fq.gz", stru
         id = readid)
       writeFastq(object = demultiplexed_res[width(demultiplexed_res) > 10],
         mode = "a", file = out.file)
+    }
+    if (length(strands) > 1) {
+      cat(as.character(id(res[match.idx[["+"]] & match.idx[["-"]]])), sep = "\n")
+      cat("\n")
     }
   }
   close(strm)
@@ -122,7 +132,7 @@ cat(format(Sys.time(), "%a %b %d %X"), "\n")
 x <- agrep_demultiplex(fq_files, barcodes.atac.tsv, bc.max.distance = 1, pattern.max.distance = 3)
 cat(format(Sys.time(), "%a %b %d %X"), "\n")
 
-saveRDS(x, 'stats.rds')
+saveRDS(x, "stats.rds")
 
 
 # structure <- list(`-` = list(seq = '.*', adaptor.read1nspacer =
