@@ -22,14 +22,6 @@
 #' @param sce The \code{SingleCellExperiment} object from \code{sc_long_pipeline}, an additional \code{cluster_annotation.csv}
 #' file is required under the output folder of the SCE object.
 #'
-#' @param path The path to the output folder of \code{sc_long_pipeline}
-#' the folder needs to contain:
-#' \itemize{
-#'  \item{transcript_count.csv.gz}{ - the transcript count matrix }
-#'  \item{isoform_FSM_annotation.csv}{ - the full splice match annotation file }
-#'  \item{cluster_annotation.csv}{ - cluster annotation file }
-#' }
-#'
 #' @param min_count The minimum UMI count threshold for filtering isoforms.
 #'
 #' @return a \code{data.frame} containing the following columns:
@@ -74,7 +66,7 @@
 #'   )
 #'   group_anno <- data.frame(barcode_seq = colnames(sce), groups = SingleCellExperiment::counts(sce)["ENSMUST00000169826.2", ] > 1)
 #'   write.csv(group_anno, file.path(outdir, "cluster_annotation.csv"), row.names = FALSE)
-#'   sc_DTU_analysis(sce, outdir, min_count = 1)
+#'   sc_DTU_analysis(sce, min_count = 1)
 #' }
 sc_DTU_analysis <- function(sce, min_count = 15) {
 
@@ -200,9 +192,12 @@ sc_DTU_analysis <- function(sce, min_count = 15) {
   p_value <- c()
   DTU_tr <- c()
   DTU_group <- c()
-  pb = txtProgressBar(min = 1, max = length(unique(counts_group$gene_id)),
-                      initial = 1, style=3)
-  pbi <- 0
+  pb_max <- length(unique(counts_group$gene_id))
+  if (pb_max > 10) {
+    pb <- txtProgressBar(min = 1, max = length(unique(counts_group$gene_id)),
+                        initial = 1, style=3)
+    pbi <- 0
+  }
   for (gene in unique(counts_group$gene_id)) {
     # transcript x clutser count matrix for gene
     counts_group_gene <- counts_group %>%
@@ -238,10 +233,14 @@ sc_DTU_analysis <- function(sce, min_count = 15) {
         }
       }
     }
-    pbi <- pbi + 1
-    setTxtProgressBar(pb,pbi)
+    if (exists("pb")) {
+      pbi <- pbi + 1
+      setTxtProgressBar(pb,pbi)
+    }
   }
-  close(pb)
+  if (exists("pb")) {
+    close(pb)
+  }
   res_df <- data.frame(
     gene_id = ge_name,
     X_value = X_value,
