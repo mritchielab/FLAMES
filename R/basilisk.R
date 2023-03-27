@@ -21,7 +21,7 @@ flames_env <- BasiliskEnvironment(
         "scipy==1.2.0",
         "pysam==0.18.0"
     ),
-    channels = c("bioconda", "conda-forge")
+    channels = c("conda-forge", "bioconda")
 )
 # flames_env <- BasiliskEnvironment(envname="full_env",
 #     pkgname="FLAMES",
