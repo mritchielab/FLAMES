@@ -103,7 +103,7 @@ find_isoform_flames <- function(annotation, genome_fa, genome_bam, outdir, confi
 #' @return Path to the outputted transcriptome assembly
 #'
 #' @importFrom Biostrings readDNAStringSet writeXStringSet
-#' @importFrom GenomicFeatures extractTranscriptSeqs
+#' @importFrom GenomicFeatures extractTranscriptSeqs makeTxDbFromGFF
 #' @importFrom Rsamtools indexFa
 #'
 #' @examples
@@ -112,23 +112,18 @@ find_isoform_flames <- function(annotation, genome_fa, genome_bam, outdir, confi
 #'
 #' @export
 annotation_to_fasta <- function(isoform_annotation, genome_fa, outdir) {
-    #    if (!missing(outdir) && !missing(out_file) && out_file != file.path(outdir, "transcript_assembly.fa")) {
-    #        stop("Please specify only one of 'outdir' and 'out_file'.")
-    #    }
-    #    if (missing(out_file)) {
-    out_file <- file.path(outdir, "transcript_assembly.fa")
-    #    }
-    if (is.character(isoform_annotation)) {
-        isoform_annotation <- get_GRangesList(isoform_annotation)
-    }
+  out_file <- file.path(outdir, "transcript_assembly.fa")
 
-    dna_string_set <- Biostrings::readDNAStringSet(genome_fa)
-    names(dna_string_set) <- gsub(" .*$", "", names(dna_string_set))
-    tr_string_set <- GenomicFeatures::extractTranscriptSeqs(dna_string_set, isoform_annotation)
-    Biostrings::writeXStringSet(tr_string_set, out_file)
-    Rsamtools::indexFa(out_file)
+  dna_string_set <- Biostrings::readDNAStringSet(genome_fa)
+  names(dna_string_set) <- gsub(" .*$", "", names(dna_string_set))
+  txdb <- GenomicFeatures::makeTxDbFromGFF(isoform_annotation)
 
-    return(out_file)
+  tr_string_set <- GenomicFeatures::extractTranscriptSeqs(dna_string_set, txdb,
+    use.names = TRUE)
+  Biostrings::writeXStringSet(tr_string_set, out_file)
+  Rsamtools::indexFa(out_file)
+
+  return(out_file)
 }
 
 #' Parse FLAMES' GFF output
