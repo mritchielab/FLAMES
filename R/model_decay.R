@@ -1,8 +1,13 @@
 #' filter annotation for plotting coverages
 #' 
-#' Removes isoform annotations that could produce ambigious reads, such as isoforms
+#' @description Removes isoform annotations that could produce ambigious reads, such as isoforms
 #' that only differ by the 5' / 3' end. This could be useful for plotting average
 #' coverage plots.
+#' 
+#' @importFrom rtracklayer import
+#' @importFrom S4Vectors split
+#' @importFrom GenomicRanges strand
+#' @importFrom arrangements combinations
 #' 
 #' @param annotation path to the GTF annotation file, or the parsed GenomicRanges
 #' object.
@@ -11,7 +16,13 @@
 #' differ by the transcription end site position), 'both' (only keep those that
 #' differ by both the start and end site), or 'single_transcripts' (only keep
 #' genes that contains a sinlge transcript).
-
+#' @return GenomicRanges of the filtered isoforms
+#' @examples
+#' filtered_annotation <- filter_annotation(system.file("extdata/rps24.gtf.gz", package = "FLAMES"), keep = "tes_differ")
+#' filtered_annotation
+#'
+#' @md
+#' @export
 filter_annotation <- function(annotation, keep = "tss_differ") {
   if (is.character(annotation)) {
     annotation <- rtracklayer::import(annotation, feature.type = "exon")
@@ -84,22 +95,72 @@ filter_annotation <- function(annotation, keep = "tss_differ") {
   return(filtered_annotation)
 }
 
-plot_coverage <- function(annotation, isoform = NULL) {
-  annotation <- annotation |>
-    GenomicFeatures::makeTxDbFromGRanges() |>
-    GenomicFeatures::transcripts()
+#' plot read coverages
+#' 
+#' @description Plot the average read coverages for each length bin or a 
+#' perticular isoform
+#' 
+#' @importFrom GenomicFeatures makeTxDbFromGFF transcripts
+#' @importFrom GenomicAlignments readGAlignments seqnames 
+#' @importFrom GenomicRanges width strand granges coverage
+#' @importFrom Rsamtools ScanBamParam
+#' @importFrom tidyr as_tibble pivot_longer
+#' @importFrom dplyr filter mutate group_by summarize_at
+#' @importFrom ggplot2 ggplot geom_line aes
+#'
+#' @param annotation path to the GTF annotation file, or the parsed GenomicRanges
+#' object.
+#' @param isoform string vector, provide isoform names to plot the coverage for the
+#' corresponding isoforms, or provide NULL to plot average coverages for each 
+#' length bin
+#' @param length_bins, numeric vector to specify the sizes to bin the isoforms by
+#' @param bam, path to the BAM file (aligning reads to the transcriptome), or
+#' the (GenomicAlignments::readGAlignments) parsed GAlignments object
+#' @return a ggplot2 object of the coverage plot(s)
+#' @examples
+#' temp_path <- tempfile()
+#' bfc <- BiocFileCache::BiocFileCache(temp_path, ask = FALSE)
+#' file_url <- 'https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data'
+#' fastq1 <- bfc[[names(BiocFileCache::bfcadd(bfc, 'Fastq1', paste(file_url, 'fastq/sample1.fastq.gz', sep = '/')))]]
+#' genome_fa <- bfc[[names(BiocFileCache::bfcadd(bfc, 'genome.fa', paste(file_url, 'SIRV_isoforms_multi-fasta_170612a.fasta', sep = '/')))]]
+#' annotation <- bfc[[names(BiocFileCache::bfcadd(bfc, 'annot.gtf', paste(file_url, 'SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf', sep = '/')))]]
+#' outdir <- tempfile()
+#' dir.create(outdir)
+#' if (is.character(locate_minimap2_dir())) {
+#'     fasta <- annotation_to_fasta(annotation, genome_fa, outdir)
+#'     minimap2_realign(
+#'         config = jsonlite::fromJSON(system.file('extdata/SIRV_config_default.json', package = 'FLAMES')),
+#'         fq_in = fastq1,
+#'         outdir = outdir
+#'     )
+#'   plot_coverage(annotation = annotation, bam = file.path(outdir, 'realign2transcript.bam'))
+#' }
+#' @md
+#' @export
+plot_coverage <- function(annotation, bam, isoform = NULL, length_bins = c(0, 1,
+  2, 5, 10, Inf)) {
+  if (is.character(annotation)) {
+    annotation <- annotation |>
+      GenomicFeatures::makeTxDbFromGFF() |>
+      GenomicFeatures::transcripts()
+  } else {
+    annotation <- annotation |>
+      GenomicFeatures::makeTxDbFromGRanges() |>
+      GenomicFeatures::transcripts()
+  }
 
-  alig <- GenomicAlignments::readGAlignments("alignment/bp02_restranded.bam", param = Rsamtools::ScanBamParam(mapqFilter = 5))
+  if (!is(bam, "GAlignments")) {
+    bam <- GenomicAlignments::readGAlignments(bam, param = Rsamtools::ScanBamParam(mapqFilter = 5))
+  }
 
-  read_counts <- table(GenomicAlignments::seqnames(alig))
+  read_counts <- table(GenomicAlignments::seqnames(bam))
   transcript_names <- intersect(annotation$tx_name, names(read_counts))
   annotation <- annotation[match(transcript_names, annotation$tx_name)]
   transcript_info <- data.frame(tr_length = GenomicRanges::width(annotation), read_counts = as.data.frame(read_counts[transcript_names])$Freq,
     strand = GenomicRanges::strand(annotation))
-  length_bins <- c(0, 1, 2, 5, 10, Inf)
   transcript_info$length_bin <- cut(transcript_info$tr_length/1000, length_bins)
 
-  cover <- alig |>
+  cover <- bam |>
     GenomicRanges::granges() |>
     GenomicRanges::coverage() |>
     sapply(function(x) {
@@ -112,21 +173,25 @@ plot_coverage <- function(annotation, isoform = NULL) {
   colnames(cover) <- paste0("coverage_", 1:100)
 
   transcript_info <- cbind(transcript_info, cover[transcript_names, ])
+
+  if (!is.null(isoform)) {
+    p <- transcript_info |>
+      tidyr::as_tibble(rownames = "transcript") |>
+      dplyr::filter(transcript %in% isoform) |>
+      tidyr::pivot_longer(paste0("coverage_", 1:100), names_to = "x", values_to = "coverage") |>
+      dplyr::mutate(x = as.numeric(gsub("coverage_", "", x))) |>
+      ggplot2::ggplot(aes(x = x, y = coverage, color = transcript)) + geom_line()
+    return(p)
+  }
+
   mean_coverage <- transcript_info |>
     dplyr::group_by(length_bin) |>
     dplyr::summarize_at(paste0("coverage_", 1:100), mean)
 
-  mean_coverage |>
+  p <- mean_coverage |>
     tidyr::pivot_longer(paste0("coverage_", 1:100), names_to = "x", values_to = "coverage") |>
     dplyr::mutate(x = as.numeric(gsub("coverage_", "", x))) |>
-    ggplot(aes(x = x, y = coverage, color = length_bin)) + geom_line()
-
-  p <- transcript_info |>
-    tidyr::as_tibble(rownames = "transcript") |>
-    dplyr::filter(length_bin == "(1,2]") |>
-    tidyr::pivot_longer(paste0("coverage_", 1:100), names_to = "x", values_to = "coverage") |>
-    dplyr::mutate(x = as.numeric(gsub("coverage_", "", x))) |>
-    ggplot(aes(x = x, y = coverage, color = transcript)) + geom_line()
+    ggplot2::ggplot(aes(x = x, y = coverage, color = length_bin)) + geom_line()
 
   return(p)
 }
