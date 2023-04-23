@@ -7,6 +7,7 @@
 #' @importFrom rtracklayer import
 #' @importFrom S4Vectors split
 #' @importFrom GenomicRanges strand
+#' @importFrom BiocGenerics start end
 #' @importFrom arrangements combinations
 #' 
 #' @param annotation path to the GTF annotation file, or the parsed GenomicRanges
@@ -18,7 +19,7 @@
 #' genes that contains a sinlge transcript).
 #' @return GenomicRanges of the filtered isoforms
 #' @examples
-#' filtered_annotation <- filter_annotation(system.file("extdata/rps24.gtf.gz", package = "FLAMES"), keep = "tes_differ")
+#' filtered_annotation <- filter_annotation(system.file('extdata/rps24.gtf.gz', package = 'FLAMES'), keep = 'tes_differ')
 #' filtered_annotation
 #'
 #' @md
@@ -30,11 +31,11 @@ filter_annotation <- function(annotation, keep = "tss_differ") {
   annotation <- S4Vectors::split(annotation, annotation$gene_id)
 
   min_differ <- function(x, y) {
-    return(min(start(x)) != min(start(y)))
+    return(min(BiocGenerics::start(x)) != min(BiocGenerics::start(y)))
   }
 
   max_differ <- function(x, y) {
-    return(max(end(x)) != max(end(y)))
+    return(max(BiocGenerics::end(x)) != max(BiocGenerics::end(y)))
   }
 
   tes_differ <- function(x, y) {
@@ -171,9 +172,22 @@ plot_coverage <- function(annotation, bam, isoform = NULL, length_bins = c(0, 1,
     t() |>
     as.data.frame()
   colnames(cover) <- paste0("coverage_", 1:100)
+  cover <- cover[transcript_names, ]
 
-  transcript_info <- cbind(transcript_info, cover[transcript_names, ])
+  scale_coverage <- function(mat) {
+    mat <- mat/apply(mat, 1, max, na.rm = TRUE)  # divide by max coverage
+  }
+  weight_covergae <- function(mat, read_counts) {
+    sigmoid <- function(x) {
+      exp(x)/(exp(x) + 1)
+    }
+    mat * sigmoid((read_counts - mean(read_counts))/100)
+  }
+  cover <- cover |>
+    scale_coverage() |>
+    weight_covergae(transcript_info$read_counts)
 
+  transcript_info <- cbind(transcript_info, cover)
   if (!is.null(isoform)) {
     p <- transcript_info |>
       tidyr::as_tibble(rownames = "transcript") |>
