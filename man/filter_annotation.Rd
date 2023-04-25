@@ -25,7 +25,7 @@ that only differ by the 5' / 3' end. This could be useful for plotting average
 coverage plots.
 }
 \examples{
-filtered_annotation <- filter_annotation(system.file("extdata/rps24.gtf.gz", package = "FLAMES"), keep = "tes_differ")
+filtered_annotation <- filter_annotation(system.file('extdata/rps24.gtf.gz', package = 'FLAMES'), keep = 'tes_differ')
 filtered_annotation
 
 }
