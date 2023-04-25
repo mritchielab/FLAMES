@@ -106,8 +106,9 @@ filter_annotation <- function(annotation, keep = "tss_differ") {
 #' @importFrom GenomicRanges width strand granges coverage
 #' @importFrom Rsamtools ScanBamParam
 #' @importFrom tidyr as_tibble pivot_longer
-#' @importFrom dplyr filter mutate group_by summarize_at
+#' @importFrom dplyr filter mutate group_by summarize_at summarise across
 #' @importFrom ggplot2 ggplot geom_line aes
+#' @importFrom stats weighted.mean
 #'
 #' @param annotation path to the GTF annotation file, or the parsed GenomicRanges
 #' object.
@@ -174,20 +175,16 @@ plot_coverage <- function(annotation, bam, isoform = NULL, length_bins = c(0, 1,
   colnames(cover) <- paste0("coverage_", 1:100)
   cover <- cover[transcript_names, ]
 
-  scale_coverage <- function(mat) {
-    mat <- mat/apply(mat, 1, max, na.rm = TRUE)  # divide by max coverage
-  }
   weight_covergae <- function(mat, read_counts) {
     sigmoid <- function(x) {
       exp(x)/(exp(x) + 1)
     }
-    mat * sigmoid((read_counts - mean(read_counts))/100)
+    sigmoid((read_counts - mean(read_counts))/100)
   }
-  cover <- cover |>
-    scale_coverage() |>
-    weight_covergae(transcript_info$read_counts)
 
+  cover <- cover/transcript_info$read_counts  # scale by read counts
   transcript_info <- cbind(transcript_info, cover)
+  transcript_info$weight <- weight_covergae(mat, transcript_info$read_counts)
   if (!is.null(isoform)) {
     p <- transcript_info |>
       tidyr::as_tibble(rownames = "transcript") |>
@@ -200,7 +197,8 @@ plot_coverage <- function(annotation, bam, isoform = NULL, length_bins = c(0, 1,
 
   mean_coverage <- transcript_info |>
     dplyr::group_by(length_bin) |>
-    dplyr::summarize_at(paste0("coverage_", 1:100), mean)
+    dplyr::summarise(dplyr::across(paste0("coverage_", 1:100), ~stats::weighted.mean(.,
+      w = read_counts)))
 
   p <- mean_coverage |>
     tidyr::pivot_longer(paste0("coverage_", 1:100), names_to = "x", values_to = "coverage") |>
