@@ -1,14 +1,21 @@
 # quantify transcript
-import pysam as ps
+
 import os
-from collections import Counter
+import sys
 import gzip
 import numpy as np
 import editdistance
+from itertools import groupby
+from collections import Counter
+
+import multiprocessing as mp
+import pysam as ps
+
 from parse_gene_anno import parse_gff_tree
 from filter_gff import annotate_filter_gff, annotate_full_splice_match_all_sample
-from itertools import groupby
-import sys
+
+import helper
+
 
 # log errors when calling via R/reticulate:
 # import traceback
@@ -23,19 +30,21 @@ def umi_dedup(l, has_UMI):
     if has_UMI:
         l_cnt = sorted(Counter(l).most_common(), key=lambda x: (x[1], x[0]), reverse=True)
         if len(l_cnt) == 1:
-            return 1
+            return 1,1
         rm_umi = {}
         for ith in range(len(l_cnt)-1):
             for jth in range(len(l_cnt)-1, ith, -1):  # first assess the low abundant UMI
                 if l_cnt[jth][0] not in rm_umi:
                     if editdistance.eval(l_cnt[ith][0], l_cnt[jth][0]) < 2:
                         rm_umi[l_cnt[jth][0]] = 1
-        return(len(l_cnt)-len(rm_umi))
+        # return read count, dedup read count
+        return len(l_cnt), len(l_cnt)-len(rm_umi)
     else:
-        return(len(l))
+        return len(l), len(l)
 
 
-def wrt_tr_to_csv(bc_tr_count_dict, transcript_dict, csv_f, transcript_dict_ref=None, has_UMI=True):
+def wrt_tr_to_csv(bc_tr_count_dict, transcript_dict, csv_f, transcript_dict_ref=None, has_UMI=True,
+                  output_saturation = True):
     f = gzip.open(csv_f, "wt")
     all_tr = set()
     for bc in bc_tr_count_dict:
@@ -44,10 +53,16 @@ def wrt_tr_to_csv(bc_tr_count_dict, transcript_dict, csv_f, transcript_dict_ref=
     f.write("transcript_id,gene_id," +
             ",".join([x for x in bc_tr_count_dict])+"\n")
     tr_cnt = {}
+    tot_count = 0
+    tot_count_dedup = 0
     for tr in all_tr:
-        cnt_l = [umi_dedup(bc_tr_count_dict[x][tr], has_UMI)
+        cnt_l = [umi_dedup(bc_tr_count_dict[x][tr], has_UMI)[1]
                  if tr in bc_tr_count_dict[x] else 0 for x in bc_tr_count_dict]
         tr_cnt[tr] = sum(cnt_l)
+        tot_count_dedup += sum(cnt_l)
+        tot_count += sum([umi_dedup(bc_tr_count_dict[x][tr], has_UMI)[0]
+                 if tr in bc_tr_count_dict[x] else 0 for x in bc_tr_count_dict])
+
         if tr in transcript_dict:
             f.write(
                 "{},{},".format(tr, transcript_dict[tr].parent_id))
@@ -59,6 +74,8 @@ def wrt_tr_to_csv(bc_tr_count_dict, transcript_dict, csv_f, transcript_dict_ref=
             exit(1)
         f.write(",".join([str(x) for x in cnt_l])+"\n")
     f.close()
+    if output_saturation and has_UMI:
+        helper.green_msg(f"The estimated saturation is {1-tot_count_dedup/tot_count}")
     return tr_cnt
 
 
@@ -107,8 +124,10 @@ def query_len(cigar_string, hard_clipping=False):
     return result
 
 
-def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_read_coverage, bc_file = False):
-    """
+
+def process_trans(trans_id, bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, 
+                        min_read_coverage, bc_file):
+    """Main function for process single reference transcrtpt
     """
     fa_idx = dict((it.strip().split()[0], int(
         it.strip().split()[1])) for it in open(fa_idx_f))
@@ -118,10 +137,10 @@ def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_re
     read_dict = {}
     cnt_stat = Counter()
     bamfile = ps.AlignmentFile(bam_in, "rb")
-
     if bc_file:
         bc_dict = make_bc_dict(bc_file)
-    for rec in bamfile.fetch(until_eof=True):
+
+    for rec in bamfile.fetch(trans_id):
         if rec.is_unmapped:
             cnt_stat["unmapped"] += 1
             continue
@@ -148,11 +167,17 @@ def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_re
                     rec.query_alignment_length)/rec.infer_read_length(), rec.mapping_quality))
         if tr not in fa_idx:
             cnt_stat["not_in_annotation"] += 1
-            print("\t" + str(tr), "not in annotation ???")
+            # print("\t" + str(tr), "not in annotation ???")
+
+    
     tr_kept = dict((tr, tr) for tr in tr_cov_dict if len(
         [it for it in tr_cov_dict[tr] if it > 0.9]) > min_sup_reads)
+    
+    
+    
     #unique_tr_count = Counter(read_dict[r][0][0]
     #                          for r in read_dict if read_dict[r][0][2] > 0.9)
+    
     for r in read_dict:
         tmp = read_dict[r]
         tmp = [it for it in tmp if it[0] in tr_kept]
@@ -199,9 +224,50 @@ def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_re
                 bc_tr_count_dict[bc] = {}
             bc_tr_count_dict[bc].setdefault(hit[0], []).append(umi)
             cnt_stat["counted_reads"] += 1
-    print(("\t" + str(cnt_stat)))
+    print((trans_id + ":\t" + str(cnt_stat)))
     return bc_tr_count_dict, bc_tr_badcov_count_dict, tr_kept
 
+
+def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, 
+                        min_read_coverage, bc_file = False, 
+                        n_process=mp.cpu_count()-1):
+    """
+    Read each alignment from the read to transcript realignment BAM file
+    Current approach: 
+        Single thread loop through all alignment
+    Returns:
+        Per transcript read count.
+    """
+
+    bamfile = ps.AlignmentFile(bam_in, "rb")
+
+    trans_ids = bamfile.references
+    bamfile.close()
+    rst_futures = helper.multiprocessing_submit(process_trans,
+                                iter(trans_ids), n_process, pbar = True, 
+                                pbar_tot=len(trans_ids), pbar_update=1, bam_in=bam_in,
+                                fa_idx_f=fa_idx_f, min_sup_reads=min_sup_reads, 
+                                min_tr_coverage=min_tr_coverage, 
+                                min_read_coverage=min_read_coverage, bc_file=bc_file)
+    
+    bc_tr_count_dict_mp_rst = {}
+    bc_tr_badcov_count_dict_mp_rst = {}
+    tr_kept_rst_mp_rst = None # this doesn't seem to be used in the downstream
+
+    for idx, f in enumerate(rst_futures):
+        d1, d2, _ = f.result()
+        merge_d = {}
+        for k1 in d1.keys():    
+            for k2 in d1[k1].keys():
+                bc_tr_count_dict_mp_rst.setdefault(k1,{}).setdefault(k2,[]).extend(d1[k1][k2])
+        for k1 in d2.keys():    
+            for k2 in d2[k1].keys():
+                bc_tr_badcov_count_dict_mp_rst.setdefault(k1,{}).setdefault(k2,[]).extend(d2[k1][k2])
+
+        # tr_kept_rst_mp_rst.update(p3)
+
+    return bc_tr_count_dict_mp_rst, bc_tr_badcov_count_dict_mp_rst, tr_kept_rst_mp_rst
+    
 def realigment_min_sup_reads_filter(bam_list, fa_idx_f, min_sup_reads):
     fa_idx = dict((it.strip().split()[0], int(
         it.strip().split()[1])) for it in open(fa_idx_f))
@@ -537,7 +603,7 @@ def quantification(config_dict, annotation, outdir, pipeline):
     tr_cnt = wrt_tr_to_csv(bc_tr_count_dict, transcript_dict_i, tr_cnt_csv,
                            transcript_dict, config_dict["barcode_parameters"]["has_UMI"])
     wrt_tr_to_csv(bc_tr_badcov_count_dict, transcript_dict_i, tr_badcov_cnt_csv,
-                  transcript_dict, config_dict["barcode_parameters"]["has_UMI"])
+                  transcript_dict, config_dict["barcode_parameters"]["has_UMI"], output_saturation = False)
     annotate_filter_gff(isoform_gff3, annotation, isoform_gff3_f, FSM_anno_out,
                         tr_cnt, config_dict["isoform_parameters"]["min_sup_cnt"])
     return
