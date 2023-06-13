@@ -155,6 +155,30 @@ def check_exist(file_list):
         sys.exit()
 
 # split any iterator in to batches  
+
+class pysam_AlignmentSegment_pickible:
+    """Copy all necessary information from pysam AlignemntSegment to make it pickible 
+    for multiprocessing
+    """
+    def __init__(self, AlignmentSegment):
+        self.is_unmapped = AlignmentSegment.is_unmapped
+        self.reference_name = AlignmentSegment.reference_name
+        self.reference_end = AlignmentSegment.reference_end
+        self.reference_start = AlignmentSegment.reference_start
+        self.query_name = AlignmentSegment.query_name
+        self.AS = AlignmentSegment.get_tag("AS")
+        self.mapping_quality = AlignmentSegment.mapping_quality
+        self.read_length = AlignmentSegment.infer_read_length()
+        self.query_alignment_length = AlignmentSegment.query_alignment_length
+    def get_tag(self, tag):
+        if tag == "AS":
+            return self.AS
+        else:
+            raise AttributeError
+            sys.exit(1)
+    def infer_read_length(self):
+        return self.read_length
+        
 def batch_iterator(iterator, batch_size):
     """generateor of batches of items in a iterator with batch_size.
     """
@@ -162,7 +186,7 @@ def batch_iterator(iterator, batch_size):
     i=0
     for entry in iterator:
         i += 1
-        batch.append(entry)
+        batch.append(pysam_AlignmentSegment_pickible(entry))
         if i == batch_size:
             yield batch
             batch = []

@@ -118,7 +118,7 @@ sc_long_pipeline <-
             minimap2_dir,
             config_file
         )
-
+        cat(format(Sys.time(), "%X %a %b %d %Y"), "Start running\n")
         config <- checked_args$config
         minimap2_dir <- checked_args$minimap2_dir
 
@@ -131,6 +131,7 @@ sc_long_pipeline <-
             }
         }
         if (match_barcode) {
+            cat(format(Sys.time(), "%X %a %b %d %Y"), "Demultiplexing\n")
             cat("Matching cell barcodes...\n")
             if (!file.exists(reference_csv)) {
                 stop("reference_csv must exists.")
@@ -149,7 +150,7 @@ sc_long_pipeline <-
             infq <- fastq
         } # requesting to not match barcodes implies `fastq` has already been run through the
         # function in a previous FLAMES call
-
+        cat(format(Sys.time(), "%X %a %b %d %Y"), "Demultiplex done\n")
         cat("Running FLAMES pipeline...\n")
 
         using_bam <- FALSE
@@ -199,6 +200,8 @@ sc_long_pipeline <-
         }
 
         # realign to transcript
+        cat(format(Sys.time(), "%X %a %b %d %Y"), "minimap2_realign\n")
+
         if (config$pipeline_parameters$do_read_realignment) {
             cat("#### Realign to transcript using minimap2\n")
             minimap2_realign(config, infq, outdir, minimap2_dir, prefix = NULL, threads = 12)

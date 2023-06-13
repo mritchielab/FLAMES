@@ -13,6 +13,7 @@
 #' @importFrom basilisk BasiliskEnvironment
 flames_env <- BasiliskEnvironment(
     envname = "flames_env", pkgname = "FLAMES",
+    pip = c("fast-edit-distance"),
     packages = c(
         "python==3.7",
         # "minimap2==2.17",

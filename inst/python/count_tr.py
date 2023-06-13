@@ -5,9 +5,9 @@ import sys
 import gzip
 import numpy as np
 import editdistance
+import fast_edit_distance 
 from itertools import groupby
 from collections import Counter
-
 import multiprocessing as mp
 import pysam as ps
 
@@ -26,7 +26,7 @@ import helper
 #     traceback.print_exception(*sys.exc_info())
 
 
-def umi_dedup(l, has_UMI):
+def umi_dedup(l, has_UMI, max_ed=1):
     if has_UMI:
         l_cnt = sorted(Counter(l).most_common(), key=lambda x: (x[1], x[0]), reverse=True)
         if len(l_cnt) == 1:
@@ -35,7 +35,9 @@ def umi_dedup(l, has_UMI):
         for ith in range(len(l_cnt)-1):
             for jth in range(len(l_cnt)-1, ith, -1):  # first assess the low abundant UMI
                 if l_cnt[jth][0] not in rm_umi:
-                    if editdistance.eval(l_cnt[ith][0], l_cnt[jth][0]) < 2:
+                    # if editdistance.eval(l_cnt[ith][0], l_cnt[jth][0]) < 2:
+                    if fast_edit_distance.edit_distance(l_cnt[ith][0],
+                                        l_cnt[jth][0], max_ed) <= max_ed: 
                         rm_umi[l_cnt[jth][0]] = 1
         # return read count, dedup read count
         return len(l_cnt), len(l_cnt)-len(rm_umi)
@@ -125,9 +127,11 @@ def query_len(cigar_string, hard_clipping=False):
 
 
 
-def process_trans(trans_id, bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, 
+def process_trans(alignment_batch, bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, 
                         min_read_coverage, bc_file):
     """Main function for process single reference transcrtpt
+
+    alignment_batch: a list of pysam AlignedSegment object
     """
     fa_idx = dict((it.strip().split()[0], int(
         it.strip().split()[1])) for it in open(fa_idx_f))
@@ -136,11 +140,11 @@ def process_trans(trans_id, bam_in, fa_idx_f, min_sup_reads, min_tr_coverage,
     tr_cov_dict = {}
     read_dict = {}
     cnt_stat = Counter()
-    bamfile = ps.AlignmentFile(bam_in, "rb")
+    #bamfile = ps.AlignmentFile(bam_in, "rb")
     if bc_file:
-        bc_dict = make_bc_dict(bc_file)
+        bc_dict = make_bc_dict(bc_file) # not sure yet what this is doing
 
-    for rec in bamfile.fetch(trans_id):
+    for rec in alignment_batch:
         if rec.is_unmapped:
             cnt_stat["unmapped"] += 1
             continue
@@ -224,7 +228,7 @@ def process_trans(trans_id, bam_in, fa_idx_f, min_sup_reads, min_tr_coverage,
                 bc_tr_count_dict[bc] = {}
             bc_tr_count_dict[bc].setdefault(hit[0], []).append(umi)
             cnt_stat["counted_reads"] += 1
-    print((trans_id + ":\t" + str(cnt_stat)))
+    print(("\t" + str(cnt_stat)))
     return bc_tr_count_dict, bc_tr_badcov_count_dict, tr_kept
 
 
@@ -240,12 +244,14 @@ def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage,
     """
 
     bamfile = ps.AlignmentFile(bam_in, "rb")
-
-    trans_ids = bamfile.references
-    bamfile.close()
+    
+    proc_batch = helper.batch_iterator(bamfile.fetch(until_eof=True), 
+                                                    batch_size=5000)
+    #trans_ids = bamfile.references
+    #bamfile.close()
     rst_futures = helper.multiprocessing_submit(process_trans,
-                                iter(trans_ids), n_process, pbar = True, 
-                                pbar_tot=len(trans_ids), pbar_update=1, bam_in=bam_in,
+                                proc_batch, n_process, pbar = True, 
+                                pbar_tot=None, pbar_update=1, bam_in=bam_in,
                                 fa_idx_f=fa_idx_f, min_sup_reads=min_sup_reads, 
                                 min_tr_coverage=min_tr_coverage, 
                                 min_read_coverage=min_read_coverage, bc_file=bc_file)
@@ -253,10 +259,9 @@ def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage,
     bc_tr_count_dict_mp_rst = {}
     bc_tr_badcov_count_dict_mp_rst = {}
     tr_kept_rst_mp_rst = None # this doesn't seem to be used in the downstream
-
+    
     for idx, f in enumerate(rst_futures):
         d1, d2, _ = f.result()
-        merge_d = {}
         for k1 in d1.keys():    
             for k2 in d1[k1].keys():
                 bc_tr_count_dict_mp_rst.setdefault(k1,{}).setdefault(k2,[]).extend(d1[k1][k2])
@@ -265,6 +270,7 @@ def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage,
                 bc_tr_badcov_count_dict_mp_rst.setdefault(k1,{}).setdefault(k2,[]).extend(d2[k1][k2])
 
         # tr_kept_rst_mp_rst.update(p3)
+    bamfile.close()
 
     return bc_tr_count_dict_mp_rst, bc_tr_badcov_count_dict_mp_rst, tr_kept_rst_mp_rst
     
