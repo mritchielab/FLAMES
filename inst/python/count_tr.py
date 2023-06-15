@@ -7,9 +7,11 @@ import numpy as np
 import editdistance
 import fast_edit_distance 
 from itertools import groupby
-from collections import Counter
+from collections import Counter, defaultdict
 import multiprocessing as mp
+import concurrent.futures
 import pysam as ps
+from datetime import datetime
 
 from parse_gene_anno import parse_gff_tree
 from filter_gff import annotate_filter_gff, annotate_full_splice_match_all_sample
@@ -28,21 +30,23 @@ import helper
 
 def umi_dedup(l, has_UMI, max_ed=1):
     if has_UMI:
-        l_cnt = sorted(Counter(l).most_common(), key=lambda x: (x[1], x[0]), reverse=True)
+        read_cnt = len(l)
+        dup_cnt = Counter(l)
+        l_cnt = sorted(dup_cnt.most_common(), key=lambda x: (x[1], x[0]), reverse=True)
         if len(l_cnt) == 1:
-            return 1,1
+            return (),1
         rm_umi = {}
         for ith in range(len(l_cnt)-1):
             for jth in range(len(l_cnt)-1, ith, -1):  # first assess the low abundant UMI
                 if l_cnt[jth][0] not in rm_umi:
-                    # if editdistance.eval(l_cnt[ith][0], l_cnt[jth][0]) < 2:
-                    if fast_edit_distance.edit_distance(l_cnt[ith][0],
-                                        l_cnt[jth][0], max_ed) <= max_ed: 
+                    #if editdistance.eval(l_cnt[ith][0], l_cnt[jth][0]) < 2:
+                    if fast_edit_distance.edit_distance(l_cnt[ith][0],l_cnt[jth][0], max_ed) <= max_ed:
                         rm_umi[l_cnt[jth][0]] = 1
-        # return read count, dedup read count
-        return len(l_cnt), len(l_cnt)-len(rm_umi)
+                        l_cnt[ith] = (l_cnt[ith][0], l_cnt[ith][1]+l_cnt[ith][1])
+        # return read count, dedup UMI count
+        return tuple([x[1] for x in l_cnt]), len(l_cnt)-len(rm_umi)
     else:
-        return len(l), len(l)
+        (), len(l)
 
 
 def wrt_tr_to_csv(bc_tr_count_dict, transcript_dict, csv_f, transcript_dict_ref=None, has_UMI=True,
@@ -55,15 +59,15 @@ def wrt_tr_to_csv(bc_tr_count_dict, transcript_dict, csv_f, transcript_dict_ref=
     f.write("transcript_id,gene_id," +
             ",".join([x for x in bc_tr_count_dict])+"\n")
     tr_cnt = {}
-    tot_count = 0
-    tot_count_dedup = 0
+    dup_count = ()
     for tr in all_tr:
         cnt_l = [umi_dedup(bc_tr_count_dict[x][tr], has_UMI)[1]
                  if tr in bc_tr_count_dict[x] else 0 for x in bc_tr_count_dict]
         tr_cnt[tr] = sum(cnt_l)
-        tot_count_dedup += sum(cnt_l)
-        tot_count += sum([umi_dedup(bc_tr_count_dict[x][tr], has_UMI)[0]
-                 if tr in bc_tr_count_dict[x] else 0 for x in bc_tr_count_dict])
+        if has_UMI:
+            dup_count += \
+                sum([umi_dedup(bc_tr_count_dict[x][tr], has_UMI)[0]
+                    if tr in bc_tr_count_dict[x] else () for x in bc_tr_count_dict], ())
 
         if tr in transcript_dict:
             f.write(
@@ -77,7 +81,7 @@ def wrt_tr_to_csv(bc_tr_count_dict, transcript_dict, csv_f, transcript_dict_ref=
         f.write(",".join([str(x) for x in cnt_l])+"\n")
     f.close()
     if output_saturation and has_UMI:
-        helper.green_msg(f"The estimated saturation is {1-tot_count_dedup/tot_count}")
+        helper.green_msg(f"The estimated saturation is {1-len(dup_count)/sum(dup_count)}")
     return tr_cnt
 
 
@@ -127,12 +131,15 @@ def query_len(cigar_string, hard_clipping=False):
 
 
 
-def process_trans(alignment_batch, bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, 
+def process_trans(batch_id, total_batches, bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, 
                         min_read_coverage, bc_file):
-    """Main function for process single reference transcrtpt
-
+    """Main function for process single batch of alignments 
+    batch_id: 0 based integer
+    total_batches: total number of batches
     alignment_batch: a list of pysam AlignedSegment object
     """
+    bamfile = ps.AlignmentFile(bam_in, "rb")
+    print("process start time:" + datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
     fa_idx = dict((it.strip().split()[0], int(
         it.strip().split()[1])) for it in open(fa_idx_f))
     bc_tr_count_dict = {}
@@ -140,11 +147,13 @@ def process_trans(alignment_batch, bam_in, fa_idx_f, min_sup_reads, min_tr_cover
     tr_cov_dict = {}
     read_dict = {}
     cnt_stat = Counter()
-    #bamfile = ps.AlignmentFile(bam_in, "rb")
+    
     if bc_file:
         bc_dict = make_bc_dict(bc_file) # not sure yet what this is doing
 
-    for rec in alignment_batch:
+    for idx,rec in enumerate(bamfile.fetch()):
+        if idx % total_batches != batch_id:
+            continue
         if rec.is_unmapped:
             cnt_stat["unmapped"] += 1
             continue
@@ -229,12 +238,13 @@ def process_trans(alignment_batch, bam_in, fa_idx_f, min_sup_reads, min_tr_cover
             bc_tr_count_dict[bc].setdefault(hit[0], []).append(umi)
             cnt_stat["counted_reads"] += 1
     print(("\t" + str(cnt_stat)))
+    print("process end time:" + datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
     return bc_tr_count_dict, bc_tr_badcov_count_dict, tr_kept
 
 
 def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, 
                         min_read_coverage, bc_file = False, 
-                        n_process=mp.cpu_count()-1):
+                        n_process=mp.cpu_count()-4):
     """
     Read each alignment from the read to transcript realignment BAM file
     Current approach: 
@@ -242,15 +252,8 @@ def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage,
     Returns:
         Per transcript read count.
     """
-
-    bamfile = ps.AlignmentFile(bam_in, "rb")
-    
-    proc_batch = helper.batch_iterator(bamfile.fetch(until_eof=True), 
-                                                    batch_size=5000)
-    #trans_ids = bamfile.references
-    #bamfile.close()
     rst_futures = helper.multiprocessing_submit(process_trans,
-                                proc_batch, n_process, pbar = True, 
+                                (x for x in range(n_process)), total_batches=n_process ,n_process=n_process, pbar = True, 
                                 pbar_tot=None, pbar_update=1, bam_in=bam_in,
                                 fa_idx_f=fa_idx_f, min_sup_reads=min_sup_reads, 
                                 min_tr_coverage=min_tr_coverage, 
@@ -261,17 +264,18 @@ def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage,
     tr_kept_rst_mp_rst = None # this doesn't seem to be used in the downstream
     
     for idx, f in enumerate(rst_futures):
+        print(f"collecting result of batch {idx}  " + datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+              flush = True)
         d1, d2, _ = f.result()
-        for k1 in d1.keys():    
+        for k1 in d1.keys():
             for k2 in d1[k1].keys():
                 bc_tr_count_dict_mp_rst.setdefault(k1,{}).setdefault(k2,[]).extend(d1[k1][k2])
-        for k1 in d2.keys():    
+        for k1 in d2.keys():
             for k2 in d2[k1].keys():
                 bc_tr_badcov_count_dict_mp_rst.setdefault(k1,{}).setdefault(k2,[]).extend(d2[k1][k2])
 
-        # tr_kept_rst_mp_rst.update(p3)
-    bamfile.close()
-
+        #tr_kept_rst_mp_rst.update(p3) # this doesn't seem to be used in the downstream
+    print("All reads processed", flush= True)
     return bc_tr_count_dict_mp_rst, bc_tr_badcov_count_dict_mp_rst, tr_kept_rst_mp_rst
     
 def realigment_min_sup_reads_filter(bam_list, fa_idx_f, min_sup_reads):
@@ -536,8 +540,9 @@ def realigned_bam_coverage(bam_in, fa_idx_f, coverage_dir):
         tr_cov_f.write("{},".format(i)+",".join(str(it) for it in lhi)+"\n")
     tr_cov_f.close()
 
-
+# this is the main function
 def quantification(config_dict, annotation, outdir, pipeline):
+    
     sys.stderr = open('quantification.err', 'a')
 
     transcript_fa_idx = os.path.join(outdir, "transcript_assembly.fa.fai")
@@ -545,10 +550,19 @@ def quantification(config_dict, annotation, outdir, pipeline):
     isoform_gff3_f = os.path.join(outdir, "isoform_annotated.filtered.gff3")
     FSM_anno_out = os.path.join(outdir, "isoform_FSM_annotation.csv")
 
+    # submit to concurrent future
+    executor = concurrent.futures.ProcessPoolExecutor(5)
+
+    futures = {}
+    futures['parse_gff_tree_anno'] = executor.submit(parse_gff_tree, annotation)
+    futures['parse_gff_tree_iso'] = executor.submit(parse_gff_tree, isoform_gff3)
+
     if pipeline == "sc_single_sample":
         realign_bam = os.path.join(outdir, "realign2transcript.bam")
         tr_cnt_csv = os.path.join(outdir, "transcript_count.csv.gz")
         tr_badcov_cnt_csv = os.path.join(outdir, "transcript_count.bad_coverage.csv.gz")
+        
+        start_time = datetime.now()
         bc_tr_count_dict, bc_tr_badcov_count_dict, tr_kept = parse_realigned_bam(
             realign_bam,
             transcript_fa_idx,
@@ -556,6 +570,13 @@ def quantification(config_dict, annotation, outdir, pipeline):
             config_dict["transcript_counting"]["min_tr_coverage"],
             config_dict["transcript_counting"]["min_read_coverage"],
             bc_file = False)
+        
+        chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = \
+            futures['parse_gff_tree_anno'].result()
+        chr_to_gene_i, transcript_dict_i, gene_to_transcript_i, transcript_to_exon_i = \
+            futures['parse_gff_tree_iso'].result()
+
+        print("Time for parse_realigned_bam: ", str(datetime.now()-start_time))
 
     elif pipeline == "bulk":
         realign_bam = [os.path.join(outdir, f) for f in os.listdir(outdir) if f[-22:] == "realign2transcript.bam"]
@@ -571,9 +592,9 @@ def quantification(config_dict, annotation, outdir, pipeline):
     elif pipeline == "sc_multi_sample":
         realign_bam = [os.path.join(outdir, f) for f in os.listdir(outdir) if f[-23:] == "_realign2transcript.bam"]
         tr_kept = realigment_min_sup_reads_filter(realign_bam, transcript_fa_idx, config_dict["isoform_parameters"]["min_sup_cnt"])
-        chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = parse_gff_tree(annotation)
-        chr_to_gene_i, transcript_dict_i, gene_to_transcript_i, transcript_to_exon_i = parse_gff_tree(isoform_gff3)
-        
+        chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = futures['parse_gff_tree_anno'].result()
+        chr_to_gene_i, transcript_dict_i, gene_to_transcript_i, transcript_to_exon_i = futures['parse_gff_tree_iso'].result()
+
         for sample_bam in  realign_bam:
             sys.stderr.write("parsing " + sample_bam + "...\n")
             sample = os.path.basename(sample_bam).replace('_realign2transcript.bam','')
@@ -602,16 +623,27 @@ def quantification(config_dict, annotation, outdir, pipeline):
     else:
         raise ValueError(f"Unknown pipeline type {pipeline}")
 
-            
-    chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = parse_gff_tree(annotation)
-    chr_to_gene_i, transcript_dict_i, gene_to_transcript_i, transcript_to_exon_i = parse_gff_tree(isoform_gff3)
+    
+    chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = futures['parse_gff_tree_anno'].result()
+    chr_to_gene_i, transcript_dict_i, gene_to_transcript_i, transcript_to_exon_i = futures['parse_gff_tree_iso'].result()
 
+    time_now = datetime.now()
     tr_cnt = wrt_tr_to_csv(bc_tr_count_dict, transcript_dict_i, tr_cnt_csv,
                            transcript_dict, config_dict["barcode_parameters"]["has_UMI"])
+    
+    print("Time for wrt_tr_to_csv(bc_tr_count_dict): ", str(datetime.now()-time_now))
+    time_now = datetime.now()
+
     wrt_tr_to_csv(bc_tr_badcov_count_dict, transcript_dict_i, tr_badcov_cnt_csv,
                   transcript_dict, config_dict["barcode_parameters"]["has_UMI"], output_saturation = False)
+    
+    print("Time for wrt_tr_to_csv(bc_tr_badcov_count_dict): ", str(datetime.now()-time_now))
+
+    time_now = datetime.now()
     annotate_filter_gff(isoform_gff3, annotation, isoform_gff3_f, FSM_anno_out,
-                        tr_cnt, config_dict["isoform_parameters"]["min_sup_cnt"])
+                        tr_cnt, config_dict["isoform_parameters"]["min_sup_cnt"], verbose=False)
+    print("Time for annotate_filter_gff: ", str(datetime.now()-time_now))
+    time_now = datetime.now()
     return
 
 

@@ -63,6 +63,7 @@ Imports:
     utils,
     withr,
     zlibbioc,
+    future,
 Suggests: 
     BiocStyle,
     GEOquery,

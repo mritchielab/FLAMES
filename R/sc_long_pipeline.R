@@ -188,7 +188,7 @@ sc_long_pipeline <-
                 outdir,
                 minimap2_dir,
                 prefix = NULL,
-                threads = 12
+                threads = config$alignment_parameters$threads
             )
         } else {
             cat("#### Skip aligning reads to genome\n")
@@ -204,7 +204,7 @@ sc_long_pipeline <-
 
         if (config$pipeline_parameters$do_read_realignment) {
             cat("#### Realign to transcript using minimap2\n")
-            minimap2_realign(config, infq, outdir, minimap2_dir, prefix = NULL, threads = 12)
+            minimap2_realign(config, infq, outdir, minimap2_dir, prefix = NULL, threads = config$alignment_parameters$threads)
         } else {
             cat("#### Skip read realignment\n")
         }

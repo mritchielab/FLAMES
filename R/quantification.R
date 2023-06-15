@@ -43,12 +43,14 @@ parse_realigned_bam <-
     }
 
 #' @importFrom reticulate import_from_path
+#' @importFrom future plan
 wrt_tr_to_csv <-
     function(bc_tr_count_dict,
              transcript_dict,
              csv_f,
              transcript_dict_ref = NULL,
              has_UMI = TRUE) {
+        future::plan(future::multisession)
         callBasilisk(flames_env, function(bc_tr_count_dict,
                                           transcript_dict,
                                           csv_f,

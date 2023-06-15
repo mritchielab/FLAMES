@@ -1,6 +1,6 @@
 import numpy as np
 import concurrent.futures
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor, as_completed
 import multiprocessing as mp
 from pathlib import Path
 from tqdm import tqdm
@@ -102,6 +102,7 @@ class param:
 def multiprocessing_submit(func, iterator, n_process=mp.cpu_count()-1 ,pbar = True, pbar_tot=None, pbar_update=1 ,*arg, **kwargs):
     executor = concurrent.futures.ProcessPoolExecutor(n_process)
     
+    
     # A dictionary which will contain the  future object
     max_queue = n_process + 10
     if pbar:
@@ -112,7 +113,7 @@ def multiprocessing_submit(func, iterator, n_process=mp.cpu_count()-1 ,pbar = Tr
     while True:
         while n_job_in_queue < max_queue:
             i = next(iterator, None)
-            if not i:
+            if i is None:
                 break
             futures[executor.submit(func, i, *arg, **kwargs)] = None
             n_job_in_queue += 1
@@ -166,7 +167,10 @@ class pysam_AlignmentSegment_pickible:
         self.reference_end = AlignmentSegment.reference_end
         self.reference_start = AlignmentSegment.reference_start
         self.query_name = AlignmentSegment.query_name
-        self.AS = AlignmentSegment.get_tag("AS")
+        try:
+            self.AS = AlignmentSegment.get_tag("AS")
+        except:
+            self.AS = None
         self.mapping_quality = AlignmentSegment.mapping_quality
         self.read_length = AlignmentSegment.infer_read_length()
         self.query_alignment_length = AlignmentSegment.query_alignment_length
