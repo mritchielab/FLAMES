@@ -28,10 +28,5 @@ strippedLib: $(SHLIB)
 	if test -e "/usr/bin/strip" & test -e "/bin/uname" & [[ `uname` == "Linux" ]] ; then /usr/bin/strip --strip-debug $(SHLIB); fi
 .phony: strippedLib
 
-RHTSLIB_LIBS=$(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript" -e \
-    'Rhtslib::pkgconfig("PKG_LIBS")')
-RHTSLIB_CPPFLAGS=$(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript" -e \
-    'Rhtslib::pkgconfig("PKG_CPPFLAGS")')
-
-PKG_LIBS= -pthread $(RHTSLIB_LIBS)
-PKG_CPPFLAGS= -pthread $(RHTSLIB_LIBS)
+PKG_LIBS= -pthread
+PKG_CPPFLAGS= -pthread

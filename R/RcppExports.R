@@ -6,8 +6,3 @@ flexiplex <- function(reads_in, barcodes_file, bc_as_readid, max_bc_editdistance
     .Call(`_FLAMES_flexiplex`, reads_in, barcodes_file, bc_as_readid, max_bc_editdistance, max_flank_editdistance, pattern, reads_out, stats_out, bc_out, n_threads)
 }
 
-#' @import zlibbioc
-match_cell_barcode <- function(fastq_dir, stats_file, out_fastq, ref_csv, MAX_DIST, UMI_LEN, left_seq, min_length, reverse_complement, fixed_range) {
-    .Call(`_FLAMES_match_cell_barcode`, fastq_dir, stats_file, out_fastq, ref_csv, MAX_DIST, UMI_LEN, left_seq, min_length, reverse_complement, fixed_range)
-}
-
