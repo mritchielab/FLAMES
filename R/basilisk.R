@@ -13,18 +13,29 @@
 #' @importFrom basilisk BasiliskEnvironment
 flames_env <- BasiliskEnvironment(
     envname = "flames_env", pkgname = "FLAMES",
-    pip = c("fast-edit-distance"),
     packages = c(
         "python==3.7",
         # "minimap2==2.17",
         "numpy==1.16.5",
         "editdistance==0.5.3",
         "scipy==1.2.0",
-        "pysam==0.18.0",
-        "tqdm"
-    ),
-    channels = c("conda-forge", "bioconda")
-)
+        "pysam==0.18.0"
+))
+
+blaze_env <- BasiliskEnvironment(
+    envname = "blaze_env", pkgname = "FLAMES",
+    pip = c("fast-edit-distance==1.2.0"),
+    channels = c('conda-forge','bioconda', 'defaults'),
+    packages = c(
+        "python==3.7",
+        "biopython==1.79", #blaze specific
+        "pandas==1.3.5",#blaze specific
+        "numpy==1.21.6", #blaze specific
+        "matplotlib==3.5.3", #blaze specific
+        "tqdm==4.64.1",
+        "swifter==1.0.9"
+
+))
 # flames_env <- BasiliskEnvironment(envname="full_env",
 #     pkgname="FLAMES",
 #     packages=c("python==2.7.15.0",

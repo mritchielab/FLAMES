@@ -63,6 +63,7 @@ find_isoform_bambu <- function(annotation, genome_fa, genome_bam, outdir, config
                 genome = genome_fa, 
                 quant = TRUE, 
                 discovery = TRUE,
+                lowMemory = TRUE,
                 ncore = ifelse(is.vector(genome_bam), length(genome_bam), 1)
         ))
 

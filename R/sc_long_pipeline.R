@@ -106,7 +106,7 @@ sc_long_pipeline <-
              outdir,
              genome_fa,
              minimap2_dir = NULL,
-             reference_csv,
+             reference_csv = NULL,
              match_barcode,
              config_file = NULL) {
         checked_args <- check_arguments(
@@ -131,21 +131,30 @@ sc_long_pipeline <-
             }
         }
         if (match_barcode) {
-            cat(format(Sys.time(), "%X %a %b %d %Y"), "Demultiplexing\n")
-            cat("Matching cell barcodes...\n")
-            if (!file.exists(reference_csv)) {
-                stop("reference_csv must exists.")
+            if (is.null(reference_csv)){
+                cat("No refernce_csv provided, running BLAZE to generate it from long reads...")
+                config$blaze_parameters['output_fastq'] <- file.path(
+                    outdir, "matched_reads.fastq.gz")
+                blaze(config$blaze_parameters, fastq)
+            } else {
+                cat(format(Sys.time(), "%X %a %b %d %Y"), "Demultiplexing\n")
+                cat("Matching cell barcodes...\n")
+                if (!file.exists(reference_csv)) {
+                    stop("reference_csv must exists.")
+                }
+                infq <- file.path(outdir, "matched_reads.fastq.gz")
+                bc_stat <- file.path(outdir, "matched_barcode_stat")
+                find_barcode(
+                    fastq,
+                    bc_stat,
+                    infq,
+                    reference_csv,
+                    config$barcode_parameters$max_edit_distance,
+                    config$barcode_parameters$UMI_length
+                )
+
             }
-            infq <- file.path(outdir, "matched_reads.fastq.gz")
-            bc_stat <- file.path(outdir, "matched_barcode_stat")
-            find_barcode(
-                fastq,
-                bc_stat,
-                infq,
-                reference_csv,
-                config$barcode_parameters$max_edit_distance,
-                config$barcode_parameters$UMI_length
-            )
+
         } else {
             infq <- fastq
         } # requesting to not match barcodes implies `fastq` has already been run through the
