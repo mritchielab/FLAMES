@@ -13,23 +13,8 @@
 
 #include <Rcpp.h>
 
-//#include "../classes/Pos.h"
-//#include "../classes/StartEndPair.h"
-
-struct Pos 
-{
-    std::string chr;
-    int start;
-    int end;
-    char strand;
-    std::string parent_id;
-};
-
-struct StartEndPair {
-    int start;
-    int end;
-};
-
+#include "../classes/Pos.h"
+#include "../classes/StartEndPair.h"
 
 namespace ranges
 {

@@ -105,7 +105,7 @@ smooth_cigar (const std::vector<CigarPair> &cigar, int threshold)
 std::string printCigarPairs(const std::vector<CigarPair> &cigar) {
     std::stringstream ss;
     ss << cigar[0].len << "-" << cigar[0].op;
-    for (int i =1; i < cigar.size(); i++) {
+    for (size_t i =1; i < cigar.size(); i++) {
         ss << "," << cigar[i].len << "-" << cigar[i].op;
     }
     return ss.str();
