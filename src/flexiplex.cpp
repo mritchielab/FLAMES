@@ -21,7 +21,7 @@
 #include <filesystem>
 // [[Rcpp::plugins(cpp17)]]
 
-#include "../utility/edlib-1.2.7/edlib.h"
+#include "./utility/edlib-1.2.7/edlib.h"
 
 
 const static std::string VERSION="0.96.2";

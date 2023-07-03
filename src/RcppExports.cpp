@@ -11,7 +11,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // flexiplex
-int flexiplex(Rcpp::String reads_in, Rcpp::String barcodes_file, bool bc_as_readid, int max_bc_editdistance, int max_flank_editdistance, Rcpp::List pattern, Rcpp::String reads_out, Rcpp::String stats_out, Rcpp::String bc_out, int n_threads);
+int flexiplex(Rcpp::String reads_in, Rcpp::String barcodes_file, bool bc_as_readid, int max_bc_editdistance, int max_flank_editdistance, Rcpp::StringVector pattern, Rcpp::String reads_out, Rcpp::String stats_out, Rcpp::String bc_out, int n_threads);
 RcppExport SEXP _FLAMES_flexiplex(SEXP reads_inSEXP, SEXP barcodes_fileSEXP, SEXP bc_as_readidSEXP, SEXP max_bc_editdistanceSEXP, SEXP max_flank_editdistanceSEXP, SEXP patternSEXP, SEXP reads_outSEXP, SEXP stats_outSEXP, SEXP bc_outSEXP, SEXP n_threadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -21,7 +21,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type bc_as_readid(bc_as_readidSEXP);
     Rcpp::traits::input_parameter< int >::type max_bc_editdistance(max_bc_editdistanceSEXP);
     Rcpp::traits::input_parameter< int >::type max_flank_editdistance(max_flank_editdistanceSEXP);
-    Rcpp::traits::input_parameter< Rcpp::List >::type pattern(patternSEXP);
+    Rcpp::traits::input_parameter< Rcpp::StringVector >::type pattern(patternSEXP);
     Rcpp::traits::input_parameter< Rcpp::String >::type reads_out(reads_outSEXP);
     Rcpp::traits::input_parameter< Rcpp::String >::type stats_out(stats_outSEXP);
     Rcpp::traits::input_parameter< Rcpp::String >::type bc_out(bc_outSEXP);

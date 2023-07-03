@@ -197,7 +197,7 @@ sc_long_multisample_pipeline <-
                     outdir,
                     minimap2_dir,
                     prefix = samples[i],
-                    threads = NULL
+                    threads = config$pipeline_parameters$threads
                 )
             }
         } else {
@@ -214,7 +214,8 @@ sc_long_multisample_pipeline <-
             cat("#### Realign to transcript using minimap2\n")
             for (i in 1:length(samples)) {
                 cat(paste0(c("\tRealigning sample ", samples[i], "...\n")))
-                minimap2_realign(config, infqs[i], outdir, minimap2_dir, prefix = samples[i], threads = NULL)
+                minimap2_realign(config, infqs[i], outdir, minimap2_dir, prefix = samples[i], 
+                                 threads = config$pipeline_parameters$threads)
             }
         } else {
             cat("#### Skip read realignment\n")

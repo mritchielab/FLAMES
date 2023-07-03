@@ -178,7 +178,6 @@ sc_long_pipeline <-
         # if (!using_bam && config$pipeline_parameters$do_genome_alignment) {
         if (config$pipeline_parameters$do_genome_alignment) {
             cat("#### Aligning reads to genome using minimap2\n")
-            # minimap2_align <- function(config, fa_file, fq_in, annotation, outdir, minimap2_dir, threads = NULL)
             minimap2_align(
                 config,
                 genome_fa,
@@ -187,7 +186,7 @@ sc_long_pipeline <-
                 outdir,
                 minimap2_dir,
                 prefix = NULL,
-                threads = 12
+                threads = config$pipeline_parameters$threads
             )
         } else {
             cat("#### Skip aligning reads to genome\n")
@@ -201,7 +200,8 @@ sc_long_pipeline <-
         # realign to transcript
         if (config$pipeline_parameters$do_read_realignment) {
             cat("#### Realign to transcript using minimap2\n")
-            minimap2_realign(config, infq, outdir, minimap2_dir, prefix = NULL, threads = 12)
+            minimap2_realign(config, infq, outdir, minimap2_dir, prefix = NULL, 
+                             threads = config$pipeline_parameters$threads)
         } else {
             cat("#### Skip read realignment\n")
         }
