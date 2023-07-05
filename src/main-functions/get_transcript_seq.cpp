@@ -147,7 +147,7 @@ get_transcript_seq(
 
                     fa_dict[transcript] = transcript_seq;
                     if (global_seq_dict.find(transcript_seq) != global_seq_dict.end()) {
-                        std::cout << "Duplicate transcript sequence: " << global_seq_dict[transcript_seq] << ", " << transcript << "\n";
+                        Rcpp::Rcout << "Duplicate transcript sequence: " << global_seq_dict[transcript_seq] << ", " << transcript << "\n";
                     } else {
                         global_seq_dict[transcript_seq] = transcript;
                     }
