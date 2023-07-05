@@ -140,128 +140,130 @@ void group_bam2isoform(
     const Rcpp::List &isoform_parameters,
     const std::string &raw_gff3)
 {
-    // // random seed stuff here
-    // if (!file_exists(bam_in + ".bai")) {
-	// 	Rcpp::stop("Can not find corresponding .bai file %s. Cancelling group_bam2isoform.\n", bam_in);
-    // }
+    // random seed stuff here
+    if (!file_exists(bam_in + ".bai")) {
+		// Rcpp::stop("Can not find corresponding .bai file %s. Cancelling group_bam2isoform.\n", bam_in);
+        Rcpp::Rcout << "Can not find corresponding .bai file " << bam_in << ". Cancelling group_bam2isoform.\n";
+        return();
+    }
     
-    // // import all the values of fa_f
-    // const std::unordered_map<std::string, std::string> fa_dict = get_fa_dict(fa_file);
+    // import all the values of fa_f
+    const std::unordered_map<std::string, std::string> fa_dict = get_fa_dict(fa_file);
 
-    // Rcpp::Rcout << "starting main group_bam2isoform\n";
-    // std::string iso_annotated_output_prefix = splitStringToVector(out_gff3, '.').front();
-    // std::string tss_tes_output_prefix = splitStringToVector(out_stat, '.').front();
-    // std::string raw_gff3_prefix = raw_gff3 != "" ? splitStringToVector(raw_gff3, '.').front() : "";
-    // std::vector<std::thread> pool;
-    // std::vector<std::string> isoform_annotated_files;
-    // std::vector<std::string> tss_tes_files;
-    // std::vector<std::string> raw_gff3_files;
+    Rcpp::Rcout << "starting main group_bam2isoform\n";
+    std::string iso_annotated_output_prefix = splitStringToVector(out_gff3, '.').front();
+    std::string tss_tes_output_prefix = splitStringToVector(out_stat, '.').front();
+    std::string raw_gff3_prefix = raw_gff3 != "" ? splitStringToVector(raw_gff3, '.').front() : "";
+    std::vector<std::thread> pool;
+    std::vector<std::string> isoform_annotated_files;
+    std::vector<std::string> tss_tes_files;
+    std::vector<std::string> raw_gff3_files;
 
-    // // run the main group_bam2isoform on each chromosome,
-    // // generating a new worker thread to handle the isoform identification
-    // // and merging the resultant out files into one output gff3
-    // for (const auto &[chromosome, blocks] : chr_to_blocks) {
-    //     std::string isoform_outfile = iso_annotated_output_prefix + chromosome + ".gff3";
-    //     isoform_annotated_files.push_back(isoform_outfile);
-    //     std::string tss_tes_outfile = tss_tes_output_prefix + chromosome + ".bedgraph";
-    //     tss_tes_files.push_back(tss_tes_outfile);
-    //     std::string raw_gff3_outfile = raw_gff3 != "" ? raw_gff3_prefix + chromosome + ".gff3" : "";
-    //     raw_gff3_files.push_back(raw_gff3_outfile);
+    // run the main group_bam2isoform on each chromosome,
+    // generating a new worker thread to handle the isoform identification
+    // and merging the resultant out files into one output gff3
+    for (const auto &[chromosome, blocks] : chr_to_blocks) {
+        std::string isoform_outfile = iso_annotated_output_prefix + chromosome + ".gff3";
+        isoform_annotated_files.push_back(isoform_outfile);
+        std::string tss_tes_outfile = tss_tes_output_prefix + chromosome + ".bedgraph";
+        tss_tes_files.push_back(tss_tes_outfile);
+        std::string raw_gff3_outfile = raw_gff3 != "" ? raw_gff3_prefix + chromosome + ".gff3" : "";
+        raw_gff3_files.push_back(raw_gff3_outfile);
 
-    //     auto thread_function = [
-    //         chromosome=chromosome, &blocks=blocks, 
-    //         bam_in,
-    //         &transcript_to_junctions, 
-    //         &transcript_dict, &gene_dict, &fa_dict,
-    //         raw_gff3_outfile, tss_tes_outfile, isoform_outfile,
-    //         MAX_TS_DIST=isoform_parameters["MAX_TS_DIST"],
-    //         MAX_DIST=isoform_parameters["MAX_DIST"],
-    //         strand_specific=isoform_parameters["strand_specific"],
-    //         MAX_SPLICE_MATCH_DIST=isoform_parameters["MAX_SPLICE_MATCH_DIST"],
-    //         remove_incomp_reads=isoform_parameters["remove_incomp_reads"],
-    //         min_fl_exon_len=isoform_parameters["min_fl_exon_len"],
-    //         Min_sup_cnt=isoform_parameters["Min_sup_cnt"], 
-    //         Min_sup_pct=isoform_parameters["Min_sup_pct"],
-    //         Max_site_per_splice=isoform_parameters["Max_site_per_splice"],
-    //         Min_cnt_pct=isoform_parameters["Min_cnt_pct"]
-    //     ]() {
-    //         bamFile bam = bam_open(bam_in.c_str(), "r"); // bam.h
-    //         bam_index_t *bam_index = bam_index_load(bam_in.c_str());
-    //         bam_header_t *header = bam_header_read(bam); // bam.h
-    //         int tid = bam_get_tid(header, chromosome.c_str());
+        auto thread_function = [
+            chromosome=chromosome, &blocks=blocks, 
+            bam_in,
+            &transcript_to_junctions, 
+            &transcript_dict, &gene_dict, &fa_dict,
+            raw_gff3_outfile, tss_tes_outfile, isoform_outfile,
+            MAX_TS_DIST=isoform_parameters["MAX_TS_DIST"],
+            MAX_DIST=isoform_parameters["MAX_DIST"],
+            strand_specific=isoform_parameters["strand_specific"],
+            MAX_SPLICE_MATCH_DIST=isoform_parameters["MAX_SPLICE_MATCH_DIST"],
+            remove_incomp_reads=isoform_parameters["remove_incomp_reads"],
+            min_fl_exon_len=isoform_parameters["min_fl_exon_len"],
+            Min_sup_cnt=isoform_parameters["Min_sup_cnt"], 
+            Min_sup_pct=isoform_parameters["Min_sup_pct"],
+            Max_site_per_splice=isoform_parameters["Max_site_per_splice"],
+            Min_cnt_pct=isoform_parameters["Min_cnt_pct"]
+        ]() {
+            bamFile bam = bam_open(bam_in.c_str(), "r"); // bam.h
+            bam_index_t *bam_index = bam_index_load(bam_in.c_str());
+            bam_header_t *header = bam_header_read(bam); // bam.h
+            int tid = bam_get_tid(header, chromosome.c_str());
             
-    //         for (const auto &block : blocks) {
-    //             Isoforms tmp_isoform(
-    //                 chromosome, MAX_TS_DIST,
-    //                 MAX_DIST,
-    //                 strand_specific,
-    //                 MAX_SPLICE_MATCH_DIST,
-    //                 remove_incomp_reads,
-    //                 min_fl_exon_len,
-    //                 Min_sup_cnt, Min_sup_pct,
-    //                 Max_site_per_splice);
-    //             DataStruct2 data = {header, &tmp_isoform, 0};
+            for (const auto &block : blocks) {
+                Isoforms tmp_isoform(
+                    chromosome, MAX_TS_DIST,
+                    MAX_DIST,
+                    strand_specific,
+                    MAX_SPLICE_MATCH_DIST,
+                    remove_incomp_reads,
+                    min_fl_exon_len,
+                    Min_sup_cnt, Min_sup_pct,
+                    Max_site_per_splice);
+                DataStruct2 data = {header, &tmp_isoform, 0};
 
-    //             // bam_fetch(bam, bam_index, tid, block.start, block.end, &data, &bam2isoform_fetch_function);
+                // bam_fetch(bam, bam_index, tid, block.start, block.end, &data, &bam2isoform_fetch_function);
                 
-    //             // auto TSS_TES_site = get_TSS_TES_site(transcript_to_junctions, block.transcript_list);
+                // auto TSS_TES_site = get_TSS_TES_site(transcript_to_junctions, block.transcript_list);
 
-    //             // then process the complete isoform
-    //             // if (tmp_isoform.size() > 0) {
-    //             //     std::ofstream tss_tes_stream(tss_tes_outfile);
+                // then process the complete isoform
+                // if (tmp_isoform.size() > 0) {
+                //     std::ofstream tss_tes_stream(tss_tes_outfile);
 
-    //             //     tmp_isoform.update_all_splice();
-    //             //     tmp_isoform.filter_TSS_TES(tss_tes_stream, TSS_TES_site, (float)0.1);
-    //             //     tmp_isoform.match_known_annotation(
-    //             //         transcript_to_junctions,
-    //             //         transcript_dict,
-    //             //         gene_dict,
-    //             //         block,
-    //             //         fa_dict
-    //             //     );
+                //     tmp_isoform.update_all_splice();
+                //     tmp_isoform.filter_TSS_TES(tss_tes_stream, TSS_TES_site, (float)0.1);
+                //     tmp_isoform.match_known_annotation(
+                //         transcript_to_junctions,
+                //         transcript_dict,
+                //         gene_dict,
+                //         block,
+                //         fa_dict
+                //     );
                     
-    //             //     if (raw_gff3_outfile != "") {
-    //             //         // todo - i haven't written the Isoforms function to do this yet
-    //             //         // splice_raw.write(tmp_isoform()); 
-    //             //     }
+                //     if (raw_gff3_outfile != "") {
+                //         // todo - i haven't written the Isoforms function to do this yet
+                //         // splice_raw.write(tmp_isoform()); 
+                //     }
 
-    //             //     tss_tes_stream.close();
+                //     tss_tes_stream.close();
 
-    //             //     std::ofstream iso_annotated(isoform_outfile);
-    //             //     iso_annotated << tmp_isoform.isoform_to_gff3(Min_cnt_pct);
-    //             //     iso_annotated.close();
-    //             // }
-    //         }
+                //     std::ofstream iso_annotated(isoform_outfile);
+                //     iso_annotated << tmp_isoform.isoform_to_gff3(Min_cnt_pct);
+                //     iso_annotated.close();
+                // }
+            }
 
-    //         bam_close(bam);
-    //     }; // end thread_function
+            bam_close(bam);
+        }; // end thread_function
 
-    //     // pool.push_back(std::thread(thread_function));
-    // }
+        // pool.push_back(std::thread(thread_function));
+    }
 
-    // for (auto &thread : pool) {
-    //     thread.join();
-    // }
+    for (auto &thread : pool) {
+        thread.join();
+    }
 
-    // // After joining all threads 
-    // // merge all the individual output files into a single output, and delete all temp files
-    // std::ofstream iso_annotated(out_gff3);
-    // iso_annotated << "##gff-version 3\n";
-    // merge_files_and_delete(iso_annotated, isoform_annotated_files);
-    // iso_annotated.close();
+    // After joining all threads 
+    // merge all the individual output files into a single output, and delete all temp files
+    std::ofstream iso_annotated(out_gff3);
+    iso_annotated << "##gff-version 3\n";
+    merge_files_and_delete(iso_annotated, isoform_annotated_files);
+    iso_annotated.close();
 
-    // std::ofstream tss_tes_stat (out_stat);
-    // merge_files_and_delete(tss_tes_stat, tss_tes_files);
-    // tss_tes_stat.close();
+    std::ofstream tss_tes_stat (out_stat);
+    merge_files_and_delete(tss_tes_stat, tss_tes_files);
+    tss_tes_stat.close();
 
-    // // add to splice_raw if we are planning on outputting raw_gff3
-    // std::ofstream splice_raw;
-    // if (raw_gff3 != "") {
-    //     splice_raw.open(raw_gff3);
-    //     splice_raw << "##gff-version 3\n";
-    //     merge_files_and_delete(splice_raw, raw_gff3_files);
-    //     splice_raw.close();
-    // }
+    // add to splice_raw if we are planning on outputting raw_gff3
+    std::ofstream splice_raw;
+    if (raw_gff3 != "") {
+        splice_raw.open(raw_gff3);
+        splice_raw << "##gff-version 3\n";
+        merge_files_and_delete(splice_raw, raw_gff3_files);
+        splice_raw.close();
+    }
 
     Rcpp::Rcout << "Finished!\n";
 }
