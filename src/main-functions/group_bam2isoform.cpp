@@ -144,7 +144,7 @@ void group_bam2isoform(
     if (!file_exists(bam_in + ".bai")) {
 		// Rcpp::stop("Can not find corresponding .bai file %s. Cancelling group_bam2isoform.\n", bam_in);
         Rcpp::Rcout << "Can not find corresponding .bai file " << bam_in << ". Cancelling group_bam2isoform.\n";
-        return();
+        return;
     }
     
     // import all the values of fa_f
