@@ -75,6 +75,10 @@ license you like.
 
 #include "json/json.h"
 
+#include <Rcpp.h>
+
+#define Rassert(condition) if(!(condition)) Rcpp::stop("assertion error")
+
 #ifndef JSON_IS_AMALGAMATION
 #error "Compile with -I PATH_TO_JSON_DIRECTORY"
 #endif
@@ -249,7 +253,6 @@ Iter fixZerosInTheEnd(Iter begin, Iter end, unsigned int precision) {
 #include <json/value.h>
 #endif // if !defined(JSON_IS_AMALGAMATION)
 #include <algorithm>
-#include <cassert>
 #include <cstring>
 #include <iostream>
 #include <istream>
@@ -608,10 +611,10 @@ String Reader::normalizeEOL(Reader::Location begin, Reader::Location end) {
 
 void Reader::addComment(Location begin, Location end,
                         CommentPlacement placement) {
-  assert(collectComments_);
+  Rassert(collectComments_);
   const String& normalized = normalizeEOL(begin, end);
   if (placement == commentAfterOnSameLine) {
-    assert(lastValue_ != nullptr);
+    Rassert((lastValue_ != nullptr));
     lastValue_->setComment(normalized, placement);
   } else {
     commentsBefore_ += normalized;
@@ -1584,10 +1587,10 @@ String OurReader::normalizeEOL(OurReader::Location begin,
 
 void OurReader::addComment(Location begin, Location end,
                            CommentPlacement placement) {
-  assert(collectComments_);
+  Rassert(collectComments_);
   const String& normalized = normalizeEOL(begin, end);
   if (placement == commentAfterOnSameLine) {
-    assert(lastValue_ != nullptr);
+    Rassert((lastValue_ != nullptr));
     lastValue_->setComment(normalized, placement);
   } else {
     commentsBefore_ += normalized;
@@ -2423,7 +2426,6 @@ ValueIterator& ValueIterator::operator=(const SelfType& other) {
 #include <json/writer.h>
 #endif // if !defined(JSON_IS_AMALGAMATION)
 #include <algorithm>
-#include <cassert>
 #include <cmath>
 #include <cstddef>
 #include <cstring>
@@ -2459,7 +2461,7 @@ int JSON_API msvc_pre1900_c99_snprintf(char* outBuf, size_t size,
 #pragma warning(disable : 4702)
 #endif
 
-#define JSON_ASSERT_UNREACHABLE assert(false)
+#define JSON_ASSERT_UNREACHABLE Rassert(false)
 
 namespace Json {
 template <typename T>
@@ -4070,7 +4072,7 @@ Value& Path::make(Value& root) const {
 #include <json/writer.h>
 #endif // if !defined(JSON_IS_AMALGAMATION)
 #include <algorithm>
-#include <cassert>
+// #include <cassert>
 #include <cctype>
 #include <cstring>
 #include <iomanip>
@@ -4165,7 +4167,7 @@ String valueToString(LargestInt value) {
   } else {
     uintToString(LargestUInt(value), current);
   }
-  assert(current >= buffer);
+  Rassert((current >= buffer));
   return current;
 }
 
@@ -4173,7 +4175,7 @@ String valueToString(LargestUInt value) {
   UIntToStringBuffer buffer;
   char* current = buffer + sizeof(buffer);
   uintToString(value, current);
-  assert(current >= buffer);
+  Rassert((current >= buffer));
   return current;
 }
 
@@ -4204,7 +4206,7 @@ String valueToString(double value, bool useSpecialFloats,
         &*buffer.begin(), buffer.size(),
         (precisionType == PrecisionType::significantDigits) ? "%.*g" : "%.*f",
         precision, value);
-    assert(len >= 0);
+    Rassert(len >= 0);
     auto wouldPrint = static_cast<size_t>(len);
     if (wouldPrint >= buffer.size()) {
       buffer.resize(wouldPrint + 1);
@@ -4240,7 +4242,7 @@ String valueToString(double value, unsigned int precision,
 String valueToString(bool value) { return value ? "true" : "false"; }
 
 static bool doesAnyCharRequireEscaping(char const* s, size_t n) {
-  assert(s || !n);
+  Rassert(s || !n);
 
   return std::any_of(s, s + n, [](unsigned char c) {
     return c == '\\' || c == '"' || c < 0x20 || c > 0x7F;
@@ -4600,7 +4602,7 @@ void StyledWriter::writeArrayValue(const Value& value) {
       writeWithIndent("]");
     } else // output on a single line
     {
-      assert(childValues_.size() == size);
+      Rassert(childValues_.size() == size);
       document_ += "[ ";
       for (size_t index = 0; index < size; ++index) {
         if (index > 0)
@@ -4665,7 +4667,7 @@ void StyledWriter::writeWithIndent(const String& value) {
 void StyledWriter::indent() { indentString_ += String(indentSize_, ' '); }
 
 void StyledWriter::unindent() {
-  assert(indentString_.size() >= indentSize_);
+  Rassert(indentString_.size() >= indentSize_);
   indentString_.resize(indentString_.size() - indentSize_);
 }
 
@@ -4821,7 +4823,7 @@ void StyledStreamWriter::writeArrayValue(const Value& value) {
       writeWithIndent("]");
     } else // output on a single line
     {
-      assert(childValues_.size() == size);
+      Rassert(childValues_.size() == size);
       *document_ << "[ ";
       for (unsigned index = 0; index < size; ++index) {
         if (index > 0)
@@ -4885,7 +4887,7 @@ void StyledStreamWriter::writeWithIndent(const String& value) {
 void StyledStreamWriter::indent() { indentString_ += indentation_; }
 
 void StyledStreamWriter::unindent() {
-  assert(indentString_.size() >= indentation_.size());
+  Rassert(indentString_.size() >= indentation_.size());
   indentString_.resize(indentString_.size() - indentation_.size());
 }
 
@@ -5097,7 +5099,7 @@ void BuiltStyledStreamWriter::writeArrayValue(Value const& value) {
       writeWithIndent("]");
     } else // output on a single line
     {
-      assert(childValues_.size() == size);
+      Rassert(childValues_.size() == size);
       *sout_ << "[";
       if (!indentation_.empty())
         *sout_ << " ";
@@ -5169,7 +5171,7 @@ void BuiltStyledStreamWriter::writeWithIndent(String const& value) {
 void BuiltStyledStreamWriter::indent() { indentString_ += indentation_; }
 
 void BuiltStyledStreamWriter::unindent() {
-  assert(indentString_.size() >= indentation_.size());
+  Rassert(indentString_.size() >= indentation_.size());
   indentString_.resize(indentString_.size() - indentation_.size());
 }
 

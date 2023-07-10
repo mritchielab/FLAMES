@@ -10,7 +10,6 @@
 #include <unordered_map>
 #include <algorithm>
 #include <string>
-#include <cassert>
 #include <fstream>
 
 #include <Rcpp.h>
@@ -97,7 +96,7 @@ char complement(char n)
   case 'N':
     return 'N';
   }
-  assert(false);
+  Rcpp::stop("No matching base complement");
   return ' ';
 }
 

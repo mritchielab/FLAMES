@@ -36,96 +36,96 @@ struct DataStruct2 {
 static std::unordered_map<std::string, std::string> 
 get_fa_dict(std::string filename)
 {
-    // // Modify in place
-    // auto
-    // string_toupper = [] (std::string &input)
-    // { std::transform(input.begin(), input.end(), input.begin(), [](unsigned char c) { return std::toupper(c); }); };
+    // Modify in place
+    auto
+    string_toupper = [] (std::string &input)
+    { std::transform(input.begin(), input.end(), input.begin(), [](unsigned char c) { return std::toupper(c); }); };
 
-    // std::string ch = "";
-    // std::stringstream sequence;
-    // std::unordered_map<std::string, std::string>  output;
+    std::string ch = "";
+    std::stringstream sequence;
+    std::unordered_map<std::string, std::string>  output;
 
-    // std::ifstream infile(filename);
+    std::ifstream infile(filename);
 
-    // std::string line;
-    // while (std::getline(infile, line)) {
-    //     if (line[0] == '>') {
-    //         if (ch != "") {
-    //             output[ch] = sequence.str();
-    //         }
-    //         ch = strip(std::string(line.begin()+1, line.end()));
-    //         string_toupper(ch);
-    //         sequence.str(""); // reset the stringstream to empty
-    //     } else {
-    //         string_toupper(line);
-    //         sequence << strip(line);
-    //     }
-    // }
-    // infile.close();
+    std::string line;
+    while (std::getline(infile, line)) {
+        if (line[0] == '>') {
+            if (ch != "") {
+                output[ch] = sequence.str();
+            }
+            ch = strip(std::string(line.begin()+1, line.end()));
+            string_toupper(ch);
+            sequence.str(""); // reset the stringstream to empty
+        } else {
+            string_toupper(line);
+            sequence << strip(line);
+        }
+    }
+    infile.close();
 
-    // return output;
+    return output;
 }
 
 static std::vector<StartEndPair>
 get_blocks(const BAMRecord &record) {
-    // std::vector<StartEndPair> blocks;
-    // int pos = record.reference_start;
+    std::vector<StartEndPair> blocks;
+    int pos = record.reference_start;
 
-    // for (const auto & [op, len] : record.cigar) {
-    //     if ((op == BAM_CMATCH) ||
-    //         (op == BAM_CEQUAL) ||
-    //         (op == BAM_CDIFF)) {
-    //         // add it to the blocks and move on
-    //         blocks.push_back({pos, pos + len});
-    //         pos += len;
-    //     } else if (
-    //         (op == BAM_CDEL) ||
-    //         (op == BAM_CREF_SKIP)) {
-    //         // just skip over this position
-    //         pos += len;
-    //     }
-    // }
+    for (const auto & [op, len] : record.cigar) {
+        if ((op == BAM_CMATCH) ||
+            (op == BAM_CEQUAL) ||
+            (op == BAM_CDIFF)) {
+            // add it to the blocks and move on
+            blocks.push_back({pos, pos + len});
+            pos += len;
+        } else if (
+            (op == BAM_CDEL) ||
+            (op == BAM_CREF_SKIP)) {
+            // just skip over this position
+            pos += len;
+        }
+    }
 
-    // return blocks;
+    return blocks;
 }
 
 void 
 merge_files_and_delete(std::ofstream &outfile, const std::vector<std::string> &infiles) {
-    // for (const auto &file : infiles) {
-    //     std::ifstream infile(file);
+    for (const auto &file : infiles) {
+        std::ifstream infile(file);
 
-    //     if (!infile.is_open()) continue;
+        if (!infile.is_open()) continue;
 
-    //     std::string line;
-    //     while (std::getline(infile, line)) {
-    //         outfile << line;
-    //     }
-    //     infile.close();
+        std::string line;
+        while (std::getline(infile, line)) {
+            outfile << line;
+        }
+        infile.close();
 
-    //     std::remove(file.c_str());
-    // }
+        std::remove(file.c_str());
+    }
 }
 
 static int
 bam2isoform_fetch_function(const bam1_t *b, void *data)
 {
-    // // retrieve the data from htslib and void * object
-	// DataStruct2 *data_struct = (DataStruct2 *)data;
-	// BAMRecord rec = read_record(b, data_struct->header);
+    // retrieve the data from htslib and void * object
+	DataStruct2 *data_struct = (DataStruct2 *)data;
+	BAMRecord rec = read_record(b, data_struct->header);
 
-    // // smooth and update the CIGAR
-	// std::vector<CigarPair> cigar = smooth_cigar(rec.cigar, 20);
-	// rec.cigar = cigar;
-	// rec.cigar_string = generate_cigar(cigar);
+    // smooth and update the CIGAR
+	std::vector<CigarPair> cigar = smooth_cigar(rec.cigar, 20);
+	rec.cigar = cigar;
+	rec.cigar_string = generate_cigar(cigar);
 
-	// std::vector<StartEndPair> tmp_blocks = get_blocks(rec);
-	// Junctions junctions = blocks_to_junctions(tmp_blocks);
+	std::vector<StartEndPair> tmp_blocks = get_blocks(rec);
+	Junctions junctions = blocks_to_junctions(tmp_blocks);
     
-	// std::vector<std::string> tmp_blocks_str = ranges::map<StartEndPair, std::string>(tmp_blocks, [](StartEndPair sep) -> std::string { return sep.getString(); });
+	std::vector<std::string> tmp_blocks_str = ranges::map<StartEndPair, std::string>(tmp_blocks, [](StartEndPair sep) -> std::string { return sep.getString(); });
     
-    // data_struct->isoform->add_isoform(junctions, rec.flag.read_reverse_strand);
-	// data_struct->i = data_struct->i + 1;
-	// return 0;
+    data_struct->isoform->add_isoform(junctions, rec.flag.read_reverse_strand);
+	data_struct->i = data_struct->i + 1;
+	return 0;
 }
 
 void group_bam2isoform(
@@ -141,11 +141,11 @@ void group_bam2isoform(
     const std::string &raw_gff3)
 {
     // random seed stuff here
-    if (!file_exists(bam_in + ".bai")) {
-		// Rcpp::stop("Can not find corresponding .bai file %s. Cancelling group_bam2isoform.\n", bam_in);
-        Rcpp::Rcout << "Can not find corresponding .bai file " << bam_in << ". Cancelling group_bam2isoform.\n";
-        return;
-    }
+    // if (!file_exists(bam_in + ".bai")) {
+	// 	// Rcpp::stop("Can not find corresponding .bai file %s. Cancelling group_bam2isoform.\n", bam_in);
+    //     Rcpp::Rcout << "Can not find corresponding .bai file " << bam_in << ". Cancelling group_bam2isoform.\n";
+    //     return;
+    // }
     
     // import all the values of fa_f
     const std::unordered_map<std::string, std::string> fa_dict = get_fa_dict(fa_file);

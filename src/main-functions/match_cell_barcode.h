@@ -8,7 +8,6 @@
 #include <utility>
 #include <unordered_map>
 #include <string>
-#include <cassert>
 
 #include <Rcpp.h>
 

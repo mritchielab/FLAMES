@@ -1,3 +1,5 @@
+#include <Rcpp.h>
+
 /// Json-cpp amalgamated header (http://jsoncpp.sourceforge.net/).
 /// It is intended to be used with #include "json/json.h"
 
@@ -2296,7 +2298,7 @@ JSON_API OStream& operator<<(OStream&, const Value& root);
 #define JSON_ASSERT(condition)                                                 \
   do {                                                                         \
     if (!(condition)) {                                                        \
-      Json::throwLogicError("assert json failed");                             \
+      Rcpp::stop("failed");                             \
     }                                                                          \
   } while (0)
 
@@ -2305,12 +2307,12 @@ JSON_API OStream& operator<<(OStream&, const Value& root);
     OStringStream oss;                                                         \
     oss << message;                                                            \
     Json::throwLogicError(oss.str());                                          \
-    abort();                                                                   \
+    Rcpp::stop(oss.str());                                                     \
   } while (0)
 
 #else // JSON_USE_EXCEPTION
 
-#define JSON_ASSERT(condition) assert(condition)
+// #define JSON_ASSERT(condition) assert(condition)
 
 // The call to assert() will show the failure message in debug builds. In
 // release builds we abort, for a core-dump or debugger.
@@ -2318,8 +2320,9 @@ JSON_API OStream& operator<<(OStream&, const Value& root);
   {                                                                            \
     OStringStream oss;                                                         \
     oss << message;                                                            \
-    assert(false && oss.str().c_str());                                        \
-    abort();                                                                   \
+    Rcpp::stop(oss.str().c_str());
+    //assert(false && oss.str().c_str());                                        
+    //abort();                                                                   
   }
 
 #endif
