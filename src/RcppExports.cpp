@@ -25,9 +25,27 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// testfunc
+void testfunc(const std::string& gff3, const std::string& genome_bam, const std::string& isoform_gff3, const std::string& tss_tes_stat, const std::string& genomefa, const std::string& transcript_fa, const Rcpp::List& isoform_parameters, const std::string& raw_splice_isoform);
+RcppExport SEXP _FLAMES_testfunc(SEXP gff3SEXP, SEXP genome_bamSEXP, SEXP isoform_gff3SEXP, SEXP tss_tes_statSEXP, SEXP genomefaSEXP, SEXP transcript_faSEXP, SEXP isoform_parametersSEXP, SEXP raw_splice_isoformSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::string& >::type gff3(gff3SEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type genome_bam(genome_bamSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type isoform_gff3(isoform_gff3SEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type tss_tes_stat(tss_tes_statSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type genomefa(genomefaSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type transcript_fa(transcript_faSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type isoform_parameters(isoform_parametersSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type raw_splice_isoform(raw_splice_isoformSEXP);
+    testfunc(gff3, genome_bam, isoform_gff3, tss_tes_stat, genomefa, transcript_fa, isoform_parameters, raw_splice_isoform);
+    return R_NilValue;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_FLAMES_find_barcode", (DL_FUNC) &_FLAMES_find_barcode, 6},
+    {"_FLAMES_testfunc", (DL_FUNC) &_FLAMES_testfunc, 8},
     {NULL, NULL, 0}
 };
 
