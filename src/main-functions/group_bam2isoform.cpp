@@ -141,11 +141,12 @@ void group_bam2isoform(
     const std::string &raw_gff3)
 {
     // random seed stuff here
-    // if (!file_exists(bam_in + ".bai")) {
-	// 	// Rcpp::stop("Can not find corresponding .bai file %s. Cancelling group_bam2isoform.\n", bam_in);
-    //     Rcpp::Rcout << "Can not find corresponding .bai file " << bam_in << ". Cancelling group_bam2isoform.\n";
-    //     return;
-    // }
+    if (false) {
+    // if (!file_exists(bam_in + ".bai")) { // WE CAN'T CHECK THIS AS THIS IS AN ABORT STATEMENT APPARENTLY
+		Rcpp::stop("Can not find corresponding .bai file %s. Cancelling group_bam2isoform.\n", bam_in);
+        // Rcpp::Rcout << "Can not find corresponding .bai file " << bam_in << ". Cancelling group_bam2isoform.\n";
+        return;
+    }
     
     // import all the values of fa_f
     const std::unordered_map<std::string, std::string> fa_dict = get_fa_dict(fa_file);
