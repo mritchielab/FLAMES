@@ -26,74 +26,28 @@
 #' @export
 filter_annotation <- function(annotation, keep = "tss_differ") {
   if (is.character(annotation)) {
-    annotation <- rtracklayer::import(annotation, feature.type = "exon")
-  }
-  annotation <- S4Vectors::split(annotation, annotation$gene_id)
-
-  min_differ <- function(x, y) {
-    return(min(BiocGenerics::start(x)) != min(BiocGenerics::start(y)))
-  }
-
-  max_differ <- function(x, y) {
-    return(max(BiocGenerics::end(x)) != max(BiocGenerics::end(y)))
+    annotation <- annotation |>
+      GenomicFeatures::makeTxDbFromGFF() |>
+      GenomicFeatures::transcripts()
+  } else {
+    annotation <- annotation |>
+      GenomicFeatures::makeTxDbFromGRanges() |>
+      GenomicFeatures::transcripts()
   }
 
-  tes_differ <- function(x, y) {
-    if (as.logical(GenomicRanges::strand(x)[1] != GenomicRanges::strand(y)[1])) {
-      return(TRUE)
-    } else if (as.logical(GenomicRanges::strand(x)[1] == "+")) {
-      return(max_differ(x, y))
-    } else if (as.logical(GenomicRanges::strand(x)[1] == "-")) {
-      return(min_differ(x, y))
-    } else {
-      return(min_differ(x, y) && max_differ(x, y))
+  unique_fn <- function(x, keep){
+    if (keep == "tss_differ") {
+      return(!duplicated(GenomicRanges::start(x)) & !duplicated(GenomicRanges::start(x), fromLast=TRUE))
+    }
+    if (keep == "tes_differ") {
+      return(!duplicated(GenomicRanges::end(x)) & !duplicated(GenomicRanges::end(x), fromLast=TRUE))
+    }
+    if (keep == "both") {
+      return(unique_fn(x, "tss_differ") & unique_fn(x, "tes_differ"))
     }
   }
 
-  tss_differ <- function(x, y) {
-    if (as.logical(GenomicRanges::strand(x)[1] != GenomicRanges::strand(y)[1])) {
-      return(TRUE)
-    } else if (as.logical(GenomicRanges::strand(x)[1] == "-")) {
-      return(max_differ(x, y))
-    } else if (as.logical(GenomicRanges::strand(x)[1] == "+")) {
-      return(min_differ(x, y))
-    } else {
-      return(min_differ(x, y) && max_differ(x, y))
-    }
-  }
-
-  check_fn <- switch(keep, single_transcripts = function(...) {
-    stop("Line should not be reached")
-  }, tss_differ = tss_differ, tes_differ = tes_differ, both = function(x, y) {
-    tss_differ(x, y) && tes_differ(x, y)
-  })
-
-  filtered_annotation <- NULL
-  for (gene in seq_along(annotation)) {
-    transcripts <- S4Vectors::split(annotation[[gene]], annotation[[gene]]$transcript_id)
-    if (length(transcripts) == 1) {
-      filtered_annotation <- append(filtered_annotation, unlist(transcripts))
-    } else if (keep == "single_transcripts") {
-      next
-
-      # remove isoforms that could spawn ambigious reads
-    } else {
-      pairwise_checks <- arrangements::combinations(x = names(transcripts),
-        k = 2, replace = FALSE, layout = "row")
-      kept_transcripts <- rep(TRUE, length(transcripts))
-      names(kept_transcripts) <- names(transcripts)
-      for (check in seq_len(nrow(pairwise_checks))) {
-        i <- transcripts[[pairwise_checks[check, 1]]]
-        j <- transcripts[[pairwise_checks[check, 2]]]
-        if (!check_fn(i, j)) {
-          kept_transcripts[pairwise_checks[check, ]] <- FALSE
-        }
-      }
-      filtered_annotation <- append(filtered_annotation, unlist(transcripts[kept_transcripts]))
-    }
-
-  }
-  return(filtered_annotation)
+  return(annotation[unique_fn(annotation, keep)])
 }
 
 #' plot read coverages
@@ -110,14 +64,14 @@ filter_annotation <- function(annotation, keep = "tss_differ") {
 #' @importFrom ggplot2 ggplot geom_line aes
 #' @importFrom stats weighted.mean
 #'
-#' @param annotation path to the GTF annotation file, or the parsed GenomicRanges
-#' object.
 #' @param isoform string vector, provide isoform names to plot the coverage for the
 #' corresponding isoforms, or provide NULL to plot average coverages for each 
 #' length bin
 #' @param length_bins, numeric vector to specify the sizes to bin the isoforms by
 #' @param bam, path to the BAM file (aligning reads to the transcriptome), or
 #' the (GenomicAlignments::readGAlignments) parsed GAlignments object
+#' @param weight_fn "read_counts" or "sigmoid", determins how the transcripts 
+#' should be weighted within length bins.
 #' @return a ggplot2 object of the coverage plot(s)
 #' @examples
 #' temp_path <- tempfile()
@@ -135,31 +89,53 @@ filter_annotation <- function(annotation, keep = "tss_differ") {
 #'         fq_in = fastq1,
 #'         outdir = outdir
 #'     )
-#'   plot_coverage(annotation = annotation, bam = file.path(outdir, 'realign2transcript.bam'))
+#'   plot_coverage(bam = file.path(outdir, 'realign2transcript.bam'))
 #' }
 #' @md
 #' @export
-plot_coverage <- function(annotation, bam, isoform = NULL, length_bins = c(0, 1,
-  2, 5, 10, Inf)) {
-  if (is.character(annotation)) {
-    annotation <- annotation |>
-      GenomicFeatures::makeTxDbFromGFF() |>
-      GenomicFeatures::transcripts()
-  } else {
-    annotation <- annotation |>
-      GenomicFeatures::makeTxDbFromGRanges() |>
-      GenomicFeatures::transcripts()
+plot_coverage <- function(bam, isoform = NULL, length_bins = c(0, 1,
+  2, 5, 10, Inf), weight_fn = "read_counts") {
+  
+  transcript_info <- transcript_coverage(bam, isoform, length_bins, weight_fn)
+
+  if (!is.null(isoform)) {
+    p <- transcript_info |>
+      tidyr::as_tibble(rownames = "transcript") |>
+      tidyr::pivot_longer(paste0("coverage_", 1:100), names_to = "x", values_to = "coverage") |>
+      dplyr::mutate(x = as.numeric(gsub("coverage_", "", x))) |>
+      ggplot2::ggplot(aes(x = x, y = coverage, color = transcript)) + geom_line()
+    return(p)
   }
 
+  mean_coverage <- transcript_info |>
+    dplyr::group_by(length_bin) |>
+    dplyr::summarise(dplyr::across(paste0("coverage_", 1:100), ~stats::weighted.mean(.,
+      w = weight)))
+
+  p <- mean_coverage |>
+    tidyr::pivot_longer(paste0("coverage_", 1:100), names_to = "x", values_to = "coverage") |>
+    dplyr::mutate(x = as.numeric(gsub("coverage_", "", x))) |>
+    ggplot2::ggplot(aes(x = x, y = coverage, color = length_bin)) + geom_line()
+
+  return(p)
+}
+
+
+transcript_coverage <- function(bam, isoform = NULL, length_bins = c(0, 1,
+  2, 5, 10, Inf), weight_fn = "read_counts") {
+  
   if (!is(bam, "GAlignments")) {
     bam <- GenomicAlignments::readGAlignments(bam, param = Rsamtools::ScanBamParam(mapqFilter = 5))
   }
 
+  if (!is.null(isoform)) {
+    bam <- bam[GenomicAlignments::seqnames(bam) %in% isoform]
+  }
+
   read_counts <- table(GenomicAlignments::seqnames(bam))
-  transcript_names <- intersect(annotation$tx_name, names(read_counts))
-  annotation <- annotation[match(transcript_names, annotation$tx_name)]
-  transcript_info <- data.frame(tr_length = GenomicRanges::width(annotation), read_counts = as.data.frame(read_counts[transcript_names])$Freq,
-    strand = GenomicRanges::strand(annotation))
+  transcript_names <- names(read_counts)
+  transcript_info <- data.frame(tr_length =  GenomeInfoDb::seqlengths(bam)[transcript_names], 
+    read_counts = as.data.frame(read_counts[transcript_names])$Freq)
   transcript_info$length_bin <- cut(transcript_info$tr_length/1000, length_bins)
 
   cover <- bam |>
@@ -175,35 +151,19 @@ plot_coverage <- function(annotation, bam, isoform = NULL, length_bins = c(0, 1,
   colnames(cover) <- paste0("coverage_", 1:100)
   cover <- cover[transcript_names, ]
 
-  weight_covergae <- function(mat, read_counts) {
-    sigmoid <- function(x) {
-      exp(x)/(exp(x) + 1)
+  if (weight_fn == "sigmoid") {
+    weight_fn <- function(mat, read_counts) {
+      sigmoid <- function(x) {
+        exp(x)/(exp(x) + 1)
+      }
+      sigmoid((read_counts - 2000)/500)
     }
-    sigmoid((read_counts - mean(read_counts))/100)
+  } else if (weight_fn == "read_counts") {
+    weight_fn <- function(mat, read_counts) {read_counts}
   }
 
   cover <- cover/transcript_info$read_counts  # scale by read counts
   transcript_info <- cbind(transcript_info, cover)
-  transcript_info$weight <- weight_covergae(mat, transcript_info$read_counts)
-  if (!is.null(isoform)) {
-    p <- transcript_info |>
-      tidyr::as_tibble(rownames = "transcript") |>
-      dplyr::filter(transcript %in% isoform) |>
-      tidyr::pivot_longer(paste0("coverage_", 1:100), names_to = "x", values_to = "coverage") |>
-      dplyr::mutate(x = as.numeric(gsub("coverage_", "", x))) |>
-      ggplot2::ggplot(aes(x = x, y = coverage, color = transcript)) + geom_line()
-    return(p)
-  }
-
-  mean_coverage <- transcript_info |>
-    dplyr::group_by(length_bin) |>
-    dplyr::summarise(dplyr::across(paste0("coverage_", 1:100), ~stats::weighted.mean(.,
-      w = read_counts)))
-
-  p <- mean_coverage |>
-    tidyr::pivot_longer(paste0("coverage_", 1:100), names_to = "x", values_to = "coverage") |>
-    dplyr::mutate(x = as.numeric(gsub("coverage_", "", x))) |>
-    ggplot2::ggplot(aes(x = x, y = coverage, color = length_bin)) + geom_line()
-
-  return(p)
+  transcript_info$weight <- weight_fn(mat, transcript_info$read_counts)
+  return(transcript_info)
 }

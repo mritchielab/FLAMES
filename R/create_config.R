@@ -134,6 +134,11 @@ check_arguments <-
                 stop("Bambu requires GTF format for annotation file.\n")
             }
         }
+        
+        n_cores <- parallel::detectCores()
+        if (!is.na(n_cores) && config$pipeline_parameters$threads > n_cores) {
+                cat("Configured to use", config$pipeline_parameters$threads, "cores, detected", n_cores, "\n")
+        }
 
         return(list(config = config, minimap2_dir = minimap2_dir))
     }

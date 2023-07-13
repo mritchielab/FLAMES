@@ -466,8 +466,6 @@ def realigned_bam_coverage(bam_in, fa_idx_f, coverage_dir):
 
 
 def quantification(config_dict, annotation, outdir, pipeline):
-    sys.stderr = open('quantification.err', 'a')
-
     transcript_fa_idx = os.path.join(outdir, "transcript_assembly.fa.fai")
     isoform_gff3 = os.path.join(outdir, "isoform_annotated.gtf" if os.path.isfile(os.path.join(outdir, "isoform_annotated.gtf")) else "isoform_annotated.gff3")
     isoform_gff3_f = os.path.join(outdir, "isoform_annotated.filtered.gff3")
@@ -515,10 +513,10 @@ def quantification(config_dict, annotation, outdir, pipeline):
                 config_dict["transcript_counting"]["min_read_coverage"])
             sys.stderr.write("parsing " + sample_bam + "done\n")
             tr_cnt = wrt_tr_to_csv(bc_tr_count_dict, transcript_dict_i, tr_cnt_csv,
-                                   transcript_dict, config_dict["barcode_parameters"]["has_UMI"])
+                                   transcript_dict, "umi_seq" in config_dict["barcode_parameters"]["pattern"].keys())
             sys.stderr.write("wrt_tr_to_csv for" + sample_bam + "done\n")
             wrt_tr_to_csv(bc_tr_badcov_count_dict, transcript_dict_i, tr_badcov_cnt_csv,
-                          transcript_dict, config_dict["barcode_parameters"]["has_UMI"])
+                          transcript_dict, "umi_seq" in config_dict["barcode_parameters"]["pattern"].keys())
             del bc_tr_count_dict, bc_tr_badcov_count_dict, tr_cnt
             ##gc.collect()
 
@@ -535,46 +533,10 @@ def quantification(config_dict, annotation, outdir, pipeline):
     chr_to_gene_i, transcript_dict_i, gene_to_transcript_i, transcript_to_exon_i = parse_gff_tree(isoform_gff3)
 
     tr_cnt = wrt_tr_to_csv(bc_tr_count_dict, transcript_dict_i, tr_cnt_csv,
-                           transcript_dict, config_dict["barcode_parameters"]["has_UMI"])
+                           transcript_dict, "umi_seq" in config_dict["barcode_parameters"]["pattern"].keys())
     wrt_tr_to_csv(bc_tr_badcov_count_dict, transcript_dict_i, tr_badcov_cnt_csv,
-                  transcript_dict, config_dict["barcode_parameters"]["has_UMI"])
+                  transcript_dict, "umi_seq" in config_dict["barcode_parameters"]["pattern"].keys())
     annotate_filter_gff(isoform_gff3, annotation, isoform_gff3_f, FSM_anno_out,
                         tr_cnt, config_dict["isoform_parameters"]["min_sup_cnt"])
     return
 
-
-if __name__ == '__main__':
-    realign_bam = "/Users/voogd.o/Documents/FlamesNew/FLAMES_output/realign2transcript.bam"
-    transcript_fa_idx = "/Users/voogd.o/Documents/FlamesNew/FLAMES_output/transcript_assembly.fa.fai"
-    output = "/Users/voogd.o/Documents/FlamesNew/FLAMES_output/realigntester"
-    print("\t\tSTART OF NEW RUN")
-    parse_realigned_bam(realign_bam, transcript_fa_idx, 10, 0.75, 0.75, dict())
-    # parse_realigned_bam is totally fine now
-    if False:
-        # gff_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoforms/isoform_annotated.sample.nofilter.gff3"
-        # csv_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoforms/transcript_count.sample.csv"
-        # bam_in="/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/LT03_PromethION_10P.sample.realign.bam"
-        """
-        gff_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_test/isoform_annotated.gff3"
-        csv_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_test/transcript_count.csv"
-        bam_in = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_test/realign2transcript.bam"
-        fa_idx_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_test/transcript_assembly.fa.fai"
-        coverage_csv = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_test/per_cell_coverage.csv"
-        tr_csv = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_test/per_tr_coverage.csv"
-
-        gff_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_all/isoform_annotated.gff3"
-        csv_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_all/transcript_count.csv"
-        bam_in = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_all/realign2transcript.bam"
-        fa_idx_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_all/transcript_assembly.fa.fai"
-        coverage_csv = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_all/per_cell_coverage.csv"
-        tr_csv = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_all/per_tr_coverage.csv"
-        """
-        data_dir = "/stornext/General/data/user_managed/grpu_mritchie_1/RachelThijssen/sclr_data/Rachel_scRNA_Aug19/isoform_out"
-        bam_in = os.path.join(data_dir, "tmp_checkread.bam")
-        fa_idx_f = os.path.join(data_dir, "transcript_assembly.fa.fai")
-        bc_tr_count_dict, bc_tr_badcov_count_dict, tr_kept = parse_realigned_bam(
-            bam_in, fa_idx_f, 3, 0.4, 0.4)
-        print([len(bc_tr_count_dict[i]["ENSG00000277734.8_22493926_22552156_1"])
-              for i in bc_tr_count_dict if "ENSG00000277734.8_22493926_22552156_1" in bc_tr_count_dict[i]])
-        print(sum([len(bc_tr_count_dict[i]["ENSG00000277734.8_22493926_22552156_1"])
-              for i in bc_tr_count_dict if "ENSG00000277734.8_22493926_22552156_1" in bc_tr_count_dict[i]]))

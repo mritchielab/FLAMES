@@ -62,7 +62,7 @@
 #'     annotation = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),
 #'     outdir = outdir,
 #'     match_barcode = TRUE,
-#'     reference_csv = bc_allow
+#'     barcodes_file = bc_allow
 #'   )
 #'   group_anno <- data.frame(barcode_seq = colnames(sce), groups = SingleCellExperiment::counts(sce)["ENSMUST00000169826.2", ] > 1)
 #'   write.csv(group_anno, file.path(outdir, "cluster_annotation.csv"), row.names = FALSE)

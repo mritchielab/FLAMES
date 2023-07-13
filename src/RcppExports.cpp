@@ -10,29 +10,29 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// match_cell_barcode
-Rcpp::List match_cell_barcode(Rcpp::String fastq_dir, Rcpp::String stats_file, Rcpp::String out_fastq, Rcpp::String ref_csv, int MAX_DIST, int UMI_LEN, Rcpp::String left_seq, int min_length, bool reverse_complement, bool fixed_range);
-RcppExport SEXP _FLAMES_match_cell_barcode(SEXP fastq_dirSEXP, SEXP stats_fileSEXP, SEXP out_fastqSEXP, SEXP ref_csvSEXP, SEXP MAX_DISTSEXP, SEXP UMI_LENSEXP, SEXP left_seqSEXP, SEXP min_lengthSEXP, SEXP reverse_complementSEXP, SEXP fixed_rangeSEXP) {
+// flexiplex
+int flexiplex(Rcpp::String reads_in, Rcpp::String barcodes_file, bool bc_as_readid, int max_bc_editdistance, int max_flank_editdistance, Rcpp::StringVector pattern, Rcpp::String reads_out, Rcpp::String stats_out, Rcpp::String bc_out, int n_threads);
+RcppExport SEXP _FLAMES_flexiplex(SEXP reads_inSEXP, SEXP barcodes_fileSEXP, SEXP bc_as_readidSEXP, SEXP max_bc_editdistanceSEXP, SEXP max_flank_editdistanceSEXP, SEXP patternSEXP, SEXP reads_outSEXP, SEXP stats_outSEXP, SEXP bc_outSEXP, SEXP n_threadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::String >::type fastq_dir(fastq_dirSEXP);
-    Rcpp::traits::input_parameter< Rcpp::String >::type stats_file(stats_fileSEXP);
-    Rcpp::traits::input_parameter< Rcpp::String >::type out_fastq(out_fastqSEXP);
-    Rcpp::traits::input_parameter< Rcpp::String >::type ref_csv(ref_csvSEXP);
-    Rcpp::traits::input_parameter< int >::type MAX_DIST(MAX_DISTSEXP);
-    Rcpp::traits::input_parameter< int >::type UMI_LEN(UMI_LENSEXP);
-    Rcpp::traits::input_parameter< Rcpp::String >::type left_seq(left_seqSEXP);
-    Rcpp::traits::input_parameter< int >::type min_length(min_lengthSEXP);
-    Rcpp::traits::input_parameter< bool >::type reverse_complement(reverse_complementSEXP);
-    Rcpp::traits::input_parameter< bool >::type fixed_range(fixed_rangeSEXP);
-    rcpp_result_gen = Rcpp::wrap(match_cell_barcode(fastq_dir, stats_file, out_fastq, ref_csv, MAX_DIST, UMI_LEN, left_seq, min_length, reverse_complement, fixed_range));
+    Rcpp::traits::input_parameter< Rcpp::String >::type reads_in(reads_inSEXP);
+    Rcpp::traits::input_parameter< Rcpp::String >::type barcodes_file(barcodes_fileSEXP);
+    Rcpp::traits::input_parameter< bool >::type bc_as_readid(bc_as_readidSEXP);
+    Rcpp::traits::input_parameter< int >::type max_bc_editdistance(max_bc_editdistanceSEXP);
+    Rcpp::traits::input_parameter< int >::type max_flank_editdistance(max_flank_editdistanceSEXP);
+    Rcpp::traits::input_parameter< Rcpp::StringVector >::type pattern(patternSEXP);
+    Rcpp::traits::input_parameter< Rcpp::String >::type reads_out(reads_outSEXP);
+    Rcpp::traits::input_parameter< Rcpp::String >::type stats_out(stats_outSEXP);
+    Rcpp::traits::input_parameter< Rcpp::String >::type bc_out(bc_outSEXP);
+    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(flexiplex(reads_in, barcodes_file, bc_as_readid, max_bc_editdistance, max_flank_editdistance, pattern, reads_out, stats_out, bc_out, n_threads));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_FLAMES_match_cell_barcode", (DL_FUNC) &_FLAMES_match_cell_barcode, 10},
+    {"_FLAMES_flexiplex", (DL_FUNC) &_FLAMES_flexiplex, 10},
     {NULL, NULL, 0}
 };
 

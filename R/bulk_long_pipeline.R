@@ -107,7 +107,7 @@ bulk_long_pipeline <-
                     outdir,
                     minimap2_dir,
                     prefix = samples[i],
-                    threads = NULL
+                    threads = config$pipeline_parameters$threads
                 )
             }
         } else {
@@ -124,7 +124,8 @@ bulk_long_pipeline <-
             cat("#### Realign to transcript using minimap2\n")
             for (i in 1:length(samples)) {
                 cat(paste0(c("\tRealigning sample ", samples[i], "...\n")))
-                minimap2_realign(config, fastq_files[i], outdir, minimap2_dir, prefix = samples[i], threads = 12)
+                minimap2_realign(config, fastq_files[i], outdir, minimap2_dir, prefix = samples[i], 
+                                 threads = config$pipeline_parameters$threads)
             }
         } else {
             cat("#### Skip read realignment\n")

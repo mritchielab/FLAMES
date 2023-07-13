@@ -5,16 +5,13 @@
 \title{plot read coverages}
 \usage{
 plot_coverage(
-  annotation,
   bam,
   isoform = NULL,
-  length_bins = c(0, 1, 2, 5, 10, Inf)
+  length_bins = c(0, 1, 2, 5, 10, Inf),
+  weight_fn = "read_counts"
 )
 }
 \arguments{
-\item{annotation}{path to the GTF annotation file, or the parsed GenomicRanges
-object.}
-
 \item{bam, }{path to the BAM file (aligning reads to the transcriptome), or
 the (GenomicAlignments::readGAlignments) parsed GAlignments object}
 
@@ -23,6 +20,9 @@ corresponding isoforms, or provide NULL to plot average coverages for each
 length bin}
 
 \item{length_bins, }{numeric vector to specify the sizes to bin the isoforms by}
+
+\item{weight_fn}{"read_counts" or "sigmoid", determins how the transcripts
+should be weighted within length bins.}
 }
 \value{
 a ggplot2 object of the coverage plot(s)
@@ -47,6 +47,6 @@ if (is.character(locate_minimap2_dir())) {
         fq_in = fastq1,
         outdir = outdir
     )
-  plot_coverage(annotation = annotation, bam = file.path(outdir, 'realign2transcript.bam'))
+  plot_coverage(bam = file.path(outdir, 'realign2transcript.bam'))
 }
 }
