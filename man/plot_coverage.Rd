@@ -47,6 +47,6 @@ if (is.character(locate_minimap2_dir())) {
         fq_in = fastq1,
         outdir = outdir
     )
-  plot_coverage(annotation = annotation, bam = file.path(outdir, 'realign2transcript.bam'))
+  plot_coverage(bam = file.path(outdir, 'realign2transcript.bam'))
 }
 }

@@ -89,7 +89,7 @@ filter_annotation <- function(annotation, keep = "tss_differ") {
 #'         fq_in = fastq1,
 #'         outdir = outdir
 #'     )
-#'   plot_coverage(annotation = annotation, bam = file.path(outdir, 'realign2transcript.bam'))
+#'   plot_coverage(bam = file.path(outdir, 'realign2transcript.bam'))
 #' }
 #' @md
 #' @export

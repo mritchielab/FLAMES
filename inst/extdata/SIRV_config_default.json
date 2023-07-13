@@ -10,8 +10,14 @@
         "do_transcript_quantification": true
     },
     "barcode_parameters": {
-        "max_edit_distance": 2,
-        "has_UMI": false
+        "max_bc_editdistance": 2,
+        "max_flank_editdistance": 8,
+        "pattern": {
+          "primer": "CTACACGACGCTCTTCCGATCT",
+          "polyT": "TTTTTTTTT",
+          "umi_seq": "????????????",
+          "barcode_seq": "????????????????"
+        }
     },
     "isoform_parameters": {
         "generate_raw_isoform": true,
