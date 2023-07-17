@@ -102,7 +102,7 @@ merge_files_and_delete(std::ofstream &outfile, const std::vector<std::string> &i
         }
         infile.close();
 
-        std::remove(file.c_str());
+        // std::remove(file.c_str());
     }
 }
 
@@ -140,13 +140,13 @@ void group_bam2isoform(
     const Rcpp::List &isoform_parameters,
     const std::string &raw_gff3)
 {
-    // random seed stuff here
-    if (false) {
-    // if (!file_exists(bam_in + ".bai")) { // WE CAN'T CHECK THIS AS THIS IS AN ABORT STATEMENT APPARENTLY
-		Rcpp::stop("Can not find corresponding .bai file %s. Cancelling group_bam2isoform.\n", bam_in);
-        // Rcpp::Rcout << "Can not find corresponding .bai file " << bam_in << ". Cancelling group_bam2isoform.\n";
-        return;
-    }
+    // // random seed stuff here
+    // if (false) {
+    // // if (!file_exists(bam_in + ".bai")) { // WE CAN'T CHECK THIS AS THIS IS AN ABORT STATEMENT APPARENTLY
+	// 	Rcpp::stop("Can not find corresponding .bai file %s. Cancelling group_bam2isoform.\n", bam_in);
+    //     // Rcpp::Rcout << "Can not find corresponding .bai file " << bam_in << ". Cancelling group_bam2isoform.\n";
+    //     return;
+    // }
     
     // import all the values of fa_f
     const std::unordered_map<std::string, std::string> fa_dict = get_fa_dict(fa_file);
@@ -159,6 +159,19 @@ void group_bam2isoform(
     std::vector<std::string> isoform_annotated_files;
     std::vector<std::string> tss_tes_files;
     std::vector<std::string> raw_gff3_files;
+
+    // capture variables form Rcpp::List isoform_parameters
+    int max_ts_dist=isoform_parameters["max_ts_dist"],
+        max_dist=isoform_parameters["max_dist"],
+        strand_specific=isoform_parameters["strand_specific"],
+        max_splice_match_dist=isoform_parameters["max_splice_match_dist"],
+        remove_incomp_reads=isoform_parameters["remove_incomp_reads"],
+        min_fl_exon_len=isoform_parameters["min_fl_exon_len"],
+        min_sup_cnt=isoform_parameters["min_sup_cnt"], 
+        max_site_per_splice=isoform_parameters["max_site_per_splice"];
+        
+    double min_sup_pct=isoform_parameters["min_sup_pct"],
+        min_cnt_pct=isoform_parameters["min_cnt_pct"];
 
     // run the main group_bam2isoform on each chromosome,
     // generating a new worker thread to handle the isoform identification
@@ -177,16 +190,16 @@ void group_bam2isoform(
             &transcript_to_junctions, 
             &transcript_dict, &gene_dict, &fa_dict,
             raw_gff3_outfile, tss_tes_outfile, isoform_outfile,
-            MAX_TS_DIST=isoform_parameters["MAX_TS_DIST"],
-            MAX_DIST=isoform_parameters["MAX_DIST"],
-            strand_specific=isoform_parameters["strand_specific"],
-            MAX_SPLICE_MATCH_DIST=isoform_parameters["MAX_SPLICE_MATCH_DIST"],
-            remove_incomp_reads=isoform_parameters["remove_incomp_reads"],
-            min_fl_exon_len=isoform_parameters["min_fl_exon_len"],
-            Min_sup_cnt=isoform_parameters["Min_sup_cnt"], 
-            Min_sup_pct=isoform_parameters["Min_sup_pct"],
-            Max_site_per_splice=isoform_parameters["Max_site_per_splice"],
-            Min_cnt_pct=isoform_parameters["Min_cnt_pct"]
+            max_ts_dist,
+            max_dist,
+            strand_specific,
+            max_splice_match_dist,
+            remove_incomp_reads,
+            min_fl_exon_len,
+            min_sup_cnt, 
+            min_sup_pct,
+            max_site_per_splice,
+            min_cnt_pct
         ]() {
             bamFile bam = bam_open(bam_in.c_str(), "r"); // bam.h
             bam_index_t *bam_index = bam_index_load(bam_in.c_str());
@@ -195,51 +208,51 @@ void group_bam2isoform(
             
             for (const auto &block : blocks) {
                 Isoforms tmp_isoform(
-                    chromosome, MAX_TS_DIST,
-                    MAX_DIST,
+                    chromosome, max_ts_dist,
+                    max_dist,
                     strand_specific,
-                    MAX_SPLICE_MATCH_DIST,
+                    max_splice_match_dist,
                     remove_incomp_reads,
                     min_fl_exon_len,
-                    Min_sup_cnt, Min_sup_pct,
-                    Max_site_per_splice);
+                    min_sup_cnt, min_sup_pct,
+                    max_site_per_splice);
                 DataStruct2 data = {header, &tmp_isoform, 0};
 
-                // bam_fetch(bam, bam_index, tid, block.start, block.end, &data, &bam2isoform_fetch_function);
+                bam_fetch(bam, bam_index, tid, block.start, block.end, &data, &bam2isoform_fetch_function);
                 
-                // auto TSS_TES_site = get_TSS_TES_site(transcript_to_junctions, block.transcript_list);
+                auto TSS_TES_site = get_TSS_TES_site(transcript_to_junctions, block.transcript_list);
 
                 // then process the complete isoform
-                // if (tmp_isoform.size() > 0) {
-                //     std::ofstream tss_tes_stream(tss_tes_outfile);
+                if (tmp_isoform.size() > 0) {
+                    std::ofstream tss_tes_stream(tss_tes_outfile);
 
-                //     tmp_isoform.update_all_splice();
-                //     tmp_isoform.filter_TSS_TES(tss_tes_stream, TSS_TES_site, (float)0.1);
-                //     tmp_isoform.match_known_annotation(
-                //         transcript_to_junctions,
-                //         transcript_dict,
-                //         gene_dict,
-                //         block,
-                //         fa_dict
-                //     );
+                    tmp_isoform.update_all_splice();
+                    tmp_isoform.filter_TSS_TES(tss_tes_stream, TSS_TES_site, (float)0.1);
+                    tmp_isoform.match_known_annotation(
+                        transcript_to_junctions,
+                        transcript_dict,
+                        gene_dict,
+                        block,
+                        fa_dict
+                    );
                     
-                //     if (raw_gff3_outfile != "") {
-                //         // todo - i haven't written the Isoforms function to do this yet
-                //         // splice_raw.write(tmp_isoform()); 
-                //     }
+                    if (raw_gff3_outfile != "") {
+                        // todo - i haven't written the Isoforms function to do this yet
+                        // splice_raw.write(tmp_isoform()); 
+                    }
 
-                //     tss_tes_stream.close();
+                    tss_tes_stream.close();
 
-                //     std::ofstream iso_annotated(isoform_outfile);
-                //     iso_annotated << tmp_isoform.isoform_to_gff3(Min_cnt_pct);
-                //     iso_annotated.close();
-                // }
+                    std::ofstream iso_annotated(isoform_outfile);
+                    iso_annotated << tmp_isoform.isoform_to_gff3(min_cnt_pct);
+                    iso_annotated.close();
+                }
             }
 
             bam_close(bam);
         }; // end thread_function
 
-        // pool.push_back(std::thread(thread_function));
+        pool.push_back(std::thread(thread_function));
     }
 
     for (auto &thread : pool) {

@@ -72,6 +72,10 @@ find_isoform_bambu <- function(annotation, genome_fa, genome_bam, outdir, config
 #' @importFrom reticulate import_from_path
 #' @importFrom Rsamtools indexFa
 find_isoform_flames <- function(annotation, genome_fa, genome_bam, outdir, config) {
+    if (!file.exists(paste0(genome_bam, ".bai"))) {
+        stop(c("Cannot find corresponding bam file ", genome_bam, ".bai. Cancelling find_isoform."))
+    }
+
     if (length(genome_bam) == 1) {
         ret <- callBasilisk(flames_env, function(gff3, genome, iso, tss, fa, tran, ds, conf, raw) {
             python_path <- system.file("python", package = "FLAMES")
