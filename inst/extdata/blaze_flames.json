@@ -1,0 +1,51 @@
+{
+    "comment": "this is the default config for nanopore single cell long read data using 10x VDJ kit (5'end). use splice annotation in alignment. ",
+    "pipeline_parameters": {
+        "seed": 2023,
+        "do_barcode_identification": true,
+        "do_genome_alignment": true,
+        "do_isoform_identification": true,
+        "bambu_isoform_identification": true,
+        "do_read_realignment": true,
+        "do_transcript_quantification": true
+    },
+    "barcode_parameters": {
+        "max_edit_distance": 2,
+        "has_UMI": true,
+        "UMI_length": 10
+    },
+    "isoform_parameters": {
+        "generate_raw_isoform": false,
+        "max_dist": 10,
+        "max_ts_dist": 100,
+        "max_splice_match_dist": 10,
+        "min_fl_exon_len": 40,
+        "max_site_per_splice": 3,
+        "min_sup_cnt": 5,
+        "min_cnt_pct": 0.001,
+        "min_sup_pct": 0.2,
+        "bambu_trust_reference": true,
+        "strand_specific": 0,
+        "remove_incomp_reads": 4,
+        "downsample_ratio": 1
+    },
+    "alignment_parameters": {
+        "use_junctions": true,
+        "no_flank": false,
+        "threads": 10
+    },
+    "realign_parameters": {
+        "use_annotation": true
+    },
+    "transcript_counting": {
+        "min_tr_coverage": 0.4,
+        "min_read_coverage": 0.4
+    },
+    "blaze_parameters": {
+        "expect-cells": 500,
+        "threads": 12,
+        "output-prefix": "blaze_",
+        "overwrite": true
+    }
+
+}

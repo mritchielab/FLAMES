@@ -24,21 +24,20 @@
 #' fastq1 <- bfc[[names(BiocFileCache::bfcadd(bfc, 'Fastq1', fastq1_url))]]
 #' outdir <- tempfile()
 #' dir.create(outdir)
-#' if (is.character(locate_minimap2_dir())) {
-#'     minimap2_align(
-#'         config = jsonlite::fromJSON(system.file('extdata/SIRV_config_default.json', package = 'FLAMES')),
-#'         fa_file = genome_fa,
-#'         fq_in = fastq1,
-#'         annot = annotation,
-#'         outdir = outdir
-#'     )
-#' }
+#' config = jsonlite::fromJSON(system.file('extdata/blaze_flames.json', package = 'FLAMES'))
+#' config$blaze_parameters['output-prefix'] <- outdir
+#' blaze(config$blaze_parameters, fastq1)
 #' @importFrom reticulate import_from_path dict
 #' @export
 blaze <- function(blaze_config, fq_in) {
         
         # command line arguments for blaze
         blaze_argv <- paste("")
+
+        if (blaze_config['overwrite'] == TRUE) {
+            blaze_argv <- paste(blaze_argv, '--overwrite ')
+        }
+        blaze_config['overwrite'] <- NULL
         for (arg in names(blaze_config)) {
             blaze_argv <- paste(blaze_argv, paste0('--',arg), blaze_config[arg])}
         
@@ -49,6 +48,7 @@ blaze <- function(blaze_config, fq_in) {
         cat('Downloading the full whitelist from 10X...')
         bc_list_10x <- bfc[[names(BiocFileCache::bfcadd(bfc, 'bc_list_10x', bc_list_10x_url))]]
         blaze_argv <- paste(blaze_argv, '--full-bc-whitelist', bc_list_10x)
+
         blaze_argv <- paste(blaze_argv, fq_in)
 
         ret <-
