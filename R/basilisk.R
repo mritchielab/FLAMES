@@ -32,8 +32,7 @@ blaze_env <- BasiliskEnvironment(
         "pandas==1.3.5",#blaze specific
         "numpy==1.21.6", #blaze specific
         "matplotlib==3.5.3", #blaze specific
-        "tqdm==4.64.1",
-        "swifter==1.0.9"
+        "tqdm==4.64.1"
 
 ))
 # flames_env <- BasiliskEnvironment(envname="full_env",

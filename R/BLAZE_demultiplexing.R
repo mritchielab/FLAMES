@@ -20,7 +20,7 @@
 #' bfc <- BiocFileCache::BiocFileCache(temp_path, ask = FALSE)
 #' bc_list_10x_url <- 'https://github.com/shimlab/BLAZE/blob/main/10X_bc/3M-february-2018.zip'
 #' bc_list_10x <- bfc[[names(BiocFileCache::bfcadd(bfc, 'bc_list_10x', bc_list_10x_url))]]
-#' fastq1_url <- 'https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data/fastq/sample1.fastq.gz'
+#' fastq1_url <- 'https://raw.githubusercontent.com/shimlab/BLAZE/main/test/data/FAR20033_pass_51e510db_100.fastq'
 #' fastq1 <- bfc[[names(BiocFileCache::bfcadd(bfc, 'Fastq1', fastq1_url))]]
 #' outdir <- tempfile()
 #' dir.create(outdir)
@@ -65,31 +65,5 @@ blaze <- function(blaze_config, fq_in) {
                 ret
             }, blaze_argv = blaze_argv
             )
-        ret # return the filename of demultiplexed fastq
+        #ret # return the filename of demultiplexed fastq
     }
-
-            #  <fastq directory>
-            
-            # Required argument:
-            #     --expect-cells
-
-            # Options:
-            #     -h, --help
-            #     --output_fastq
-            #     --kit-version <v2 or v3>:
-            #     --minQ <INT>:
-            #     --threads <INT>
-            #     --batch-size <INT>
-            #     --full-bc-whitelist <path to file>
-            #     --out-putative-bc <filename_prefix>
-            #     --out-bc-whitelist <filename_prefix>
-
-
-            # High sensitivity mode:
-
-            #     --high-sensitivity-mode:
-            #         Note that --emptydrop is recommanded specified with this mode (See details below).
-
-            # Empty droplet BCs
-            #     --emptydrop
-            #     --emptydrop-max-count <INT>
