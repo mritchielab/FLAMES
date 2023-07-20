@@ -1,15 +1,11 @@
 #' BLAZE Assign reads to cell barcodes. 
 #'
 #' @description
-#' Uses BLAZE to assign reads to cell barcodes. 
+#' Uses BLAZE to generate barcode list and assign reads to cell barcodes. 
 #' Uses default options for BLAZE, see BLAZE documentation for details (https://github.com/shimlab/BLAZE).
 #'
-#' @param config Parsed list of FLAMES config file
-#' @param fq_in File path to the fastq file used as a query sequence file
-#' @param outdir Output folder
-#' @param prefix String, the prefix (e.g. sample name) for the output files
-#' @param threads Integer, threads for BLAZE to use, FLAMES will try to detect cores if this parameter is not provided.
 #' @param blaze_config List, additional BLAZE configuration parameters
+#' @param fq_in File path to the fastq file used as a query sequence file
 #'
 #' @return a \code{data.frame} summarising the reads aligned
 #'

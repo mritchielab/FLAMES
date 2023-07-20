@@ -10,20 +10,12 @@ blaze(blaze_config, fq_in)
 \item{blaze_config}{List, additional BLAZE configuration parameters}
 
 \item{fq_in}{File path to the fastq file used as a query sequence file}
-
-\item{config}{Parsed list of FLAMES config file}
-
-\item{outdir}{Output folder}
-
-\item{prefix}{String, the prefix (e.g. sample name) for the output files}
-
-\item{threads}{Integer, threads for BLAZE to use, FLAMES will try to detect cores if this parameter is not provided.}
 }
 \value{
 a \code{data.frame} summarising the reads aligned
 }
 \description{
-Uses BLAZE to assign reads to cell barcodes. 
+Uses BLAZE to generate barcode list and assign reads to cell barcodes. 
 Uses default options for BLAZE, see BLAZE documentation for details (https://github.com/shimlab/BLAZE).
 }
 \examples{
@@ -31,17 +23,11 @@ temp_path <- tempfile()
 bfc <- BiocFileCache::BiocFileCache(temp_path, ask = FALSE)
 bc_list_10x_url <- 'https://github.com/shimlab/BLAZE/blob/main/10X_bc/3M-february-2018.zip'
 bc_list_10x <- bfc[[names(BiocFileCache::bfcadd(bfc, 'bc_list_10x', bc_list_10x_url))]]
-fastq1_url <- 'https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data/fastq/sample1.fastq.gz'
+fastq1_url <- 'https://raw.githubusercontent.com/shimlab/BLAZE/main/test/data/FAR20033_pass_51e510db_100.fastq'
 fastq1 <- bfc[[names(BiocFileCache::bfcadd(bfc, 'Fastq1', fastq1_url))]]
 outdir <- tempfile()
 dir.create(outdir)
-if (is.character(locate_minimap2_dir())) {
-    minimap2_align(
-        config = jsonlite::fromJSON(system.file('extdata/SIRV_config_default.json', package = 'FLAMES')),
-        fa_file = genome_fa,
-        fq_in = fastq1,
-        annot = annotation,
-        outdir = outdir
-    )
-}
+config = jsonlite::fromJSON(system.file('extdata/blaze_flames.json', package = 'FLAMES'))
+config$blaze_parameters['output-prefix'] <- outdir
+blaze(config$blaze_parameters, fastq1)
 }

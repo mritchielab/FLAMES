@@ -2,7 +2,7 @@
 % Please edit documentation in R/FLAMES.R
 \name{FLAMES}
 \alias{FLAMES}
-\title{mypackage: A package for computating foo bar}
+\title{FLAMES: full-length analysis of mutations and splicing}
 \description{
-mypackage: A package for computating foo bar
+FLAMES: full-length analysis of mutations and splicing
 }
