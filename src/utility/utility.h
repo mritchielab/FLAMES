@@ -109,22 +109,25 @@ inline std::string PosToStr(const Pos &p) {
 	return ss.str();
 }
 
-inline std::string VecToStr(const std::vector<std::string> &v) {
-	std::stringstream ss;
-	for (auto it : v) {
-		ss << it << "\t";
-	}
-	return ss.str();
-}
+// inline std::string VecToStr(const std::vector<std::string> &v) {
+// 	std::stringstream ss;
+// 	for (auto it : v) {
+// 		ss << it << "\t";
+// 	}
+// 	return ss.str();
+// }
 
 template <typename T>
-inline std::string VecToStr(const std::vector<T> &v) {
+inline std::string VecToStr(const std::vector<T> &v, char open='(', char close=')') {
 	std::stringstream ss;
-	ss << "{";
-	for (const auto &it : v) {
-		ss << it << ",";
+	ss << open;
+	if (v.size() > 0) {
+		ss << v.at(0);
+		for (size_t i = 1; i < v.size(); i++) {
+			ss << ", " << v.at(i);
+		}
 	}
-	ss << "}";
+	ss << close;
 	return ss.str();
 }
 /*

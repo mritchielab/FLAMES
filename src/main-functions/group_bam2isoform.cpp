@@ -91,19 +91,22 @@ get_blocks(const BAMRecord &record) {
 
 void 
 merge_files_and_delete(std::ofstream &outfile, const std::vector<std::string> &infiles) {
+    if (!outfile.is_open()) return;
+
     for (const auto &file : infiles) {
         std::ifstream infile(file);
 
-        if (!infile.is_open()) continue;
+        foreachLineinFile(file, [&outfile](const std::string &line) { 
+            outfile << line << "\n";
+        });
 
-        std::string line;
-        while (std::getline(infile, line)) {
-            outfile << line;
-        }
-        infile.close();
-
-        // std::remove(file.c_str());
+        std::remove(file.c_str());
     }
+}
+void merge_files_and_delete(const std::string &filename, const std::vector<std::string> &infiles) {
+    std::ofstream outfile(filename);
+    merge_files_and_delete(outfile, infiles);
+    outfile.close();
 }
 
 static int
@@ -125,6 +128,7 @@ bam2isoform_fetch_function(const bam1_t *b, void *data)
     
     data_struct->isoform->add_isoform(junctions, rec.flag.read_reverse_strand);
 	data_struct->i = data_struct->i + 1;
+
 	return 0;
 }
 
@@ -151,10 +155,9 @@ void group_bam2isoform(
     // import all the values of fa_f
     const std::unordered_map<std::string, std::string> fa_dict = get_fa_dict(fa_file);
 
-    Rcpp::Rcout << "starting main group_bam2isoform\n";
-    std::string iso_annotated_output_prefix = splitStringToVector(out_gff3, '.').front();
-    std::string tss_tes_output_prefix = splitStringToVector(out_stat, '.').front();
-    std::string raw_gff3_prefix = raw_gff3 != "" ? splitStringToVector(raw_gff3, '.').front() : "";
+    std::string iso_annotated_output_prefix = getFilenameBeforeExt(out_gff3, '.');
+    std::string tss_tes_output_prefix = getFilenameBeforeExt(out_stat, '.');
+    std::string raw_gff3_prefix = raw_gff3 != "" ? getFilenameBeforeExt(raw_gff3, '.') : "";
     std::vector<std::thread> pool;
     std::vector<std::string> isoform_annotated_files;
     std::vector<std::string> tss_tes_files;
@@ -228,6 +231,7 @@ void group_bam2isoform(
 
                     tmp_isoform.update_all_splice();
                     tmp_isoform.filter_TSS_TES(tss_tes_stream, TSS_TES_site, (float)0.1);
+                    
                     tmp_isoform.match_known_annotation(
                         transcript_to_junctions,
                         transcript_dict,
@@ -266,10 +270,7 @@ void group_bam2isoform(
     merge_files_and_delete(iso_annotated, isoform_annotated_files);
     iso_annotated.close();
 
-    std::ofstream tss_tes_stat (out_stat);
-    merge_files_and_delete(tss_tes_stat, tss_tes_files);
-    tss_tes_stat.close();
-
+    merge_files_and_delete(out_stat, tss_tes_files);
     // add to splice_raw if we are planning on outputting raw_gff3
     std::ofstream splice_raw;
     if (raw_gff3 != "") {
@@ -278,6 +279,4 @@ void group_bam2isoform(
         merge_files_and_delete(splice_raw, raw_gff3_files);
         splice_raw.close();
     }
-
-    Rcpp::Rcout << "Finished!\n";
 }
