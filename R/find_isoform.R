@@ -133,6 +133,11 @@ annotation_to_fasta <- function(isoform_annotation, genome_fa, outdir) {
 
   tr_string_set <- GenomicFeatures::extractTranscriptSeqs(dna_string_set, txdb,
     use.names = TRUE)
+  if (length(names(tr_string_set)) > length(unique(names(tr_string_set)))) {
+    cat("Duplicated transcript IDs present, removing ...")
+    tr_string_set <- tr_string_set[unique(names(tr_string_set))]
+  }
+
   Biostrings::writeXStringSet(tr_string_set, out_file)
   Rsamtools::indexFa(out_file)
 

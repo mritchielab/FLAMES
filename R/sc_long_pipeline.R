@@ -37,7 +37,7 @@
 #' \code{do_genome_align} and \code{do_read_realign} are \code{TRUE}.
 #' @param config_file File path to the JSON configuration file. If specified, \code{config_file} overrides
 #' all configuration parameters
-#' @param reference_csv The file path to the reference csv used for demultiplexing
+#' @param barcodes_file The file path to the reference csv used for demultiplexing
 #' @param match_barcode Boolean; specifies if demultiplexing should be performed using `FLAMES::find_barcode`
 #' @return if \code{do_transcript_quantification} set to true, \code{sc_long_pipeline} returns a \code{SingleCellExperiment} object, containing a count
 #' matrix as an assay, gene annotations under metadata, as well as a list of the other
@@ -95,7 +95,7 @@
 #'         annotation = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),
 #'         outdir = outdir,
 #'         match_barcode = TRUE,
-#'         reference_csv = bc_allow
+#'         barcodes_file = bc_allow
 #'     )
 #' }
 #' @export
@@ -106,7 +106,7 @@ sc_long_pipeline <-
              outdir,
              genome_fa,
              minimap2_dir = NULL,
-             reference_csv = NULL,
+             barcodes_file=NULL,
              match_barcode,
              config_file = NULL) {
         checked_args <- check_arguments(
@@ -131,28 +131,30 @@ sc_long_pipeline <-
             }
         }
         if (match_barcode) {
-            if (is.null(reference_csv)){
-                cat("No refernce_csv provided, running BLAZE to generate it from long reads...")
-                config$blaze_parameters['output_fastq'] <- file.path(
-                    outdir, "matched_reads.fastq.gz")
+
+            if (is.null(barcodes_file)){
+                cat("No barcodes_file provided, running BLAZE to generate it from long reads...")
+                config$blaze_parameters['output-prefix'] <- past0(outdir, '/')
                 blaze(config$blaze_parameters, fastq)
             } else {
                 cat(format(Sys.time(), "%X %a %b %d %Y"), "Demultiplexing\n")
                 cat("Matching cell barcodes...\n")
-                if (!file.exists(reference_csv)) {
-                    stop("reference_csv must exists.")
+                if (!file.exists(barcodes_file)) {
+                    stop("barcodes_file must exists.")
                 }
                 infq <- file.path(outdir, "matched_reads.fastq.gz")
                 bc_stat <- file.path(outdir, "matched_barcode_stat")
                 find_barcode(
-                    fastq,
-                    bc_stat,
-                    infq,
-                    reference_csv,
-                    config$barcode_parameters$max_edit_distance,
-                    config$barcode_parameters$UMI_length
+                    fastq = fastq,
+                    barcodes_file = barcodes_file,
+                    stats_out = bc_stat,
+                    reads_out = infq,
+                    pattern = setNames(as.character(config$barcode_parameters$pattern), 
+                                    names(config$barcode_parameters$pattern)),
+                    max_bc_editdistance = config$barcode_parameters$max_bc_editdistance, 
+                    max_flank_editdistance = config$barcode_parameters$max_flank_editdistance,
+                    threads = config$pipeline_parameters$threads
                 )
-
             }
 
         } else {
@@ -188,7 +190,6 @@ sc_long_pipeline <-
         # if (!using_bam && config$pipeline_parameters$do_genome_alignment) {
         if (config$pipeline_parameters$do_genome_alignment) {
             cat("#### Aligning reads to genome using minimap2\n")
-            # minimap2_align <- function(config, fa_file, fq_in, annotation, outdir, minimap2_dir, threads = NULL)
             minimap2_align(
                 config,
                 genome_fa,
@@ -197,7 +198,7 @@ sc_long_pipeline <-
                 outdir,
                 minimap2_dir,
                 prefix = NULL,
-                threads = config$alignment_parameters$threads
+                threads = config$pipeline_parameters$threads
             )
         } else {
             cat("#### Skip aligning reads to genome\n")
@@ -213,7 +214,8 @@ sc_long_pipeline <-
 
         if (config$pipeline_parameters$do_read_realignment) {
             cat("#### Realign to transcript using minimap2\n")
-            minimap2_realign(config, infq, outdir, minimap2_dir, prefix = NULL, threads = config$alignment_parameters$threads)
+            minimap2_realign(config, infq, outdir, minimap2_dir, prefix = NULL, 
+                             threads = config$pipeline_parameters$threads)
         } else {
             cat("#### Skip read realignment\n")
         }
@@ -338,7 +340,7 @@ generate_bulk_summarized <- function(out_files, load_genome_anno = NULL) {
 #'         annotation = annotation,
 #'         outdir = outdir,
 #'         match_barcode = TRUE,
-#'         reference_csv = bc_allow
+#'         barcodes_file = bc_allow
 #'     )
 #'     sce_2 <- create_sce_from_dir(outdir, annotation)
 #' }

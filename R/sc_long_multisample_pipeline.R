@@ -79,7 +79,7 @@
 #'         fastqs = file.path(outdir, "fastq", list.files(file.path(outdir, "fastq"))),
 #'         outdir = outdir,
 #'         genome_fa = genome_fa,
-#'         reference_csv = rep(bc_allow, 3)
+#'         barcodes_file = rep(bc_allow, 3)
 #'     )
 #' }
 #'
@@ -90,7 +90,7 @@ sc_long_multisample_pipeline <-
              outdir,
              genome_fa,
              minimap2_dir = NULL,
-             reference_csv,
+             barcodes_file,
              match_barcode = TRUE,
              config_file = NULL) {
         checked_args <- check_arguments(
@@ -120,7 +120,7 @@ sc_long_multisample_pipeline <-
             }
 
             if (match_barcode) {
-                stop("If \"match_barcode\" set to TRUE, argument \"fastqs\" must be a list of fastq files, with the same order in \"reference_csv\"\nYou can also demultiplex the reads with \"FLAMES::find_barcode\"")
+                stop("If \"match_barcode\" set to TRUE, argument \"fastqs\" must be a list of fastq files, with the same order in \"barcodes_file\"\nYou can also demultiplex the reads with \"FLAMES::find_barcode\"")
             }
         } else if (any(!file.exists(fastqs))) {
             stop("Please make sure all fastq files exist.")
@@ -128,26 +128,29 @@ sc_long_multisample_pipeline <-
 
         samples <- gsub("\\.(fastq|fq)(\\.gz)?$", "", basename(fastqs))
 
-        if (match_barcode && length(reference_csv) >= 1) {
-            if (!all(file.exists(reference_csv))) {
-                stop("Please make sure all reference_csv file exists.\n")
+        if (match_barcode && length(barcodes_file) >= 1) {
+            if (!all(file.exists(barcodes_file))) {
+                stop("Please make sure all barcodes_file file exists.\n")
             }
-            if (length(reference_csv) == 1) {
-                reference_csv <- rep(reference_csv, length(fastqs))
+            if (length(barcodes_file) == 1) {
+                barcodes_file <- rep(barcodes_file, length(fastqs))
             }
-            if (length(reference_csv) != length(fastqs)) {
-                stop(length(reference_csv), " barcode allow-lists provided while there are ", length(fastqs), "fastq file. Please either provide one allow-list per sample, or one allow-list for all samples.")
+            if (length(barcodes_file) != length(fastqs)) {
+                stop(length(barcodes_file), " barcode allow-lists provided while there are ", length(fastqs), "fastq file. Please either provide one allow-list per sample, or one allow-list for all samples.")
             }
             infqs <- file.path(outdir, paste(samples, "matched_reads.fastq.gz", sep = "_"))
             bc_stats <- file.path(outdir, paste(samples, "matched_barcode_stat", sep = "_"))
             for (i in 1:length(fastqs)) {
                 find_barcode(
-                    fastqs[i],
-                    bc_stats[i],
-                    infqs[i],
-                    reference_csv[i],
-                    config$barcode_parameters$max_edit_distance,
-                    config$barcode_parameters$UMI_length
+                    fastq = fastqs[i],
+                    barcodes_file = barcodes_file[i],
+                    stats_out = bc_stats[i],
+                    reads_out = infqs[i],
+                    pattern = setNames(as.character(config$barcode_parameters$pattern), 
+                                       names(config$barcode_parameters$pattern)),
+                    max_bc_editdistance = config$barcode_parameters$max_bc_editdistance, 
+                    max_flank_editdistance = config$barcode_parameters$max_flank_editdistance,
+                    threads = config$pipeline_parameters$threads
                 )
             }
         } else {
@@ -197,7 +200,7 @@ sc_long_multisample_pipeline <-
                     outdir,
                     minimap2_dir,
                     prefix = samples[i],
-                    threads = NULL
+                    threads = config$pipeline_parameters$threads
                 )
             }
         } else {
@@ -214,7 +217,8 @@ sc_long_multisample_pipeline <-
             cat("#### Realign to transcript using minimap2\n")
             for (i in 1:length(samples)) {
                 cat(paste0(c("\tRealigning sample ", samples[i], "...\n")))
-                minimap2_realign(config, infqs[i], outdir, minimap2_dir, prefix = samples[i], threads = NULL)
+                minimap2_realign(config, infqs[i], outdir, minimap2_dir, prefix = samples[i], 
+                                 threads = config$pipeline_parameters$threads)
             }
         } else {
             cat("#### Skip read realignment\n")

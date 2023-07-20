@@ -5,48 +5,37 @@
 \title{Match Cell Barcodes}
 \usage{
 find_barcode(
-  fastq_dir,
-  stats_file,
-  out_fastq,
-  ref_csv,
-  MAX_DIST,
-  UMI_LEN = 10L,
-  left_seq = "CTACACGACGCTCTTCCGATCT",
-  min_length = 20L,
-  reverse_complement = TRUE,
-  fixed_range = FALSE
+  fastq,
+  barcodes_file,
+  max_bc_editdistance = 2,
+  max_flank_editdistance = 8,
+  reads_out,
+  stats_out,
+  threads = 1,
+  pattern = c(primer = "CTACACGACGCTCTTCCGATCT", polyT = paste0(rep("T", 9), collapse =
+    ""), umi_seq = paste0(rep("?", 12), collapse = ""), barcode_seq = paste0(rep("?",
+    16), collapse = ""))
 )
 }
 \arguments{
-\item{fastq_dir}{directory containing fastq files to match}
+\item{fastq}{input FASTQ file path}
 
-\item{stats_file}{NEEDED}
+\item{barcodes_file}{path to file containing barcode allow-list, with one barcode in each line}
 
-\item{out_fastq}{output filename for matched barcodes}
+\item{max_bc_editdistance}{max edit distances for the barcode sequence}
 
-\item{ref_csv}{NEEDED}
+\item{max_flank_editdistance}{max edit distances for the flanking sequences (primer and polyT)}
 
-\item{MAX_DIST}{int; maximum edit distance}
+\item{reads_out}{path of output FASTQ file}
 
-\item{UMI_LEN}{int; length of UMI sequences}
+\item{stats_out}{path of output stats file}
 
-\item{left_seq}{String; sequence that appears at the left of the barcode}
+\item{threads}{number of threads to be used}
 
-\item{min_length}{int; minimum read length to be filtered after timming barcodes}
-
-\item{reverse_complement}{boolean; whether to check the reverse complement of the reads}
-
-\item{fixed_range}{boolean; deprecated, whether to skip finding flanking sequence by infering
-its position from previous reads. Setting to \code{TRUE} may decrease performance and accuracy.}
-}
-\value{
-returns a list containing statistics of the reads demultiplexed.
+\item{pattern}{named character vector defining the barcode pattern}
 }
 \description{
-Match cell barcodes in the given fastq directory with the given barcode allow-list. For each read, the left flanking
-sequence is located, FLAMES then takes the next 16 characters and match it to barcodes in the allow-list. If there is an unambigious match
-within the given edit distance (\code{MAX_DIST}), the barcode and following \code{UMI_LEN} characters are tirmmed, along with potential
-polyT tail. The trimmed read is then saved to \code{out_fastq}, with the identier field formatted as [barcode]_[UMI]#[original read ID].
+demultiplex reads with flexiplex
 }
 \examples{
 outdir <- tempfile()
@@ -54,11 +43,9 @@ dir.create(outdir)
 bc_allow <- file.path(outdir, 'bc_allow.tsv')
 R.utils::gunzip(filename = system.file('extdata/bc_allow.tsv.gz', package = 'FLAMES'), destname = bc_allow, remove = FALSE)
 find_barcode(
-   fastq_dir = system.file('extdata/fastq', package = 'FLAMES'),
-   stats_file = file.path(outdir, 'bc_stat'),
-   out_fastq = file.path(outdir, 'demultiplexed.fq.gz'),
-   ref_csv = bc_allow,
-   MAX_DIST = 2,
-   UMI_LEN = 10
+   fastq = system.file('extdata/fastq', package = 'FLAMES'),
+   stats_out = file.path(outdir, 'bc_stat'),
+   reads_out = file.path(outdir, 'demultiplexed.fq.gz'),
+   barcodes_file = bc_allow
 )
 }
