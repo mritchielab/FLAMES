@@ -67,7 +67,7 @@ find_isoform
     );
 
     GFFData isoform_annotation = parse_gff_file(isoform_gff3);
-    
+
     // get_transcript_seq
     get_transcript_seq(
         genomefa,
@@ -75,5 +75,6 @@ find_isoform
         isoform_annotation,
         gene_annotation
     ); // - This does not modify values that are used later (it modifies chr_to_blocks, but only transcript_dict_i and transcript_dict are used later.)
+    
     return;
 }

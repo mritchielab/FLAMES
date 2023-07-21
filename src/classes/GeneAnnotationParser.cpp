@@ -1,5 +1,6 @@
 #include "GeneAnnotationParser.h"
 
+#include <Rcpp.h>
 #include <unordered_map>
 #include <string>
 #include <vector>
@@ -73,13 +74,11 @@ GFFData parse_gtf(const std::string &filename)
 {
     GFFData data;
     auto attributeParsingFunction = GFFRecord::chooseAttributesFunc(filename);
-
     gzFile annotationFile = gzopen(filename.c_str(), "r");
     const int MAXLEN = 65535; // maximum char array size
     char buf[MAXLEN];
     while(gzgets(annotationFile, buf, MAXLEN) != NULL) {
         GFFRecord rec = GFFRecord::parseGFFRecord(std::string(buf), attributeParsingFunction);
-        
         if (rec.feature == "gene") {
             data.chr_to_gene[rec.seqname].push_back(rec.attributes["gene_id"]);
         } else if (rec.feature == "transcript") {
@@ -124,45 +123,49 @@ GFFData parse_gff(const std::string &filename)
 
     AnnotationSource annotation_source = guessAnnotationSource(filename);
     auto attributeParsingFunction = GFFRecord::chooseAttributesFunc(filename);
-    
     gzFile annotationFile = gzopen(filename.c_str(), "r");
     const int MAXLEN = 1000;
     char buf[MAXLEN];
     while(gzgets(annotationFile, buf, MAXLEN) != NULL) {
-        GFFRecord rec = GFFRecord::parseGFFRecord(std::string(buf), attributeParsingFunction);
-        if (annotation_source == ensembl){
-            if (rec.attributes.count("gene_id")) 
-                data.chr_to_gene[rec.seqname].push_back(rec.attributes["gene_id"]);
-            if (rec.attributes.count("Parent") 
-                    && rec.attributes["Parent"].find("gene:") != std::string::npos) {
-                std::string gene_id = rec.attributes["Parent"].substr(
-                    rec.attributes["Parent"].find_first_of(':') + 1);
-                data.gene_to_transcript[gene_id].push_back(rec.attributes["transcript_id"]);
-                data.transcript_dict[rec.attributes["transcript_id"]] = 
-                    Pos (rec.seqname, rec.start - 1, rec.end, rec.strand, gene_id);
-            } else if (rec.feature == "exon") {
-                if (rec.attributes["Parent"].find("transcript:") == std::string::npos)
-                    throw std::invalid_argument("format error");
-                std::string gene_id = rec.attributes["Parent"].substr(
-                    rec.attributes["Parent"].find_first_of(':') + 1);
-                data.transcript_to_exon[gene_id].push_back( StartEndPair(rec.start - 1, rec.end) );
+        try {
+            GFFRecord rec = GFFRecord::parseGFFRecord(std::string(buf), attributeParsingFunction);
+            if (annotation_source == ensembl){
+                if (rec.attributes.count("gene_id")) 
+                    data.chr_to_gene[rec.seqname].push_back(rec.attributes["gene_id"]);
+                if (rec.attributes.count("Parent") 
+                        && rec.attributes["Parent"].find("gene:") != std::string::npos) {
+                    std::string gene_id = rec.attributes["Parent"].substr(
+                        rec.attributes["Parent"].find_first_of(':') + 1);
+                    data.gene_to_transcript[gene_id].push_back(rec.attributes["transcript_id"]);
+                    data.transcript_dict[rec.attributes["transcript_id"]] = 
+                        Pos (rec.seqname, rec.start - 1, rec.end, rec.strand, gene_id);
+                } else if (rec.feature == "exon") {
+                    if (rec.attributes["Parent"].find("transcript:") == std::string::npos)
+                        throw std::invalid_argument("format error");
+                    std::string gene_id = rec.attributes["Parent"].substr(
+                        rec.attributes["Parent"].find_first_of(':') + 1);
+                    data.transcript_to_exon[gene_id].push_back( StartEndPair(rec.start - 1, rec.end) );
+                }
+            } else if (annotation_source == gencode) {
+                if (rec.feature == "gene") {
+                    data.chr_to_gene[rec.seqname].push_back(rec.attributes["gene_id"]);
+                } else if (rec.feature == "transcript") {
+                    std::string gene_id = rec.attributes["Parent"];
+                    if (ranges::doesNotContain(data.chr_to_gene[rec.seqname], gene_id)) 
+                        data.chr_to_gene[rec.seqname].push_back(gene_id);
+                    
+                    data.gene_to_transcript["gene_id"].push_back(rec.attributes["transcript_id"]);
+                    data.transcript_dict[rec.attributes["transcript_id"]] = 
+                        Pos( rec.seqname, rec.start - 1, rec.end, rec.strand, gene_id);
+                } else if (rec.feature == "exon") {
+                    data.transcript_to_exon[rec.attributes["Parent"]].push_back(
+                        StartEndPair(rec.start - 1, rec.end)
+                    );
+                }
             }
-        } else if (annotation_source == gencode) {
-            if (rec.feature == "gene") {
-                data.chr_to_gene[rec.seqname].push_back(rec.attributes["gene_id"]);
-            } else if (rec.feature == "transcript") {
-                std::string gene_id = rec.attributes["Parent"];
-                if (ranges::doesNotContain(data.chr_to_gene[rec.seqname], gene_id)) 
-                    data.chr_to_gene[rec.seqname].push_back(gene_id);
-                
-                data.gene_to_transcript["gene_id"].push_back(rec.attributes["transcript_id"]);
-                data.transcript_dict[rec.attributes["transcript_id"]] = 
-                    Pos( rec.seqname, rec.start - 1, rec.end, rec.strand, gene_id);
-            } else if (rec.feature == "exon") {
-                data.transcript_to_exon[rec.attributes["Parent"]].push_back(
-                    StartEndPair(rec.start - 1, rec.end)
-                );
-            }
+        } catch(std::exception &err) {
+            Rcpp::Rcout << "exception oh noe: " << err.what() << "\nline: " << buf << "\n";
+            break;
         }
     }
     gzclose(annotationFile);

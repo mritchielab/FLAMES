@@ -1176,7 +1176,6 @@ def group_bam2isoform(bam_in, out_gff3, out_stat, summary_csv, chr_to_blocks, ge
     isoform_dict = {}
     fa_dict = {}
 
-    debuglog = open("/Users/voogd.o/Documents/FLAMESintermediate/SIRV/flamesc++out/py/debug.log", "w")
     for c in get_fa(fa_f):
         fa_dict[c[0]] = c[1]
     for ch in sorted(chr_to_blocks.keys()):
@@ -1201,19 +1200,14 @@ def group_bam2isoform(bam_in, out_gff3, out_stat, summary_csv, chr_to_blocks, ge
                 junctions = blocks_to_junctions(blocks)
                 tmp_isoform.add_isoform(junctions, rec.is_reverse)
 
-                debuglog.write(rec.query_name + ", " + rec.cigarstring + ", " + str(blocks) + ", " + str(junctions) + "\n")
-                debuglog.write("tmp_isoform length: " + str(len(tmp_isoform)) + "\n")
-            
             if len(tmp_isoform) > 0:
                 tmp_isoform.update_all_splice()
-                debuglog.write("splice: " + str(len(tmp_isoform)) + "\n")
                 tmp_isoform.filter_TSS_TES(
                     tss_tes_stat, known_site=TSS_TES_site, fdr_cutoff=0.1)
                 # tmp_isoform.site_stat(tss_tes_stat)
                 # issue
                 # tmp_isoform.match_known_annotation(
                 #    transcript_to_junctions, transcript_dict, gene_dict, bl, fa_dict)
-                debuglog.write("filter: " + str(len(tmp_isoform)) + "\ncnt_pct: " + str(config["isoform_parameters"]["min_cnt_pct"]) + "\n")
                 if tmp_isoform.match_known_annotation(
                         transcript_to_junctions, transcript_dict, gene_dict, bl, fa_dict) == 0:
                     tmp_isoform.match_known_seg(
@@ -1223,8 +1217,7 @@ def group_bam2isoform(bam_in, out_gff3, out_stat, summary_csv, chr_to_blocks, ge
                     splice_raw.write(tmp_isoform.raw_splice_to_gff3())
                 iso_annotated.write(tmp_isoform.isoform_to_gff3(
                     isoform_pct=config["isoform_parameters"]["min_cnt_pct"]))
-        break
-    debuglog.close()
+
     tss_tes_stat.close()
     iso_annotated.close()
     bamfile.close()

@@ -20,9 +20,11 @@ struct GFFRecord {
         const std::string &line, 
         std::function<std::unordered_map<std::string, std::string>(const std::string &)> parseAttributesFunc);
 
+    // static std::function<GFFRecord(const std::string &)> parseGFFRecordFactoryFromAttributes(const std::string &filename);
     static std::unordered_map<std::string, std::string> parseGFFAttributes(const std::string &attributes);
     static std::unordered_map<std::string, std::string> parseGTFAttributes(const std::string &attributes);
     static std::function<std::unordered_map<std::string, std::string>(const std::string &)> chooseAttributesFunc(const std::string &filename);
+
 };
 
 #endif // GFFRECORD_H
