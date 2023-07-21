@@ -137,7 +137,7 @@ sc_long_multisample_pipeline <-
             if (length(barcodes_file) != length(fastqs)) {
                 stop(length(barcodes_file), " barcode allow-lists provided while there are ", length(fastqs), "fastq file. Please either provide one allow-list per sample, or one allow-list for all samples.")
             }
-            infqs <- file.path(outdir, paste(samples, "matched_reads.fastq.gz", sep = "_"))
+            infqs <- file.path(outdir, paste(samples, "matched_reads.fastq", sep = "_"))
             bc_stats <- file.path(outdir, paste(samples, "matched_barcode_stat", sep = "_"))
             for (i in 1:length(fastqs)) {
                 find_barcode(

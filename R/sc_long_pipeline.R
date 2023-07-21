@@ -125,7 +125,7 @@ sc_long_pipeline <-
             if (!file.exists(barcodes_file)) {
                 stop("barcodes_file must exists.")
             }
-            infq <- file.path(outdir, "matched_reads.fastq.gz")
+            infq <- file.path(outdir, "matched_reads.fastq")
             bc_stat <- file.path(outdir, "matched_barcode_stat")
             find_barcode(
                 fastq = fastq,
