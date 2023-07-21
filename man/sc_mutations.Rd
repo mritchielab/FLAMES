@@ -84,7 +84,6 @@ if (is.character(locate_minimap2_dir())) {
         fastq = system.file("extdata/fastq", package = "FLAMES"),
         annotation = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),
         outdir = outdir,
-        match_barcode = TRUE,
         reference_csv = bc_allow
     )
     sc_mutations(sce, barcode_tsv = file.path(outdir, "bc_allow.tsv"), min_cov = 2, report_pct = c(0, 1))

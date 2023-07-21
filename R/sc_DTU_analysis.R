@@ -61,7 +61,6 @@
 #'     fastq = system.file("extdata/fastq", package = "FLAMES"),
 #'     annotation = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),
 #'     outdir = outdir,
-#'     match_barcode = TRUE,
 #'     barcodes_file = bc_allow
 #'   )
 #'   group_anno <- data.frame(barcode_seq = colnames(sce), groups = SingleCellExperiment::counts(sce)["ENSMUST00000169826.2", ] > 1)

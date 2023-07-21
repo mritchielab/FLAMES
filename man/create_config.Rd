@@ -49,7 +49,7 @@ Create Configuration File From Arguments
 \details{
 Create a list object containing the arguments supplied in a format usable for the FLAMES pipeline.
 Also writes the object to a JSON file, which is located with the prefix 'config_' in the supplied \code{outdir}.
-Default values from \code{extdata/config_sclr_nanopore_5end.json} will be used for unprovided parameters.
+Default values from \code{extdata/config_sclr_nanopore_3end.json} will be used for unprovided parameters.
 }
 \examples{
 # create the default configuration file

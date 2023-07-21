@@ -91,7 +91,6 @@ sc_long_multisample_pipeline <-
              genome_fa,
              minimap2_dir = NULL,
              barcodes_file,
-             match_barcode = TRUE,
              config_file = NULL) {
         checked_args <- check_arguments(
             annotation,
@@ -119,8 +118,8 @@ sc_long_multisample_pipeline <-
                 stop(length(fastqs), " .fq or .fastq file(s) found\n")
             }
 
-            if (match_barcode) {
-                stop("If \"match_barcode\" set to TRUE, argument \"fastqs\" must be a list of fastq files, with the same order in \"barcodes_file\"\nYou can also demultiplex the reads with \"FLAMES::find_barcode\"")
+            if (config$pipeline_parameters$do_barcode_demultiplex) {
+                stop("If \"do_barcode_demultiplex\" set to TRUE, argument \"fastqs\" must be a list of fastq files, with the same order in \"barcodes_file\"\nYou can also demultiplex the reads with \"FLAMES::find_barcode\"")
             }
         } else if (any(!file.exists(fastqs))) {
             stop("Please make sure all fastq files exist.")
@@ -128,7 +127,7 @@ sc_long_multisample_pipeline <-
 
         samples <- gsub("\\.(fastq|fq)(\\.gz)?$", "", basename(fastqs))
 
-        if (match_barcode && length(barcodes_file) >= 1) {
+        if (config$pipeline_parameters$do_barcode_demultiplex && length(barcodes_file) >= 1) {
             if (!all(file.exists(barcodes_file))) {
                 stop("Please make sure all barcodes_file file exists.\n")
             }
@@ -150,6 +149,7 @@ sc_long_multisample_pipeline <-
                                        names(config$barcode_parameters$pattern)),
                     max_bc_editdistance = config$barcode_parameters$max_bc_editdistance, 
                     max_flank_editdistance = config$barcode_parameters$max_flank_editdistance,
+                    full_length_only = config$barcode_parameters$full_length_only,
                     threads = config$pipeline_parameters$threads
                 )
             }
