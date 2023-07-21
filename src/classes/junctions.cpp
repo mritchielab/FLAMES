@@ -91,7 +91,7 @@ remove_similar_tr(
     const std::unordered_map<std::string, std::vector<exon>>  &transcript_to_exon,
     int threshold)
 {
-    int dup_count = 0;
+    // int dup_count = 0;
     int transcriptIdx1, transcriptIdx2;
 
     std::unordered_map<std::string, transcriptvector> out_gene_to_transcript;
@@ -118,7 +118,7 @@ remove_similar_tr(
                     threshold)) 
                 {
                     dup_set.insert(transcriptIdx2);
-                    dup_count++;
+                    // dup_count++;
                 }
             }
         }

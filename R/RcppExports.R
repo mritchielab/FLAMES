@@ -40,7 +40,7 @@ find_barcode <- function(fastq_dir, stats_file, out_fastq, ref_csv, MAX_DIST, UM
     invisible(.Call(`_FLAMES_find_barcode`, fastq_dir, stats_file, out_fastq, ref_csv, MAX_DIST, UMI_LEN))
 }
 
-testfunc <- function(gff3, genome_bam, isoform_gff3, tss_tes_stat, genomefa, transcript_fa, isoform_parameters, raw_splice_isoform) {
-    invisible(.Call(`_FLAMES_testfunc`, gff3, genome_bam, isoform_gff3, tss_tes_stat, genomefa, transcript_fa, isoform_parameters, raw_splice_isoform))
+find_isoform_multithread <- function(gff3, genome_bam, isoform_gff3, tss_tes_stat, genomefa, transcript_fa, isoform_parameters, raw_splice_isoform) {
+    invisible(.Call(`_FLAMES_find_isoform_multithread`, gff3, genome_bam, isoform_gff3, tss_tes_stat, genomefa, transcript_fa, isoform_parameters, raw_splice_isoform))
 }
 

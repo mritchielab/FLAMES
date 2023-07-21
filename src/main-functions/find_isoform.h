@@ -8,7 +8,7 @@
 #include "../classes/Pos.h"
 
 void
-find_isoform
+find_isoform_multithread_cpp
 (
     const std::string &gff3,
     const std::string &genome_bam,

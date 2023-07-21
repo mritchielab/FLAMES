@@ -27,3 +27,4 @@ vignettes/.build.timestamp
 vignettes/FLAMES_vignette.md
 **/.smbdelete*
 check
+src/testfuncs.cpp

@@ -62,3 +62,31 @@ find_barcode
         UMI_LEN
     );
 }
+
+#include "main-functions/find_isoform.h"
+
+// [[Rcpp::export]]
+void
+find_isoform_multithread
+(
+    const std::string &gff3,
+    const std::string &genome_bam,
+    const std::string &isoform_gff3,
+    const std::string &tss_tes_stat,
+    const std::string &genomefa,
+    const std::string &transcript_fa,
+    const Rcpp::List  &isoform_parameters,
+    const std::string &raw_splice_isoform
+)
+{
+    find_isoform_multithread_cpp(
+        gff3, 
+        genome_bam,
+        isoform_gff3,
+        tss_tes_stat,
+        genomefa,
+        transcript_fa,
+        isoform_parameters,
+        raw_splice_isoform
+    );
+}
