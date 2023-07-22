@@ -14,7 +14,8 @@ find_barcode(
   threads = 1,
   pattern = c(primer = "CTACACGACGCTCTTCCGATCT", polyT = paste0(rep("T", 9), collapse =
     ""), umi_seq = paste0(rep("?", 12), collapse = ""), barcode_seq = paste0(rep("?",
-    16), collapse = ""))
+    16), collapse = "")),
+  full_length_only = FALSE
 )
 }
 \arguments{
@@ -33,6 +34,9 @@ find_barcode(
 \item{threads}{number of threads to be used}
 
 \item{pattern}{named character vector defining the barcode pattern}
+
+\item{full_length_only}{boolean, when TSO sequence is provided, whether reads without TSO
+are to be discarded}
 }
 \description{
 demultiplex reads with flexiplex

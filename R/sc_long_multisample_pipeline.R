@@ -91,7 +91,6 @@ sc_long_multisample_pipeline <-
              genome_fa,
              minimap2_dir = NULL,
              barcodes_file = NULL,
-             match_barcode = TRUE,
              config_file = NULL) {
         checked_args <- check_arguments(
             annotation,
@@ -119,8 +118,8 @@ sc_long_multisample_pipeline <-
                 stop(length(fastqs), " .fq or .fastq file(s) found\n")
             }
 
-            if (match_barcode && !is.null(barcodes_file)) {
-                stop("If \"match_barcode\" set to TRUE and \"barcodes_file\" is specified, argument \"fastqs\" must be a list of fastq files, with the same order in \"barcodes_file\"\nYou can also demultiplex the reads with \"FLAMES::find_barcode\"")
+            if (config$pipeline_parameters$do_barcode_demultiplex && !is.null(barcodes_file)) {
+                stop("If \"do_barcode_demultiplex\" set to TRUE and \"barcodes_file\" is specified, argument \"fastqs\" must be a list of fastq files, with the same order in \"barcodes_file\"\nYou can also demultiplex the reads with \"FLAMES::find_barcode\"")
             }
         } else if (any(!file.exists(fastqs))) {
             stop("Please make sure all fastq files exist.")
@@ -128,12 +127,12 @@ sc_long_multisample_pipeline <-
 
         samples <- gsub("\\.(fastq|fq)(\\.gz)?$", "", basename(fastqs))
         
-        if (match_barcode && is.null(barcodes_file)) {
+        if (config$pipeline_parameters$do_barcode_demultiplex && is.null(barcodes_file)) {
             cat("No barcodes_file provided, running BLAZE to generate it from long reads...")
             # config the blaze run
             config$blaze_parameters['output-fastq'] <- 'matched_reads.fastq.gz'
             config$blaze_parameters['threads'] <- config$blaze_parameters$threads  
-            warning("BLAZE is running with default with --expect-cell ",config$blaze_parameters$expect_cell,
+            warning("BLAZE is running with default with --expect-cells ",config$blaze_parameters['expect-cells'],
                 ",\n which meant to be the expected number of cells. If it is very different from your actuall\n"
                 ," expectation, please modify it in the config file.")
 
@@ -142,7 +141,7 @@ sc_long_multisample_pipeline <-
                 blaze(config$blaze_parameters, fastqs[i])
             }
             infqs <- file.path(outdir, paste(samples, "matched_reads.fastq.gz", sep = "_"))
-        } else if (match_barcode && length(barcodes_file) >= 1) {
+        } else if (config$pipeline_parameters$do_barcode_demultiplex && length(barcodes_file) >= 1) {
               
             if (!all(file.exists(barcodes_file))) {
                 stop("Please make sure all barcodes_file file exists.\n")
@@ -153,7 +152,7 @@ sc_long_multisample_pipeline <-
             if (length(barcodes_file) != length(fastqs)) {
                 stop(length(barcodes_file), " barcode allow-lists provided while there are ", length(fastqs), "fastq file. Please either provide one allow-list per sample, or one allow-list for all samples.")
             }
-            infqs <- file.path(outdir, paste(samples, "matched_reads.fastq.gz", sep = "_"))
+            infqs <- file.path(outdir, paste(samples, "matched_reads.fastq", sep = "_"))
             bc_stats <- file.path(outdir, paste(samples, "matched_barcode_stat", sep = "_"))
             for (i in 1:length(fastqs)) {
                 find_barcode(
@@ -165,6 +164,7 @@ sc_long_multisample_pipeline <-
                                        names(config$barcode_parameters$pattern)),
                     max_bc_editdistance = config$barcode_parameters$max_bc_editdistance, 
                     max_flank_editdistance = config$barcode_parameters$max_flank_editdistance,
+                    full_length_only = config$barcode_parameters$full_length_only,
                     threads = config$pipeline_parameters$threads
                 )
             }

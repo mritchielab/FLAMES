@@ -140,7 +140,7 @@ def process_trans(batch_id, total_batches, bam_in, fa_idx_f, min_sup_reads, min_
     alignment_batch: a list of pysam AlignedSegment object
     """
     bamfile = ps.AlignmentFile(bam_in, "rb")
-    print("process start time:" + datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    # print("process start time:" + datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
     fa_idx = dict((it.strip().split()[0], int(
         it.strip().split()[1])) for it in open(fa_idx_f))
     bc_tr_count_dict = {}
@@ -238,8 +238,8 @@ def process_trans(batch_id, total_batches, bam_in, fa_idx_f, min_sup_reads, min_
                 bc_tr_count_dict[bc] = {}
             bc_tr_count_dict[bc].setdefault(hit[0], []).append(umi)
             cnt_stat["counted_reads"] += 1
-    print(("\t" + str(cnt_stat)))
-    print("process end time:" + datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    # print(("\t" + str(cnt_stat)))
+    # print("process end time:" + datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
     return bc_tr_count_dict, bc_tr_badcov_count_dict, tr_kept
 
 
@@ -254,8 +254,10 @@ def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage,
         Per transcript read count.
     """
     rst_futures = helper.multiprocessing_submit(process_trans,
-                                (x for x in range(n_process)), total_batches=n_process ,n_process=n_process, pbar = True, 
-                                pbar_tot=None, pbar_update=1, bam_in=bam_in,
+                                (x for x in range(n_process)), total_batches=n_process ,n_process=n_process, pbar = False, 
+                                pbar_func = lambda x: 1, 
+                                pbar_unit='Batch',
+                                bam_in=bam_in,
                                 fa_idx_f=fa_idx_f, min_sup_reads=min_sup_reads, 
                                 min_tr_coverage=min_tr_coverage, 
                                 min_read_coverage=min_read_coverage, bc_file=bc_file)
@@ -265,8 +267,8 @@ def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage,
     tr_kept_rst_mp_rst = None # this doesn't seem to be used in the downstream
     
     for idx, f in enumerate(rst_futures):
-        print(f"collecting result of batch {idx}  " + datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-              flush = True)
+        #print(f"collecting result of batch {idx}  " + datetime.now().strftime("%Y-%m-%d %H:%M:%S"),flush = True)
+              
         d1, d2, _ = f.result()
         for k1 in d1.keys():
             for k2 in d1[k1].keys():

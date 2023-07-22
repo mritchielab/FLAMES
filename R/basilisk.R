@@ -8,6 +8,7 @@ flames_env <- BasiliskEnvironment(
         "editdistance==0.6.2",
         "scipy==1.11.1",
         "pysam==0.21.0",
+        "cutadapt==4.4",
         "tqdm==4.64.1",
         "matplotlib==3.5.3",
         "pandas==1.3.5",

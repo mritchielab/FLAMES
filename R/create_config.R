@@ -2,7 +2,7 @@
 #'
 #' @details Create a list object containing the arguments supplied in a format usable for the FLAMES pipeline.
 #' Also writes the object to a JSON file, which is located with the prefix 'config_' in the supplied \code{outdir}.
-#' Default values from \code{extdata/config_sclr_nanopore_5end.json} will be used for unprovided parameters.
+#' Default values from \code{extdata/config_sclr_nanopore_3end.json} will be used for unprovided parameters.
 #'
 #' @param outdir the destination directory for the configuratio nfile
 #' @param type use an example config, available values:
@@ -47,7 +47,7 @@
 #' @export
 create_config <- function(outdir, type = "sc_5end", ...) {
     if (type == "sc_5end") {
-        config <- jsonlite::fromJSON(system.file("extdata/config_sclr_nanopore_5end.json", package = "FLAMES"))
+        config <- jsonlite::fromJSON(system.file("extdata/config_sclr_nanopore_3end.json", package = "FLAMES"))
     } else if (type == "SIRV") {
         config <- jsonlite::fromJSON(system.file("extdata/SIRV_config_default.json", package = "FLAMES"))
     } else {

@@ -33,7 +33,6 @@ if (is.character(locate_minimap2_dir())) {
         fastq = system.file("extdata/fastq", package = "FLAMES"),
         annotation = annotation,
         outdir = outdir,
-        match_barcode = TRUE,
         barcodes_file = bc_allow
     )
     sce_2 <- create_sce_from_dir(outdir, annotation)

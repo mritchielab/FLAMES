@@ -9,6 +9,8 @@
 #' @param reads_out path of output FASTQ file
 #' @param stats_out path of output stats file
 #' @param threads number of threads to be used
+#' @param full_length_only boolean, when TSO sequence is provided, whether reads without TSO 
+#' are to be discarded
 #' @param pattern named character vector defining the barcode pattern
 #' @examples
 #' outdir <- tempfile()
@@ -26,7 +28,7 @@
 find_barcode <- function(fastq, barcodes_file, max_bc_editdistance = 2, max_flank_editdistance = 8,
   reads_out, stats_out, threads = 1, pattern = c(primer = "CTACACGACGCTCTTCCGATCT",
     polyT = paste0(rep("T", 9), collapse = ""), umi_seq = paste0(rep("?", 12),
-      collapse = ""), barcode_seq = paste0(rep("?", 16), collapse = ""))) {
+      collapse = ""), barcode_seq = paste0(rep("?", 16), collapse = "")), full_length_only = FALSE) {
   if (file_test("-f", fastq)) {
     flexiplex(reads_in = fastq, barcodes_file = barcodes_file, bc_as_readid = TRUE,
       max_bc_editdistance = max_bc_editdistance, max_flank_editdistance = max_flank_editdistance,
@@ -42,4 +44,40 @@ find_barcode <- function(fastq, barcodes_file, max_bc_editdistance = 2, max_flan
   } else {
     stop("The specified path does not exist: ", fastq)
   }
+
+  if (sum(grepl("^[35]'TSO$", names(pattern))) == 1) {
+    untrimmed_reads <- file.path(
+      dirname(reads_out),
+      paste0("untrimmed_", basename(reads_out))
+    )
+    noTSO_reads <- file.path(
+      dirname(reads_out),
+      paste0("noTSO_", basename(reads_out))
+    )
+    stopifnot(file.rename(reads_out, untrimmed_reads))
+    #cutadapt -a 'TSO' -o reads_out --untrimmed-output noTSO_out in_fq(untrimmed.fq)
+    cutadapt(
+      c(
+        ifelse("3'TSO" %in% names(pattern), "-a", "-g"),
+        pattern[[which(grepl("^[35]'TSO$", names(pattern)))]],
+        "-o",
+        reads_out,
+        untrimmed_reads,
+        if (full_length_only) {
+          c("--untrimmed-output", noTSO_reads)
+        }
+      )
+    )
+  } else {
+    cat("Skipping TSO trimming...\n")
+  }
+}
+
+convert_cellranger_bc <- function(bc_allow, bc_from, bc_to) {
+  from <- read.delim(bc_from, header = FALSE)$V1
+  to <- read.delim(bc_to, header = FALSE)$V1
+  allowed <- read.delim(bc_allow, header = FALSE)$V1
+  stopifnot(length(from) == length(to))
+  stopifnot(all(allowed %in% from))
+  return(to[from %in% allowed])
 }

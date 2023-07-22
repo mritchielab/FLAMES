@@ -11,7 +11,6 @@ sc_long_multisample_pipeline(
   genome_fa,
   minimap2_dir = NULL,
   barcodes_file,
-  match_barcode = TRUE,
   config_file = NULL
 )
 }
@@ -28,8 +27,6 @@ sc_long_multisample_pipeline(
 \code{do_genome_align} and \code{do_read_realign} are \code{TRUE}.}
 
 \item{barcodes_file}{The file path to the reference csv used for demultiplexing}
-
-\item{match_barcode}{Boolean; specifies if demultiplexing should be performed using \code{FLAMES::find_barcode}}
 
 \item{config_file}{File path to the JSON configuration file. If specified, \code{config_file} overrides
 all configuration parameters}
