@@ -119,7 +119,7 @@ quantify <- function(annotation, outdir, config, pipeline = "sc_single_sample") 
     if (length(realign_bam) != 1 && grepl("single_sample", pipeline)) {
         stop("Incorrect number of realignment files found.\n")
     }
-
+    
     callBasilisk(flames_env, function(config_dict, annotation, outdir, pipeline) {
         python_path <- system.file("python", package = "FLAMES")
         count <- reticulate::import_from_path("count_tr", python_path)
@@ -130,6 +130,8 @@ quantify <- function(annotation, outdir, config, pipeline = "sc_single_sample") 
     outdir = outdir,
     pipeline = pipeline
     )
+
+
 }
 
 # example for Rsamtools

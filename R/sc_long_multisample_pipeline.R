@@ -90,7 +90,7 @@ sc_long_multisample_pipeline <-
              outdir,
              genome_fa,
              minimap2_dir = NULL,
-             barcodes_file,
+             barcodes_file = NULL,
              match_barcode = TRUE,
              config_file = NULL) {
         checked_args <- check_arguments(
@@ -119,16 +119,31 @@ sc_long_multisample_pipeline <-
                 stop(length(fastqs), " .fq or .fastq file(s) found\n")
             }
 
-            if (match_barcode) {
-                stop("If \"match_barcode\" set to TRUE, argument \"fastqs\" must be a list of fastq files, with the same order in \"barcodes_file\"\nYou can also demultiplex the reads with \"FLAMES::find_barcode\"")
+            if (match_barcode && !is.null(barcodes_file)) {
+                stop("If \"match_barcode\" set to TRUE and \"barcodes_file\" is specified, argument \"fastqs\" must be a list of fastq files, with the same order in \"barcodes_file\"\nYou can also demultiplex the reads with \"FLAMES::find_barcode\"")
             }
         } else if (any(!file.exists(fastqs))) {
             stop("Please make sure all fastq files exist.")
         }
 
         samples <- gsub("\\.(fastq|fq)(\\.gz)?$", "", basename(fastqs))
+        
+        if (match_barcode && is.null(barcodes_file)) {
+            cat("No barcodes_file provided, running BLAZE to generate it from long reads...")
+            # config the blaze run
+            config$blaze_parameters['output-fastq'] <- 'matched_reads.fastq.gz'
+            config$blaze_parameters['threads'] <- config$blaze_parameters$threads  
+            warning("BLAZE is running with default with --expect-cell ",config$blaze_parameters$expect_cell,
+                ",\n which meant to be the expected number of cells. If it is very different from your actuall\n"
+                ," expectation, please modify it in the config file.")
 
-        if (match_barcode && length(barcodes_file) >= 1) {
+            for (i in 1:length(fastqs)) {
+                config$blaze_parameters['output-prefix'] <- paste0(outdir, '/', samples[i], '_')
+                blaze(config$blaze_parameters, fastqs[i])
+            }
+            infqs <- file.path(outdir, paste(samples, "matched_reads.fastq.gz", sep = "_"))
+        } else if (match_barcode && length(barcodes_file) >= 1) {
+              
             if (!all(file.exists(barcodes_file))) {
                 stop("Please make sure all barcodes_file file exists.\n")
             }

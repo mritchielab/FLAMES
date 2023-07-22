@@ -7,12 +7,18 @@
         "do_isoform_identification": true,
         "bambu_isoform_identification": true,
         "do_read_realignment": true,
-        "do_transcript_quantification": true
+        "do_transcript_quantification": true,
+        "threads": 12
     },
     "barcode_parameters": {
-        "max_edit_distance": 2,
-        "has_UMI": true,
-        "UMI_length": 10
+        "max_bc_editdistance": 2,
+        "max_flank_editdistance": 8,
+        "pattern": {
+          "primer": "CTACACGACGCTCTTCCGATCT",
+          "polyT": "TTTTTTTTT",
+          "umi_seq": "????????????",
+          "barcode_seq": "????????????????"
+        }    
     },
     "isoform_parameters": {
         "generate_raw_isoform": false,
@@ -31,8 +37,7 @@
     },
     "alignment_parameters": {
         "use_junctions": true,
-        "no_flank": false,
-        "threads": 10
+        "no_flank": false
     },
     "realign_parameters": {
         "use_annotation": true
@@ -43,9 +48,6 @@
     },
     "blaze_parameters": {
         "expect-cells": 500,
-        "threads": 12,
-        "output-prefix": "blaze_",
-        "overwrite": true
+        "overwrite": false
     }
-
 }

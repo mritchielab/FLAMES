@@ -4,7 +4,7 @@ import os
 import sys
 import gzip
 import numpy as np
-import editdistance
+# import editdistance
 import fast_edit_distance 
 from itertools import groupby
 from collections import Counter, defaultdict
@@ -50,7 +50,7 @@ def umi_dedup(l, has_UMI, max_ed=1):
 
 
 def wrt_tr_to_csv(bc_tr_count_dict, transcript_dict, csv_f, transcript_dict_ref=None, has_UMI=True,
-                  output_saturation = True):
+                  print_saturation = True):
     f = gzip.open(csv_f, "wt")
     all_tr = set()
     for bc in bc_tr_count_dict:
@@ -80,7 +80,8 @@ def wrt_tr_to_csv(bc_tr_count_dict, transcript_dict, csv_f, transcript_dict_ref=
             exit(1)
         f.write(",".join([str(x) for x in cnt_l])+"\n")
     f.close()
-    if output_saturation and has_UMI:
+    if print_saturation and has_UMI:
+        helper.green_msg(f"The isoform quantification result generated:  {csv_f}.")
         helper.green_msg(f"The estimated saturation is {1-len(dup_count)/sum(dup_count)}")
     return tr_cnt
 
@@ -547,9 +548,8 @@ def quantification(config_dict, annotation, outdir, pipeline):
     isoform_gff3_f = os.path.join(outdir, "isoform_annotated.filtered.gff3")
     FSM_anno_out = os.path.join(outdir, "isoform_FSM_annotation.csv")
 
-    # submit to concurrent future
+    # parsing gff file in background (concurrent future)
     executor = concurrent.futures.ProcessPoolExecutor(5)
-
     futures = {}
     futures['parse_gff_tree_anno'] = executor.submit(parse_gff_tree, annotation)
     futures['parse_gff_tree_iso'] = executor.submit(parse_gff_tree, isoform_gff3)
@@ -558,8 +558,6 @@ def quantification(config_dict, annotation, outdir, pipeline):
         realign_bam = os.path.join(outdir, "realign2transcript.bam")
         tr_cnt_csv = os.path.join(outdir, "transcript_count.csv.gz")
         tr_badcov_cnt_csv = os.path.join(outdir, "transcript_count.bad_coverage.csv.gz")
-        
-        start_time = datetime.now()
         bc_tr_count_dict, bc_tr_badcov_count_dict, tr_kept = parse_realigned_bam(
             realign_bam,
             transcript_fa_idx,
@@ -568,12 +566,17 @@ def quantification(config_dict, annotation, outdir, pipeline):
             config_dict["transcript_counting"]["min_read_coverage"],
             bc_file = False)
         
-        chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = \
-            futures['parse_gff_tree_anno'].result()
-        chr_to_gene_i, transcript_dict_i, gene_to_transcript_i, transcript_to_exon_i = \
-            futures['parse_gff_tree_iso'].result()
+        chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = futures['parse_gff_tree_anno'].result()
+        chr_to_gene_i, transcript_dict_i, gene_to_transcript_i, transcript_to_exon_i = futures['parse_gff_tree_iso'].result()
 
-        print("Time for parse_realigned_bam: ", str(datetime.now()-start_time))
+        tr_cnt = wrt_tr_to_csv(bc_tr_count_dict, transcript_dict_i, tr_cnt_csv,
+                            transcript_dict, "umi_seq" in config_dict["barcode_parameters"]["pattern"].keys())
+        wrt_tr_to_csv(bc_tr_badcov_count_dict, transcript_dict_i, tr_badcov_cnt_csv,
+                    transcript_dict, "umi_seq" in config_dict["barcode_parameters"]["pattern"].keys(),
+                    print_saturation = False)
+        annotate_filter_gff(isoform_gff3, annotation, isoform_gff3_f, FSM_anno_out,
+                        tr_cnt, config_dict["isoform_parameters"]["min_sup_cnt"], verbose=False)
+        return
 
     elif pipeline == "bulk":
         realign_bam = [os.path.join(outdir, f) for f in os.listdir(outdir) if f[-22:] == "realign2transcript.bam"]
@@ -585,6 +588,20 @@ def quantification(config_dict, annotation, outdir, pipeline):
             config_dict["isoform_parameters"]["min_sup_cnt"],
             config_dict["transcript_counting"]["min_tr_coverage"],
             config_dict["transcript_counting"]["min_read_coverage"])
+
+
+        chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = futures['parse_gff_tree_anno'].result()
+        chr_to_gene_i, transcript_dict_i, gene_to_transcript_i, transcript_to_exon_i = futures['parse_gff_tree_iso'].result()
+
+        tr_cnt = wrt_tr_to_csv(bc_tr_count_dict, transcript_dict_i, tr_cnt_csv,
+                                transcript_dict, "umi_seq" in config_dict["barcode_parameters"]["pattern"].keys(),
+                                print_saturation = False)
+        wrt_tr_to_csv(bc_tr_badcov_count_dict, transcript_dict_i, tr_badcov_cnt_csv,
+                        transcript_dict, "umi_seq" in config_dict["barcode_parameters"]["pattern"].keys(),
+                        print_saturation = False)
+        annotate_filter_gff(isoform_gff3, annotation, isoform_gff3_f, FSM_anno_out,
+                            tr_cnt, config_dict["isoform_parameters"]["min_sup_cnt"], verbose=False)
+        return
 
     elif pipeline == "sc_multi_sample":
         realign_bam = [os.path.join(outdir, f) for f in os.listdir(outdir) if f[-23:] == "_realign2transcript.bam"]
@@ -608,7 +625,8 @@ def quantification(config_dict, annotation, outdir, pipeline):
                                    transcript_dict, "umi_seq" in config_dict["barcode_parameters"]["pattern"].keys())
             sys.stderr.write("wrt_tr_to_csv for" + sample_bam + "done\n")
             wrt_tr_to_csv(bc_tr_badcov_count_dict, transcript_dict_i, tr_badcov_cnt_csv,
-                          transcript_dict, "umi_seq" in config_dict["barcode_parameters"]["pattern"].keys())
+                          transcript_dict, "umi_seq" in config_dict["barcode_parameters"]["pattern"].keys(),
+                          print_saturation = False)
             del bc_tr_count_dict, bc_tr_badcov_count_dict, tr_cnt
             ##gc.collect()
 
@@ -620,19 +638,4 @@ def quantification(config_dict, annotation, outdir, pipeline):
     else:
         raise ValueError(f"Unknown pipeline type {pipeline}")
 
-    
-    chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = futures['parse_gff_tree_anno'].result()
-    chr_to_gene_i, transcript_dict_i, gene_to_transcript_i, transcript_to_exon_i = futures['parse_gff_tree_iso'].result()
-
-    time_now = datetime.now()
-    tr_cnt = wrt_tr_to_csv(bc_tr_count_dict, transcript_dict_i, tr_cnt_csv,
-                           transcript_dict, "umi_seq" in config_dict["barcode_parameters"]["pattern"].keys())
-    wrt_tr_to_csv(bc_tr_badcov_count_dict, transcript_dict_i, tr_badcov_cnt_csv,
-                  transcript_dict, "umi_seq" in config_dict["barcode_parameters"]["pattern"].keys())
-
-    annotate_filter_gff(isoform_gff3, annotation, isoform_gff3_f, FSM_anno_out,
-                        tr_cnt, config_dict["isoform_parameters"]["min_sup_cnt"], verbose=False)
-    print("Time for annotate_filter_gff: ", str(datetime.now()-time_now))
-    time_now = datetime.now()
-    return
 

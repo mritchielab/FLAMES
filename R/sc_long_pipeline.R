@@ -134,8 +134,15 @@ sc_long_pipeline <-
 
             if (is.null(barcodes_file)){
                 cat("No barcodes_file provided, running BLAZE to generate it from long reads...")
-                config$blaze_parameters['output-prefix'] <- past0(outdir, '/')
+
+                # config the blaze run
+                config$blaze_parameters['output-prefix'] <- paste0(outdir, '/')
+                config$blaze_parameters['output-fastq'] <- 'matched_reads.fastq.gz'
+                config$blaze_parameters['threads'] <- config$blaze_parameters$threads
+
+
                 blaze(config$blaze_parameters, fastq)
+                infq <- file.path(outdir, "matched_reads.fastq.gz")
             } else {
                 cat(format(Sys.time(), "%X %a %b %d %Y"), "Demultiplexing\n")
                 cat("Matching cell barcodes...\n")
