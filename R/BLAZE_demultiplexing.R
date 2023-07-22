@@ -48,7 +48,7 @@ blaze <- function(blaze_config, fq_in) {
         blaze_argv <- paste(blaze_argv, fq_in)
 
         ret <-
-            callBasilisk(blaze_env, function(blaze_argv) {
+            callBasilisk(flames_env, function(blaze_argv) {
 
                 blaze_path <- system.file("blaze", package = "FLAMES")
                 cat("Running BLAZE...\n")
