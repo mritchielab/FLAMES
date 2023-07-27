@@ -27,7 +27,6 @@ Imports:
     arrangements,
     basilisk,
     bambu,
-    Rsubread,
     Biostrings,
     BiocGenerics,
     circlize,

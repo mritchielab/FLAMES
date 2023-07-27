@@ -117,7 +117,8 @@ def multiprocessing_submit(func, iterator, n_process=mp.cpu_count()-1 ,pbar = Tr
         else:
             n_job_in_queue -= 1
             # update pregress bar based on batch size
-            _pbar.update(pbar_update)
+            if pbar:
+                _pbar.update(pbar_update)
             yield job
             del futures[job]
 
