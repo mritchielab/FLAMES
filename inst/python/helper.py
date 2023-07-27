@@ -88,26 +88,15 @@ class param:
                 self.__dict__[attr] = None
         return check_res if not silent else True
     
-# multiprocessing
-# def multiprocessing_submit(func, iterator, n_process=mp.cpu_count()-1, pbar = True, *arg, **kwargs):
-#     executor = concurrent.futures.ProcessPoolExecutor(n_process)
-#     if pbar:
-#         #pbar = tqdm(total=len(iterator))
-#         pbar = tqdm()
-#     futures = [executor.submit(func, i, *arg, **kwargs) for i in iterator]
-#     for future in as_completed(futures):
-#         print(111)
-#         pbar.update(1)
-#     return futures
 def multiprocessing_submit(func, iterator, n_process=mp.cpu_count()-1 ,pbar = True, pbar_tot=None, pbar_update=1 ,*arg, **kwargs):
+    "Run function in multiprocessing setting"
     executor = concurrent.futures.ProcessPoolExecutor(n_process)
     
-    
-    # A dictionary which will contain the  future object
     max_queue = n_process + 10
     if pbar:
-        pbar = tqdm(unit = 'isoforms', desc='Processed', total=pbar_tot)
-
+        _pbar = tqdm(unit = 'isoforms', desc='Processed', total=pbar_tot)
+    
+    # A dictionary which will contain the  future object
     futures = {}
     n_job_in_queue = 0
     while True:
@@ -128,10 +117,9 @@ def multiprocessing_submit(func, iterator, n_process=mp.cpu_count()-1 ,pbar = Tr
         else:
             n_job_in_queue -= 1
             # update pregress bar based on batch size
-            pbar.update(pbar_update)
+            _pbar.update(pbar_update)
             yield job
             del futures[job]
-
 
 # get file with a certian extensions
 def get_files(search_dir, extensions, recursive=True):
@@ -155,7 +143,6 @@ def check_exist(file_list):
     if exit_code == 1:
         sys.exit()
 
-# split any iterator in to batches  
 
 class pysam_AlignmentSegment_pickible:
     """Copy all necessary information from pysam AlignemntSegment to make it pickible 
