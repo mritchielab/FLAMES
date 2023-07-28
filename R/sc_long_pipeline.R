@@ -121,9 +121,13 @@ sc_long_pipeline <-
 
         infq <- NULL
         if (config$pipeline_parameters$do_barcode_demultiplex) {
-
-            if (is.null(barcodes_file)){
-                cat("No barcodes_file provided, running BLAZE to generate it from long reads...")
+            if (config$pipeline_parameters$demultiplex_method == 'blaze'){
+                cat("Running BLAZE to generate barcode list from long reads...")
+                if (!is.null(barcodes_file)){
+                    warnings(
+                        "The provided barcodes file(s) was ignored." ,
+                        "BLAZE generated it directly from the long reads.")
+                }
 
                 # config the blaze run
                 config$blaze_parameters['output-prefix'] <- paste0(outdir, '/')
@@ -135,8 +139,8 @@ sc_long_pipeline <-
 
                 blaze(config$blaze_parameters, fastq)
                 infq <- file.path(outdir, "matched_reads.fastq.gz")
-            } else {
-                cat(format(Sys.time(), "%X %a %b %d %Y"), "Demultiplexing\n")
+            } else if (config$pipeline_parameters$demultiplex_method == 'flexiplex') {
+                cat(format(Sys.time(), "%X %a %b %d %Y"), "Demultiplexing using flexiplex...\n")
                 cat("Matching cell barcodes...\n")
                 if (!file.exists(barcodes_file)) {
                     stop("barcodes_file must exists.")
@@ -155,13 +159,15 @@ sc_long_pipeline <-
                 full_length_only = config$barcode_parameters$full_length_only,
                     threads = config$pipeline_parameters$threads
                 )
+            } else {
+               # throw error if invalue demultiplex method specified
+                stop("Invalid demultiplex method specified in the config file. Please use either 'blaze' or 'flexiplex'.")
             }
-
+            cat(format(Sys.time(), "%X %a %b %d %Y"), "Demultiplex done\n")
         } else {
             infq <- fastq
         } # requesting to not match barcodes implies `fastq` has already been run through the
         # function in a previous FLAMES call
-        cat(format(Sys.time(), "%X %a %b %d %Y"), "Demultiplex done\n")
         cat("Running FLAMES pipeline...\n")
 
         using_bam <- FALSE
@@ -204,6 +210,13 @@ sc_long_pipeline <-
             cat("#### Skip aligning reads to genome\n")
         }
 
+        # gene quantification
+        if (config$pipeline_parameters$do_gene_quantification) {
+            quantify_gene(annotation, outdir, 
+                        demultiplex_methods=config$pipeline_parameters$demultiplex_method, 
+                        pipeline = "sc_single_sample")
+        }
+        
         # find isofroms
         if (config$pipeline_parameters$do_isoform_identification) {
             find_isoform(annotation, genome_fa, genome_bam, outdir, config)
@@ -223,7 +236,10 @@ sc_long_pipeline <-
         # quantification
         if (config$pipeline_parameters$do_transcript_quantification) {
             cat("#### Generating transcript count matrix\n")
-            quantify(annotation = annotation, outdir = outdir, config = config)
+            quantify_transcript(annotation = annotation, 
+                                outdir = outdir, 
+                                pipeline = "sc_single_sample",
+                                config = config)
 
             out_files <- list(
                 "annotation" = annotation,

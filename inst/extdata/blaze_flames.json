@@ -3,14 +3,27 @@
     "pipeline_parameters": {
         "seed": 2023,
         "do_barcode_demultiplex": true,
+        "demultiplex_method": "blaze",
         "do_genome_alignment": true,
+        "do_gene_quantification": true,
         "do_isoform_identification": true,
         "bambu_isoform_identification": true,
         "do_read_realignment": true,
         "do_transcript_quantification": true,
         "threads": 12
     },
+    
+    
+    "comment": "this is the parameters for blaze barcode demultiplexing.",
+    "blaze_parameters": {
+        
+        "expect-cells": 500,
+        "overwrite": false
+    },
+
+    "comment": "this is the parameters for flexiblix barcode demultiplexing. ",
     "barcode_parameters": {
+        
         "max_bc_editdistance": 2,
         "max_flank_editdistance": 8,
         "pattern": {
@@ -18,7 +31,7 @@
           "polyT": "TTTTTTTTT",
           "umi_seq": "????????????",
           "barcode_seq": "????????????????"
-        }    
+        }
     },
     "isoform_parameters": {
         "generate_raw_isoform": false,
@@ -45,9 +58,5 @@
     "transcript_counting": {
         "min_tr_coverage": 0.4,
         "min_read_coverage": 0.4
-    },
-    "blaze_parameters": {
-        "expect-cells": 500,
-        "overwrite": false
     }
 }

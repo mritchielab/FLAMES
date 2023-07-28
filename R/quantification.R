@@ -74,6 +74,34 @@ wrt_tr_to_csv <-
         )
     }
 
+#' @importFrom reticulate import_from_path dict
+quantify_gene <- function(annotation, outdir, demultiplex_methods, pipeline = "sc_single_sample") {
+    cat(format(Sys.time(), "%X %a %b %d %Y"), "quantify genes \n")
+
+    if (grepl("\\.gff3?(\\.gz)?$", annotation)) {
+        warning("Annotation in GFF format may cause errors. Please consider using GTF formats.\n")
+    }
+
+    genome_bam <- list.files(outdir)[grepl("_?align2genome\\.bam$", list.files(outdir))]
+    cat("Found genome alignment file(s): ")
+    cat(paste0("\t", paste(genome_bam, collapse = "\n\t"), "\n"))
+
+    if (length(genome_bam) != 1 && grepl("single_sample", pipeline)) {
+        stop("Incorrect number of genome alignment files found.\n")
+    }
+    
+    callBasilisk(flames_env, function(annotation, outdir, demultiplex_methods,pipeline) {
+        python_path <- system.file("python", package = "FLAMES")
+        count <- reticulate::import_from_path("count_gene", python_path)
+        count$quantification(annotation, outdir, demultiplex_methods, pipeline)
+    },
+    annotation = annotation,
+    outdir = outdir,
+    demultiplex_methods = demultiplex_methods,
+    pipeline = pipeline
+    )
+}
+
 #' Transcript quantification
 #' @description Calculate the transcript count matrix by parsing the re-alignment file.
 #' @param annotation The file path to the annotation file in GFF3 format
@@ -101,12 +129,12 @@ wrt_tr_to_csv <-
 #'         config = config, outdir = outdir,
 #'         fq_in = fastq1
 #'     )
-#'     quantify(annotation, outdir, config, pipeline = "bulk")
+#'     quantify_transcript(annotation, outdir, config, pipeline = "bulk")
 #' }
 #' }
 #' @export
-quantify <- function(annotation, outdir, config, pipeline = "sc_single_sample") {
-    cat(format(Sys.time(), "%X %a %b %d %Y"), "quantify\n")
+quantify_transcript <- function(annotation, outdir, config, pipeline = "sc_single_sample") {
+    cat(format(Sys.time(), "%X %a %b %d %Y"), "quantify transcripts \n")
 
     if (grepl("\\.gff3?(\\.gz)?$", annotation)) {
         warning("Annotation in GFF format may cause errors. Please consider using GTF formats.\n")
