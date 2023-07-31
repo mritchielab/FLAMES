@@ -288,10 +288,10 @@ inline void rename_file(std::string from, std::string to) {
 	Rcpp::Function rename("file.rename");
 	rename(Rcpp::_["from"]=from, Rcpp::_["to"]=to);
 }
-inline bool file_exists(std::string file) {
-	Rcpp::Function fileExists("file.exists");
-	return Rcpp::as<bool> (fileExists(file));
-}
+// inline bool file_exists(std::string file) {
+// 	Rcpp::Function fileExists("file.exists");
+// 	return Rcpp::as<bool> (fileExists(file));
+// }
 
 /*
     checks whether an int vector is strictly increasing
