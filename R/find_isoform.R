@@ -85,8 +85,8 @@ find_isoform_bambu <- function(annotation, genome_fa, genome_bam, outdir, config
 #' @importFrom reticulate import_from_path
 #' @importFrom Rsamtools indexFa
 find_isoform_flames <- function(annotation, genome_fa, genome_bam, outdir, config) {
-    if (!file.exists(paste0(genome_bam, ".bai"))) {
-        stop(c("Cannot find corresponding bam file ", genome_bam, ".bai. Cancelling find_isoform."))
+    if (!all(file.exists(paste0(genome_bam, ".bai")))) {
+        stop(c("Cannot find corresponding bam file(s) ", paste0(genome_bam, ".bai"), ". Cancelling find_isoform."))
     }
     isoform_annotation <- file.path(outdir, "isoform_annotated.gff3")
     tss_stat <- file.path(outdir, "tss_tes.bedgraph")
