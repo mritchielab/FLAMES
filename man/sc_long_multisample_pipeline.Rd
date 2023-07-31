@@ -10,7 +10,7 @@ sc_long_multisample_pipeline(
   outdir,
   genome_fa,
   minimap2_dir = NULL,
-  barcodes_file,
+  barcodes_file = NULL,
   config_file = NULL
 )
 }

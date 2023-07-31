@@ -23,6 +23,8 @@
 #'    reads_out = file.path(outdir, 'demultiplexed.fq.gz'),
 #'    barcodes_file = bc_allow
 #')
+#' @return invisible()
+#' @import zlibbioc
 #' @md
 #' @export
 find_barcode <- function(fastq, barcodes_file, max_bc_editdistance = 2, max_flank_editdistance = 8,

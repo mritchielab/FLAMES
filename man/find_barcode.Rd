@@ -38,6 +38,9 @@ find_barcode(
 \item{full_length_only}{boolean, when TSO sequence is provided, whether reads without TSO
 are to be discarded}
 }
+\value{
+invisible()
+}
 \description{
 demultiplex reads with flexiplex
 }

@@ -384,6 +384,12 @@ void search_read(std::vector<SearchResult> &reads,
   }
 }
 
+// file exists
+bool file_exists(const std::string &filename) {
+  std::ifstream infile(filename);
+  return infile.good();
+}
+
 //' Rcpp port of flexiplex
 //'
 //' @description demultiplex reads with flexiplex, for detailed description, see
@@ -400,6 +406,7 @@ void search_read(std::vector<SearchResult> &reads,
 //' @param stats_out output file for demultiplexed stats
 //' @param n_threads number of threads to be used during demultiplexing
 //' @param bc_out WIP
+//' @return integer return value. 0 represents normal return.
 //' @export
 // [[Rcpp::export]]
 int flexiplex(Rcpp::String reads_in, Rcpp::String barcodes_file,
@@ -477,7 +484,7 @@ int flexiplex(Rcpp::String reads_in, Rcpp::String barcodes_file,
   } else {
     kseq = kseq_init(gz_reads_in);
     kseq_len = kseq_read(kseq);
-    if (!kseq_len > 0) {
+    if (!(kseq_len > 0)) {
       Rcpp::stop("Unknown read format");
     } else {
       is_fastq = (bool)kseq->qual.s;
@@ -497,7 +504,8 @@ int flexiplex(Rcpp::String reads_in, Rcpp::String barcodes_file,
   std::ofstream out_stat_file;
 
   if (known_barcodes.size() > 0) {
-    if (std::filesystem::exists(stats_out.get_cstring())) {
+    // if (std::filesystem::exists(stats_out.get_cstring())) {
+    if (file_exists(stats_out.get_cstring())) {
       out_stat_file.open(stats_out, std::ios_base::app);
     } else {
       out_stat_file.open(stats_out);
