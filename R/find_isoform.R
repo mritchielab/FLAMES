@@ -95,6 +95,7 @@ find_isoform_flames <- function(annotation, genome_fa, genome_bam, outdir, confi
 
     if (length(genome_bam) == 1) {
         if (config$pipeline_parameters$multithread_isoform_identification) {
+            # C++ Multithreaded implementation of python find_isoform
             find_isoform_multithread(
                 gff3, genome_bam, isoform_annotation, tss_stat, genome_fa, transcript_assembly, config$isoform_parameters, ifelse(config$isoform_parameters$generate_raw_isoform, raw_splice, "")
             )
