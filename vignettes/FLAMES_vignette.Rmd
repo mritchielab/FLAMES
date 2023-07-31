@@ -44,7 +44,7 @@ This vignette will detail the process of running the FLAMES pipeline. It details
 
 To get started, the pipeline needs access to a gene annotation file in GFF3 or GTF format, a directory containing one or more FASTQ files (which will be merged as pre-processing), a genome FASTA file, as well as the file path to minimap2, and the file path to the directory to hold output files.
 
-The single cell pipeline can demultiplex the input data before running, if required. This can be disabled by setting the `match_barcode` argument to `FALSE` when calling the pipeline. This example dataset has already been demultiplexed.
+The single cell pipeline can demultiplex the input data before running, if required. This can be disabled by setting the `do_barcode_demultiplex` argument in the config file to `FALSE` when calling the pipeline. This example dataset has already been demultiplexed.
 
 For this example, the required files are downloaded from GitHub using [BiocFileCache](http://bioconductor.org/packages/release/bioc/html/BiocFileCache.html) [@biocfilecache].
 ```{r eval=TRUE, echo=TRUE}
@@ -71,7 +71,7 @@ fastq <- bfc[[names(BiocFileCache::bfcadd(
 # setup other environment variables
 outdir <- tempfile()
 dir.create(outdir)
-config_file <- FLAMES::create_config(outdir, type = "SIRV")
+config_file <- FLAMES::create_config(outdir, type = "SIRV", do_barcode_demultiplex = FALSE)
 ```
 
 The optional argument `config_file` can be given to both `bulk_long_pipeline()` and `sc_long_pipeline()` in order to customise the execution of the pipelines. It is expected to be a JSON file, and an example can be found by calling `FLAMES::create_config`, which returns the path to a copy of the default JSON configuration file. The values from the default configs can be altered by either editing the JSON file manually, or passing additional arguments to `FLAMES::create_config`, for example, `FLAMES::create_config(outdir, type = "sc_5end", min_sup_cnt = 10)` with create a copy of the default config for 5' end nanopore single cell reads, with the `min_sup_cnt` value (minimal number of supporting reads for a novel isoform to pass filtering) changed to 10.
@@ -87,12 +87,9 @@ library(FLAMES)
 if (is.character(locate_minimap2_dir())) { 
   sce <- sc_long_pipeline(
     annotation = annot, fastq = fastq, genome_fa = genome_fa,
-    outdir = outdir, config_file = config_file, match_barcode = FALSE
-  )
+    outdir = outdir, config_file = config_file)
 }
 ```
-
-As stated above, the example dataset has already been demultiplexed, so `match_barcode=FALSE` should be set to skip the preprocessing of the barcodes.
 
 If, however, the input fastq files need to be demultiplexed, then the `reference_csv` argument will need to be specified - `reference_csv` is the file path to a  cell barcode allow-list, as a text file with one barcode per line. The `filtered_feature_bc_matrix/barcodes.tsv.gz` from `cellranger` outputs can be used to create such allow-list, with `zcat barcodes.tsv.gz | cut -f1 -d'-' > allow-list.csv`.
 
@@ -103,10 +100,10 @@ minimap2_dir <- locate_minimap2_dir()
 if (is.character(minimap2_dir)) { # do not run if minimap2 cannot be found
   config <- jsonlite::fromJSON(config_file)
   # find_barcode(...)
-  genome_bam <- minimap2_align(
+  genome_bam <- rownames(minimap2_align(
     config = config, fa_file = genome_fa, fq_in = fastq, annot = annot,
     outdir = outdir, minimap2_dir = minimap2_dir
-  )
+  ))
   find_isoform(
     annotation = annot, genome_fa = genome_fa,
     genome_bam = genome_bam, outdir = outdir, config = config
@@ -234,31 +231,31 @@ Since the barcode demultiplexing step, isoform identification step and quantific
 #!/bin/bash -x
 
 # set all steps to false
-sed -i '/"do_/s/true/false/' config_sclr_nanopore_5end.json 
+sed -i '/"do_/s/true/false/' config_sclr_nanopore_3end.json 
 # set do_genome_alignment to true
 sed -i '/do_genome_alignment/s/false/true/' \
-        config_sclr_nanopore_5end.json 
+        config_sclr_nanopore_3end.json 
 srun -c 20 --mem 64GB \
         Rscript flames_pipeline.R && \
 
 sed -i '/"do_/s/true/false/' \
-        config_sclr_nanopore_5end.json && \
+        config_sclr_nanopore_3end.json && \
 sed -i '/do_isoform_identification/s/false/true/' \
-        config_sclr_nanopore_5end.json && \
+        config_sclr_nanopore_3end.json && \
 srun -c 1 --mem 64GB --ntasks=1 \
         Rscript flames_pipeline.R  && \
 
 sed -i '/"do_/s/true/false/' \
-        config_sclr_nanopore_5end.json && \
+        config_sclr_nanopore_3end.json && \
 sed -i '/do_read_realignment/s/false/true/' \
-        config_sclr_nanopore_5end.json && \
+        config_sclr_nanopore_3end.json && \
 srun -c 20 --mem 64GB --ntasks=1 \
         Rscript flames_pipeline.R && \
 
 sed -i '/"do_/s/true/false/' \
-        config_sclr_nanopore_5end.json && \
+        config_sclr_nanopore_3end.json && \
 sed -i '/do_transcript_quantification/s/false/true/' \
-        config_sclr_nanopore_5end.json && \
+        config_sclr_nanopore_3end.json && \
 srun -c 1 --mem 64GB --ntasks=1 \
         Rscript flames_pipeline.R && \
 

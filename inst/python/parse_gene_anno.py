@@ -113,7 +113,7 @@ def _parse_gff_tree(gff_f):
                     rec.attributes["gene_id"])
             # transcript
             if "Parent" in rec.attributes and (rec.attributes["Parent"].split(':')[0] == "gene"):
-                gene_id = rec.attributes["Parent"].split(':')[1]
+                gene_id = ":".join(rec.attributes["Parent"].split(':')[1:])
                 gene_to_transcript.setdefault(gene_id, []).append(
                     rec.attributes["transcript_id"])
                 transcript_dict[rec.attributes["transcript_id"]] = Pos(
@@ -123,7 +123,7 @@ def _parse_gff_tree(gff_f):
                     print(rec)
                     print("format error.")
                     raise Exception
-                transcript_to_exon.setdefault(rec.attributes["Parent"].split(':')[1], []).append(
+                transcript_to_exon.setdefault(":".join(rec.attributes["Parent"].split(':')[1:]), []).append(
                     [rec.start-1, rec.end])  # `-1` convert 1 based to 0 based
     elif a_s == "GENCODE":
         for rec in parseGFF3(gff_f):

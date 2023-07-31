@@ -42,10 +42,31 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// flexiplex
+int flexiplex(Rcpp::String reads_in, Rcpp::String barcodes_file, bool bc_as_readid, int max_bc_editdistance, int max_flank_editdistance, Rcpp::StringVector pattern, Rcpp::String reads_out, Rcpp::String stats_out, Rcpp::String bc_out, int n_threads);
+RcppExport SEXP _FLAMES_flexiplex(SEXP reads_inSEXP, SEXP barcodes_fileSEXP, SEXP bc_as_readidSEXP, SEXP max_bc_editdistanceSEXP, SEXP max_flank_editdistanceSEXP, SEXP patternSEXP, SEXP reads_outSEXP, SEXP stats_outSEXP, SEXP bc_outSEXP, SEXP n_threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::String >::type reads_in(reads_inSEXP);
+    Rcpp::traits::input_parameter< Rcpp::String >::type barcodes_file(barcodes_fileSEXP);
+    Rcpp::traits::input_parameter< bool >::type bc_as_readid(bc_as_readidSEXP);
+    Rcpp::traits::input_parameter< int >::type max_bc_editdistance(max_bc_editdistanceSEXP);
+    Rcpp::traits::input_parameter< int >::type max_flank_editdistance(max_flank_editdistanceSEXP);
+    Rcpp::traits::input_parameter< Rcpp::StringVector >::type pattern(patternSEXP);
+    Rcpp::traits::input_parameter< Rcpp::String >::type reads_out(reads_outSEXP);
+    Rcpp::traits::input_parameter< Rcpp::String >::type stats_out(stats_outSEXP);
+    Rcpp::traits::input_parameter< Rcpp::String >::type bc_out(bc_outSEXP);
+    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(flexiplex(reads_in, barcodes_file, bc_as_readid, max_bc_editdistance, max_flank_editdistance, pattern, reads_out, stats_out, bc_out, n_threads));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_FLAMES_find_barcode", (DL_FUNC) &_FLAMES_find_barcode, 6},
     {"_FLAMES_find_isoform_multithread", (DL_FUNC) &_FLAMES_find_isoform_multithread, 8},
+    {"_FLAMES_flexiplex", (DL_FUNC) &_FLAMES_flexiplex, 10},
     {NULL, NULL, 0}
 };
 

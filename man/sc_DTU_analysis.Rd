@@ -4,26 +4,18 @@
 \alias{sc_DTU_analysis}
 \title{FLAMES Differential Transcript Usage Analysis}
 \usage{
-sc_DTU_analysis(sce, path, min_count = 15)
+sc_DTU_analysis(sce, min_count = 15)
 }
 \arguments{
 \item{sce}{The \code{SingleCellExperiment} object from \code{sc_long_pipeline}, an additional \code{cluster_annotation.csv}
 file is required under the output folder of the SCE object.}
-
-\item{path}{The path to the output folder of \code{sc_long_pipeline}
-the folder needs to contain:
-\itemize{
- \item{transcript_count.csv.gz}{ - the transcript count matrix }
- \item{isoform_FSM_annotation.csv}{ - the full splice match annotation file }
- \item{cluster_annotation.csv}{ - cluster annotation file }
-}}
 
 \item{min_count}{The minimum UMI count threshold for filtering isoforms.}
 }
 \value{
 a \code{data.frame} containing the following columns:
 \itemize{
- \item{gene_name}{ - differentially transcribed genes }
+ \item{gene_id}{ - differentially transcribed genes }
  \item{X_value}{ - the X value for the DTU gene}
  \item{df}{ - degrees of freedom of the approximate chi-squared distribution of the test statistic }
  \item{DTU_tr}{ - the transcript_id with the highest squared residuals}
@@ -63,11 +55,10 @@ if (is.character(locate_minimap2_dir())) {
     fastq = system.file("extdata/fastq", package = "FLAMES"),
     annotation = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),
     outdir = outdir,
-    match_barcode = TRUE,
-    reference_csv = bc_allow
+    barcodes_file = bc_allow
   )
   group_anno <- data.frame(barcode_seq = colnames(sce), groups = SingleCellExperiment::counts(sce)["ENSMUST00000169826.2", ] > 1)
   write.csv(group_anno, file.path(outdir, "cluster_annotation.csv"), row.names = FALSE)
-  sc_DTU_analysis(sce, outdir, min_count = 1)
+  sc_DTU_analysis(sce, min_count = 1)
 }
 }

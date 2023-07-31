@@ -11,8 +11,7 @@ sc_long_pipeline(
   outdir,
   genome_fa,
   minimap2_dir = NULL,
-  reference_csv,
-  match_barcode,
+  barcodes_file = NULL,
   config_file = NULL
 )
 }
@@ -30,9 +29,7 @@ sc_long_pipeline(
 \item{minimap2_dir}{Path to the directory containing minimap2, if it is not in PATH. Only required if either or both of
 \code{do_genome_align} and \code{do_read_realign} are \code{TRUE}.}
 
-\item{reference_csv}{The file path to the reference csv used for demultiplexing}
-
-\item{match_barcode}{Boolean; specifies if demultiplexing should be performed using \code{FLAMES::find_barcode}}
+\item{barcodes_file}{The file path to the reference csv used for demultiplexing}
 
 \item{config_file}{File path to the JSON configuration file. If specified, \code{config_file} overrides
 all configuration parameters}
@@ -107,8 +104,7 @@ if (is.character(locate_minimap2_dir())) {
         fastq = system.file("extdata/fastq", package = "FLAMES"),
         annotation = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),
         outdir = outdir,
-        match_barcode = TRUE,
-        reference_csv = bc_allow
+        barcodes_file = bc_allow
     )
 }
 }

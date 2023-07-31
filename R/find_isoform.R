@@ -53,7 +53,20 @@ find_isoform_bambu <- function(annotation, genome_fa, genome_bam, outdir, config
     bambuAnnotations <- bambu::prepareAnnotations(annotation)
     # Tmp fix: remove withr if bambu imports seqlengths properly
     # https://github.com/GoekeLab/bambu/issues/255
-    bambu_out <- withr::with_package("GenomeInfoDb", bambu::bambu(reads = genome_bam, annotations = bambuAnnotations, genome = genome_fa, quant = TRUE, discovery = TRUE , opt.discovery = list(min.readCount = config$isoform_parameters$min_sup_cnt)))
+    # min.readCount seems to cause errors
+    # https://github.com/GoekeLab/bambu/issues/364
+
+    bambu_out <- withr::with_package("GenomeInfoDb", 
+        bambu::bambu(
+                reads = genome_bam, 
+                annotations = bambuAnnotations, 
+                genome = genome_fa, 
+                quant = TRUE, 
+                discovery = TRUE,
+                lowMemory = TRUE,
+                ncore = ifelse(is.vector(genome_bam), length(genome_bam), 1)
+        ))
+
     bambu::writeToGTF(SummarizedExperiment::rowRanges(bambu_out), file.path(outdir, "isoform_annotated_unfiltered.gtf")) 
     if (is.null(config$isoform_parameters$bambu_trust_reference) || config$isoform_parameters$bambu_trust_reference) {
         bambu_out <- bambu_out[base::rowSums(SummarizedExperiment::assays(bambu_out)$counts)>=1,]
@@ -117,7 +130,7 @@ find_isoform_flames <- function(annotation, genome_fa, genome_bam, outdir, confi
 #' @return Path to the outputted transcriptome assembly
 #'
 #' @importFrom Biostrings readDNAStringSet writeXStringSet
-#' @importFrom GenomicFeatures extractTranscriptSeqs
+#' @importFrom GenomicFeatures extractTranscriptSeqs makeTxDbFromGFF
 #' @importFrom Rsamtools indexFa
 #'
 #' @examples
@@ -126,23 +139,23 @@ find_isoform_flames <- function(annotation, genome_fa, genome_bam, outdir, confi
 #'
 #' @export
 annotation_to_fasta <- function(isoform_annotation, genome_fa, outdir) {
-    #    if (!missing(outdir) && !missing(out_file) && out_file != file.path(outdir, "transcript_assembly.fa")) {
-    #        stop("Please specify only one of 'outdir' and 'out_file'.")
-    #    }
-    #    if (missing(out_file)) {
-    out_file <- file.path(outdir, "transcript_assembly.fa")
-    #    }
-    if (is.character(isoform_annotation)) {
-        isoform_annotation <- get_GRangesList(isoform_annotation)
-    }
+  out_file <- file.path(outdir, "transcript_assembly.fa")
 
-    dna_string_set <- Biostrings::readDNAStringSet(genome_fa)
-    names(dna_string_set) <- gsub(" .*$", "", names(dna_string_set))
-    tr_string_set <- GenomicFeatures::extractTranscriptSeqs(dna_string_set, isoform_annotation)
-    Biostrings::writeXStringSet(tr_string_set, out_file)
-    Rsamtools::indexFa(out_file)
+  dna_string_set <- Biostrings::readDNAStringSet(genome_fa)
+  names(dna_string_set) <- gsub(" .*$", "", names(dna_string_set))
+  txdb <- GenomicFeatures::makeTxDbFromGFF(isoform_annotation)
 
-    return(out_file)
+  tr_string_set <- GenomicFeatures::extractTranscriptSeqs(dna_string_set, txdb,
+    use.names = TRUE)
+  if (length(names(tr_string_set)) > length(unique(names(tr_string_set)))) {
+    cat("Duplicated transcript IDs present, removing ...")
+    tr_string_set <- tr_string_set[unique(names(tr_string_set))]
+  }
+
+  Biostrings::writeXStringSet(tr_string_set, out_file)
+  Rsamtools::indexFa(out_file)
+
+  return(out_file)
 }
 
 #' Parse FLAMES' GFF output

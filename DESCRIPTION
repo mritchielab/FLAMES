@@ -1,28 +1,30 @@
 Package: FLAMES
 Type: Package
 Title: FLAMES: Full Length Analysis of Mutations and Splicing in long read RNA-seq data
-Version: 1.5.2
+Version: 1.5.5
 Date: 2022-4-21
-Authors@R: c(person("Tian", "Luyi", role=c("aut"),
+Authors@R: c(person("Luyi", "Tian", role=c("aut"),
                     email="tian.l@wehi.edu.au"),
-             person("Voogd", "Oliver", role=c("aut", "cre"),
+             person("Oliver", "Voogd", role=c("aut", "cre"),
                     email="voogd.o@wehi.edu.au"),
-             person("Schuster", "Jakob", role=c("aut"),
+             person("Jakob", "Schuster", role=c("aut"),
 		    email="schuster.j@wehi.edu.au"),
-	     person("Wang", "Changqing", role=c("aut"),
+	     person("Changqing", "Wang", role=c("aut"),
 		    email="wang.ch@wehi.edu.au"),
-	     person("Su", "Shian",  role=c("aut"),
+	     person("Shian",  "Su", role=c("aut"),
                     email="su.s@wehi.edu.au"),
-             person("Ritchie","Matthew", role=c("ctb"),
+             person("Matthew", "Ritchie",role=c("ctb"),
                     email="mritchie@wehi.edu.au"))
 Description: Semi-supervised isoform detection and annotation from both bulk and single-cell 
   long read RNA-seq data. Flames provides automated pipelines for analysing isoforms,
   as well as intermediate functions for manual execution.
 biocViews: RNASeq, SingleCell, Transcriptomics, DataImport, 
-            DifferentialSplicing, AlternativeSplicing, GeneExpression
+            DifferentialSplicing, AlternativeSplicing, GeneExpression,
+            LongRead
 License: GPL (>= 2)
 Encoding: UTF-8
 Imports: 
+    arrangements,
     basilisk,
     bambu,
     Biostrings,
@@ -34,6 +36,7 @@ Imports:
     DropletUtils,
     GenomicRanges,
     GenomicFeatures,
+    GenomicAlignments,
     GenomeInfoDb,
     ggplot2,
     ggbio,
@@ -61,6 +64,7 @@ Imports:
     utils,
     withr,
     zlibbioc,
+    future,
 Suggests: 
     BiocStyle,
     GEOquery,

@@ -1,14 +1,23 @@
 # quantify transcript
-import pysam as ps
+
 import os
-from collections import Counter
+import sys
 import gzip
 import numpy as np
-import editdistance
+# import editdistance
+import fast_edit_distance 
+from itertools import groupby
+from collections import Counter, defaultdict
+import multiprocessing as mp
+import concurrent.futures
+import pysam as ps
+from datetime import datetime
+
 from parse_gene_anno import parse_gff_tree
 from filter_gff import annotate_filter_gff, annotate_full_splice_match_all_sample
-from itertools import groupby
-import sys
+
+import helper
+
 
 # log errors when calling via R/reticulate:
 # import traceback
@@ -19,23 +28,29 @@ import sys
 #     traceback.print_exception(*sys.exc_info())
 
 
-def umi_dedup(l, has_UMI):
+def umi_dedup(l, has_UMI, max_ed=1):
     if has_UMI:
-        l_cnt = sorted(Counter(l).most_common(), key=lambda x: (x[1], x[0]), reverse=True)
+        read_cnt = len(l)
+        dup_cnt = Counter(l)
+        l_cnt = sorted(dup_cnt.most_common(), key=lambda x: (x[1], x[0]), reverse=True)
         if len(l_cnt) == 1:
-            return 1
+            return (),1
         rm_umi = {}
         for ith in range(len(l_cnt)-1):
             for jth in range(len(l_cnt)-1, ith, -1):  # first assess the low abundant UMI
                 if l_cnt[jth][0] not in rm_umi:
-                    if editdistance.eval(l_cnt[ith][0], l_cnt[jth][0]) < 2:
+                    #if editdistance.eval(l_cnt[ith][0], l_cnt[jth][0]) < 2:
+                    if fast_edit_distance.edit_distance(l_cnt[ith][0],l_cnt[jth][0], max_ed) <= max_ed:
                         rm_umi[l_cnt[jth][0]] = 1
-        return(len(l_cnt)-len(rm_umi))
+                        l_cnt[ith] = (l_cnt[ith][0], l_cnt[ith][1]+l_cnt[ith][1])
+        # return read count, dedup UMI count
+        return tuple([x[1] for x in l_cnt]), len(l_cnt)-len(rm_umi)
     else:
-        return(len(l))
+        (), len(l)
 
 
-def wrt_tr_to_csv(bc_tr_count_dict, transcript_dict, csv_f, transcript_dict_ref=None, has_UMI=True):
+def wrt_tr_to_csv(bc_tr_count_dict, transcript_dict, csv_f, transcript_dict_ref=None, has_UMI=True,
+                  print_saturation = True):
     f = gzip.open(csv_f, "wt")
     all_tr = set()
     for bc in bc_tr_count_dict:
@@ -44,10 +59,16 @@ def wrt_tr_to_csv(bc_tr_count_dict, transcript_dict, csv_f, transcript_dict_ref=
     f.write("transcript_id,gene_id," +
             ",".join([x for x in bc_tr_count_dict])+"\n")
     tr_cnt = {}
+    dup_count = ()
     for tr in all_tr:
-        cnt_l = [umi_dedup(bc_tr_count_dict[x][tr], has_UMI)
+        cnt_l = [umi_dedup(bc_tr_count_dict[x][tr], has_UMI)[1]
                  if tr in bc_tr_count_dict[x] else 0 for x in bc_tr_count_dict]
         tr_cnt[tr] = sum(cnt_l)
+        if has_UMI:
+            dup_count += \
+                sum([umi_dedup(bc_tr_count_dict[x][tr], has_UMI)[0]
+                    if tr in bc_tr_count_dict[x] else () for x in bc_tr_count_dict], ())
+
         if tr in transcript_dict:
             f.write(
                 "{},{},".format(tr, transcript_dict[tr].parent_id))
@@ -59,6 +80,10 @@ def wrt_tr_to_csv(bc_tr_count_dict, transcript_dict, csv_f, transcript_dict_ref=
             exit(1)
         f.write(",".join([str(x) for x in cnt_l])+"\n")
     f.close()
+    if print_saturation and has_UMI:
+        helper.green_msg(f"The isoform quantification result generated:  {csv_f}.")
+        if sum(dup_count):
+            helper.green_msg(f"The estimated saturation is {1-len(dup_count)/sum(dup_count)}")
     return tr_cnt
 
 
@@ -107,6 +132,153 @@ def query_len(cigar_string, hard_clipping=False):
     return result
 
 
+def parse_realigned_bam_multiprocss(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, 
+                        min_read_coverage, bc_file = False, 
+                        n_process=mp.cpu_count()-4):
+    """
+    Read each alignment from the read to transcript realignment BAM file
+    Current approach: 
+        Single thread loop through all alignment
+    Returns:
+        Per transcript read count.
+    Note: This function is not currently used as multi-mapping reads are not handled properly.
+    """
+    with ps.AlignmentFile(bam_in, "rb") as bam_file:
+        # Get the list of reference names
+        reference_names = bam_file.references
+
+    rst_futures = helper.multiprocessing_submit(process_trans, iter(reference_names)
+                                 ,n_process=n_process, pbar = False, 
+                                bam_in=bam_in,
+                                fa_idx_f=fa_idx_f, min_sup_reads=min_sup_reads, 
+                                min_tr_coverage=min_tr_coverage, 
+                                min_read_coverage=min_read_coverage, bc_file=bc_file)
+    
+    bc_tr_count_dict_mp_rst = {}
+    bc_tr_badcov_count_dict_mp_rst = {}
+    tr_kept_rst_mp_rst = None # this doesn't seem to be used in the downstream
+    
+    for idx, f in enumerate(rst_futures):
+        #print(f"collecting result of batch {idx}  " + datetime.now().strftime("%Y-%m-%d %H:%M:%S"),flush = True)
+              
+        d1, d2, _ = f.result()
+        for k1 in d1.keys():
+            for k2 in d1[k1].keys():
+                bc_tr_count_dict_mp_rst.setdefault(k1,{}).setdefault(k2,[]).extend(d1[k1][k2])
+        for k1 in d2.keys():
+            for k2 in d2[k1].keys():
+                bc_tr_badcov_count_dict_mp_rst.setdefault(k1,{}).setdefault(k2,[]).extend(d2[k1][k2])
+
+        #tr_kept_rst_mp_rst.update(p3) # this doesn't seem to be used in the downstream
+    print("All reads processed", flush= True)
+    return bc_tr_count_dict_mp_rst, bc_tr_badcov_count_dict_mp_rst, tr_kept_rst_mp_rst
+
+def process_trans(chr_name, bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, 
+                        min_read_coverage, bc_file):
+    """Main function for process single batch of alignments 
+    chr_name: chromosome name
+    alignment_batch: a list of pysam AlignedSegment object
+    """
+    bamfile = ps.AlignmentFile(bam_in, "rb")
+    # print("process start time:" + datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    fa_idx = dict((it.strip().split()[0], int(
+        it.strip().split()[1])) for it in open(fa_idx_f))
+    bc_tr_count_dict = {}
+    bc_tr_badcov_count_dict = {}
+    tr_cov_dict = {}
+    read_dict = {}
+    cnt_stat = Counter()
+    
+    if bc_file:
+        bc_dict = make_bc_dict(bc_file) # not sure yet what this is doing
+    print(chr_name)
+    for idx, rec in enumerate(bamfile.fetch(chr_name)):
+        if rec.is_unmapped:
+            cnt_stat["unmapped"] += 1
+            continue
+        map_st = rec.reference_start
+        map_en = rec.reference_end
+        tr = rec.reference_name
+        tr_cov = float(map_en-map_st)/fa_idx[tr]
+        tr_cov_dict.setdefault(tr, []).append(tr_cov)
+        if rec.query_name not in read_dict:
+            read_dict.setdefault(rec.query_name, []).append((tr, rec.get_tag("AS"), tr_cov, float(
+                rec.query_alignment_length)/rec.infer_read_length(), rec.mapping_quality))
+        else:
+            if rec.get_tag("AS") > read_dict[rec.query_name][0][1]:
+                read_dict[rec.query_name].insert(0, (tr, rec.get_tag("AS"), tr_cov, float(
+                    rec.query_alignment_length)/rec.infer_read_length(), rec.mapping_quality))
+            # same aligned sequence
+            elif rec.get_tag("AS") == read_dict[rec.query_name][0][1] and float(rec.query_alignment_length)/rec.infer_read_length() == read_dict[rec.query_name][0][3]:
+                # choose the one with higher transcript coverage, might be internal TSS
+                if tr_cov > read_dict[rec.query_name][0][2]:
+                    read_dict[rec.query_name].insert(0, (tr, rec.get_tag("AS"), tr_cov, float(
+                        rec.query_alignment_length)/rec.infer_read_length(), rec.mapping_quality))
+            else:
+                read_dict[rec.query_name].append((tr, rec.get_tag("AS"), tr_cov, float(
+                    rec.query_alignment_length)/rec.infer_read_length(), rec.mapping_quality))
+        if tr not in fa_idx:
+            cnt_stat["not_in_annotation"] += 1
+            # print("\t" + str(tr), "not in annotation ???")
+
+    
+    tr_kept = dict((tr, tr) for tr in tr_cov_dict if len(
+        [it for it in tr_cov_dict[tr] if it > 0.9]) > min_sup_reads)
+    
+    
+    #unique_tr_count = Counter(read_dict[r][0][0]
+    #                          for r in read_dict if read_dict[r][0][2] > 0.9)
+    
+    for r in read_dict:
+        tmp = read_dict[r]
+        tmp = [it for it in tmp if it[0] in tr_kept]
+        if len(tmp) > 0:
+            hit = tmp[0]  # transcript_id, pct_ref, pct_reads
+        else:
+            cnt_stat["no_good_match"] += 1
+            continue
+        # below line creates issue when header line has more than one _.
+        # in this case, umi is assumed to be delimited from the barcode by the last _
+        # bc, umi = r.split("#")[0].split("_")  # assume cleaned barcode
+        try:
+            bc, umi = r.split("#")[0].split("_")  # assume cleaned barcode
+        except ValueError as ve:
+            print(ve, ": ", ve.args, ".")
+            raise ValueError(
+                "Please check if barcode and UMI are delimited by \"_\"")
+
+        if bc_file:
+            bc = bc_dict[bc]
+        if len(tmp) == 1 and tmp[0][4] > 0:
+            if bc not in bc_tr_count_dict:
+                bc_tr_count_dict[bc] = {}
+            bc_tr_count_dict[bc].setdefault(hit[0], []).append(umi)
+            cnt_stat["counted_reads"] += 1
+        elif len(tmp) > 1 and tmp[0][1] == tmp[1][1] and tmp[0][3] == tmp[1][3]:
+            if hit[1] > 0.8:
+                if bc not in bc_tr_count_dict:
+                    bc_tr_count_dict[bc] = {}
+                bc_tr_count_dict[bc].setdefault(hit[0], []).append(umi)
+                cnt_stat["counted_reads"] += 1
+            else:
+                cnt_stat["ambigious_reads"] += 1
+                if bc not in bc_tr_badcov_count_dict:
+                    bc_tr_badcov_count_dict[bc] = {}
+                bc_tr_badcov_count_dict[bc].setdefault(hit[0], []).append(umi)
+        elif hit[2] < min_tr_coverage or hit[3] < min_read_coverage:
+            cnt_stat["not_enough_coverage"] += 1
+            if bc not in bc_tr_badcov_count_dict:
+                bc_tr_badcov_count_dict[bc] = {}
+            bc_tr_badcov_count_dict[bc].setdefault(hit[0], []).append(umi)
+        else:
+            if bc not in bc_tr_count_dict:
+                bc_tr_count_dict[bc] = {}
+            bc_tr_count_dict[bc].setdefault(hit[0], []).append(umi)
+            cnt_stat["counted_reads"] += 1
+    # print(("\t" + str(cnt_stat)))
+    # print("process end time:" + datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    return bc_tr_count_dict, bc_tr_badcov_count_dict, tr_kept
+
 def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_read_coverage, bc_file = False):
     """
     """
@@ -118,6 +290,7 @@ def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_re
     read_dict = {}
     cnt_stat = Counter()
     bamfile = ps.AlignmentFile(bam_in, "rb")
+    gene_names = bamfile.references
 
     if bc_file:
         bc_dict = make_bc_dict(bc_file)
@@ -151,8 +324,10 @@ def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_re
             print("\t" + str(tr), "not in annotation ???")
     tr_kept = dict((tr, tr) for tr in tr_cov_dict if len(
         [it for it in tr_cov_dict[tr] if it > 0.9]) > min_sup_reads)
+    
     #unique_tr_count = Counter(read_dict[r][0][0]
     #                          for r in read_dict if read_dict[r][0][2] > 0.9)
+
     for r in read_dict:
         tmp = read_dict[r]
         tmp = [it for it in tmp if it[0] in tr_kept]
@@ -201,7 +376,7 @@ def parse_realigned_bam(bam_in, fa_idx_f, min_sup_reads, min_tr_coverage, min_re
             cnt_stat["counted_reads"] += 1
     print(("\t" + str(cnt_stat)))
     return bc_tr_count_dict, bc_tr_badcov_count_dict, tr_kept
-
+    
 def realigment_min_sup_reads_filter(bam_list, fa_idx_f, min_sup_reads):
     fa_idx = dict((it.strip().split()[0], int(
         it.strip().split()[1])) for it in open(fa_idx_f))
@@ -464,14 +639,18 @@ def realigned_bam_coverage(bam_in, fa_idx_f, coverage_dir):
         tr_cov_f.write("{},".format(i)+",".join(str(it) for it in lhi)+"\n")
     tr_cov_f.close()
 
-
+# this is the main function
 def quantification(config_dict, annotation, outdir, pipeline):
-    sys.stderr = open('quantification.err', 'a')
-
     transcript_fa_idx = os.path.join(outdir, "transcript_assembly.fa.fai")
     isoform_gff3 = os.path.join(outdir, "isoform_annotated.gtf" if os.path.isfile(os.path.join(outdir, "isoform_annotated.gtf")) else "isoform_annotated.gff3")
     isoform_gff3_f = os.path.join(outdir, "isoform_annotated.filtered.gff3")
     FSM_anno_out = os.path.join(outdir, "isoform_FSM_annotation.csv")
+
+    # parsing gff file in background (concurrent future)
+    executor = concurrent.futures.ProcessPoolExecutor(5)
+    futures = {}
+    futures['parse_gff_tree_anno'] = executor.submit(parse_gff_tree, annotation)
+    futures['parse_gff_tree_iso'] = executor.submit(parse_gff_tree, isoform_gff3)
 
     if pipeline == "sc_single_sample":
         realign_bam = os.path.join(outdir, "realign2transcript.bam")
@@ -484,6 +663,18 @@ def quantification(config_dict, annotation, outdir, pipeline):
             config_dict["transcript_counting"]["min_tr_coverage"],
             config_dict["transcript_counting"]["min_read_coverage"],
             bc_file = False)
+        
+        chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = futures['parse_gff_tree_anno'].result()
+        chr_to_gene_i, transcript_dict_i, gene_to_transcript_i, transcript_to_exon_i = futures['parse_gff_tree_iso'].result()
+
+        tr_cnt = wrt_tr_to_csv(bc_tr_count_dict, transcript_dict_i, tr_cnt_csv,
+                            transcript_dict, "umi_seq" in config_dict["barcode_parameters"]["pattern"].keys())
+        wrt_tr_to_csv(bc_tr_badcov_count_dict, transcript_dict_i, tr_badcov_cnt_csv,
+                    transcript_dict, "umi_seq" in config_dict["barcode_parameters"]["pattern"].keys(),
+                    print_saturation = False)
+        annotate_filter_gff(isoform_gff3, annotation, isoform_gff3_f, FSM_anno_out,
+                        tr_cnt, config_dict["isoform_parameters"]["min_sup_cnt"], verbose=False)
+        return
 
     elif pipeline == "bulk":
         realign_bam = [os.path.join(outdir, f) for f in os.listdir(outdir) if f[-22:] == "realign2transcript.bam"]
@@ -496,12 +687,26 @@ def quantification(config_dict, annotation, outdir, pipeline):
             config_dict["transcript_counting"]["min_tr_coverage"],
             config_dict["transcript_counting"]["min_read_coverage"])
 
+
+        chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = futures['parse_gff_tree_anno'].result()
+        chr_to_gene_i, transcript_dict_i, gene_to_transcript_i, transcript_to_exon_i = futures['parse_gff_tree_iso'].result()
+
+        tr_cnt = wrt_tr_to_csv(bc_tr_count_dict, transcript_dict_i, tr_cnt_csv,
+                                transcript_dict, "umi_seq" in config_dict["barcode_parameters"]["pattern"].keys(),
+                                print_saturation = False)
+        wrt_tr_to_csv(bc_tr_badcov_count_dict, transcript_dict_i, tr_badcov_cnt_csv,
+                        transcript_dict, "umi_seq" in config_dict["barcode_parameters"]["pattern"].keys(),
+                        print_saturation = False)
+        annotate_filter_gff(isoform_gff3, annotation, isoform_gff3_f, FSM_anno_out,
+                            tr_cnt, config_dict["isoform_parameters"]["min_sup_cnt"], verbose=False)
+        return
+
     elif pipeline == "sc_multi_sample":
         realign_bam = [os.path.join(outdir, f) for f in os.listdir(outdir) if f[-23:] == "_realign2transcript.bam"]
         tr_kept = realigment_min_sup_reads_filter(realign_bam, transcript_fa_idx, config_dict["isoform_parameters"]["min_sup_cnt"])
-        chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = parse_gff_tree(annotation)
-        chr_to_gene_i, transcript_dict_i, gene_to_transcript_i, transcript_to_exon_i = parse_gff_tree(isoform_gff3)
-        
+        chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = futures['parse_gff_tree_anno'].result()
+        chr_to_gene_i, transcript_dict_i, gene_to_transcript_i, transcript_to_exon_i = futures['parse_gff_tree_iso'].result()
+
         for sample_bam in  realign_bam:
             sys.stderr.write("parsing " + sample_bam + "...\n")
             sample = os.path.basename(sample_bam).replace('_realign2transcript.bam','')
@@ -515,10 +720,11 @@ def quantification(config_dict, annotation, outdir, pipeline):
                 config_dict["transcript_counting"]["min_read_coverage"])
             sys.stderr.write("parsing " + sample_bam + "done\n")
             tr_cnt = wrt_tr_to_csv(bc_tr_count_dict, transcript_dict_i, tr_cnt_csv,
-                                   transcript_dict, config_dict["barcode_parameters"]["has_UMI"])
+                                   transcript_dict, "umi_seq" in config_dict["barcode_parameters"]["pattern"].keys())
             sys.stderr.write("wrt_tr_to_csv for" + sample_bam + "done\n")
             wrt_tr_to_csv(bc_tr_badcov_count_dict, transcript_dict_i, tr_badcov_cnt_csv,
-                          transcript_dict, config_dict["barcode_parameters"]["has_UMI"])
+                          transcript_dict, "umi_seq" in config_dict["barcode_parameters"]["pattern"].keys(),
+                          print_saturation = False)
             del bc_tr_count_dict, bc_tr_badcov_count_dict, tr_cnt
             ##gc.collect()
 
@@ -530,51 +736,4 @@ def quantification(config_dict, annotation, outdir, pipeline):
     else:
         raise ValueError(f"Unknown pipeline type {pipeline}")
 
-            
-    chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = parse_gff_tree(annotation)
-    chr_to_gene_i, transcript_dict_i, gene_to_transcript_i, transcript_to_exon_i = parse_gff_tree(isoform_gff3)
 
-    tr_cnt = wrt_tr_to_csv(bc_tr_count_dict, transcript_dict_i, tr_cnt_csv,
-                           transcript_dict, config_dict["barcode_parameters"]["has_UMI"])
-    wrt_tr_to_csv(bc_tr_badcov_count_dict, transcript_dict_i, tr_badcov_cnt_csv,
-                  transcript_dict, config_dict["barcode_parameters"]["has_UMI"])
-    annotate_filter_gff(isoform_gff3, annotation, isoform_gff3_f, FSM_anno_out,
-                        tr_cnt, config_dict["isoform_parameters"]["min_sup_cnt"])
-    return
-
-
-if __name__ == '__main__':
-    realign_bam = "/Users/voogd.o/Documents/FlamesNew/FLAMES_output/realign2transcript.bam"
-    transcript_fa_idx = "/Users/voogd.o/Documents/FlamesNew/FLAMES_output/transcript_assembly.fa.fai"
-    output = "/Users/voogd.o/Documents/FlamesNew/FLAMES_output/realigntester"
-    print("\t\tSTART OF NEW RUN")
-    parse_realigned_bam(realign_bam, transcript_fa_idx, 10, 0.75, 0.75, dict())
-    # parse_realigned_bam is totally fine now
-    if False:
-        # gff_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoforms/isoform_annotated.sample.nofilter.gff3"
-        # csv_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoforms/transcript_count.sample.csv"
-        # bam_in="/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/LT03_PromethION_10P.sample.realign.bam"
-        """
-        gff_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_test/isoform_annotated.gff3"
-        csv_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_test/transcript_count.csv"
-        bam_in = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_test/realign2transcript.bam"
-        fa_idx_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_test/transcript_assembly.fa.fai"
-        coverage_csv = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_test/per_cell_coverage.csv"
-        tr_csv = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_test/per_tr_coverage.csv"
-
-        gff_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_all/isoform_annotated.gff3"
-        csv_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_all/transcript_count.csv"
-        bam_in = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_all/realign2transcript.bam"
-        fa_idx_f = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_all/transcript_assembly.fa.fai"
-        coverage_csv = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_all/per_cell_coverage.csv"
-        tr_csv = "/stornext/General/data/user_managed/grpu_mritchie_1/SCmixology/PromethION/isoform_all/per_tr_coverage.csv"
-        """
-        data_dir = "/stornext/General/data/user_managed/grpu_mritchie_1/RachelThijssen/sclr_data/Rachel_scRNA_Aug19/isoform_out"
-        bam_in = os.path.join(data_dir, "tmp_checkread.bam")
-        fa_idx_f = os.path.join(data_dir, "transcript_assembly.fa.fai")
-        bc_tr_count_dict, bc_tr_badcov_count_dict, tr_kept = parse_realigned_bam(
-            bam_in, fa_idx_f, 3, 0.4, 0.4)
-        print([len(bc_tr_count_dict[i]["ENSG00000277734.8_22493926_22552156_1"])
-              for i in bc_tr_count_dict if "ENSG00000277734.8_22493926_22552156_1" in bc_tr_count_dict[i]])
-        print(sum([len(bc_tr_count_dict[i]["ENSG00000277734.8_22493926_22552156_1"])
-              for i in bc_tr_count_dict if "ENSG00000277734.8_22493926_22552156_1" in bc_tr_count_dict[i]]))

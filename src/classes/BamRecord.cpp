@@ -87,7 +87,7 @@ read_record(const bam1_t * b, const bam_header_t * header)
     BAMRecord rec;
     rec.reference_start = bam_reference_start(b);
     rec.reference_name = std::string(header->target_name[b->core.tid]);
-    rec.AS_tag = bam_aux2i(bam_aux_get(b, "AS"));
+    // rec.AS_tag = bam_auxasi(bam_aux_get(b, "AS"));
     rec.read_name = std::string(bam1_qname(b));
     rec.mapping_quality = (int)bam_mapping_qual(b);
     rec.cigar = generate_cigar_pairs(b);

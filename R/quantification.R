@@ -43,12 +43,14 @@ parse_realigned_bam <-
     }
 
 #' @importFrom reticulate import_from_path
+#' @importFrom future plan
 wrt_tr_to_csv <-
     function(bc_tr_count_dict,
              transcript_dict,
              csv_f,
              transcript_dict_ref = NULL,
              has_UMI = TRUE) {
+        future::plan(future::multisession)
         callBasilisk(flames_env, function(bc_tr_count_dict,
                                           transcript_dict,
                                           csv_f,
@@ -117,7 +119,7 @@ quantify <- function(annotation, outdir, config, pipeline = "sc_single_sample") 
     if (length(realign_bam) != 1 && grepl("single_sample", pipeline)) {
         stop("Incorrect number of realignment files found.\n")
     }
-
+    
     callBasilisk(flames_env, function(config_dict, annotation, outdir, pipeline) {
         python_path <- system.file("python", package = "FLAMES")
         count <- reticulate::import_from_path("count_tr", python_path)
@@ -128,4 +130,16 @@ quantify <- function(annotation, outdir, config, pipeline = "sc_single_sample") 
     outdir = outdir,
     pipeline = pipeline
     )
+
+
 }
+
+# example for Rsamtools
+#' @importFrom Rsamtools BamFile  scanBam isIncomplete
+#quantify_tmp <- function(bamFileName) {
+#    bf <- Rsamtools::BamFile(bamFileName, yieldSize=100)
+#    while (Rsamtools::isIncomplete(bf)) {
+#        print(Rsamtools::scanBam(bf)[[1]][[1]])
+#        Sys.sleep(3)
+#    }
+#}
