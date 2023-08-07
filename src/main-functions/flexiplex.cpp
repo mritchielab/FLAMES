@@ -1,3 +1,4 @@
+#include "flexiplex.h"
 // Copyright 2022 Nadia Davidson
 // This program is distributed under the MIT License.
 // We also ask that you cite this software in publications
@@ -21,7 +22,7 @@
 #include <vector>
 // [[Rcpp::plugins(cpp17)]]
 
-#include "./utility/edlib-1.2.7/edlib.h"
+#include "../utility/edlib-1.2.7/edlib.h"
 #include "htslib/kseq.h"
 #include "zlib.h"
 
@@ -390,26 +391,8 @@ bool file_exists(const std::string &filename) {
   return infile.good();
 }
 
-//' Rcpp port of flexiplex
-//'
-//' @description demultiplex reads with flexiplex, for detailed description, see
-//' documentation for the original flexiplex: https://davidsongroup.github.io/flexiplex
-//'
-//' @param reads_in Input FASTQ or FASTA file
-//' @param barcodes_file barcode allow-list file
-//' @param bc_as_readid bool, whether to add the demultiplexed barcode to the
-//' read ID field 
-//' @param max_bc_editdistance max edit distance for barcode '
-//' @param max_flank_editdistance max edit distance for the flanking sequences '
-//' @param pattern StringVector defining the barcode structure, see [find_barcode]
-//' @param reads_out output file for demultiplexed reads
-//' @param stats_out output file for demultiplexed stats
-//' @param n_threads number of threads to be used during demultiplexing
-//' @param bc_out WIP
-//' @return integer return value. 0 represents normal return.
-//' @export
 // [[Rcpp::export]]
-int flexiplex(Rcpp::String reads_in, Rcpp::String barcodes_file,
+int flexiplex_cpp(Rcpp::String reads_in, Rcpp::String barcodes_file,
               bool bc_as_readid, int max_bc_editdistance,
               int max_flank_editdistance, Rcpp::StringVector pattern,
               Rcpp::String reads_out, Rcpp::String stats_out,

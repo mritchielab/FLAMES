@@ -10,21 +10,6 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// find_barcode
-void find_barcode(Rcpp::String fastq_dir, Rcpp::String stats_file, Rcpp::String out_fastq, Rcpp::String ref_csv, int MAX_DIST, int UMI_LEN);
-RcppExport SEXP _FLAMES_find_barcode(SEXP fastq_dirSEXP, SEXP stats_fileSEXP, SEXP out_fastqSEXP, SEXP ref_csvSEXP, SEXP MAX_DISTSEXP, SEXP UMI_LENSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::String >::type fastq_dir(fastq_dirSEXP);
-    Rcpp::traits::input_parameter< Rcpp::String >::type stats_file(stats_fileSEXP);
-    Rcpp::traits::input_parameter< Rcpp::String >::type out_fastq(out_fastqSEXP);
-    Rcpp::traits::input_parameter< Rcpp::String >::type ref_csv(ref_csvSEXP);
-    Rcpp::traits::input_parameter< int >::type MAX_DIST(MAX_DISTSEXP);
-    Rcpp::traits::input_parameter< int >::type UMI_LEN(UMI_LENSEXP);
-    find_barcode(fastq_dir, stats_file, out_fastq, ref_csv, MAX_DIST, UMI_LEN);
-    return R_NilValue;
-END_RCPP
-}
 // find_isoform_multithread
 void find_isoform_multithread(const std::string& gff3, const std::string& genome_bam, const std::string& isoform_gff3, const std::string& tss_tes_stat, const std::string& genomefa, const std::string& transcript_fa, const Rcpp::List& isoform_parameters, const std::string& raw_splice_isoform);
 RcppExport SEXP _FLAMES_find_isoform_multithread(SEXP gff3SEXP, SEXP genome_bamSEXP, SEXP isoform_gff3SEXP, SEXP tss_tes_statSEXP, SEXP genomefaSEXP, SEXP transcript_faSEXP, SEXP isoform_parametersSEXP, SEXP raw_splice_isoformSEXP) {
@@ -64,7 +49,6 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_FLAMES_find_barcode", (DL_FUNC) &_FLAMES_find_barcode, 6},
     {"_FLAMES_find_isoform_multithread", (DL_FUNC) &_FLAMES_find_isoform_multithread, 8},
     {"_FLAMES_flexiplex", (DL_FUNC) &_FLAMES_flexiplex, 10},
     {NULL, NULL, 0}
