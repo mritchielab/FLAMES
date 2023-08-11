@@ -216,7 +216,6 @@ sc_long_pipeline <-
         # gene quantification
         if (config$pipeline_parameters$do_gene_quantification) {
             quantify_gene(annotation, outdir, 
-                        demultiplex_methods=config$pipeline_parameters$demultiplex_method, 
                         pipeline = "sc_single_sample")
         }
         
@@ -236,7 +235,7 @@ sc_long_pipeline <-
             cat("#### Skip read realignment\n")
         }
 
-        # quantification
+        # transcript quantification
         if (config$pipeline_parameters$do_transcript_quantification) {
             cat("#### Generating transcript count matrix\n")
             quantify_transcript(annotation = annotation, 

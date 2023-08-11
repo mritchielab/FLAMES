@@ -230,6 +230,12 @@ sc_long_multisample_pipeline <-
             cat("#### Skip aligning reads to genome\n")
         }
 
+        # gene quantification
+        if (config$pipeline_parameters$do_gene_quantification) {
+            quantify_gene(annotation, outdir, 
+                        pipeline = "sc_multi_sample")
+        }
+
         # find isofroms
         if (config$pipeline_parameters$do_isoform_identification) {
             find_isoform(annotation, genome_fa, genome_bam, outdir, config)
@@ -247,11 +253,11 @@ sc_long_multisample_pipeline <-
             cat("#### Skip read realignment\n")
         }
 
-        # quantification
+        # transcript quantification
         # TODO: implement filtering in R
         if (config$pipeline_parameters$do_transcript_quantification) {
             cat("#### Generating transcript count matrix\n")
-            quantify(annotation = annotation, outdir = outdir, config = config, pipeline = "sc_multi_sample")
+            quantify_transcript(annotation = annotation, outdir = outdir, config = config, pipeline = "sc_multi_sample")
 
             sce_list <- as.list(1:length(samples))
             names(sce_list) <- samples

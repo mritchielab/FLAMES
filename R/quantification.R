@@ -75,7 +75,7 @@ wrt_tr_to_csv <-
     }
 
 #' @importFrom reticulate import_from_path dict
-quantify_gene <- function(annotation, outdir, demultiplex_methods, pipeline = "sc_single_sample") {
+quantify_gene <- function(annotation, outdir, pipeline = "sc_single_sample") {
     cat(format(Sys.time(), "%X %a %b %d %Y"), "quantify genes \n")
 
     if (grepl("\\.gff3?(\\.gz)?$", annotation)) {
@@ -90,14 +90,13 @@ quantify_gene <- function(annotation, outdir, demultiplex_methods, pipeline = "s
         stop("Incorrect number of genome alignment files found.\n")
     }
     
-    callBasilisk(flames_env, function(annotation, outdir, demultiplex_methods,pipeline) {
+    callBasilisk(flames_env, function(annotation, outdir,pipeline) {
         python_path <- system.file("python", package = "FLAMES")
         count <- reticulate::import_from_path("count_gene", python_path)
-        count$quantification(annotation, outdir, demultiplex_methods, pipeline)
+        count$quantification(annotation, outdir, pipeline)
     },
     annotation = annotation,
     outdir = outdir,
-    demultiplex_methods = demultiplex_methods,
     pipeline = pipeline
     )
 }

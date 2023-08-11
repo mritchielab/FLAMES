@@ -82,8 +82,9 @@ def wrt_tr_to_csv(bc_tr_count_dict, transcript_dict, csv_f, transcript_dict_ref=
     f.close()
     if print_saturation and has_UMI:
         helper.green_msg(f"The isoform quantification result generated:  {csv_f}.")
-        if sum(dup_count):
-            helper.green_msg(f"The estimated saturation is {1-len(dup_count)/sum(dup_count)}")
+        # remove the following saturation estimation because it's done in gene quantification part
+        # if sum(dup_count):
+        #     helper.green_msg(f"The estimated saturation is {1-len(dup_count)/sum(dup_count)}")
     return tr_cnt
 
 

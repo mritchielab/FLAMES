@@ -102,14 +102,14 @@ def flames_read_id_parser(read_id, methods = 'flexiplex'):
         sys.exit("Please specify the correct methods: 'flexiplex' or 'blaze'")
 
 
-def quantify_gene(in_bam, in_gtf, demulti_methods, 
-                   saturation_curve_fn='', estimate_saturation=False):
+def quantify_gene(in_bam, in_gtf,
+                    saturation_curve_fn='', 
+                    estimate_saturation=False):
     """
     Get gene counts from a bam file and a gtf file.
     Input:
         in_bam: bam file path
         in_gtf: gtf file path
-        demulti_methods: demultiplexing methods, 'flexiplex' or 'blaze'
         estimate_saturation: whether to estimate saturation curve
         plot_saturation_curve: plot filename for saturation curve, if specified, 
                               `estimate_saturation` is autimatically set to True
@@ -117,6 +117,11 @@ def quantify_gene(in_bam, in_gtf, demulti_methods,
         gene_count_mat: a matrix of gene counts
         read_gene_assign_df: a dataframe of read to gene assignment with umi corrected
     """
+    # identify the demultiplexing methods
+    bam_file = pysam.AlignmentFile(in_bam, "rb")
+    first_read_id = next(bam_file).query_name
+    demulti_methods = 'flexiplex' if first_read_id[-4:] == "1of1" else 'blaze'
+
     # get read to gene assignment
     gene_idx_df, read_gene_assign_df = \
         get_read_to_gene_assignment(in_bam, in_gtf, methods=demulti_methods) 
@@ -257,7 +262,7 @@ def _pd_parellel_transform(groupby_obj, func, num_workers=mp.cpu_count()-1, **kw
 
 
 # this is the main function
-def quantification(annotation, outdir, demultiplex_methods, pipeline):
+def quantification(annotation, outdir, pipeline):
 
     if pipeline == "sc_single_sample":
         in_bam = os.path.join(outdir, "align2genome.bam")
@@ -265,7 +270,7 @@ def quantification(annotation, outdir, demultiplex_methods, pipeline):
         out_fig = os.path.join(outdir, "saturation_curve.png")
 
         gene_count_mat, _ = quantify_gene(
-            in_bam, annotation, demultiplex_methods, out_fig)
+            in_bam, annotation, out_fig)
         gene_count_mat.to_csv(out_csv, compression='gzip')
         return
 
@@ -275,19 +280,14 @@ def quantification(annotation, outdir, demultiplex_methods, pipeline):
         return
 
     elif pipeline == "sc_multi_sample":
-        try:
-            assert isinstance(inbam, list)
-        except AssertionError:
-            raise ValueError("inbam must be a list of bam files")
-
         in_bams = \
             [os.path.join(outdir, f) for f in os.listdir(outdir) if f[-17:] == "_align2genome.bam"]
-        for sample_bam in realign_bam:
+        for sample_bam in in_bams:
             sys.stderr.write("parsing " + sample_bam + "...\n")
             sample = os.path.basename(sample_bam).replace('_align2genome.bam','')
             out_csv = os.path.join(outdir, sample+ "_"+"gene_count.csv.gz")
             out_fig = os.path.join(outdir, sample+ "_"+"saturation_curve.png")
-            gene_count_mat, _ = quantify_gene(in_bam, annotation, out_fig)
+            gene_count_mat, _ = quantify_gene(sample_bam, annotation, out_fig)
             gene_count_mat.to_csv(out_csv, compression='gzip')
         return
 
