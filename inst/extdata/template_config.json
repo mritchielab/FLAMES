@@ -3,7 +3,6 @@
     "pipeline_parameters": {
         "seed": 2023,
         "do_barcode_demultiplex": true,
-        "demultiplex_method": "blaze",
         "do_genome_alignment": true,
         "do_gene_quantification": true,
         "do_isoform_identification": true,
@@ -13,18 +12,10 @@
         "threads": 12
     },
     
-    
-    "comment": "this is the parameters for blaze barcode demultiplexing.",
-    "blaze_parameters": {
-        
-        "expect-cells": 500,
-        "overwrite": false
-    },
-
-    "comment": "this is the parameters for flexiblix barcode demultiplexing. ",
     "barcode_parameters": {
         
         "max_bc_editdistance": 2,
+        "comment": "The following barcode parameters are only used when using flexiplex for demultiplexing.",
         "max_flank_editdistance": 8,
         "pattern": {
           "primer": "CTACACGACGCTCTTCCGATCT",

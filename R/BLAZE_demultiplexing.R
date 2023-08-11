@@ -2,12 +2,16 @@
 #'
 #' @description
 #' Uses BLAZE to generate barcode list and assign reads to cell barcodes. 
-#' Uses default options for BLAZE, see BLAZE documentation for details (https://github.com/shimlab/BLAZE).
-#'
-#' @param blaze_config List, additional BLAZE configuration parameters
+#' @param expect_cells Integer, expected number of cells. Note: this could be just a rough estimate. E.g., the targeted number of cells.
 #' @param fq_in File path to the fastq file used as a query sequence file
+#' @param config_file File path to the FLAMES configuration file.
+#' @param ... Additional BLAZE configuration parameters. E.g., setting
+#'  `'output-prefix'='some_prefix'`` is equivalent to specifying `--output-prefix some_prefix` in BLAZE; Similarly,
+#'  `overwrite=TRUE` is equivalent to switch on the `--overwrite`` option. Note that the specified parameters will
+#'  override the parameters specified in the configuration file. All available options can be found at https://github.com/shimlab/BLAZE.
 #'
-#' @return a \code{data.frame} summarising the reads aligned
+#' @return A \code{data.frame} summarising the reads aligned. Other outputs are written to disk. 
+#' The details of the output files can be found at https://github.com/shimlab/BLAZE.
 #'
 #' @importFrom parallel detectCores
 #' @export
@@ -22,41 +26,49 @@
 #' dir.create(outdir)
 #' config = jsonlite::fromJSON(system.file('extdata/blaze_flames.json', package = 'FLAMES'))
 #' config$blaze_parameters['output-prefix'] <- outdir
-#' blaze(config$blaze_parameters, fastq1)
+#' blaze(100, fastq1, config$blaze_parameters)
 #' @importFrom reticulate import_from_path dict
 #' @export
-blaze <- function(blaze_config, fq_in) {
+blaze <- function(expect_cells, fq_in, ...) {
+        # prepare command-line-style arguments for blaze        
+        blaze_argv <- paste('--expect-cells ', expect_cells)
         
-        # command line arguments for blaze
-        blaze_argv <- paste("")
+        # include additional blaze parameters
+        blaze_config <- list(...)
+        
+        
+        if (length(blaze_config) > 0) {
+            # handle the switch options first as they do not have values
+            if ('overwrite' %in% names(blaze_config) && blaze_config$`overwrite` == TRUE) {
+                blaze_argv <- paste(blaze_argv, '--overwrite ')
+            }
+            
+            print(blaze_config)
+            if ('high-sensitivity-mode' %in% names(blaze_config)
+                && blaze_config$`high-sensitivity-mode` == TRUE) {
+                blaze_argv <- paste(blaze_argv, '--high-sensitivity-mode ')
+            }
 
-        if (blaze_config['overwrite'] == TRUE) {
-            blaze_argv <- paste(blaze_argv, '--overwrite ')
+            # remove the switch options from the list and add the rest
+            blaze_config['overwrite'] <- NULL
+            blaze_config['high-sensitivity-mode'] <- NULL
+            for (arg in names(blaze_config)) {
+                blaze_argv <- paste(blaze_argv, paste0('--',arg), blaze_config[arg])}
         }
-        blaze_config['overwrite'] <- NULL
-        for (arg in names(blaze_config)) {
-            blaze_argv <- paste(blaze_argv, paste0('--',arg), blaze_config[arg])}
-        
-        # prepare 10X whitelist
-        temp_path <- tempfile()
-        bfc <- BiocFileCache::BiocFileCache(temp_path, ask = FALSE)
-        bc_list_10x_url <- 'https://github.com/shimlab/BLAZE/raw/main/10X_bc/3M-february-2018.zip'
-        cat('Downloading the full whitelist from 10X...')
-        bc_list_10x <- bfc[[names(BiocFileCache::bfcadd(bfc, 'bc_list_10x', bc_list_10x_url))]]
-        blaze_argv <- paste(blaze_argv, '--full-bc-whitelist', bc_list_10x)
 
         blaze_argv <- paste(blaze_argv, fq_in)
 
+
+        # run blaze
         ret <-
             callBasilisk(flames_env, function(blaze_argv) {
-
-                blaze_path <- system.file("blaze", package = "FLAMES")
+                # blaze_path <- system.file("blaze", package = "FLAMES")
                 cat("Running BLAZE...\n")
                 cat("Argument: ", blaze_argv, "\n")
                 blaze <-
-                    reticulate::import_from_path("blaze", blaze_path)
+                    reticulate::import("blaze")
                 ret <-
-                    blaze$main(blaze_argv)
+                    blaze$blaze(blaze_argv)
 
                 ret
             }, blaze_argv = blaze_argv

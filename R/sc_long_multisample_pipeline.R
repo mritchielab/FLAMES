@@ -91,6 +91,7 @@ sc_long_multisample_pipeline <-
              genome_fa,
              minimap2_dir = NULL,
              barcodes_file = NULL,
+             expect_cell_number = NULL,
              config_file = NULL) {
         checked_args <- check_arguments(
             annotation,
@@ -128,18 +129,25 @@ sc_long_multisample_pipeline <-
         samples <- gsub("\\.(fastq|fq)(\\.gz)?$", "", basename(fastqs))
         
         if (config$pipeline_parameters$do_barcode_demultiplex && is.null(barcodes_file)) {
-            cat("No barcodes_file provided, running BLAZE to generate it from long reads...")
+            cat("No barcodes_file provided, running BLAZE to generate it from long reads...\n")
+            
             # config the blaze run
-            config$blaze_parameters['output-fastq'] <- 'matched_reads.fastq.gz'
-            config$blaze_parameters['threads'] <- config$blaze_parameters$threads  
-            warning("BLAZE is running with default with --expect-cells ",config$blaze_parameters['expect-cells'],
-                ",\n which meant to be the expected number of cells. If it is very different from your actuall\n"
-                ," expectation, please modify it in the config file.")
+            if (is.null(expect_cell_number)){
+                    stop("'expect_cell_number' is required to run BLAZE for barcode identification. Please specify it.")
+                } else if (length(fastqs) != length(expect_cell_number)) {
+                    stop("Please specify 'expect_cell_number' for each fastq file as a vector of the same length as 'fastqs'.")
+                }
 
             for (i in 1:length(fastqs)) {
-                config$blaze_parameters['output-prefix'] <- paste0(outdir, '/', samples[i], '_')
-                blaze(config$blaze_parameters, fastqs[i])
+
+                blaze(expect_cell_number[i], fastqs[i], 
+                     'output-prefix' = paste0(outdir, '/', samples[i], '_'),
+                     'output-fastq' = 'matched_reads.fastq.gz',
+                    'threads' = config$pipeline_parameters$threads,
+                    'max-edit-distance' = config$barcode_parameters$max_bc_editdistance,
+                    'overwrite' = TRUE)
             }
+
             infqs <- file.path(outdir, paste(samples, "matched_reads.fastq.gz", sep = "_"))
         } else if (config$pipeline_parameters$do_barcode_demultiplex && length(barcodes_file) >= 1) {
               
