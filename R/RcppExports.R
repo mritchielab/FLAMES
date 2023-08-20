@@ -17,6 +17,7 @@
 #' @param stats_out output file for demultiplexed stats
 #' @param n_threads number of threads to be used during demultiplexing
 #' @param bc_out WIP
+#' @return integer return value. 0 represents normal return.
 #' @export
 flexiplex <- function(reads_in, barcodes_file, bc_as_readid, max_bc_editdistance, max_flank_editdistance, pattern, reads_out, stats_out, bc_out, n_threads) {
     .Call(`_FLAMES_flexiplex`, reads_in, barcodes_file, bc_as_readid, max_bc_editdistance, max_flank_editdistance, pattern, reads_out, stats_out, bc_out, n_threads)

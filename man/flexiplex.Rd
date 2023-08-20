@@ -39,6 +39,9 @@ read ID field}
 
 \item{n_threads}{number of threads to be used during demultiplexing}
 }
+\value{
+integer return value. 0 represents normal return.
+}
 \description{
 demultiplex reads with flexiplex, for detailed description, see
 documentation for the original flexiplex: https://davidsongroup.github.io/flexiplex
