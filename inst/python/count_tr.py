@@ -49,8 +49,8 @@ def umi_dedup(l, has_UMI, max_ed=1):
         (), len(l)
 
 
-def wrt_tr_to_csv(bc_tr_count_dict, transcript_dict, csv_f, transcript_dict_ref=None, has_UMI=True,
-                  print_saturation = True):
+def wrt_tr_to_csv(bc_tr_count_dict, transcript_dict, csv_f, transcript_dict_ref=None, has_UMI=False,
+                  print_saturation = False):
     f = gzip.open(csv_f, "wt")
     all_tr = set()
     for bc in bc_tr_count_dict:
@@ -83,8 +83,8 @@ def wrt_tr_to_csv(bc_tr_count_dict, transcript_dict, csv_f, transcript_dict_ref=
     if print_saturation and has_UMI:
         helper.green_msg(f"The isoform quantification result generated:  {csv_f}.")
         # remove the following saturation estimation because it's done in gene quantification part
-        # if sum(dup_count):
-        #     helper.green_msg(f"The estimated saturation is {1-len(dup_count)/sum(dup_count)}")
+        if sum(dup_count):
+            helper.green_msg(f"The estimated saturation is {1-len(dup_count)/sum(dup_count)}")
     return tr_cnt
 
 

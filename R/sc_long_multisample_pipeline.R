@@ -142,13 +142,13 @@ sc_long_multisample_pipeline <-
 
                 blaze(expect_cell_number[i], fastqs[i], 
                      'output-prefix' = paste0(outdir, '/', samples[i], '_'),
-                     'output-fastq' = 'matched_reads.fastq.gz',
+                     'output-fastq' = 'matched_reads.fastq',
                     'threads' = config$pipeline_parameters$threads,
                     'max-edit-distance' = config$barcode_parameters$max_bc_editdistance,
                     'overwrite' = TRUE)
             }
 
-            infqs <- file.path(outdir, paste(samples, "matched_reads.fastq.gz", sep = "_"))
+            infqs <- file.path(outdir, paste(samples, "matched_reads.fastq", sep = "_"))
         } else if (config$pipeline_parameters$do_barcode_demultiplex && length(barcodes_file) >= 1) {
               
             if (!all(file.exists(barcodes_file))) {
@@ -230,7 +230,7 @@ sc_long_multisample_pipeline <-
             cat("#### Skip aligning reads to genome\n")
         }
 
-        # gene quantification
+        # gene quantification and UMI deduplication
         if (config$pipeline_parameters$do_gene_quantification) {
             quantify_gene(annotation, outdir, 
                         pipeline = "sc_multi_sample")
@@ -244,9 +244,10 @@ sc_long_multisample_pipeline <-
         # realign to transcript
         if (config$pipeline_parameters$do_read_realignment) {
             cat("#### Realign to transcript using minimap2\n")
+            infqs_realign <- file.path(outdir, paste(samples, "matched_reads_dedup.fastq", sep = "_"))
             for (i in 1:length(samples)) {
                 cat(paste0(c("\tRealigning sample ", samples[i], "...\n")))
-                minimap2_realign(config, infqs[i], outdir, minimap2_dir, prefix = samples[i], 
+                minimap2_realign(config, infqs_realign[i], outdir, minimap2_dir, prefix = samples[i], 
                                  threads = config$pipeline_parameters$threads)
             }
         } else {

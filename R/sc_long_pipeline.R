@@ -137,12 +137,12 @@ sc_long_pipeline <-
                 }
                 blaze(expect_cell_number, fastq, 
                      'output-prefix' = paste0(outdir, '/'),
-                     'output-fastq' = 'matched_reads.fastq.gz',
+                     'output-fastq' = 'matched_reads.fastq',
                     'threads' = config$pipeline_parameters$threads,
                     'max-edit-distance' = config$barcode_parameters$max_bc_editdistance,
                     'overwrite' = TRUE)
                     
-                infq <- file.path(outdir, "matched_reads.fastq.gz")
+                infq <- file.path(outdir, "matched_reads.fastq")
             } else {
                 # run flexiplex
                 cat(format(Sys.time(), "%X %a %b %d %Y"), "Demultiplexing using flexiplex...\n")
@@ -213,7 +213,7 @@ sc_long_pipeline <-
             cat("#### Skip aligning reads to genome\n")
         }
 
-        # gene quantification
+        # gene quantification and UMI deduplication
         if (config$pipeline_parameters$do_gene_quantification) {
             quantify_gene(annotation, outdir, 
                         pipeline = "sc_single_sample")
@@ -229,7 +229,8 @@ sc_long_pipeline <-
 
         if (config$pipeline_parameters$do_read_realignment) {
             cat("#### Realign to transcript using minimap2\n")
-            minimap2_realign(config, infq, outdir, minimap2_dir, prefix = NULL, 
+            infq_realign <- file.path(outdir, "matched_reads_dedup.fastq")
+            minimap2_realign(config, infq_realign, outdir, minimap2_dir, prefix = NULL, 
                              threads = config$pipeline_parameters$threads)
         } else {
             cat("#### Skip read realignment\n")

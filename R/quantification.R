@@ -74,6 +74,32 @@ wrt_tr_to_csv <-
         )
     }
 
+
+#' Gene quantification
+#' @description Calculate the per gene UMI count matrix by parsing the genome alignment file.
+#'
+#' @details
+#' After the genome alignment step (\code{do_genome_align}), the alignment file will be parsed to 
+#' generate the per gene UMI count matrix. For each gene in the annotation file, the number of 
+#' reads whose mapped ranges overlap with the gene's genome coordinates will be assigned to the 
+#' gene. For reads can be assigned to multiple gene, the read will be assigned to the gene with 
+#' the highest number of overlapping nucleotides. If the read can be assigned to multiple genes 
+#' with the same number of overlapping nucleotides, the read will be not be assigned.
+#'
+#' After the read-to-gene assignment, the per gene UMI count matrix will be generated.
+#' Specifically, for each gene, the reads with similar mapping coordinates of transcript
+#' termination sites (TTS, i.e. the end of the the read with a polyT or polyA) will be grouped 
+#' together. UMIs of reads in the same group will be collapsed to generate the UMI counts for each
+#' gene. 
+#' 
+#' Finally, a new fastq file with deduplicated reads by keeping the longest read in each UMI.
+#' 
+#' @param annotation The file path to the annotation file in GFF3 format
+#' @param outdir The path to directory to store all output files.
+#' @param config Parsed FLAMES configurations.
+#' @param pipeline The pipeline type as a character string, either \code{sc_single_sample} (single-cell, single-sample),
+#' \code{bulk} (bulk, single or multi-sample), or \code{sc_multi_sample} (single-cell, multiple samples)
+#' @return The count matrix will be saved in the output folder as \code{transcript_count.csv.gz}.
 #' @importFrom reticulate import_from_path dict
 quantify_gene <- function(annotation, outdir, pipeline = "sc_single_sample") {
     cat(format(Sys.time(), "%X %a %b %d %Y"), "quantify genes \n")
