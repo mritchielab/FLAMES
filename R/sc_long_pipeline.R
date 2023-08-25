@@ -129,6 +129,13 @@ sc_long_pipeline <-
 
         infq <- NULL
         if (config$pipeline_parameters$do_barcode_demultiplex) {
+
+            if (file.exists(file.path(outdir, "matched_reads.fastq"))) {
+                stop(paste0("The demultiplexing output file matched_reads.fastq already exists in the output directory.",
+                " If you want to run the demultiplexing step again, please remove the file first,  ",
+                "otherwise please set `do_barcode_demultiplex = FALSE` in the JSON configuration file."))
+            }
+
             if (is.null(barcodes_file)){
                 # run blaze
                 cat("Running BLAZE to generate barcode list from long reads...\n")
@@ -169,6 +176,8 @@ sc_long_pipeline <-
             cat(format(Sys.time(), "%X %a %b %d %Y"), "Demultiplex done\n")
         } else {
             infq <- fastq
+            cat("Skipping Demultiplexing step...\n")
+            cat("Please make sure the `",infq,"`` is the the demultiplexing output from previous FLAEMS call.\n")
         } # requesting to not match barcodes implies `fastq` has already been run through the
         # function in a previous FLAMES call
         cat("Running FLAMES pipeline...\n")
@@ -214,21 +223,33 @@ sc_long_pipeline <-
         }
 
         # gene quantification and UMI deduplication
+        
         if (config$pipeline_parameters$do_gene_quantification) {
+            cat(format(Sys.time(), "%X %a %b %d %Y"), "Start gene quantification and UMI deduplication\n")
+            
             quantify_gene(annotation, outdir, 
                         pipeline = "sc_single_sample")
+            
+            cat(format(Sys.time(), "%X %a %b %d %Y"), "Gene quantification and UMI deduplication done!\n")
+        }else {
+            cat("#### Skip gene quantification and UMI deduplication\n")
         }
         
+
         # find isofroms
+        
         if (config$pipeline_parameters$do_isoform_identification) {
+            cat(format(Sys.time(), "%X %a %b %d %Y"), "Start isoform identificaiton\n")
             find_isoform(annotation, genome_fa, genome_bam, outdir, config)
+            cat(format(Sys.time(), "%X %a %b %d %Y"), "Isoform identificaiton done\n")
+        } else {
+            cat("#### Skip isoform identificaiton\n")
         }
-
+       
+        
         # realign to transcript
-        cat(format(Sys.time(), "%X %a %b %d %Y"), "minimap2_realign\n")
-
         if (config$pipeline_parameters$do_read_realignment) {
-            cat("#### Realign to transcript using minimap2\n")
+            cat("#### Realigning deduplicated reads to transcript using minimap2\n")
             infq_realign <- file.path(outdir, "matched_reads_dedup.fastq")
             minimap2_realign(config, infq_realign, outdir, minimap2_dir, prefix = NULL, 
                              threads = config$pipeline_parameters$threads)

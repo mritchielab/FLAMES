@@ -119,9 +119,6 @@ sc_long_multisample_pipeline <-
                 stop(length(fastqs), " .fq or .fastq file(s) found\n")
             }
 
-            if (config$pipeline_parameters$do_barcode_demultiplex && !is.null(barcodes_file)) {
-                stop("If \"do_barcode_demultiplex\" set to TRUE and \"barcodes_file\" is specified, argument \"fastqs\" must be a list of fastq files, with the same order in \"barcodes_file\"\nYou can also demultiplex the reads with \"FLAMES::find_barcode\"")
-            }
         } else if (any(!file.exists(fastqs))) {
             stop("Please make sure all fastq files exist.")
         }
@@ -129,6 +126,15 @@ sc_long_multisample_pipeline <-
         samples <- gsub("\\.(fastq|fq)(\\.gz)?$", "", basename(fastqs))
         
         if (config$pipeline_parameters$do_barcode_demultiplex && is.null(barcodes_file)) {
+            
+            # check if the output exist
+            demux_fn <- file.path(outdir, paste(samples, "matched_reads.fastq", sep = "_"))
+            if (any(file.exists(demux_fn))) {
+                stop(paste0("Error: Found existing demultiplexed fastq files in the output directory.",
+                " If you want to run the demultiplexing step again, please remove the file first,  ",
+                "otherwise please set `do_barcode_demultiplex = FALSE` in the JSON configuration file."))
+            }
+
             cat("No barcodes_file provided, running BLAZE to generate it from long reads...\n")
             
             # config the blaze run
@@ -150,7 +156,14 @@ sc_long_multisample_pipeline <-
 
             infqs <- file.path(outdir, paste(samples, "matched_reads.fastq", sep = "_"))
         } else if (config$pipeline_parameters$do_barcode_demultiplex && length(barcodes_file) >= 1) {
-              
+            
+            demux_fn <- file.path(outdir, paste(samples, "matched_reads.fastq", sep = "_"))
+            if (any(file.exists(demux_fn))) {
+                stop(paste0("Error: Found existing demultiplexed fastq files in the output directory.",
+                " If you want to run the demultiplexing step again, please remove the file first,  ",
+                "otherwise please set `do_barcode_demultiplex = FALSE` in the JSON configuration file."))
+            }
+            
             if (!all(file.exists(barcodes_file))) {
                 stop("Please make sure all barcodes_file file exists.\n")
             }
