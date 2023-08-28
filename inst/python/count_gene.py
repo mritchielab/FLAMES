@@ -16,6 +16,24 @@ import matplotlib.pyplot as plt
 
 import helper
 
+def parse_gtf_to_df(in_gtf):
+    """
+    Parse gtf file to a dataframe.
+    """
+    gtf = parseGFF3(in_gtf)
+    chr_name, gene_id, start, end = [[] for i in range(4)]
+    for entry in gtf:
+        if entry.type == "gene":
+            chr_name.append(entry.seqid)
+            gene_id.append(entry.attributes["gene_id"])
+            start.append(entry.start)
+            end.append(entry.end)
+        else: 
+            continue
+    gene_idx_df = pd.DataFrame({"chr_name": chr_name, "gene_id": gene_id, 
+                                "start": start, "end": end})
+    return gene_idx_df
+
 def get_read_to_gene_assignment(in_bam, in_gtf, methods):
     """
     Get gene counts from a bam file and a gtf file.
@@ -38,18 +56,7 @@ def get_read_to_gene_assignment(in_bam, in_gtf, methods):
     bam_file = pysam.AlignmentFile(in_bam, "rb")
 
     ## read gtf file and build index df
-    gtf = parseGFF3(in_gtf)
-    chr_name, gene_id, start, end = [[] for i in range(4)]
-    for entry in gtf:
-        if entry.type == "gene":
-            chr_name.append(entry.seqid)
-            gene_id.append(entry.attributes["gene_id"])
-            start.append(entry.start)
-            end.append(entry.end)
-        else: 
-            continue
-    gene_idx_df = pd.DataFrame({"chr_name": chr_name, "gene_id": gene_id, 
-                                "start": start, "end": end})
+    gene_idx_df = parse_gtf_to_df(in_gtf)
 
     # Assign read to gene based on mapping position  
     chr_names, gene_ids, bcs, umis, read_ids, positions_3prim, \
@@ -116,6 +123,11 @@ def get_read_to_gene_assignment(in_bam, in_gtf, methods):
 
     ## merge the unambiguous and ambiguous read to gene assignment
     read_gene_assign_df = pd.concat([unambig_df, recovered_ambig_df])
+
+    ## sort the read_gene_assign_df
+    read_gene_assign_df.sort_values(by=['chr_name', 'bc', 'gene_id', 'pos_3prim'], inplace=True)
+    df[['chr_name', 'bc', 'gene_id']] =\
+          df[['chr_name','bc', 'gene_id']].astype('category')
 
     return gene_idx_df, read_gene_assign_df
 
