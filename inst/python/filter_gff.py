@@ -102,7 +102,7 @@ def annotate_filter_gff(isoform_gff, ref_gff, isoform_out, anno_out, tr_cnt, min
     iso_kp = 0
     for ch in chr_to_gene:
         new_ge_list = copy.deepcopy(chr_to_gene[ch])
-        new_ge_list.extend(chr_to_gene_ref[ch])
+        new_ge_list.extend(chr_to_gene_ref.get(ch, []))
         new_ge_list = list(set(new_ge_list))
         for ge in new_ge_list:
             gff_tmp = []
