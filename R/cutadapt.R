@@ -4,8 +4,9 @@
 #' @return Exit code of cutadapt
 #'
 #' @examples
-#' cutadapt("-h")
-#'
+#' \dontrun{
+#'  cutadapt("-h")
+#' }
 #' @export
 cutadapt <- function(args) {
   callBasilisk(flames_env, function(x) {

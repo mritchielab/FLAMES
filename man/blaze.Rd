@@ -29,5 +29,7 @@ outdir <- tempfile()
 dir.create(outdir)
 config = jsonlite::fromJSON(system.file('extdata/blaze_flames.json', package = 'FLAMES'))
 config$blaze_parameters['output-prefix'] <- outdir
-blaze(config$blaze_parameters, fastq1)
+\dontrun{
+   blaze(config$blaze_parameters, fastq1)
+}
 }

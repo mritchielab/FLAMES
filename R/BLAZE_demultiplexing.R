@@ -22,7 +22,9 @@
 #' dir.create(outdir)
 #' config = jsonlite::fromJSON(system.file('extdata/blaze_flames.json', package = 'FLAMES'))
 #' config$blaze_parameters['output-prefix'] <- outdir
-#' blaze(config$blaze_parameters, fastq1)
+#' \dontrun{
+#'    blaze(config$blaze_parameters, fastq1)
+#' }
 #' @importFrom reticulate import_from_path dict
 #' @export
 blaze <- function(blaze_config, fq_in) {
@@ -42,7 +44,7 @@ blaze <- function(blaze_config, fq_in) {
         bfc <- BiocFileCache::BiocFileCache(temp_path, ask = FALSE)
         bc_list_10x_url <- 'https://github.com/shimlab/BLAZE/raw/main/10X_bc/3M-february-2018.zip'
         cat('Downloading the full whitelist from 10X...')
-        bc_list_10x <- bfc[[names(BiocFileCache::bfcadd(bfc, 'bc_list_10x', bc_list_10x_url))]]
+        bc_list_10x <- bfc[[names(BiocFileCache::bfcadd(x=bfc, rname='bc_list_10x', fpath=bc_list_10x_url))]]
         blaze_argv <- paste(blaze_argv, '--full-bc-whitelist', bc_list_10x)
 
         blaze_argv <- paste(blaze_argv, fq_in)
