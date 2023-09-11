@@ -37,15 +37,16 @@
 #' The table is sorted by decreasing P-values. It will also be saved as \code{sc_DTU_analysis.csv} under the
 #' output folder.
 #'
-#' @importFrom dplyr group_by summarise_at top_n left_join summarise groups mutate filter_at any_vars
+#' @importFrom dplyr group_by ungroup summarise_at top_n left_join summarise groups mutate filter_at any_vars select_if select all_of 
 #' @importFrom tidyr gather pivot_wider as_tibble
 #' @importFrom magrittr "%>%"
 #' @importFrom S4Vectors DataFrame
 #' @importFrom SingleCellExperiment counts SingleCellExperiment colLabels colLabels<-
 #' @importFrom SummarizedExperiment rowData colData rowData<- colData<-
 #' @importFrom scuttle addPerCellQC addPerFeatureQC isOutlier
-#' @importFrom utils write.csv
-#' @importFrom stats chisq.test
+#' @importFrom utils write.csv setTxtProgressBar
+#' @importFrom stats chisq.test complete.cases na.omit
+#' @importFrom methods is
 #' @export
 #' @examples
 #' outdir <- tempfile()
