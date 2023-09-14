@@ -93,7 +93,7 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2_dir, 
   # /.../GRCm38.primary_assembly.genome.fa /.../trimmed_MSC.fastq.gz
   if (is.character(samtools)) {
     minimap2_status <- base::system2(command = file.path(minimap2_dir, "minimap2"),
-      args = base::append(minimap2_args, c(fa_file, fq_in, "|", samtools, "view -bS -@ 4 -m 2G -o",
+      args = base::append(minimap2_args, c(fa_file, fq_in, "|", samtools, "view -bS -@ 4 -o",
         file.path(outdir, paste0(prefix, "tmp_align.bam")), "-")))
     if (!is.null(base::attr(minimap2_status, "status")) && base::attr(minimap2_status,
       "status") != 0) {
@@ -189,7 +189,7 @@ minimap2_realign <- function(config, fq_in, outdir, minimap2_dir, prefix = NULL,
   if (is.character(samtools)) {
     minimap2_status <- base::system2(command = file.path(minimap2_dir, "minimap2"),
       args = base::append(minimap2_args, c(file.path(outdir, "transcript_assembly.fa"),
-        fq_in, "|", samtools, "view -bS -@ 4 -m 2G -o", file.path(outdir,
+        fq_in, "|", samtools, "view -bS -@ 4 -o", file.path(outdir,
           paste0(prefix, "tmp_align.bam")), "-")))
     if (!is.null(base::attr(minimap2_status, "status")) && base::attr(minimap2_status,
       "status") != 0) {

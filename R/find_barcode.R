@@ -83,3 +83,62 @@ convert_cellranger_bc <- function(bc_allow, bc_from, bc_to) {
   stopifnot(all(allowed %in% from))
   return(to[from %in% allowed])
 }
+
+#' Plot Cell Barcode demultiplex statistics
+#' 
+#' @description produce a barplot of cell barcode demultiplex statistics
+#'
+#' @param outdir folder containing the \code{matched_barcode_stat} file, or
+#' \code{matched_barcode_stat.SAMPLE} files. Ignored if \code{stats_file} is provided.
+#' @param stats_file \code{matched_barcode_stat} file(s) from which the statistics to be plotted.
+#' @examples
+#' outdir <- tempfile()
+#' dir.create(outdir)
+#' bc_allow <- file.path(outdir, 'bc_allow.tsv')
+#' R.utils::gunzip(filename = system.file('extdata/bc_allow.tsv.gz', package = 'FLAMES'), destname = bc_allow, remove = FALSE)
+#' find_barcode(
+#'    fastq = system.file('extdata/fastq', package = 'FLAMES'),
+#'    stats_out = file.path(outdir, 'bc_stat'),
+#'    reads_out = file.path(outdir, 'demultiplexed.fq.gz'),
+#'    barcodes_file = bc_allow)
+#' plot_demultiplex(stats_file = file.path(outdir, "bc_stat"))
+#' @return a \code{ggplot} object of the barcode plot
+#' @md
+#' @export
+plot_demultiplex <- function(outdir, stats_file){
+  if (missing(stats_file)) {
+    stats_file <- list.files(path = outdir, pattern = "matched_barcode_stat.*", full.names = TRUE)
+  }
+  stopifnot("matched_barcode_stat file not found under outdir! Please specifiy them with 'stats_file' arguement" = length(stats_file) >= 1)
+
+  if (length(stats_file) == 1) {
+    stats_df <- read.delim(stats_file)
+  } else { # handle multi-samples: append file name to df$CellBarcode
+    stats_dfs <- sapply(stats_file, read.delim, simplify = FALSE)
+    for (sample in names(stats_dfs)) {
+      stats_dfs[[sample]]$CellBarcode <- paste(stats_dfs[[sample]]$CellBarcode, sample, sep = '-')
+    }
+    stats_df <- do.call(rbind, stats_dfs)
+  }
+
+  knee_plot <- stats_df$CellBarcode |> 
+    table() |> 
+    data.frame() |>
+    dplyr::arrange(dplyr::desc(Freq)) %>% 
+    cbind(x = seq_len(nrow(.))) |>
+    ggplot2::ggplot(ggplot2::aes(x=x, y = Freq)) + 
+    ggplot2::geom_line() + 
+    ggplot2::scale_y_log10() + ggplot2::scale_x_log10()
+
+  editdistance_plot <- stats_df[,c("FlankEditDist", "BarcodeEditDist")] |>
+    table() |>
+    tibble::as_tibble() |>
+    ggplot2::ggplot(ggplot2::aes(x = FlankEditDist, y = n, fill = BarcodeEditDist)) + 
+    ggplot2::geom_bar(stat="identity", width=1) +
+    ggplot2::ylab("number of reads") + ggplot2::xlab('Adaptor editdistance')
+
+  return(list(
+    knee_plot = knee_plot,
+    editdistance_plot = editdistance_plot
+  ))
+}
