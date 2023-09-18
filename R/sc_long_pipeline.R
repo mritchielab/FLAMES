@@ -133,7 +133,7 @@ sc_long_pipeline <-
             if (file.exists(file.path(outdir, "matched_reads.fastq"))) {
                 stop(paste0("The demultiplexing output file matched_reads.fastq already exists in the output directory.",
                 " If you want to run the demultiplexing step again, please remove the file first,  ",
-                "otherwise please set `do_barcode_demultiplex = FALSE` in the JSON configuration file."))
+                "otherwise please set `do_barcode_demultiplex = false` in the JSON configuration file."))
             }
 
             if (is.null(barcodes_file)){
@@ -227,7 +227,7 @@ sc_long_pipeline <-
         if (config$pipeline_parameters$do_gene_quantification) {
             cat(format(Sys.time(), "%X %a %b %d %Y"), "Start gene quantification and UMI deduplication\n")
             
-            quantify_gene(annotation, outdir, 
+            quantify_gene(annotation, outdir, config$pipeline_parameters$threads,
                         pipeline = "sc_single_sample")
             
             cat(format(Sys.time(), "%X %a %b %d %Y"), "Gene quantification and UMI deduplication done!\n")

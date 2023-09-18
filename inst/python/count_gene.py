@@ -196,7 +196,7 @@ def quantify_gene(in_bam, in_gtf, n_process):
     for future in helper.multiprocessing_submit(
                             quantify_gene_single_process, 
                             in_gtf_iter,
-                            n_process=mp.cpu_count()-1, 
+                            n_process=n_process, 
                             in_bam=in_bam, 
                             demulti_methods=demulti_methods):
         
@@ -486,18 +486,10 @@ def quantification(annotation, outdir, pipeline, n_process=12, saturation_curve=
         out_read_lst = os.path.join(outdir, "duplicated_read_id.txt")
         out_fastq = os.path.join(outdir, "matched_reads_dedup.fastq")
 
-        # Start profiling
-        # profiler = cProfile.Profile()
-        # profiler.enable()
         gene_count_mat, dup_read_lst, umi_lst = \
                                 quantify_gene(in_bam, annotation, n_process)
 
-
         pd.DataFrame({'umi':umi_lst}).to_csv("umi_lst.csv")
-        # # Stop profiling
-        # profiler.disable()
-        # profiler.dump_stats("profiling_results.prof")
-        # profiler.print_stats(sort='cumulative')
 
         gene_count_mat.to_csv(out_csv)
 
@@ -529,24 +521,19 @@ def quantification(annotation, outdir, pipeline, n_process=12, saturation_curve=
             out_fig = os.path.join(outdir, sample+ "_"+"saturation_curve.png") if saturation_curve else None
             out_read_lst = os.path.join(outdir, sample+ "_"+"deduplicated_read_id.txt")
             
-            gene_count_mat, umi_corrected_df = quantify_gene(sample_bam, annotation)
+            gene_count_mat, dup_read_lst, umi_lst = \
+                                    quantify_gene(sample_bam, annotation, n_process)
+
+            pd.DataFrame({'umi':umi_lst}).to_csv("umi_lst.csv")
+
             gene_count_mat.to_csv(out_csv)
 
             print("Plotting the saturation curve ...")
-
-            # get rows with unique read_id
-            saturation_estimation(umi_corrected_df.bc.astype(str) \
-                                    + umi_corrected_df.umi_corrected.astype(str) +
-                                    umi_corrected_df.cluster.astype(str), 
-                                    out_fig)  
-            print("Deduplicating reads ...")
-            dup_read_lst = list_duplicated_reads(umi_corrected_df,out_read_lst)
-            # with open(out_read_lst, 'w') as f:
-            #     f.write('\n'.join(dup_read_lst))
-
+            saturation_estimation(umi_lst, out_fig)  
 
             print("Generating deduplicated fastq file ...")
             remove_reads_from_fastq(in_fastq, out_fastq, dup_read_lst, n_process)
+
 
         return
 

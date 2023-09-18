@@ -101,7 +101,7 @@ wrt_tr_to_csv <-
 #' \code{bulk} (bulk, single or multi-sample), or \code{sc_multi_sample} (single-cell, multiple samples)
 #' @return The count matrix will be saved in the output folder as \code{transcript_count.csv.gz}.
 #' @importFrom reticulate import_from_path dict
-quantify_gene <- function(annotation, outdir, pipeline = "sc_single_sample") {
+quantify_gene <- function(annotation, outdir, n_process, pipeline = "sc_single_sample") {
     cat(format(Sys.time(), "%X %a %b %d %Y"), "quantify genes \n")
 
     if (grepl("\\.gff3?(\\.gz)?$", annotation)) {
@@ -119,7 +119,7 @@ quantify_gene <- function(annotation, outdir, pipeline = "sc_single_sample") {
     callBasilisk(flames_env, function(annotation, outdir,pipeline) {
         python_path <- system.file("python", package = "FLAMES")
         count <- reticulate::import_from_path("count_gene", python_path)
-        count$quantification(annotation, outdir, pipeline)
+        count$quantification(annotation, outdir, pipeline, n_process)
     },
     annotation = annotation,
     outdir = outdir,
