@@ -18,15 +18,18 @@
 #' @examples
 #' temp_path <- tempfile()
 #' bfc <- BiocFileCache::BiocFileCache(temp_path, ask = FALSE)
-#' bc_list_10x_url <- 'https://github.com/shimlab/BLAZE/blob/main/10X_bc/3M-february-2018.zip'
-#' bc_list_10x <- bfc[[names(BiocFileCache::bfcadd(bfc, 'bc_list_10x', bc_list_10x_url))]]
 #' fastq1_url <- 'https://raw.githubusercontent.com/shimlab/BLAZE/main/test/data/FAR20033_pass_51e510db_100.fastq'
 #' fastq1 <- bfc[[names(BiocFileCache::bfcadd(bfc, 'Fastq1', fastq1_url))]]
 #' outdir <- tempfile()
 #' dir.create(outdir)
-#' config = jsonlite::fromJSON(system.file('extdata/blaze_flames.json', package = 'FLAMES'))
-#' config$blaze_parameters['output-prefix'] <- outdir
-#' blaze(100, fastq1, config$blaze_parameters)
+#' config = jsonlite::fromJSON(system.file('extdata/template_config.json', package = 'FLAMES'))
+#' blaze(100, fastq1,
+#'        'output-prefix' = paste0(outdir, '/'),
+#'        'output-fastq' = 'matched_reads.fastq',
+#'        'threads' = config$pipeline_parameters$threads,
+#'        'max-edit-distance' = config$barcode_parameters$max_bc_editdistance,
+#'        'overwrite' = TRUE)
+#'                    
 #' @importFrom reticulate import_from_path dict
 #' @export
 blaze <- function(expect_cells, fq_in, ...) {
