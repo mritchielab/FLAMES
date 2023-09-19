@@ -15,11 +15,12 @@
         "max_flank_editdistance": 8,
         "pattern": {
           "primer": "CTACACGACGCTCTTCCGATCT",
-          "polyT": "TTTTTTTTT",
-          "umi_seq": "????????????",
-          "barcode_seq": "????????????????",
-          "3'TSO" : "CCCATGTACTCTGCGTTGATACCACTGCTT"
+          "BC": "NNNNNNNNNNNNNNNN",
+          "UMI": "NNNNNNNNNNNN",
+          "polyT": "TTTTTTTTT"
         },
+        "TSO_seq" : "CCCATGTACTCTGCGTTGATACCACTGCTT",
+        "TSO_prime": 3,
         "full_length_only" : false
     },
     "isoform_parameters": {

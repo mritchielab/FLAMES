@@ -12,6 +12,8 @@
 #' @param full_length_only boolean, when TSO sequence is provided, whether reads without TSO
 #' are to be discarded
 #' @param pattern named character vector defining the barcode pattern
+#' @param TSO_seq TSO sequence to be trimmed
+#' @param TSO_prime either 3 (when \code{TSO_seq} is on 3' the end) or 5 (on 5' end)
 #' @examples
 #' outdir <- tempfile()
 #' dir.create(outdir)
@@ -34,7 +36,7 @@ find_barcode <- function(
       BC = paste0(rep("N", 16), collapse = ""),
       UMI = paste0(rep("N", 12), collapse = ""),
       polyT = paste0(rep("T", 9), collapse = "")
-    ), full_length_only = FALSE) {
+    ), TSO_seq = "", TSO_prime = 3, full_length_only = FALSE) {
   if (file_test("-f", fastq)) {
     flexiplex(
       reads_in = fastq, barcodes_file = barcodes_file, bc_as_readid = TRUE,
@@ -55,7 +57,7 @@ find_barcode <- function(
     stop("The specified path does not exist: ", fastq)
   }
 
-  if (sum(grepl("^[35]'TSO$", names(pattern))) == 1) {
+  if (is.character(TSO_seq) && nchar(TSO_seq) > 0 && TSO_prime %in% c(3, 5)) {
     untrimmed_reads <- file.path(
       dirname(reads_out),
       paste0("untrimmed_", basename(reads_out))
@@ -68,8 +70,8 @@ find_barcode <- function(
     # cutadapt -a 'TSO' -o reads_out --untrimmed-output noTSO_out in_fq(untrimmed.fq)
     cutadapt(
       c(
-        ifelse("3'TSO" %in% names(pattern), "-a", "-g"),
-        pattern[[which(grepl("^[35]'TSO$", names(pattern)))]],
+        ifelse(TSO_prime == 3, "-a", "-g"),
+        TSO_seq,
         "-o",
         reads_out,
         untrimmed_reads,
@@ -142,7 +144,7 @@ plot_demultiplex <- function(outdir, stats_file) {
 
   editdistance_plot <- stats_df[, c("FlankEditDist", "BarcodeEditDist")] |>
     table() |>
-    tibble::as_tibble() |>
+    tidyr::as_tibble() |>
     ggplot2::ggplot(ggplot2::aes(x = FlankEditDist, y = n, fill = BarcodeEditDist)) +
     ggplot2::geom_bar(stat = "identity", width = 1) +
     ggplot2::ylab("number of reads") +

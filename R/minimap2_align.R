@@ -70,8 +70,8 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2_dir, 
     if (file_test("-f", file.path(minimap2_dir, "k8")) && file_test("-f", file.path(minimap2_dir,
       "paftools.js"))) {
       paftoolsjs_path <- minimap2_dir
-    } else if ((file_test("-f", file.path(dirname(minimap2_dir), "k8")) && file_test("-f",
-      file.path(dirname(minimap2_dir), "paftools.js")))) {
+    } else if (file_test("-f", file.path(dirname(minimap2_dir), "k8")) && file_test("-f",
+      file.path(dirname(minimap2_dir), "paftools.js"))) {
       paftoolsjs_path <- dirname(minimap2_dir)
     } else {
       stop("Could not locate k8 and/or paftools.js in the minimap2 folder, they are required for converting annotation to bed12 files")
@@ -253,7 +253,7 @@ locate_minimap2_dir <- function(minimap2_dir = NULL) {
   which_minimap2 <- base::system2(command = "command", args = c("-v", "minimap2"), stdout = TRUE, stderr = TRUE)
 
   if (!is.null(which_minimap2)) {
-    return(which_minimap2)
+    return(dirname(which_minimap2))
   } else {
     return (NULL);
   }
@@ -262,10 +262,18 @@ locate_minimap2_dir <- function(minimap2_dir = NULL) {
 locate_samtools <- function() {
   which_samtools <- base::system2(command="command", args=c("-v", "samtools"));
   if (which_samtools == 0) {
-    return(base::system2(command="command", args=c("-v", "samtools"), stderr=TRUE, stdout=TRUE));
+    return(
+      dirname(
+        base::system2(
+          command="command", 
+          args=c("-v", "samtools"),
+          stderr=TRUE, stdout=TRUE
+        )
+      )
+    )
   } 
 
-  return("samtools");
+  return(FALSE);
 }
 
 # total mapped primary secondary

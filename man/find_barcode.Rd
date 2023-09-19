@@ -15,6 +15,8 @@ find_barcode(
   pattern = c(primer = "CTACACGACGCTCTTCCGATCT", BC = paste0(rep("N", 16), collapse =
     ""), UMI = paste0(rep("N", 12), collapse = ""), polyT = paste0(rep("T", 9), collapse
     = "")),
+  TSO_seq = "",
+  TSO_prime = 3,
   full_length_only = FALSE
 )
 }
@@ -34,6 +36,10 @@ find_barcode(
 \item{threads}{number of threads to be used}
 
 \item{pattern}{named character vector defining the barcode pattern}
+
+\item{TSO_seq}{TSO sequence to be trimmed}
+
+\item{TSO_prime}{either 3 (when \code{TSO_seq} is on 3' the end) or 5 (on 5' end)}
 
 \item{full_length_only}{boolean, when TSO sequence is provided, whether reads without TSO
 are to be discarded}
