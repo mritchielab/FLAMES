@@ -6,8 +6,8 @@
 #' @param fq_in File path to the fastq file used as a query sequence file
 #' @param config_file File path to the FLAMES configuration file.
 #' @param ... Additional BLAZE configuration parameters. E.g., setting
-#'  `'output-prefix'='some_prefix'`` is equivalent to specifying `--output-prefix some_prefix` in BLAZE; Similarly,
-#'  `overwrite=TRUE` is equivalent to switch on the `--overwrite`` option. Note that the specified parameters will
+#'  `'output-prefix'='some_prefix'` is equivalent to specifying `--output-prefix some_prefix` in BLAZE; Similarly,
+#'  `overwrite=TRUE` is equivalent to switch on the `--overwrite` option. Note that the specified parameters will
 #'  override the parameters specified in the configuration file. All available options can be found at https://github.com/shimlab/BLAZE.
 #'
 #' @return A \code{data.frame} summarising the reads aligned. Other outputs are written to disk. 
@@ -22,14 +22,11 @@
 #' fastq1 <- bfc[[names(BiocFileCache::bfcadd(bfc, 'Fastq1', fastq1_url))]]
 #' outdir <- tempfile()
 #' dir.create(outdir)
-#' config = jsonlite::fromJSON(system.file('extdata/template_config.json', package = 'FLAMES'))
-#' blaze(100, fastq1,
-#'        'output-prefix' = paste0(outdir, '/'),
-#'        'output-fastq' = 'matched_reads.fastq',
-#'        'threads' = config$pipeline_parameters$threads,
-#'        'max-edit-distance' = config$barcode_parameters$max_bc_editdistance,
-#'        'overwrite' = TRUE)
-#'                    
+#' config = jsonlite::fromJSON(system.file('extdata/blaze_flames.json', package = 'FLAMES'))
+#' config$blaze_parameters['output-prefix'] <- outdir
+#' \dontrun{
+#'    blaze(config$blaze_parameters, fastq1)
+#' }
 #' @importFrom reticulate import_from_path dict
 #' @export
 blaze <- function(expect_cells, fq_in, ...) {

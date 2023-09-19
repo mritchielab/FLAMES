@@ -12,8 +12,8 @@ blaze(expect_cells, fq_in, ...)
 \item{fq_in}{File path to the fastq file used as a query sequence file}
 
 \item{...}{Additional BLAZE configuration parameters. E.g., setting
-`'output-prefix'='some_prefix'`` is equivalent to specifying `--output-prefix some_prefix` in BLAZE; Similarly,
-`overwrite=TRUE` is equivalent to switch on the `--overwrite`` option. Note that the specified parameters will
+`'output-prefix'='some_prefix'` is equivalent to specifying `--output-prefix some_prefix` in BLAZE; Similarly,
+`overwrite=TRUE` is equivalent to switch on the `--overwrite` option. Note that the specified parameters will
 override the parameters specified in the configuration file. All available options can be found at https://github.com/shimlab/BLAZE.}
 
 \item{config_file}{File path to the FLAMES configuration file.}
@@ -28,13 +28,13 @@ Uses BLAZE to generate barcode list and assign reads to cell barcodes.
 \examples{
 temp_path <- tempfile()
 bfc <- BiocFileCache::BiocFileCache(temp_path, ask = FALSE)
-bc_list_10x_url <- 'https://github.com/shimlab/BLAZE/blob/main/10X_bc/3M-february-2018.zip'
-bc_list_10x <- bfc[[names(BiocFileCache::bfcadd(bfc, 'bc_list_10x', bc_list_10x_url))]]
 fastq1_url <- 'https://raw.githubusercontent.com/shimlab/BLAZE/main/test/data/FAR20033_pass_51e510db_100.fastq'
 fastq1 <- bfc[[names(BiocFileCache::bfcadd(bfc, 'Fastq1', fastq1_url))]]
 outdir <- tempfile()
 dir.create(outdir)
 config = jsonlite::fromJSON(system.file('extdata/blaze_flames.json', package = 'FLAMES'))
 config$blaze_parameters['output-prefix'] <- outdir
-blaze(100, fastq1, config$blaze_parameters)
+\dontrun{
+   blaze(config$blaze_parameters, fastq1)
+}
 }

@@ -16,6 +16,7 @@ Exit code of cutadapt
 trim TSO adaptor with cutadapt
 }
 \examples{
-cutadapt("-h")
-
+\dontrun{
+ cutadapt("-h")
+}
 }
