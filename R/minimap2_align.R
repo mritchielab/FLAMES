@@ -260,20 +260,17 @@ locate_minimap2_dir <- function(minimap2_dir = NULL) {
 }
 
 locate_samtools <- function() {
-  which_samtools <- base::system2(command="command", args=c("-v", "samtools"));
+  which_samtools <- base::system2(command = "command", args = c("-v", "samtools"))
   if (which_samtools == 0) {
     return(
-      dirname(
-        base::system2(
-          command="command", 
-          args=c("-v", "samtools"),
-          stderr=TRUE, stdout=TRUE
-        )
+      base::system2(
+        command = "command",
+        args = c("-v", "samtools"),
+        stderr = TRUE, stdout = TRUE
       )
     )
-  } 
-
-  return(FALSE);
+  }
+  return(FALSE)
 }
 
 # total mapped primary secondary
