@@ -49,8 +49,8 @@ def umi_dedup(l, has_UMI, max_ed=1):
         (), len(l)
 
 
-def wrt_tr_to_csv(bc_tr_count_dict, transcript_dict, csv_f, transcript_dict_ref=None, has_UMI=True,
-                  print_saturation = True):
+def wrt_tr_to_csv(bc_tr_count_dict, transcript_dict, csv_f, transcript_dict_ref=None, has_UMI=False,
+                  print_saturation = False):
     f = gzip.open(csv_f, "wt")
     all_tr = set()
     for bc in bc_tr_count_dict:
@@ -82,6 +82,7 @@ def wrt_tr_to_csv(bc_tr_count_dict, transcript_dict, csv_f, transcript_dict_ref=
     f.close()
     if print_saturation and has_UMI:
         helper.green_msg(f"The isoform quantification result generated:  {csv_f}.")
+        # remove the following saturation estimation because it's done in gene quantification part
         if sum(dup_count):
             helper.green_msg(f"The estimated saturation is {1-len(dup_count)/sum(dup_count)}")
     return tr_cnt
@@ -668,9 +669,9 @@ def quantification(config_dict, annotation, outdir, pipeline):
         chr_to_gene_i, transcript_dict_i, gene_to_transcript_i, transcript_to_exon_i = futures['parse_gff_tree_iso'].result()
 
         tr_cnt = wrt_tr_to_csv(bc_tr_count_dict, transcript_dict_i, tr_cnt_csv,
-                            transcript_dict, "umi_seq" in config_dict["barcode_parameters"]["pattern"].keys())
+                            transcript_dict, "UMI" in config_dict["barcode_parameters"]["pattern"].keys())
         wrt_tr_to_csv(bc_tr_badcov_count_dict, transcript_dict_i, tr_badcov_cnt_csv,
-                    transcript_dict, "umi_seq" in config_dict["barcode_parameters"]["pattern"].keys(),
+                    transcript_dict, "UMI" in config_dict["barcode_parameters"]["pattern"].keys(),
                     print_saturation = False)
         annotate_filter_gff(isoform_gff3, annotation, isoform_gff3_f, FSM_anno_out,
                         tr_cnt, config_dict["isoform_parameters"]["min_sup_cnt"], verbose=False)
@@ -692,10 +693,10 @@ def quantification(config_dict, annotation, outdir, pipeline):
         chr_to_gene_i, transcript_dict_i, gene_to_transcript_i, transcript_to_exon_i = futures['parse_gff_tree_iso'].result()
 
         tr_cnt = wrt_tr_to_csv(bc_tr_count_dict, transcript_dict_i, tr_cnt_csv,
-                                transcript_dict, "umi_seq" in config_dict["barcode_parameters"]["pattern"].keys(),
+                                transcript_dict, "UMI" in config_dict["barcode_parameters"]["pattern"].keys(),
                                 print_saturation = False)
         wrt_tr_to_csv(bc_tr_badcov_count_dict, transcript_dict_i, tr_badcov_cnt_csv,
-                        transcript_dict, "umi_seq" in config_dict["barcode_parameters"]["pattern"].keys(),
+                        transcript_dict, "UMI" in config_dict["barcode_parameters"]["pattern"].keys(),
                         print_saturation = False)
         annotate_filter_gff(isoform_gff3, annotation, isoform_gff3_f, FSM_anno_out,
                             tr_cnt, config_dict["isoform_parameters"]["min_sup_cnt"], verbose=False)
@@ -720,10 +721,10 @@ def quantification(config_dict, annotation, outdir, pipeline):
                 config_dict["transcript_counting"]["min_read_coverage"])
             sys.stderr.write("parsing " + sample_bam + "done\n")
             tr_cnt = wrt_tr_to_csv(bc_tr_count_dict, transcript_dict_i, tr_cnt_csv,
-                                   transcript_dict, "umi_seq" in config_dict["barcode_parameters"]["pattern"].keys())
+                                   transcript_dict, "UMI" in config_dict["barcode_parameters"]["pattern"].keys())
             sys.stderr.write("wrt_tr_to_csv for" + sample_bam + "done\n")
             wrt_tr_to_csv(bc_tr_badcov_count_dict, transcript_dict_i, tr_badcov_cnt_csv,
-                          transcript_dict, "umi_seq" in config_dict["barcode_parameters"]["pattern"].keys(),
+                          transcript_dict, "UMI" in config_dict["barcode_parameters"]["pattern"].keys(),
                           print_saturation = False)
             del bc_tr_count_dict, bc_tr_badcov_count_dict, tr_cnt
             ##gc.collect()

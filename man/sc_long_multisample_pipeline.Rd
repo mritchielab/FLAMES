@@ -11,6 +11,7 @@ sc_long_multisample_pipeline(
   genome_fa,
   minimap2_dir = NULL,
   barcodes_file = NULL,
+  expect_cell_number = NULL,
   config_file = NULL
 )
 }
@@ -26,7 +27,13 @@ sc_long_multisample_pipeline(
 \item{minimap2_dir}{Path to the directory containing minimap2, if it is not in PATH. Only required if either or both of
 \code{do_genome_align} and \code{do_read_realign} are \code{TRUE}.}
 
-\item{barcodes_file}{The file path to the reference csv used for demultiplexing}
+\item{barcodes_file}{The file path to the reference csv used for demultiplexing in flexiplex. If not specified, the
+demultiplexing will be performed using BLAZE. Default is \code{NULL}.}
+
+\item{expect_cell_number}{Expected number of cells for identifying the barcode list in BLAZE.
+This could be just a rough estimate. E.g., the targeted number of cells.
+Required if the \code{do_barcode_demultiplex} are \code{TRUE} in the the JSON configuration file
+and \code{barcodes_file} is not specified. Default is \code{NULL}.}
 
 \item{config_file}{File path to the JSON configuration file. If specified, \code{config_file} overrides
 all configuration parameters}

@@ -4,30 +4,35 @@
 \alias{blaze}
 \title{BLAZE Assign reads to cell barcodes.}
 \usage{
-blaze(blaze_config, fq_in)
+blaze(expect_cells, fq_in, ...)
 }
 \arguments{
-\item{blaze_config}{List, additional BLAZE configuration parameters}
+\item{expect_cells}{Integer, expected number of cells. Note: this could be just a rough estimate. E.g., the targeted number of cells.}
 
 \item{fq_in}{File path to the fastq file used as a query sequence file}
+
+\item{...}{Additional BLAZE configuration parameters. E.g., setting
+`'output-prefix'='some_prefix'` is equivalent to specifying `--output-prefix some_prefix` in BLAZE; Similarly,
+`overwrite=TRUE` is equivalent to switch on the `--overwrite` option. Note that the specified parameters will
+override the parameters specified in the configuration file. All available options can be found at https://github.com/shimlab/BLAZE.}
+
+\item{config_file}{File path to the FLAMES configuration file.}
 }
 \value{
-a \code{data.frame} summarising the reads aligned
+A \code{data.frame} summarising the reads aligned. Other outputs are written to disk. 
+The details of the output files can be found at https://github.com/shimlab/BLAZE.
 }
 \description{
-Uses BLAZE to generate barcode list and assign reads to cell barcodes. 
-Uses default options for BLAZE, see BLAZE documentation for details (https://github.com/shimlab/BLAZE).
+Uses BLAZE to generate barcode list and assign reads to cell barcodes.
 }
 \examples{
 temp_path <- tempfile()
 bfc <- BiocFileCache::BiocFileCache(temp_path, ask = FALSE)
-bc_list_10x_url <- 'https://github.com/shimlab/BLAZE/blob/main/10X_bc/3M-february-2018.zip'
-bc_list_10x <- bfc[[names(BiocFileCache::bfcadd(bfc, 'bc_list_10x', bc_list_10x_url))]]
 fastq1_url <- 'https://raw.githubusercontent.com/shimlab/BLAZE/main/test/data/FAR20033_pass_51e510db_100.fastq'
 fastq1 <- bfc[[names(BiocFileCache::bfcadd(bfc, 'Fastq1', fastq1_url))]]
 outdir <- tempfile()
 dir.create(outdir)
-config = jsonlite::fromJSON(system.file('extdata/blaze_flames.json', package = 'FLAMES'))
+config = jsonlite::fromJSON(system.file('extdata/template_config.json', package = 'FLAMES'))
 config$blaze_parameters['output-prefix'] <- outdir
 \dontrun{
    blaze(config$blaze_parameters, fastq1)

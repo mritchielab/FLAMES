@@ -4,7 +4,8 @@
 #' Rcpp port of flexiplex
 #'
 #' @description demultiplex reads with flexiplex, for detailed description, see
-#' documentation for the original flexiplex: https://davidsongroup.github.io/flexiplex
+#' documentation for the original flexiplex:
+#' https://davidsongroup.github.io/flexiplex
 #'
 #' @param reads_in Input FASTQ or FASTA file
 #' @param barcodes_file barcode allow-list file

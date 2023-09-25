@@ -12,9 +12,11 @@ find_barcode(
   reads_out,
   stats_out,
   threads = 1,
-  pattern = c(primer = "CTACACGACGCTCTTCCGATCT", polyT = paste0(rep("T", 9), collapse =
-    ""), umi_seq = paste0(rep("?", 12), collapse = ""), barcode_seq = paste0(rep("?",
-    16), collapse = "")),
+  pattern = c(primer = "CTACACGACGCTCTTCCGATCT", BC = paste0(rep("N", 16), collapse =
+    ""), UMI = paste0(rep("N", 12), collapse = ""), polyT = paste0(rep("T", 9), collapse
+    = "")),
+  TSO_seq = "",
+  TSO_prime = 3,
   full_length_only = FALSE
 )
 }
@@ -35,6 +37,10 @@ find_barcode(
 
 \item{pattern}{named character vector defining the barcode pattern}
 
+\item{TSO_seq}{TSO sequence to be trimmed}
+
+\item{TSO_prime}{either 3 (when \code{TSO_seq} is on 3' the end) or 5 (on 5' end)}
+
 \item{full_length_only}{boolean, when TSO sequence is provided, whether reads without TSO
 are to be discarded}
 }
@@ -47,12 +53,12 @@ demultiplex reads with flexiplex
 \examples{
 outdir <- tempfile()
 dir.create(outdir)
-bc_allow <- file.path(outdir, 'bc_allow.tsv')
-R.utils::gunzip(filename = system.file('extdata/bc_allow.tsv.gz', package = 'FLAMES'), destname = bc_allow, remove = FALSE)
+bc_allow <- file.path(outdir, "bc_allow.tsv")
+R.utils::gunzip(filename = system.file("extdata/bc_allow.tsv.gz", package = "FLAMES"), destname = bc_allow, remove = FALSE)
 find_barcode(
-   fastq = system.file('extdata/fastq', package = 'FLAMES'),
-   stats_out = file.path(outdir, 'bc_stat'),
-   reads_out = file.path(outdir, 'demultiplexed.fq.gz'),
-   barcodes_file = bc_allow
+  fastq = system.file("extdata/fastq", package = "FLAMES"),
+  stats_out = file.path(outdir, "bc_stat"),
+  reads_out = file.path(outdir, "demultiplexed.fq.gz"),
+  barcodes_file = bc_allow
 )
 }

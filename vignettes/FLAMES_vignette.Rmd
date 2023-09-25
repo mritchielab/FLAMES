@@ -28,7 +28,7 @@ This R package was created to simplify installation and execution of the FLAMES 
 knitr::include_graphics(system.file("images/FLAMESpipeline-01.png", package = "FLAMES"))
 ```
 
-Input to FLAMES are fastq files generated from the long-read platform. Using a cell barcode allow-list (e.g. barcode list obtained from short-read sequencing), the `find_barcode()` function locates the barcode sequencing in the long-reads and trims the cell barcodes and the flanking UMI sequence. The pipeline then calls `minimap_align()`, a `minimap2` wrapper, to align the demultiplex long-reads to the reference genome. Next, `find_isoform()` is called to identify novel isoforms using the alignment, creating an updated transcript assembly. The demultiplexed reads are then aligned to the transcript assembly by the function `minimap_realign()`. Finally, FLAMES calls `quantify()` to quantify the transcript counts using the (re-)alignment file.
+Input to FLAMES are fastq files generated from the long-read platform. Using a cell barcode allow-list (e.g. barcode list obtained from short-read sequencing), the `find_barcode()` function locates the barcode sequencing in the long-reads and trims the cell barcodes and the flanking UMI sequence. The pipeline then calls `minimap_align()`, a `minimap2` wrapper, to align the demultiplex long-reads to the reference genome. Next, `find_isoform()` is called to identify novel isoforms using the alignment, creating an updated transcript assembly. The demultiplexed reads are then aligned to the transcript assembly by the function `minimap_realign()`. Finally, FLAMES calls `quantify_transcript()` to quantify the transcript counts using the (re-)alignment file.
 
 Figure \@ref(fig:workflow) summerise the steps of the pipeline described above. The pipeline functions (`sc_long_pipeline`, `bulk_long_pipeline`, `sc_long_multisample_pipline`) execute the steps sequentially and return `SingleCellExperiment` object, `SummarizedExperiment` object and a list of `SingleCellExperiment` objects respectivly. 
 
@@ -112,7 +112,7 @@ if (is.character(minimap2_dir)) { # do not run if minimap2 cannot be found
     config = config, fq_in = fastq,
     outdir = outdir, minimap2_dir = minimap2_dir
   )
-  quantify(annotation = annot, outdir = outdir, config = config)
+  quantify_transcript(annotation = annot, outdir = outdir, config = config)
   sce <- create_sce_from_dir(outdir = outdir, annotation = annot)
 }
 ```

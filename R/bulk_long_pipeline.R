@@ -134,7 +134,7 @@ bulk_long_pipeline <-
         # quantification
         if (config$pipeline_parameters$do_transcript_quantification) {
             cat("#### Generating transcript count matrix\n")
-            quantify(annotation = annotation, outdir = outdir, config = config, pipeline = "bulk")
+            quantify_transcript(annotation = annotation, outdir = outdir, config = config, pipeline = "bulk")
 
             out_files <- list(
                 "annotation" = annotation,
