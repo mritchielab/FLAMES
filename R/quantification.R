@@ -96,7 +96,7 @@ wrt_tr_to_csv <-
 #' 
 #' @param annotation The file path to the annotation file in GFF3 format
 #' @param outdir The path to directory to store all output files.
-#' @param config Parsed FLAMES configurations.
+#' @param n_process The number of threads to use to process the alignment file
 #' @param pipeline The pipeline type as a character string, either \code{sc_single_sample} (single-cell, single-sample),
 #' \code{bulk} (bulk, single or multi-sample), or \code{sc_multi_sample} (single-cell, multiple samples)
 #' @return The count matrix will be saved in the output folder as \code{transcript_count.csv.gz}.

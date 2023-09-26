@@ -65,6 +65,7 @@ Imports:
     withr,
     zlibbioc,
     future,
+    methods
 Suggests: 
     BiocStyle,
     GEOquery,
