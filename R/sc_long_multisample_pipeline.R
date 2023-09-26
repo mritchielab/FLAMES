@@ -259,7 +259,11 @@ sc_long_multisample_pipeline <-
         # realign to transcript
         if (config$pipeline_parameters$do_read_realignment) {
             cat("#### Realign to transcript using minimap2\n")
-            infqs_realign <- file.path(outdir, paste(samples, "matched_reads_dedup.fastq", sep = "_"))
+            if (config$pipeline_parameters$do_gene_quantification) { 
+                infqs_realign <- file.path(outdir, paste(samples, "matched_reads_dedup.fastq", sep = "_"))
+            } else {
+                infqs_realign <- infqs
+            }
             for (i in 1:length(samples)) {
                 cat(paste0(c("\tRealigning sample ", samples[i], "...\n")))
                 minimap2_realign(config, infqs_realign[i], outdir, minimap2_dir, prefix = samples[i], 

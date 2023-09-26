@@ -22,7 +22,7 @@
 #' fastq1 <- bfc[[names(BiocFileCache::bfcadd(bfc, 'Fastq1', fastq1_url))]]
 #' outdir <- tempfile()
 #' dir.create(outdir)
-#' config = jsonlite::fromJSON(system.file('extdata/blaze_flames.json', package = 'FLAMES'))
+#' config = jsonlite::fromJSON(system.file('extdata/template_config.json', package = 'FLAMES'))
 #' config$blaze_parameters['output-prefix'] <- outdir
 #' \dontrun{
 #'    blaze(config$blaze_parameters, fastq1)

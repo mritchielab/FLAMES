@@ -252,7 +252,11 @@ sc_long_pipeline <-
         # realign to transcript
         if (config$pipeline_parameters$do_read_realignment) {
             cat("#### Realigning deduplicated reads to transcript using minimap2\n")
-            infq_realign <- file.path(outdir, "matched_reads_dedup.fastq")
+            if (config$pipeline_parameters$do_gene_quantification) {
+                infq_realign <- file.path(outdir, "matched_reads_dedup.fastq")
+            } else {
+                infq_realign <- infq
+            }
             minimap2_realign(config, infq_realign, outdir, minimap2_dir, prefix = NULL, 
                              threads = config$pipeline_parameters$threads)
         } else {
