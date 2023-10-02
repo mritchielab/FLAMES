@@ -37,10 +37,12 @@ def umi_dedup(l, has_UMI, max_ed=1):
         max_ed: maximum edit distance allowed for UMI deduplication
 
     Return:
-        tuple of (read count, dedup UMI count)
+        tuple of (read count, dedup UMI count) 
+            Note: if no UMI, the dedup UMI count is the same as read count
     """
+    read_cnt = len(l)
+    
     if has_UMI:
-        read_cnt = len(l)
         dup_cnt = Counter(l)
         l_cnt = sorted(dup_cnt.most_common(), key=lambda x: (x[1], x[0]), reverse=True)
         if len(l_cnt) == 1:
@@ -54,11 +56,11 @@ def umi_dedup(l, has_UMI, max_ed=1):
                     if fast_edit_distance.edit_distance(
                             l_cnt[ith][0],l_cnt[jth][0], max_ed) <= max_ed:
                         rm_umi[l_cnt[jth][0]] = 1
-                        l_cnt[ith] = (l_cnt[ith][0], l_cnt[ith][1]+l_cnt[ith][1])
+                        l_cnt[ith] = (l_cnt[ith][0], l_cnt[ith][1]+l_cnt[jth][1])
         # return read count, dedup UMI count
-        return sum([x[1] for x in l_cnt]), len(l_cnt)-len(rm_umi)
+        return read_cnt, len(l_cnt)-len(rm_umi)
     else:
-        return len(l), len(l)
+        return read_cnt, read_cnt
 
 
 def wrt_tr_to_csv(bc_tr_count_dict, transcript_dict, csv_f, 
@@ -81,13 +83,12 @@ def wrt_tr_to_csv(bc_tr_count_dict, transcript_dict, csv_f,
     tr_cnt = {}
     dup_count = ()
     for tr in all_tr:
-        cnt_l = [umi_dedup(bc_tr_count_dict[bc][tr], has_UMI)[1]
-                 if tr in bc_tr_count_dict[bc] else 0 for bc in bc_tr_count_dict]
-        tr_cnt[tr] = sum(cnt_l)
-        if has_UMI:
-            dup_count += \
-                sum([umi_dedup(bc_tr_count_dict[bc][tr], has_UMI)[0]
-                    if tr in bc_tr_count_dict[bc] else 0 for bc in bc_tr_count_dict])
+        read_counts, dup_counts = zip(
+            *[umi_dedup(bc_tr_count_dict[bc][tr], has_UMI)
+                 if tr in bc_tr_count_dict[bc] else (0,0) for bc in bc_tr_count_dict]
+                 )
+        
+        tr_cnt[tr] = sum(dup_counts)
 
         if tr in transcript_dict:
             f.write(
@@ -98,11 +99,11 @@ def wrt_tr_to_csv(bc_tr_count_dict, transcript_dict, csv_f,
         else:
             print("cannot find transcript in transcript_dict:", tr)
             exit(1)
-        f.write(",".join([str(x) for x in cnt_l])+"\n")
+        f.write(",".join([str(x) for x in dup_counts])+"\n")
     f.close()
     
     # print saturation if requested
-    if print_saturation and has_UMI and sum(dup_count):
+    if print_saturation and has_UMI and sum(dup_counts):
         helper.green_msg(f"The estimated saturation is {1-len(dup_count)/sum(dup_count)}")
 
     return tr_cnt
