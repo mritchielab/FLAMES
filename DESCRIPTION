@@ -1,20 +1,23 @@
 Package: FLAMES
 Type: Package
 Title: FLAMES: Full Length Analysis of Mutations and Splicing in long read RNA-seq data
-Version: 1.7.2
-Date: 2022-4-21
-Authors@R: c(person("Luyi", "Tian", role=c("aut"),
-                    email="tian.l@wehi.edu.au"),
-             person("Oliver", "Voogd", role=c("aut", "cre"),
-                    email="voogd.o@wehi.edu.au"),
-             person("Jakob", "Schuster", role=c("aut"),
-		    email="schuster.j@wehi.edu.au"),
-	     person("Changqing", "Wang", role=c("aut"),
-		    email="wang.ch@wehi.edu.au"),
-	     person("Shian",  "Su", role=c("aut"),
-                    email="su.s@wehi.edu.au"),
-             person("Matthew", "Ritchie",role=c("ctb"),
-                    email="mritchie@wehi.edu.au"))
+Version: 1.7.3
+Date: 2023-10-2
+Authors@R: c(
+       person("Luyi", "Tian", role=c("aut"),
+              email="tian.l@wehi.edu.au"),
+       person("Changqing", "Wang", role=c("aut"),
+              email="wang.ch@wehi.edu.au"),
+       person("Youpei", "You", role=c("aut"),
+              email="you.yu@wehi.edu.au"),
+       person("Oliver", "Voogd", role=c("aut", "cre"),
+              email="voogd.o@wehi.edu.au"),
+       person("Jakob", "Schuster", role=c("aut"),
+              email="schuster.j@wehi.edu.au"),
+       person("Shian",  "Su", role=c("aut"),
+              email="su.s@wehi.edu.au"),
+       person("Matthew", "Ritchie",role=c("ctb"),
+              email="mritchie@wehi.edu.au"))
 Description: Semi-supervised isoform detection and annotation from both bulk and single-cell 
   long read RNA-seq data. Flames provides automated pipelines for analysing isoforms,
   as well as intermediate functions for manual execution.
@@ -78,7 +81,7 @@ Suggests:
     uwot,
     testthat (>= 3.0.0)
 LinkingTo: Rcpp, Rhtslib, zlibbioc
-SystemRequirements: GNU make, C++11
+SystemRequirements: GNU make, C++17
 RoxygenNote: 7.2.3
 VignetteBuilder: knitr
 URL: https://github.com/OliverVoogd/FLAMES
