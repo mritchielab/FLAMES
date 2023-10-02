@@ -45,8 +45,8 @@
 #' @importFrom utils modifyList
 #' @importFrom stats setNames
 #' @export
-create_config <- function(outdir, type = "sc_5end", ...) {
-    if (type == "sc_5end") {
+create_config <- function(outdir, type = "sc_3end", ...) {
+    if (type == "sc_3end") {
         config <- jsonlite::fromJSON(system.file("extdata/config_sclr_nanopore_3end.json", package = "FLAMES"))
     } else if (type == "SIRV") {
         config <- jsonlite::fromJSON(system.file("extdata/SIRV_config_default.json", package = "FLAMES"))

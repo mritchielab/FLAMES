@@ -11,7 +11,7 @@ quantify_gene(annotation, outdir, n_process, pipeline = "sc_single_sample")
 
 \item{outdir}{The path to directory to store all output files.}
 
-\item{n_process}{The number of threads to use to process the alignment file}
+\item{n_process}{The number of processes to use for parallelization.}
 
 \item{pipeline}{The pipeline type as a character string, either \code{sc_single_sample} (single-cell, single-sample),
 \code{bulk} (bulk, single or multi-sample), or \code{sc_multi_sample} (single-cell, multiple samples)}
