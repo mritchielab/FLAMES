@@ -4,7 +4,6 @@
 #' Uses BLAZE to generate barcode list and assign reads to cell barcodes. 
 #' @param expect_cells Integer, expected number of cells. Note: this could be just a rough estimate. E.g., the targeted number of cells.
 #' @param fq_in File path to the fastq file used as a query sequence file
-#' @param config_file File path to the FLAMES configuration file.
 #' @param ... Additional BLAZE configuration parameters. E.g., setting
 #'  `'output-prefix'='some_prefix'` is equivalent to specifying `--output-prefix some_prefix` in BLAZE; Similarly,
 #'  `overwrite=TRUE` is equivalent to switch on the `--overwrite` option. Note that the specified parameters will

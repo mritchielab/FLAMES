@@ -15,8 +15,6 @@ blaze(expect_cells, fq_in, ...)
 `'output-prefix'='some_prefix'` is equivalent to specifying `--output-prefix some_prefix` in BLAZE; Similarly,
 `overwrite=TRUE` is equivalent to switch on the `--overwrite` option. Note that the specified parameters will
 override the parameters specified in the configuration file. All available options can be found at https://github.com/shimlab/BLAZE.}
-
-\item{config_file}{File path to the FLAMES configuration file.}
 }
 \value{
 A \code{data.frame} summarising the reads aligned. Other outputs are written to disk. 
