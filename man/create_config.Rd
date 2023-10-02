@@ -4,7 +4,7 @@
 \alias{create_config}
 \title{Create Configuration File From Arguments}
 \usage{
-create_config(outdir, type = "sc_5end", ...)
+create_config(outdir, type = "sc_3end", ...)
 }
 \arguments{
 \item{outdir}{the destination directory for the configuratio nfile}

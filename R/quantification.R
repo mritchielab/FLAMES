@@ -74,6 +74,59 @@ wrt_tr_to_csv <-
         )
     }
 
+
+#' Gene quantification
+#' @description Calculate the per gene UMI count matrix by parsing the genome alignment file.
+#'
+#' @details
+#' After the genome alignment step (\code{do_genome_align}), the alignment file will be parsed to 
+#' generate the per gene UMI count matrix. For each gene in the annotation file, the number of 
+#' reads whose mapped ranges overlap with the gene's genome coordinates will be assigned to the 
+#' gene. For reads can be assigned to multiple gene, the read will be assigned to the gene with 
+#' the highest number of overlapping nucleotides. If the read can be assigned to multiple genes 
+#' with the same number of overlapping nucleotides, the read will be not be assigned.
+#'
+#' After the read-to-gene assignment, the per gene UMI count matrix will be generated.
+#' Specifically, for each gene, the reads with similar mapping coordinates of transcript
+#' termination sites (TTS, i.e. the end of the the read with a polyT or polyA) will be grouped 
+#' together. UMIs of reads in the same group will be collapsed to generate the UMI counts for each
+#' gene. 
+#' 
+#' Finally, a new fastq file with deduplicated reads by keeping the longest read in each UMI.
+#' 
+#' @param annotation The file path to the annotation file in GFF3 format
+#' @param outdir The path to directory to store all output files.
+#' @param n_process The number of processes to use for parallelization.
+#' @param pipeline The pipeline type as a character string, either \code{sc_single_sample} (single-cell, single-sample),
+#' \code{bulk} (bulk, single or multi-sample), or \code{sc_multi_sample} (single-cell, multiple samples)
+#' @return The count matrix will be saved in the output folder as \code{transcript_count.csv.gz}.
+#' @importFrom reticulate import_from_path dict
+quantify_gene <- function(annotation, outdir, n_process, pipeline = "sc_single_sample") {
+    cat(format(Sys.time(), "%X %a %b %d %Y"), "quantify genes \n")
+
+    if (grepl("\\.gff3?(\\.gz)?$", annotation)) {
+        warning("Annotation in GFF format may cause errors. Please consider using GTF formats.\n")
+    }
+
+    genome_bam <- list.files(outdir)[grepl("_?align2genome\\.bam$", list.files(outdir))]
+    cat("Found genome alignment file(s): ")
+    cat(paste0("\t", paste(genome_bam, collapse = "\n\t"), "\n"))
+
+    if (length(genome_bam) != 1 && grepl("single_sample", pipeline)) {
+        stop("Incorrect number of genome alignment files found.\n")
+    }
+    
+    callBasilisk(flames_env, function(annotation, outdir,pipeline) {
+        python_path <- system.file("python", package = "FLAMES")
+        count <- reticulate::import_from_path("count_gene", python_path)
+        count$quantification(annotation, outdir, pipeline, n_process)
+    },
+    annotation = annotation,
+    outdir = outdir,
+    pipeline = pipeline
+    )
+}
+
 #' Transcript quantification
 #' @description Calculate the transcript count matrix by parsing the re-alignment file.
 #' @param annotation The file path to the annotation file in GFF3 format
@@ -101,12 +154,12 @@ wrt_tr_to_csv <-
 #'         config = config, outdir = outdir,
 #'         fq_in = fastq1
 #'     )
-#'     quantify(annotation, outdir, config, pipeline = "bulk")
+#'     quantify_transcript(annotation, outdir, config, pipeline = "bulk")
 #' }
 #' }
 #' @export
-quantify <- function(annotation, outdir, config, pipeline = "sc_single_sample") {
-    cat(format(Sys.time(), "%X %a %b %d %Y"), "quantify\n")
+quantify_transcript <- function(annotation, outdir, config, pipeline = "sc_single_sample") {
+    cat(format(Sys.time(), "%X %a %b %d %Y"), "quantify transcripts \n")
 
     if (grepl("\\.gff3?(\\.gz)?$", annotation)) {
         warning("Annotation in GFF format may cause errors. Please consider using GTF formats.\n")

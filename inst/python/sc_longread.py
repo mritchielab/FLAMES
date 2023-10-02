@@ -401,7 +401,7 @@ def parse_bam_intron(bam_in, bam_out, summary_csv, chr_to_blocks, gene_dict):
         for bl in chr_to_blocks[ch]:
             it_region = bamfile.fetch(ch, bl.s, bl.e)
             for rec in it_region:
-                if rec.is_secondary:
+                if rec.is_secondary or rec.is_unmapped:
                     continue
                 # rec.cigar = smooth_cigar(rec.cigar)
                 if len(bl.gene_to_tr) == 1:
@@ -1193,7 +1193,7 @@ def group_bam2isoform(bam_in, out_gff3, out_stat, summary_csv, chr_to_blocks, ge
             for rec in it_region:
                 if 0 < downsample_ratio < 1 and random.uniform(0, 1) > downsample_ratio:
                     continue   # downsample analysis
-                if rec.is_secondary:
+                if rec.is_secondary or rec.is_unmapped:
                     continue
                 rec.cigar = smooth_cigar(rec.cigar, thr=20)
                 rec.cigartuples = rec.cigar
@@ -1262,8 +1262,8 @@ def group_bam2isoform_multisample(bam_in_list, out_gff3, out_stat, summary_csv, 
             for rec in it_region:
                 # if 0<downsample_ratio<1 and random.uniform(0, 1)>downsample_ratio:
                 #     continue   # downsample analysis
-                # if rec.is_secondary:
-                #     continue
+                if rec.is_secondary or rec.is_unmapped:
+                    continue
                 rec.cigar = smooth_cigar(rec.cigar, thr=20)
                 rec.cigartuples = rec.cigar
                 rec.cigarstring = generate_cigar(rec.cigar)

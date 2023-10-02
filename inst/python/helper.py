@@ -88,39 +88,78 @@ class param:
                 self.__dict__[attr] = None
         return check_res if not silent else True
     
-def multiprocessing_submit(func, iterator, n_process=mp.cpu_count()-1 ,pbar = True, pbar_tot=None, pbar_update=1 ,*arg, **kwargs):
-    "Run function in multiprocessing setting"
-    executor = concurrent.futures.ProcessPoolExecutor(n_process)
-    
-    max_queue = n_process + 10
+def multiprocessing_submit(func, iterator, n_process=mp.cpu_count()-1 ,
+                           pbar=True, pbar_unit='Read',pbar_func=len, 
+                           schduler = 'process', *arg, **kwargs):
+    """multiple processing or threading, 
+    Note: this function is adapted from BLAZE (github.com/shimlab/BLAZE)
+    Args:
+        func: function to be run parallely
+        iterator: input to the function in each process/thread
+        n_process (int, optional): number of cores or threads. Defaults to mp.cpu_count()-1.
+        pbar (bool, optional): Whether or not to output a progres bar. Defaults to True.
+        pbar_unit (str, optional): Unit shown on the progress bar. Defaults to 'Read'.
+        pbar_func (function, optional): Function to calculate the total length of the progress bar. Defaults to len.
+        schduler (str, optional): 'process' or 'thread'. Defaults to 'process'.
+
+    Yields:
+        return type of the func: the yield the result in the order of submit
+    """
+    if schduler == 'process':
+        executor = concurrent.futures.ProcessPoolExecutor(n_process)
+    elif schduler == 'thread':
+        executor = concurrent.futures.ThreadPoolExecutor(n_process)
+    else:
+        green_msg('Error in multiprocessing_submit: schduler should be either process or thread', printit=True)
+        sys.exit(1)
     if pbar:
-        _pbar = tqdm(unit = 'isoforms', desc='Processed', total=pbar_tot)
-    
-    # A dictionary which will contain the  future object
+        _pbar = tqdm(unit=pbar_unit, desc='Processed')
+        
+    # A dictionary which will contain the future object
+    max_queue = n_process + 10
     futures = {}
     n_job_in_queue = 0
+    
+    # make sure the result is yield in the order of submit.
+    job_idx = 0
+    job_to_yield = 0
+    job_completed = {}
+
     while True:
         while n_job_in_queue < max_queue:
             i = next(iterator, None)
             if i is None:
                 break
-            futures[executor.submit(func, i, *arg, **kwargs)] = None
+            futures[executor.submit(func, i, *arg, **kwargs)] = (pbar_func(i),job_idx)
+            job_idx += 1
             n_job_in_queue += 1
 
         # will wait until as least one job finished
+        # batch size as value, release the cpu as soon as one job finished
         job = next(as_completed(futures), None)
-        
         # no more job  
-        if job is None:
-            break
-        # otherwise
-        else:
-            n_job_in_queue -= 1
-            # update pregress bar based on batch size
-            if pbar:
-                _pbar.update(pbar_update)
-            yield job
+        if job is not None:
+            job_completed[futures[job][1]] = job, futures[job][0]
             del futures[job]
+            #print(job_completed.keys())
+            # check order
+            if  job_to_yield in job_completed.keys():
+                n_job_in_queue -= 1
+                # update pregress bar based on batch size
+                if pbar:
+                    _pbar.update(job_completed[job_to_yield][1])
+                yield job_completed[job_to_yield][0]
+                del job_completed[job_to_yield]
+                job_to_yield += 1
+        # all jobs finished: yield complelted job in the submit order
+        else:
+            while len(job_completed):
+                if pbar:
+                    _pbar.update(job_completed[job_to_yield][1])
+                yield job_completed[job_to_yield][0]
+                del job_completed[job_to_yield]
+                job_to_yield += 1
+            break
 
 # get file with a certian extensions
 def get_files(search_dir, extensions, recursive=True):
@@ -185,3 +224,22 @@ def batch_iterator(iterator, batch_size):
             i = 0
     if len(batch):
         yield batch
+
+
+def read_chunk_generator(file_handle, chunck_size):
+    """generateor of batches of items in a iterator with batch_size.
+    """
+    lines = []
+    i=0
+    chunk_number = 0
+    for line in file_handle:
+        i += 1
+        lines.append(line)
+        if i == chunck_size:
+            # print(f"chunk {chunk_number} is ready")
+            yield lines
+            chunk_number += 1
+            lines = []
+            i = 0
+    if len(lines):
+        yield lines

@@ -70,8 +70,8 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2_dir, 
     if (file_test("-f", file.path(minimap2_dir, "k8")) && file_test("-f", file.path(minimap2_dir,
       "paftools.js"))) {
       paftoolsjs_path <- minimap2_dir
-    } else if ((file_test("-f", file.path(dirname(minimap2_dir), "k8")) && file_test("-f",
-      file.path(dirname(minimap2_dir), "paftools.js")))) {
+    } else if (file_test("-f", file.path(dirname(minimap2_dir), "k8")) && file_test("-f",
+      file.path(dirname(minimap2_dir), "paftools.js"))) {
       paftoolsjs_path <- dirname(minimap2_dir)
     } else {
       stop("Could not locate k8 and/or paftools.js in the minimap2 folder, they are required for converting annotation to bed12 files")
@@ -93,7 +93,7 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2_dir, 
   # /.../GRCm38.primary_assembly.genome.fa /.../trimmed_MSC.fastq.gz
   if (is.character(samtools)) {
     minimap2_status <- base::system2(command = file.path(minimap2_dir, "minimap2"),
-      args = base::append(minimap2_args, c(fa_file, fq_in, "|", samtools, "view -bS -@ 4 -m 2G -o",
+      args = base::append(minimap2_args, c(fa_file, fq_in, "|", samtools, "view -bS -@ 4 -o",
         file.path(outdir, paste0(prefix, "tmp_align.bam")), "-")))
     if (!is.null(base::attr(minimap2_status, "status")) && base::attr(minimap2_status,
       "status") != 0) {
@@ -189,7 +189,7 @@ minimap2_realign <- function(config, fq_in, outdir, minimap2_dir, prefix = NULL,
   if (is.character(samtools)) {
     minimap2_status <- base::system2(command = file.path(minimap2_dir, "minimap2"),
       args = base::append(minimap2_args, c(file.path(outdir, "transcript_assembly.fa"),
-        fq_in, "|", samtools, "view -bS -@ 4 -m 2G -o", file.path(outdir,
+        fq_in, "|", samtools, "view -bS -@ 4 -o", file.path(outdir,
           paste0(prefix, "tmp_align.bam")), "-")))
     if (!is.null(base::attr(minimap2_status, "status")) && base::attr(minimap2_status,
       "status") != 0) {
@@ -233,48 +233,44 @@ minimap2_realign <- function(config, fq_in, outdir, minimap2_dir, prefix = NULL,
 #' locate_minimap2_dir()
 #' @export
 locate_minimap2_dir <- function(minimap2_dir = NULL) {
-  if (is.null(minimap2_dir)) {
-    which_minimap2 <- base::system2(command = "which", args = c("minimap2"),
-      stdout = TRUE, stderr = TRUE)
-    if (!is.null(base::attr(which_minimap2, "status")) && base::attr(which_minimap2,
-      "status") != 0) {
-      tryCatch({
-        x <- base::system(command = "/usr/bin/modulecmd bash load minimap2",
-          intern = TRUE)
-        minimap2_dir <- dirname(base::system(command = paste0(x, "which minimap2"),
-          intern = TRUE))
-      }, error = function(x) {
-        # stop(paste0('error finding minimap2:\n', which_minimap2))
-        return(FALSE)
-      })
-    } else {
-      minimap2_dir <- dirname(which_minimap2)
+  if (!is.null(minimap2_dir)) { 
+    if (file_test("-f", minimap2_dir) && grepl("minimap2$", minimap2_dir)) {
+      minimap2_dir <- dirname(minimap2_dir)
+    } else if (!(file_test("-d", minimap2_dir) && file_test("-f", file.path(minimap2_dir, "minimap2")))) {
+      # stop('Error finding minimap2 in minimap2_dir')
+      return(FALSE)
     }
-  } else if (file_test("-f", minimap2_dir) && grepl("minimap2$", minimap2_dir)) {
-    minimap2_dir <- dirname(minimap2_dir)
-  } else if (!(file_test("-d", minimap2_dir) && file_test("-f", file.path(minimap2_dir,
-    "minimap2")))) {
-    # stop('Error finding minimap2 in minimap2_dir')
-    return(FALSE)
+
+    return(minimap2_dir);
   }
-  return(minimap2_dir)
+
+  minimap2_exists <- base::system2(command="command", args=c("-v", "minimap2"));
+  if (minimap2_exists != 0) {
+    # minimap2 can't be found at all
+    return(NULL);
+  }
+
+  which_minimap2 <- base::system2(command = "command", args = c("-v", "minimap2"), stdout = TRUE, stderr = TRUE)
+
+  if (!is.null(which_minimap2)) {
+    return(dirname(which_minimap2))
+  } else {
+    return (NULL);
+  }
 }
 
 locate_samtools <- function() {
-  which_samtools <- base::system2(command = "which", args = c("samtools"), stdout = TRUE,
-    stderr = TRUE)
-  if (!is.null(base::attr(which_samtools, "status")) && base::attr(which_samtools,
-    "status") != 0) {
-    tryCatch({
-      x <- base::system(command = "/usr/bin/modulecmd bash load samtools",
-        intern = TRUE)
-      return(base::system(command = paste0(x, "which samtools"), intern = TRUE))
-    }, error = function(x) {
-      return(FALSE)
-    })
-  } else {
-    return("samtools")
+  which_samtools <- base::system2(command = "command", args = c("-v", "samtools"))
+  if (which_samtools == 0) {
+    return(
+      base::system2(
+        command = "command",
+        args = c("-v", "samtools"),
+        stderr = TRUE, stdout = TRUE
+      )
+    )
   }
+  return(FALSE)
 }
 
 # total mapped primary secondary

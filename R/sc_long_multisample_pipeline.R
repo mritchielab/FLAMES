@@ -91,6 +91,7 @@ sc_long_multisample_pipeline <-
              genome_fa,
              minimap2_dir = NULL,
              barcodes_file = NULL,
+             expect_cell_number = NULL,
              config_file = NULL) {
         checked_args <- check_arguments(
             annotation,
@@ -118,9 +119,6 @@ sc_long_multisample_pipeline <-
                 stop(length(fastqs), " .fq or .fastq file(s) found\n")
             }
 
-            if (config$pipeline_parameters$do_barcode_demultiplex && !is.null(barcodes_file)) {
-                stop("If \"do_barcode_demultiplex\" set to TRUE and \"barcodes_file\" is specified, argument \"fastqs\" must be a list of fastq files, with the same order in \"barcodes_file\"\nYou can also demultiplex the reads with \"FLAMES::find_barcode\"")
-            }
         } else if (any(!file.exists(fastqs))) {
             stop("Please make sure all fastq files exist.")
         }
@@ -128,21 +126,44 @@ sc_long_multisample_pipeline <-
         samples <- gsub("\\.(fastq|fq)(\\.gz)?$", "", basename(fastqs))
         
         if (config$pipeline_parameters$do_barcode_demultiplex && is.null(barcodes_file)) {
-            cat("No barcodes_file provided, running BLAZE to generate it from long reads...")
+            
+            # check if the output exist
+            demux_fn <- file.path(outdir, paste(samples, "matched_reads.fastq", sep = "_"))
+            if (any(file.exists(demux_fn))) {
+                stop(paste0("Error: Found existing demultiplexed fastq files in the output directory.",
+                " If you want to run the demultiplexing step again, please remove the file first,  ",
+                "otherwise please set `do_barcode_demultiplex = FALSE` in the JSON configuration file."))
+            }
+
+            cat("No barcodes_file provided, running BLAZE to generate it from long reads...\n")
+            
             # config the blaze run
-            config$blaze_parameters['output-fastq'] <- 'matched_reads.fastq.gz'
-            config$blaze_parameters['threads'] <- config$blaze_parameters$threads  
-            warning("BLAZE is running with default with --expect-cells ",config$blaze_parameters['expect-cells'],
-                ",\n which meant to be the expected number of cells. If it is very different from your actuall\n"
-                ," expectation, please modify it in the config file.")
+            if (is.null(expect_cell_number)){
+                    stop("'expect_cell_number' is required to run BLAZE for barcode identification. Please specify it.")
+                } else if (length(fastqs) != length(expect_cell_number)) {
+                    stop("Please specify 'expect_cell_number' for each fastq file as a vector of the same length as 'fastqs'.")
+                }
 
             for (i in 1:length(fastqs)) {
-                config$blaze_parameters['output-prefix'] <- paste0(outdir, '/', samples[i], '_')
-                blaze(config$blaze_parameters, fastqs[i])
+
+                blaze(expect_cell_number[i], fastqs[i], 
+                     'output-prefix' = paste0(outdir, '/', samples[i], '_'),
+                     'output-fastq' = 'matched_reads.fastq',
+                    'threads' = config$pipeline_parameters$threads,
+                    'max-edit-distance' = config$barcode_parameters$max_bc_editdistance,
+                    'overwrite' = TRUE)
             }
-            infqs <- file.path(outdir, paste(samples, "matched_reads.fastq.gz", sep = "_"))
+
+            infqs <- file.path(outdir, paste(samples, "matched_reads.fastq", sep = "_"))
         } else if (config$pipeline_parameters$do_barcode_demultiplex && length(barcodes_file) >= 1) {
-              
+            
+            demux_fn <- file.path(outdir, paste(samples, "matched_reads.fastq", sep = "_"))
+            if (any(file.exists(demux_fn))) {
+                stop(paste0("Error: Found existing demultiplexed fastq files in the output directory.",
+                " If you want to run the demultiplexing step again, please remove the file first,  ",
+                "otherwise please set `do_barcode_demultiplex = FALSE` in the JSON configuration file."))
+            }
+            
             if (!all(file.exists(barcodes_file))) {
                 stop("Please make sure all barcodes_file file exists.\n")
             }
@@ -162,6 +183,8 @@ sc_long_multisample_pipeline <-
                     reads_out = infqs[i],
                     pattern = setNames(as.character(config$barcode_parameters$pattern), 
                                        names(config$barcode_parameters$pattern)),
+                    TSO_seq = config$barcode_parameters$TSO,
+                    TSO_prime = config$barcode_parameters$TSO_prime,
                     max_bc_editdistance = config$barcode_parameters$max_bc_editdistance, 
                     max_flank_editdistance = config$barcode_parameters$max_flank_editdistance,
                     full_length_only = config$barcode_parameters$full_length_only,
@@ -222,6 +245,12 @@ sc_long_multisample_pipeline <-
             cat("#### Skip aligning reads to genome\n")
         }
 
+        # gene quantification and UMI deduplication
+        if (config$pipeline_parameters$do_gene_quantification) {
+            quantify_gene(annotation, outdir, config$pipeline_parameters$threads,
+                        pipeline = "sc_multi_sample")
+        }
+
         # find isofroms
         if (config$pipeline_parameters$do_isoform_identification) {
             find_isoform(annotation, genome_fa, genome_bam, outdir, config)
@@ -230,20 +259,25 @@ sc_long_multisample_pipeline <-
         # realign to transcript
         if (config$pipeline_parameters$do_read_realignment) {
             cat("#### Realign to transcript using minimap2\n")
+            if (config$pipeline_parameters$do_gene_quantification) { 
+                infqs_realign <- file.path(outdir, paste(samples, "matched_reads_dedup.fastq", sep = "_"))
+            } else {
+                infqs_realign <- infqs
+            }
             for (i in 1:length(samples)) {
                 cat(paste0(c("\tRealigning sample ", samples[i], "...\n")))
-                minimap2_realign(config, infqs[i], outdir, minimap2_dir, prefix = samples[i], 
+                minimap2_realign(config, infqs_realign[i], outdir, minimap2_dir, prefix = samples[i], 
                                  threads = config$pipeline_parameters$threads)
             }
         } else {
             cat("#### Skip read realignment\n")
         }
 
-        # quantification
+        # transcript quantification
         # TODO: implement filtering in R
         if (config$pipeline_parameters$do_transcript_quantification) {
             cat("#### Generating transcript count matrix\n")
-            quantify(annotation = annotation, outdir = outdir, config = config, pipeline = "sc_multi_sample")
+            quantify_transcript(annotation = annotation, outdir = outdir, config = config, pipeline = "sc_multi_sample")
 
             sce_list <- as.list(1:length(samples))
             names(sce_list) <- samples
