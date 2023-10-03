@@ -21,11 +21,8 @@
 #' fastq1 <- bfc[[names(BiocFileCache::bfcadd(bfc, 'Fastq1', fastq1_url))]]
 #' outdir <- tempfile()
 #' dir.create(outdir)
-#' config = jsonlite::fromJSON(system.file('extdata/template_config.json', package = 'FLAMES'))
-#' config$blaze_parameters['output-prefix'] <- outdir
-#' \dontrun{
-#'    blaze(config$blaze_parameters, fastq1)
-#' }
+#' blaze(expect_cells=10, fastq1, overwrite=TRUE)
+#' 
 #' @importFrom reticulate import_from_path dict
 #' @export
 blaze <- function(expect_cells, fq_in, ...) {
@@ -39,7 +36,7 @@ blaze <- function(expect_cells, fq_in, ...) {
         if (length(blaze_config) > 0) {
             # handle the switch options first as they do not have values
             if ('overwrite' %in% names(blaze_config) && blaze_config$`overwrite` == TRUE) {
-                blaze_argv <- paste(blaze_argv, '--overwrite ')
+                blaze_argv <- paste(blaze_argv, '--overwrite --minimal_stdout ')
             }
             
             print(blaze_config)
