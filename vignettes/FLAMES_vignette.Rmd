@@ -127,7 +127,7 @@ if (is.character(minimap2_dir)) { # do not run if minimap2 cannot be found
 
 ## Visulisation
 The `combine_sce()` and `sc_annotate_plots()` can be used for visulisation with experiment designs similar to `FLT-seq`. The `combine_sce()` function combines the `SingleCellExperiment` objects of 1) the short-read gene counts from the larger subsample, 2) the short-read gene counts from the smaller subsample and 3) the transcript counts from the larger subsample into a `MultiAssayExperiment` object. The `sc_annotate_plots()` function can then use it to produce annotated plots.
-```{r, eval=TRUE, message=FALSE, warning=FALSE}
+```{r, eval=FALSE, message=FALSE, warning=FALSE}
 library(FLAMES)
 library(MultiAssayExperiment)
 
