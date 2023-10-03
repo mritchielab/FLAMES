@@ -50,10 +50,14 @@ scmixology_lib90 <- scuttle::addPerCellQC(scmixology_lib90)
 scmixology_lib90 <- scuttle::addPerFeatureQC(scmixology_lib90)
 # scmixology_lib10 <- scuttle::addPerCellQC(scmixology_lib10)
 # scmixology_lib10 <- scuttle::addPerFeatureQC(scmixology_lib10)
-scmixology_lib90 <- scmixology_lib90[(rowData(scmixology_lib90)$detected > 5 & rowData(scmixology_lib90)$mean > 2),]
+scmixology_lib90 <- scmixology_lib90[(rowData(scmixology_lib90)$detected > 5 & rowData(scmixology_lib90)$mean > 3),]
+scmixology_lib90 <- scmixology_lib90[, (scmixology_lib90$detected > 5500 & scmixology_lib90$sum > 30000)]
 
-# WIP
+gene_intersection <- intersect(rownames(scmixology_lib90), rownames(scmixology_lib10))
+scmixology_lib90 <- scmixology_lib90[gene_intersection, ]
+scmixology_lib10 <- scmixology_lib10[gene_intersection, ]
 
-#gene_intersection <- intersect(rownames(scmixology_lib90), rownames(scmixology_lib10))
-#scmixology_lib90 <- scmixology_lib90[gene_intersection, ]
-#scmixology_lib10 <- scmixology_lib10[gene_intersection, ]
+scmixology_lib10_transcripts <- scmixology_lib10_transcripts[,colnames(scmixology_lib10_transcripts) %in% colnames(scmixology_lib10)]
+scmixology_lib10_transcripts <- scmixology_lib10_transcripts[rowData(scmixology_lib10_transcripts)$gene_id %in% gene_intersection, ]
+
+usethis::use_data(scmixology_lib90, scmixology_lib10, scmixology_lib10_transcripts, overwrite = TRUE)

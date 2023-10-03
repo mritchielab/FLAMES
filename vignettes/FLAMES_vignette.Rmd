@@ -135,15 +135,16 @@ combined_sce <- combine_sce(
     short_read_large = scmixology_lib90,
     short_read_small = scmixology_lib10,
     long_read_sce = scmixology_lib10_transcripts,
-    remove_duplicates = FALSE)
+    remove_duplicates = FALSE) |>
+  sc_reduce_dims(n_pcs = 20, n_hvgs = 1000)
 
 sc_umap_expression(gene = "ENSG00000108107", multiAssay = combined_sce)
 sc_heatmap_expression(gene = "ENSG00000108107", multiAssay = combined_sce)
 
 scater::plotReducedDim(
-    experiments(plots[["multiAssay"]])$gene_counts,
+    experiments(combined_sce)$gene_counts,
     dimred = "PCA",
-    colour_by = colData(plots[["multiAssay"]]
+    colour_by = colData(combined_sce
         [,,"gene_counts"])[,"Lib_small",drop=FALSE])
 ```
 

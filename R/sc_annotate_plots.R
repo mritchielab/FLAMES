@@ -83,11 +83,39 @@ combine_sce <- function(short_read_large, short_read_small, long_read_sce, remov
     transcript_counts = long_read_sce), sampleMap = sampleMap, colData = colLib))
 }
 
+#' runPCA and runUMAP wrapper
+#'
+#' runPCA and runUMAP wrapper for combined SCE object from \code{combine_sce} 
+#'
+#' @details
+#' This function takes the combined \code{MultiAssayExperiment} object from 
+#' \code{combine_sce} and run \code{scater::runUMAP} and / or \code{scran::fixedPCA}
+#'
+#' @param multiAssay The \code{MultiAssayExperiment} object from \code{combine_sce()}.
+#' @param n_pcs The number of principal components to generate.
+#' @param n_hvgs The number of variable genes to use for running PCA.
+#'
+#' @return the \code{MultiAssayExperiment} with reduced dimensions
+#' 
+#' @examples
+#' combined_sce <- combine_sce(
+#'     short_read_large = scmixology_lib90,
+#'     short_read_small = scmixology_lib10,
+#'     long_read_sce = scmixology_lib10_transcripts,
+#'     remove_duplicates = FALSE)
+#' sc_reduce_dims(multiAssay = combined_sce)
+#' 
 #' @importFrom scater runUMAP
-#' @importFrom scuttle logNormCounts
+#' @importFrom scuttle logNormCounts computeLibraryFactors quickPerCellQC
+#' @importFrom scran fixedPCA getTopHVGs modelGeneVar
+#' 
+#' @export
+#' @md
 sc_reduce_dims <- function(multiAssay, n_pcs = 40, n_hvgs = 2000) {
 
-  experiments(multiAssay)$transcript_counts <- logNormCounts(experiments(multiAssay)$transcript_counts)
+  experiments(multiAssay)$transcript_counts <- experiments(multiAssay)$transcript_counts |>
+    quickPerCellQC() |>
+    logNormCounts()
   if (!"mean" %in% names(rowData(experiments(multiAssay)$transcript_counts))) {
     experiments(multiAssay)$transcript_counts <- addPerFeatureQC(experiments(multiAssay)$transcript_counts)  # needed for sorting
   }
@@ -95,7 +123,9 @@ sc_reduce_dims <- function(multiAssay, n_pcs = 40, n_hvgs = 2000) {
   if (!("PCA" %in% reducedDimNames(experiments(multiAssay)$gene_counts)) || dim(experiments(multiAssay)$gene_counts@int_colData$reducedDims$PCA)[2] <
     n_pcs) {
     cat("Running PCA for experiments(multiAssay)$gene_counts ...\n")
-    experiments(multiAssay)$gene_counts <- logNormCounts(experiments(multiAssay)$gene_counts)
+    experiments(multiAssay)$gene_counts <- experiments(multiAssay)$gene_counts |>
+      quickPerCellQC() |>
+      logNormCounts()
     hvgs <- getTopHVGs(modelGeneVar(experiments(multiAssay)$gene_counts), n = n_hvgs)
     experiments(multiAssay)$gene_counts <- fixedPCA(experiments(multiAssay)$gene_counts,
       rank = n_pcs, subset.row = hvgs)
