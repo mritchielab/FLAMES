@@ -85,6 +85,7 @@ find_barcode <- function(
   }
 }
 
+#' @importFrom utils read.delim
 convert_cellranger_bc <- function(bc_allow, bc_from, bc_to) {
   from <- read.delim(bc_from, header = FALSE)$V1
   to <- read.delim(bc_to, header = FALSE)$V1

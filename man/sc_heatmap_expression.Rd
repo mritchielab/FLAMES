@@ -52,20 +52,11 @@ This function takes the combined \code{MultiAssayExperiment} object from
 \code{combine_sce} and plots an expression heatmap with the isoform alignment visualisations.
 }
 \examples{
-source(system.file("examples/scmixology1.R", package = "FLAMES"))
-scm_lib80 <- scuttle::addPerCellQC(scm_lib80)
-scm_lib20 <- scuttle::addPerCellQC(scm_lib20)
-qc_80 <- scuttle::quickPerCellQC(colData(scm_lib80))
-qc_20 <- scuttle::quickPerCellQC(colData(scm_lib20))
-qc_80$discard[scm_lib80$sum < 10000] <- TRUE
-qc_20$discard[scm_lib20$sum < 20000] <- TRUE
-
 combined_sce <- combine_sce(
-    short_read_large = scm_lib80[,!qc_80$discard],
-    short_read_small = scm_lib20[,!qc_20$discard],
-    long_read_sce = scm_lib20_transcripts,
+    short_read_large = scmixology_lib90,
+    short_read_small = scmixology_lib10,
+    long_read_sce = scmixology_lib10_transcripts,
     remove_duplicates = FALSE)
-
 sc_heatmap_expression(gene = "ENSG00000108107", multiAssay = combined_sce)
 
 }

@@ -50,18 +50,10 @@ This function takes the combined \code{MultiAssayExperiment} object from
 are colored by expression levels. When \code{grided = TRUE}, the UMAPs are combined into a grid, along with the isoforms' visualization along genomic coordinates. Produces a single UMAP with isoform expressions colored by \code{col_low} and \code{col_high} when \code{grided = FALSE}.
 }
 \examples{
-source(system.file("examples/scmixology1.R", package = "FLAMES"))
-scm_lib80 <- scuttle::addPerCellQC(scm_lib80)
-scm_lib20 <- scuttle::addPerCellQC(scm_lib20)
-qc_80 <- scuttle::quickPerCellQC(colData(scm_lib80))
-qc_20 <- scuttle::quickPerCellQC(colData(scm_lib20))
-qc_80$discard[scm_lib80$sum < 10000] <- TRUE
-qc_20$discard[scm_lib20$sum < 20000] <- TRUE
-
 combined_sce <- combine_sce(
-    short_read_large = scm_lib80[,!qc_80$discard],
-    short_read_small = scm_lib20[,!qc_20$discard],
-    long_read_sce = scm_lib20_transcripts,
+    short_read_large = scmixology_lib90,
+    short_read_small = scmixology_lib10,
+    long_read_sce = scmixology_lib10_transcripts,
     remove_duplicates = FALSE)
 
 sc_umap_expression(gene = "ENSG00000108107", multiAssay = combined_sce)

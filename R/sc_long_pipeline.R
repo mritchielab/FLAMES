@@ -292,6 +292,8 @@ sc_long_pipeline <-
         }
     }
 
+#' @importFrom utils read.csv
+#' @importFrom GenomicRanges GRangesList GRanges
 generate_sc_sce <- function(out_files, load_genome_anno = NULL, create_function) {
     # this method requires testing using single cell data
     mdata <- list(
