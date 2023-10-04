@@ -1,4 +1,5 @@
 #' @importFrom reticulate import_from_path dict
+#' @importFrom basilisk basiliskRun
 parse_realigned_bam <-
     function(bam_in,
              fa_idx_f,
@@ -7,7 +8,7 @@ parse_realigned_bam <-
              min_read_coverage,
              bc_file) {
         ret <-
-            callBasilisk(flames_env, function(bam_in,
+            basiliskRun(env = flames_env, fun = function(bam_in,
                                               fa_idx_f,
                                               min_sup_reads,
                                               min_tr_coverage,
@@ -43,6 +44,7 @@ parse_realigned_bam <-
     }
 
 #' @importFrom reticulate import_from_path
+#' @importFrom basilisk basiliskRun
 #' @importFrom future plan
 wrt_tr_to_csv <-
     function(bc_tr_count_dict,
@@ -51,7 +53,7 @@ wrt_tr_to_csv <-
              transcript_dict_ref = NULL,
              has_UMI = TRUE) {
         future::plan(future::multisession)
-        callBasilisk(flames_env, function(bc_tr_count_dict,
+        basiliskRun(env = flames_env, fun = function(bc_tr_count_dict,
                                           transcript_dict,
                                           csv_f,
                                           transcript_dict_ref,
@@ -101,6 +103,7 @@ wrt_tr_to_csv <-
 #' \code{bulk} (bulk, single or multi-sample), or \code{sc_multi_sample} (single-cell, multiple samples)
 #' @return The count matrix will be saved in the output folder as \code{transcript_count.csv.gz}.
 #' @importFrom reticulate import_from_path dict
+#' @importFrom basilisk basiliskRun
 quantify_gene <- function(annotation, outdir, n_process, pipeline = "sc_single_sample") {
     cat(format(Sys.time(), "%X %a %b %d %Y"), "quantify genes \n")
 
@@ -116,7 +119,7 @@ quantify_gene <- function(annotation, outdir, n_process, pipeline = "sc_single_s
         stop("Incorrect number of genome alignment files found.\n")
     }
     
-    callBasilisk(flames_env, function(annotation, outdir,pipeline) {
+    basiliskRun(env = flames_env, fun = function(annotation, outdir,pipeline) {
         python_path <- system.file("python", package = "FLAMES")
         count <- reticulate::import_from_path("count_gene", python_path)
         count$quantification(annotation, outdir, pipeline, n_process)
@@ -135,6 +138,7 @@ quantify_gene <- function(annotation, outdir, n_process, pipeline = "sc_single_s
 #' @param pipeline The pipeline type as a character string, either \code{sc_single_sample} (single-cell, single-sample),
 #' \code{bulk} (bulk, single or multi-sample), or \code{sc_multi_sample} (single-cell, multiple samples)
 #' @return The count matrix will be saved in the output folder as \code{transcript_count.csv.gz}.
+#' @importFrom basilisk basiliskRun
 #' @importFrom reticulate import_from_path dict
 #' @examples
 #' temp_path <- tempfile()
@@ -173,7 +177,7 @@ quantify_transcript <- function(annotation, outdir, config, pipeline = "sc_singl
         stop("Incorrect number of realignment files found.\n")
     }
     
-    callBasilisk(flames_env, function(config_dict, annotation, outdir, pipeline) {
+    basiliskRun(env = flames_env, fun = function(config_dict, annotation, outdir, pipeline) {
         python_path <- system.file("python", package = "FLAMES")
         count <- reticulate::import_from_path("count_tr", python_path)
         count$quantification(config_dict, annotation, outdir, pipeline)

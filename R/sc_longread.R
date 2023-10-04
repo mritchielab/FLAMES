@@ -1,6 +1,7 @@
 #' @importFrom reticulate import_from_path
+#' @importFrom basilisk basiliskRun
 blocks_to_junctions <- function(block) {
-    junctions <- callBasilisk(flames_env, function(block) {
+    junctions <- basiliskRun(env = flames_env, fun = function(block) {
         python_path <- system.file("python", package = "FLAMES")
 
         sc <-
@@ -12,11 +13,12 @@ blocks_to_junctions <- function(block) {
 }
 
 #' @importFrom reticulate import_from_path
+#' @importFrom basilisk basiliskRun
 remove_similar_tr <-
     function(gene_to_transcript,
              transcript_to_exon,
              thr = 10) {
-        callBasilisk(flames_env, function(gene_tran, tr_exon, thr) {
+        basiliskRun(env = flames_env, fun = function(gene_tran, tr_exon, thr) {
             python_path <- system.file("python", package = "FLAMES")
 
             sc <-
@@ -31,9 +33,10 @@ remove_similar_tr <-
     }
 
 #' @importFrom reticulate import_from_path
+#' @importFrom basilisk basiliskRun
 get_gene_flat <- function(gene_to_transcript, transcript_to_exon) {
     gene_flat <-
-        callBasilisk(flames_env, function(gene_tran, tran_exon) {
+        basiliskRun(env = flames_env, fun = function(gene_tran, tran_exon) {
             python_path <- system.file("python", package = "FLAMES")
 
             sc <-
@@ -45,12 +48,13 @@ get_gene_flat <- function(gene_to_transcript, transcript_to_exon) {
 }
 
 #' @importFrom reticulate import_from_path
+#' @importFrom basilisk basiliskRun
 get_gene_blocks <-
     function(gene_dict,
              chr_to_gene,
              gene_to_transcript) {
         gene_blocks <-
-            callBasilisk(flames_env, function(g_dict, chr_gene, gene_tran) {
+            basiliskRun(env = flames_env, fun = function(g_dict, chr_gene, gene_tran) {
                 python_path <- system.file("python", package = "FLAMES")
 
                 sc <-
@@ -63,6 +67,7 @@ get_gene_blocks <-
     }
 
 #' @importFrom reticulate import_from_path
+#' @importFrom basilisk basiliskRun
 group_bam2isoform <-
     function(bam_in,
              out_gff3,
@@ -76,7 +81,7 @@ group_bam2isoform <-
              config,
              downsample_ratio,
              raw_gff3 = NULL) {
-        callBasilisk(flames_env, function(bin,
+        basiliskRun(env = flames_env, fun = function(bin,
                                           o_gff3,
                                           o_stat,
                                           summary,

@@ -1,4 +1,5 @@
 #' @importFrom reticulate import_from_path
+#' @importFrom basilisk basiliskRun
 annotate_filter_gff <-
     function(isoform_gff,
              ref_gff,
@@ -6,7 +7,7 @@ annotate_filter_gff <-
              anno_out,
              tr_cnt,
              min_sup_reads) {
-        callBasilisk(flames_env, function(isoform_gff,
+        basiliskRun(env = flames_env, fun = function(isoform_gff,
                                           ref_gff,
                                           isoform_out,
                                           anno_out,
@@ -34,10 +35,11 @@ annotate_filter_gff <-
     }
 
 
-
+#' @importFrom reticulate import_from_path
+#' @importFrom basilisk basiliskRun
 annotate_full_splice_match_all_sample <-
     function(anno_out, isoform_gff, ref_gff) {
-        callBasilisk(flames_env, function(anno_out, isoform_gff, ref_gff) {
+        basiliskRun(env = flames_env, fun = function(anno_out, isoform_gff, ref_gff) {
             python_path <- system.file("python", package = "FLAMES")
 
             filter <-

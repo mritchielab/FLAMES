@@ -24,6 +24,7 @@
 #' blaze(expect_cells=10, fastq1, overwrite=TRUE)
 #' 
 #' @importFrom reticulate import_from_path dict
+#' @importFrom basilisk basiliskRun
 #' @export
 blaze <- function(expect_cells, fq_in, ...) {
         # prepare command-line-style arguments for blaze        
@@ -57,7 +58,7 @@ blaze <- function(expect_cells, fq_in, ...) {
 
         # run blaze
         ret <-
-            callBasilisk(flames_env, function(blaze_argv) {
+            basiliskRun(env = flames_env, fun = function(blaze_argv) {
                 # blaze_path <- system.file("blaze", package = "FLAMES")
                 cat("Running BLAZE...\n")
                 cat("Argument: ", blaze_argv, "\n")

@@ -6,8 +6,9 @@
 #' @return returns NULL
 #' @export
 #' @importFrom reticulate import_from_path
+#' @importFrom basilisk basiliskRun
 demultiplex_sockeye <- function(fastq_dir, sockeye_tsv, out_fq) {
-    callBasilisk(flames_env, function(fastq_dir_, sockeye_tsv_, out_fq_) {
+    basiliskRun(env = flames_env, fun = function(fastq_dir_, sockeye_tsv_, out_fq_) {
         python_path <- system.file("python", package = "FLAMES")
         demult <- reticulate::import_from_path("demultiplex_sockeye", python_path)
         ret <- demult$demultiplex_sockeye(fastq_dir_, sockeye_tsv_, out_fq_)
