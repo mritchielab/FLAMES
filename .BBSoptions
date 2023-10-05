@@ -1,0 +1,3 @@
+# .BBSoptions should contain UnsupportedPlatforms: win32, as builds on Windows 32-bit are not supported.
+# https://www.bioconductor.org/packages/release/bioc/vignettes/basilisk/inst/doc/motivation.html#setting-up-the-package
+UnsupportedPlatforms: win32
