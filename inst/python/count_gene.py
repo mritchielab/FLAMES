@@ -116,24 +116,22 @@ def get_read_to_gene_assignment(in_bam, gene_idx_df, methods):
                                         "overlap": overlaps, "read_length": read_lengths})  
     # close bam file
     bam_file.close()
-
+    # deduplication row with same gene_id and read_id
+    read_gene_assign_df.drop_duplicates(subset=['gene_id', 'read_id'], inplace=True)
     # get the unambiguous read to gene assignment
     dup_mask = read_gene_assign_df.duplicated(subset='read_id', keep = False)
     unambig_df = read_gene_assign_df[~dup_mask]
     # resolve the read assigned to multipe genes
     ambig_df = read_gene_assign_df[dup_mask].sort_values(
-        by=['read_id', 'gene_id','overlap'], ascending = [True, True, False])
+        by=['read_id','overlap'], ascending = [True, False])
     
     # for the read assigned to multiple genes, keep the one with the largest overlap
-    pre_id, pre_overlap, pre_idx, pre_gene = None, None, None, None
+    pre_id, pre_overlap, pre_idx = None, None, None
     row_idx_to_drop = []
     for read in ambig_df.itertuples():
         if read.read_id != pre_id:
-            pre_id, pre_overlap, pre_idx, pre_gene = \
-                read.read_id, read.overlap, read.Index, read.gene_id
-        elif read.gene_id == pre_gene:
-            # this is usually indicate duplicated read id in the input fastq file
-            row_idx_to_drop.append(read.Index)
+            pre_id, pre_overlap, pre_idx = \
+                read.read_id, read.overlap, read.Index
         elif read.overlap < pre_overlap:
             row_idx_to_drop.append(read.Index)
         elif read.overlap == pre_overlap:
@@ -150,12 +148,12 @@ def get_read_to_gene_assignment(in_bam, gene_idx_df, methods):
     read_gene_assign_df[['chr_name', 'bc', 'gene_id']] =\
           read_gene_assign_df[['chr_name','bc', 'gene_id']].astype('category')
 
-
+    # check if there are remaining reads assigned to multiple genes
     dup_mask = recovered_ambig_df.duplicated(subset='read_id', keep = False)
-
     if dup_mask.sum():
-        print(recovered_ambig_df[dup_mask].sort_values(by=['read_id', 'overlap']))
-        exit()
+        warning_msg(f"Warning: {dup_mask.sum()} reads are assigned to multiple \
+        genes. Please check the output file for details.")
+
     return read_gene_assign_df
 
 def flames_read_id_parser(read_id, methods = 'flexiplex'):
@@ -196,6 +194,7 @@ def quantify_gene(in_bam, in_gtf, n_process):
     for future in helper.multiprocessing_submit(
                             quantify_gene_single_process, 
                             in_gtf_iter,
+                            pbar=False,
                             n_process=n_process, 
                             in_bam=in_bam, 
                             demulti_methods=demulti_methods):
