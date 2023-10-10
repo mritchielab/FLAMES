@@ -110,10 +110,14 @@ find_isoform_flames <- function(annotation, genome_fa, genome_bam, outdir, confi
 }
 
 #' GTF/GFF to FASTA conversion
-#' @description convert the transcript annotation to transcriptome assembly as FASTA file.
+#' @description convert the transcript annotation to transcriptome assembly as FASTA file. The
+#' genome annotation is first imported as TxDb object and then used to extract transcript sequence
+#' from the genome assembly.
 #' @param isoform_annotation Path to the annotation file (GTF/GFF3)
 #' @param genome_fa The file path to genome fasta file.
 #' @param outdir The path to directory to store the transcriptome as \code{transcript_assembly.fa}.
+#' @param extract_fn (optional) Function to extract \code{GRangesList} from the genome TxDb object.
+#' E.g. \code{function(txdb){GenomicFeatures::cdsBy(txdb, by="tx", use.names=TRUE)}}
 #' @return Path to the outputted transcriptome assembly
 #'
 #' @importFrom Biostrings readDNAStringSet writeXStringSet
@@ -125,15 +129,21 @@ find_isoform_flames <- function(annotation, genome_fa, genome_bam, outdir, confi
 #' cat(readChar(fasta, nchars = 1e3))
 #'
 #' @export
-annotation_to_fasta <- function(isoform_annotation, genome_fa, outdir) {
+annotation_to_fasta <- function(isoform_annotation, genome_fa, outdir, extract_fn) {
   out_file <- file.path(outdir, "transcript_assembly.fa")
 
   dna_string_set <- Biostrings::readDNAStringSet(genome_fa)
   names(dna_string_set) <- gsub(" .*$", "", names(dna_string_set))
-  txdb <- GenomicFeatures::makeTxDbFromGFF(isoform_annotation)
+  if (missing(extract_fn)) {
+    txdb <- GenomicFeatures::makeTxDbFromGFF(isoform_annotation)
+    tr_string_set <- GenomicFeatures::extractTranscriptSeqs(dna_string_set, txdb,
+      use.names = TRUE)
+  } else {
+    extracted_grl<- extract_fn(txdb)
+    tr_string_set <- GenomicFeatures::extractTranscriptSeqs(dna_string_set, extracted_grl)
+    # additional arguments are allowed only when 'transcripts' is not a GRangesList object
+  }
 
-  tr_string_set <- GenomicFeatures::extractTranscriptSeqs(dna_string_set, txdb,
-    use.names = TRUE)
   if (length(names(tr_string_set)) > length(unique(names(tr_string_set)))) {
     cat("Duplicated transcript IDs present, removing ...")
     tr_string_set <- tr_string_set[unique(names(tr_string_set))]

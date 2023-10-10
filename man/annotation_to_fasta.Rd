@@ -4,7 +4,7 @@
 \alias{annotation_to_fasta}
 \title{GTF/GFF to FASTA conversion}
 \usage{
-annotation_to_fasta(isoform_annotation, genome_fa, outdir)
+annotation_to_fasta(isoform_annotation, genome_fa, outdir, extract_fn)
 }
 \arguments{
 \item{isoform_annotation}{Path to the annotation file (GTF/GFF3)}
@@ -12,12 +12,17 @@ annotation_to_fasta(isoform_annotation, genome_fa, outdir)
 \item{genome_fa}{The file path to genome fasta file.}
 
 \item{outdir}{The path to directory to store the transcriptome as \code{transcript_assembly.fa}.}
+
+\item{extract_fn}{(optional) Function to extract \code{GRangesList} from the genome TxDb object.
+E.g. \code{function(txdb){GenomicFeatures::cdsBy(txdb, by="tx", use.names=TRUE)}}}
 }
 \value{
 Path to the outputted transcriptome assembly
 }
 \description{
-convert the transcript annotation to transcriptome assembly as FASTA file.
+convert the transcript annotation to transcriptome assembly as FASTA file. The
+genome annotation is first imported as TxDb object and then used to extract transcript sequence
+from the genome assembly.
 }
 \examples{
 fasta <- annotation_to_fasta(system.file("extdata/rps24.gtf.gz", package = "FLAMES"), system.file("extdata/rps24.fa.gz", package = "FLAMES"), tempdir())
