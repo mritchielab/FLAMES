@@ -6,6 +6,8 @@ from pathlib import Path
 from tqdm import tqdm
 import os
 import sys
+import cProfile
+import pstats
 
 def reverse_complement(seq):
 	'''
@@ -263,3 +265,26 @@ def read_chunk_generator(file_handle, chunck_size):
             i = 0
     if len(lines):
         yield lines
+
+def profile(fn):
+    def profiled_fn(*args, **kwargs):
+        profiler = cProfile.Profile()
+        profiler.enable()
+        result = fn(*args, **kwargs)
+        profiler.disable()
+        profiler.create_stats()
+
+        # Change the filename as needed
+        profile_filename = f"{fn.__name__}_profile.cprof"
+        profiler.dump_stats(profile_filename)
+        
+        # Optionally, print the profiling results
+        print(f"Profiling results for {fn.__name__}:")
+        with open(profile_filename, "rb") as f:
+            stats = pstats.Stats(profiler, stream=f)
+            stats.strip_dirs()
+            stats.sort_stats("cumulative")
+            stats.print_stats()
+        
+        return result
+    return profiled_fn
