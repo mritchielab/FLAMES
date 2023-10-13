@@ -195,7 +195,7 @@ EdlibAlignConfig edlibConf = {flank_max_editd, EDLIB_MODE_HW, EDLIB_TASK_PATH,
 
   std::vector<long unsigned int> subpattern_ends;
   subpattern_ends.resize(subpattern_lengths.size());
-  std::inclusive_scan(subpattern_lengths.begin(), subpattern_lengths.end(),
+  std::partial_sum(subpattern_lengths.begin(), subpattern_lengths.end(),
                       subpattern_ends.begin());
 
   std::vector<int> read_to_subpatterns;

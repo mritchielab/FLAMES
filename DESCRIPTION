@@ -27,7 +27,6 @@ biocViews: RNASeq, SingleCell, Transcriptomics, DataImport,
 License: GPL (>= 2)
 Encoding: UTF-8
 Imports: 
-    arrangements,
     basilisk,
     bambu,
     Biostrings,
