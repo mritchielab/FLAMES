@@ -21,12 +21,12 @@
 #' fastq1 <- bfc[[names(BiocFileCache::bfcadd(bfc, 'Fastq1', fastq1_url))]]
 #' outdir <- tempfile()
 #' dir.create(outdir)
-#' config = jsonlite::fromJSON(system.file('extdata/template_config.json', package = 'FLAMES'))
-#' config$blaze_parameters['output-prefix'] <- outdir
 #' \dontrun{
-#'    blaze(config$blaze_parameters, fastq1)
-#' }
+#' blaze(expect_cells=10, fastq1, overwrite=TRUE)
+#' } 
+#'
 #' @importFrom reticulate import_from_path dict
+#' @importFrom basilisk basiliskRun
 #' @export
 blaze <- function(expect_cells, fq_in, ...) {
         # prepare command-line-style arguments for blaze        
@@ -39,7 +39,7 @@ blaze <- function(expect_cells, fq_in, ...) {
         if (length(blaze_config) > 0) {
             # handle the switch options first as they do not have values
             if ('overwrite' %in% names(blaze_config) && blaze_config$`overwrite` == TRUE) {
-                blaze_argv <- paste(blaze_argv, '--overwrite ')
+                blaze_argv <- paste(blaze_argv, '--overwrite --minimal_stdout ')
             }
             
             print(blaze_config)
@@ -60,7 +60,7 @@ blaze <- function(expect_cells, fq_in, ...) {
 
         # run blaze
         ret <-
-            callBasilisk(flames_env, function(blaze_argv) {
+            basiliskRun(env = flames_env, fun = function(blaze_argv) {
                 # blaze_path <- system.file("blaze", package = "FLAMES")
                 cat("Running BLAZE...\n")
                 cat("Argument: ", blaze_argv, "\n")

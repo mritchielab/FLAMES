@@ -28,7 +28,17 @@
 #' of up to 2 by default. Most of the parameters, such as the minimal distance to splice site and minimal percentage of transcript coverage
 #' can be modified by the JSON configuration file (\code{config_file}).
 #'
-#' @param fastqs Paths to the folder containing fastq files, or vector of paths to each fastq file.
+#' @param fastqs The input fastq files for multiple samples. It can be provided in different way: 1) a single path to 
+#'               the folder containing fastq files, each fastq file will be treated as a sample; or 2) a vector of 
+#'               paths to each fastq file, each fastq file will be treated as a sample; or 3) a vector of paths to 
+#'               folders containing fastq files, each folder will be treated as a sample.
+#' @param sample_names A vector of sample names, 
+#'                     Default to the file names of input fastq files, or folder names if \code{fastqs} is 
+#'                     a vector of folders.
+#' @param expect_cell_numbers A vector of roughly expected numbers of cells in each sample E.g., the targeted number of cells.
+#'                           Required if using BLAZE for demultiplexing, specifically, when the \code{do_barcode_demultiplex} 
+#'                           are \code{TRUE} in the the JSON configuration file and \code{barcodes_file} is not specified.
+#'                           Default is \code{NULL}.
 #' @inheritParams sc_long_pipeline
 #' @return a list of \code{SingleCellExperiment} objects if "do_transcript_quantification" set to true.
 #' Otherwise nothing will be returned.
@@ -89,9 +99,10 @@ sc_long_multisample_pipeline <-
              fastqs,
              outdir,
              genome_fa,
+             sample_names = NULL,
              minimap2_dir = NULL,
              barcodes_file = NULL,
-             expect_cell_number = NULL,
+             expect_cell_numbers = NULL,
              config_file = NULL) {
         checked_args <- check_arguments(
             annotation,
@@ -123,7 +134,20 @@ sc_long_multisample_pipeline <-
             stop("Please make sure all fastq files exist.")
         }
 
-        samples <- gsub("\\.(fastq|fq)(\\.gz)?$", "", basename(fastqs))
+        # check input length of input fastqs, barcodes_file
+        if (!is.null(sample_names)) {
+            if (length(sample_names) != length(fastqs)) {
+                stop("Error: Different number of sample specified in 'sample_names' and 'fastqs'.")
+            } else {
+                samples <- sample_names
+            }
+        } else {
+            samples <- gsub("\\.(fastq|fq)(\\.gz)?$", "", basename(fastqs))
+            if (length(unique(samples)) != length(samples)) {
+                stop("Error: Duplicate sample names found in 'fastqs'. Please specify 'sample_names' to avoid this.")
+            }
+        }
+        
         
         if (config$pipeline_parameters$do_barcode_demultiplex && is.null(barcodes_file)) {
             
@@ -138,15 +162,15 @@ sc_long_multisample_pipeline <-
             cat("No barcodes_file provided, running BLAZE to generate it from long reads...\n")
             
             # config the blaze run
-            if (is.null(expect_cell_number)){
-                    stop("'expect_cell_number' is required to run BLAZE for barcode identification. Please specify it.")
-                } else if (length(fastqs) != length(expect_cell_number)) {
-                    stop("Please specify 'expect_cell_number' for each fastq file as a vector of the same length as 'fastqs'.")
+            if (is.null(expect_cell_numbers)){
+                    stop("'expect_cell_numbers' is required to run BLAZE for barcode identification. Please specify it.")
+                } else if (length(fastqs) != length(expect_cell_numbers)) {
+                    stop("Please specify 'expect_cell_numbers' for each fastq file as a vector of the same length as 'fastqs'.")
                 }
 
             for (i in 1:length(fastqs)) {
 
-                blaze(expect_cell_number[i], fastqs[i], 
+                blaze(expect_cell_numbers[i], fastqs[i], 
                      'output-prefix' = paste0(outdir, '/', samples[i], '_'),
                      'output-fastq' = 'matched_reads.fastq',
                     'threads' = config$pipeline_parameters$threads,

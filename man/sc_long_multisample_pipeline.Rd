@@ -9,20 +9,28 @@ sc_long_multisample_pipeline(
   fastqs,
   outdir,
   genome_fa,
+  sample_names = NULL,
   minimap2_dir = NULL,
   barcodes_file = NULL,
-  expect_cell_number = NULL,
+  expect_cell_numbers = NULL,
   config_file = NULL
 )
 }
 \arguments{
 \item{annotation}{The file path to the annotation file in GFF3 format}
 
-\item{fastqs}{Paths to the folder containing fastq files, or vector of paths to each fastq file.}
+\item{fastqs}{The input fastq files for multiple samples. It can be provided in different way: 1) a single path to
+the folder containing fastq files, each fastq file will be treated as a sample; or 2) a vector of
+paths to each fastq file, each fastq file will be treated as a sample; or 3) a vector of paths to
+folders containing fastq files, each folder will be treated as a sample.}
 
 \item{outdir}{The path to directory to store all output files.}
 
 \item{genome_fa}{The file path to genome fasta file.}
+
+\item{sample_names}{A vector of sample names,
+Default to the file names of input fastq files, or folder names if \code{fastqs} is
+a vector of folders.}
 
 \item{minimap2_dir}{Path to the directory containing minimap2, if it is not in PATH. Only required if either or both of
 \code{do_genome_align} and \code{do_read_realign} are \code{TRUE}.}
@@ -30,10 +38,10 @@ sc_long_multisample_pipeline(
 \item{barcodes_file}{The file path to the reference csv used for demultiplexing in flexiplex. If not specified, the
 demultiplexing will be performed using BLAZE. Default is \code{NULL}.}
 
-\item{expect_cell_number}{Expected number of cells for identifying the barcode list in BLAZE.
-This could be just a rough estimate. E.g., the targeted number of cells.
-Required if the \code{do_barcode_demultiplex} are \code{TRUE} in the the JSON configuration file
-and \code{barcodes_file} is not specified. Default is \code{NULL}.}
+\item{expect_cell_numbers}{A vector of roughly expected numbers of cells in each sample E.g., the targeted number of cells.
+Required if using BLAZE for demultiplexing, specifically, when the \code{do_barcode_demultiplex}
+are \code{TRUE} in the the JSON configuration file and \code{barcodes_file} is not specified.
+Default is \code{NULL}.}
 
 \item{config_file}{File path to the JSON configuration file. If specified, \code{config_file} overrides
 all configuration parameters}

@@ -7,12 +7,11 @@
 #' \dontrun{
 #'  cutadapt("-h")
 #' }
+#' @importFrom reticulate import_from_path
+#' @importFrom basilisk basiliskRun
 #' @export
 cutadapt <- function(args) {
-  callBasilisk(flames_env, function(x) {
-    # python_path <- system.file("python", package = "FLAMES")
-    # mod <- reticulate::import_from_path("cutadapt_wrapper", python_path)
-    # return(mod$wrapper(as.list(x)))
+  basiliskRun(env = flames_env, fun = function(x) {
     subprocess <- reticulate::import("subprocess")
     builtin <- reticulate::import_builtins()
     output <- subprocess$check_output(paste("cutadapt", as.list(x), sep=" "), shell=TRUE)
@@ -22,4 +21,4 @@ cutadapt <- function(args) {
   }, x = args)
 }
 
-#cutadapt -a 'CCCATGTACTCTGCGTTGATACCACTGCTT' -o cutadapt.fq  --untrimmed-output untrimmed.fq ../main/1k.out.fq
+# cutadapt usage: cutadapt -a 'CCCATGTACTCTGCGTTGATACCACTGCTT' -o cutadapt.fq  --untrimmed-output untrimmed.fq ../main/1k.out.fq

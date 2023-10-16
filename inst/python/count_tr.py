@@ -713,14 +713,15 @@ def quantification(config_dict, annotation, outdir, pipeline):
         chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = futures['parse_gff_tree_anno'].result()
         chr_to_gene_i, transcript_dict_i, gene_to_transcript_i, transcript_to_exon_i = futures['parse_gff_tree_iso'].result()
 
-        tr_cnt = wrt_tr_to_csv(bc_tr_count_dict, transcript_dict_i, tr_cnt_csv,
-                                transcript_dict, "UMI" in config_dict["barcode_parameters"]["pattern"].keys(),
-                                print_saturation = False)
-        wrt_tr_to_csv(bc_tr_badcov_count_dict, transcript_dict_i, tr_badcov_cnt_csv,
-                        transcript_dict, "UMI" in config_dict["barcode_parameters"]["pattern"].keys(),
-                        print_saturation = False)
-        annotate_filter_gff(isoform_gff3, annotation, isoform_gff3_f, FSM_anno_out,
-                            tr_cnt, config_dict["isoform_parameters"]["min_sup_cnt"], verbose=False)
+        tr_cnt = wrt_tr_to_csv(
+            bc_tr_count_dict, transcript_dict_i, tr_cnt_csv,
+                transcript_dict, has_UMI=False, print_saturation = False)
+        wrt_tr_to_csv(
+            bc_tr_badcov_count_dict, transcript_dict_i, tr_badcov_cnt_csv,
+                      transcript_dict, has_UMI=False, print_saturation = False)
+        annotate_filter_gff(
+            isoform_gff3, annotation, isoform_gff3_f, FSM_anno_out, tr_cnt, 
+                config_dict["isoform_parameters"]["min_sup_cnt"], verbose=False)
         return
 
     elif pipeline == "sc_multi_sample":

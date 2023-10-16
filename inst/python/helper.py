@@ -6,6 +6,8 @@ from pathlib import Path
 from tqdm import tqdm
 import os
 import sys
+import cProfile
+import pstats
 
 def reverse_complement(seq):
 	'''
@@ -105,15 +107,35 @@ def multiprocessing_submit(func, iterator, n_process=mp.cpu_count()-1 ,
     Yields:
         return type of the func: the yield the result in the order of submit
     """
-    if schduler == 'process':
+    if pbar:
+        _pbar = tqdm(unit=pbar_unit, desc='Processed')
+        pbar_func = lambda *x: 1
+
+    # single process
+
+    if n_process == 1:
+        # a fake future object to make the code compatible with multiprocessing
+        class fake_future:
+            def __init__(self, rst):
+                self.rst = rst
+            def result(self):
+                return self.rst
+        for i in iterator:
+            rst = func(i, *arg, **kwargs)
+            if pbar:
+                _pbar.update(pbar_func(i))
+            yield fake_future(rst)
+        return
+
+    elif schduler == 'process':
+        n_process = min(n_process, mp.cpu_count())
         executor = concurrent.futures.ProcessPoolExecutor(n_process)
     elif schduler == 'thread':
         executor = concurrent.futures.ThreadPoolExecutor(n_process)
     else:
         green_msg('Error in multiprocessing_submit: schduler should be either process or thread', printit=True)
         sys.exit(1)
-    if pbar:
-        _pbar = tqdm(unit=pbar_unit, desc='Processed')
+    
         
     # A dictionary which will contain the future object
     max_queue = n_process + 10
@@ -243,3 +265,26 @@ def read_chunk_generator(file_handle, chunck_size):
             i = 0
     if len(lines):
         yield lines
+
+def profile(fn):
+    def profiled_fn(*args, **kwargs):
+        profiler = cProfile.Profile()
+        profiler.enable()
+        result = fn(*args, **kwargs)
+        profiler.disable()
+        profiler.create_stats()
+
+        # Change the filename as needed
+        profile_filename = f"{fn.__name__}_profile.cprof"
+        profiler.dump_stats(profile_filename)
+        
+        # Optionally, print the profiling results
+        print(f"Profiling results for {fn.__name__}:")
+        with open(profile_filename, "rb") as f:
+            stats = pstats.Stats(profiler, stream=f)
+            stats.strip_dirs()
+            stats.sort_stats("cumulative")
+            stats.print_stats()
+        
+        return result
+    return profiled_fn

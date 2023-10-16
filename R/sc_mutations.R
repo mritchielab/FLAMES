@@ -53,6 +53,7 @@
 #'
 #' @importFrom utils write.csv
 #' @importFrom S4Vectors head
+#' @importFrom basilisk basiliskRun
 #'
 #' @examples
 #' outdir <- tempfile()
@@ -90,7 +91,7 @@ sc_mutations <- function(sce, barcode_tsv, bam_short, out_dir, genome_fa, annot,
     }
 
     python_path <- system.file("python", package = "FLAMES")
-    callBasilisk(flames_env, function(fa, bam, dir, barcode, gff, positions, mincov, reportpct) {
+    basiliskRun(env = flames_env, fun = function(fa, bam, dir, barcode, gff, positions, mincov, reportpct) {
         convert <- reticulate::import_from_path("sc_mutations", python_path)
         convert$sc_mutations(fa, bam, dir, barcode, gff, positions, mincov, reportpct)
     }, fa = genome_fa, bam = ifelse(missing("bam_short"), FALSE, bam_short), dir = out_dir, barcode = barcode_tsv, gff = annot, positions = known_positions, mincov = min_cov, reportpct = report_pct)

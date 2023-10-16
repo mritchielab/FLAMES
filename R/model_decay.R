@@ -8,7 +8,6 @@
 #' @importFrom S4Vectors split
 #' @importFrom GenomicRanges strand
 #' @importFrom BiocGenerics start end
-#' @importFrom arrangements combinations
 #' 
 #' @param annotation path to the GTF annotation file, or the parsed GenomicRanges
 #' object.

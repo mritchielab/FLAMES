@@ -62,22 +62,18 @@ def get_read_to_gene_assignment(in_bam, gene_idx_df, methods):
         positions_5prim, overlaps, read_lengths = [[] for i in range(9)]
     
     # process genes in the gene_idx_df
-    # for gene in tqdm(gene_idx_df.itertuples(), 
-    #                 total=gene_idx_df.shape[0], 
-    #                 desc="Processing Genes", unit="gene"):
     for gene in gene_idx_df.itertuples():
         reads_fetch = bam_file.fetch(gene.chr_name, gene.start, gene.end)
-        #
         # for each reads, get the reference_name, mapping position, strand
         for read in reads_fetch:
             if read.is_supplementary or read.is_secondary or read.is_unmapped:
                 continue
-            
             # get mapped position
             bc, umi, read_id, strand = flames_read_id_parser(read.query_name,methods)
-            #
+            
             # get the overlaps 
-            if read.reference_start > gene.start and read.reference_end < gene.end:
+            if read.reference_start >= gene.start and read.reference_end <= gene.end:
+                # when the read is fully mapped within the gene
                 overlaps.append(read.query_alignment_length)
                 if read.is_reverse ^ (strand == '+'):
                     pos3, pos5 =read.reference_end, read.reference_start
@@ -114,32 +110,31 @@ def get_read_to_gene_assignment(in_bam, gene_idx_df, methods):
                                         "bc": bcs, "umi": umis, "read_id": read_ids,
                                         "pos_5prim": positions_5prim, "pos_3prim": positions_3prim,
                                         "overlap": overlaps, "read_length": read_lengths})  
-    
     # close bam file
     bam_file.close()
-
+    # deduplication row with same gene_id and read_id
+    read_gene_assign_df.drop_duplicates(subset=['gene_id', 'read_id'], inplace=True)
     # get the unambiguous read to gene assignment
     dup_mask = read_gene_assign_df.duplicated(subset='read_id', keep = False)
     unambig_df = read_gene_assign_df[~dup_mask]
-
     # resolve the read assigned to multipe genes
-    ambig_df = read_gene_assign_df[dup_mask].sort_values(by=['read_id', 'overlap'],
-                                                         ascending = [True, False])
+    ambig_df = read_gene_assign_df[dup_mask].sort_values(
+        by=['read_id','overlap'], ascending = [True, False])
     
     # for the read assigned to multiple genes, keep the one with the largest overlap
     pre_id, pre_overlap, pre_idx = None, None, None
     row_idx_to_drop = []
     for read in ambig_df.itertuples():
         if read.read_id != pre_id:
-            pre_id, pre_overlap, pre_idx = read.read_id, read.overlap, read.Index
-        elif read.read_id == pre_id and read.overlap < pre_overlap:
+            pre_id, pre_overlap, pre_idx = \
+                read.read_id, read.overlap, read.Index
+        elif read.overlap < pre_overlap:
             row_idx_to_drop.append(read.Index)
-        elif read.read_id == pre_id and read.overlap == pre_overlap:
+        elif read.overlap == pre_overlap:
             row_idx_to_drop.append(read.Index)
             row_idx_to_drop.append(pre_idx)
             
     recovered_ambig_df = ambig_df.drop(row_idx_to_drop)
-
     ## merge the unambiguous and ambiguous read to gene assignment
     read_gene_assign_df = pd.concat([unambig_df, recovered_ambig_df])
 
@@ -149,12 +144,11 @@ def get_read_to_gene_assignment(in_bam, gene_idx_df, methods):
     read_gene_assign_df[['chr_name', 'bc', 'gene_id']] =\
           read_gene_assign_df[['chr_name','bc', 'gene_id']].astype('category')
 
-
+    # check if there are remaining reads assigned to multiple genes
     dup_mask = recovered_ambig_df.duplicated(subset='read_id', keep = False)
-
     if dup_mask.sum():
-        print(recovered_ambig_df[dup_mask].sort_values(by=['read_id', 'overlap']))
-        exit()
+        warning_msg(f"Warning: {dup_mask.sum()} reads are assigned to multiple \
+        genes. Please check the output file for details.")
 
     return read_gene_assign_df
 
@@ -167,18 +161,32 @@ def flames_read_id_parser(read_id, methods = 'flexiplex'):
     """
     if methods == 'flexiplex':
         # format: GGATGTTAGGTTACCT-1_AAATCAGTTCTT#de97a0c6-ff84-4528-ab10-721bc5528b57_+1of1
-        bc, umi, _, _, _ = re.split("_|#|1of1", read_id)
+        bc, umi = re.split("_|#|1of1", read_id)[:2] 
         # flexiplex output is always in ployT strand of cDNA
         strand = "+"
         return bc, umi, read_id, strand
     #
     if methods == 'blaze':
-        bc, umi, _, strand = re.split("_|#", read_id)
+        bc, umi, *_, strand = re.split("_|#", read_id)
         return bc, umi, read_id, strand
     else:
         sys.exit("Please specify the correct methods: 'flexiplex' or 'blaze'")
 
 def quantify_gene(in_bam, in_gtf, n_process):
+    """A multi-process wrapper of quantify_gene_single_process 
+       Processing strategy:
+        1. split the gtf file by chromosome
+            2. for each chromosome, run quantify_gene_single_process
+        3. combine the gene count matrix
+       Input:
+        in_bam: bam file path
+        in_gtf: gtf file path
+        n_process: number of process to run
+       return:
+        gene_count_mat: pd.DataFrame, a matrix of gene counts
+        dup_read_lst: a list of duplicated read id
+        umi_lst: a list of umi
+    """
     # identify the demultiplexing methods
     bam_file = pysam.AlignmentFile(in_bam, "rb")
     first_read_id = next(bam_file).query_name
@@ -190,12 +198,13 @@ def quantify_gene(in_bam, in_gtf, n_process):
     chr_names = in_gtf_df.chr_name.unique()
     in_gtf_iter = (in_gtf_df[in_gtf_df.chr_name == x] for x in chr_names)
 
-
+    # run quantify_gene_single_process for each chromosome
     print("Assigning reads to genes...")
     gene_count_mat_dfs, dup_read_lst, umi_lst = [], [], []
     for future in helper.multiprocessing_submit(
                             quantify_gene_single_process, 
                             in_gtf_iter,
+                            pbar=False,
                             n_process=n_process, 
                             in_bam=in_bam, 
                             demulti_methods=demulti_methods):
@@ -217,26 +226,19 @@ def quantify_gene_single_process(in_gtf_df, in_bam, demulti_methods):
     Input:
         in_bam: bam file path
         in_gtf_df: gtf_df contains the subset of gene to run in a single process
-        estimate_saturation: whether to estimate saturation curve
-        plot_saturation_curve: plot filename for saturation curve, if specified, 
-                              `estimate_saturation` is autimatically set to True
+        demulti_methods: demultiplexing methods, 'flexiplex' or 'blaze'
     Output:
         gene_count_mat: a matrix of gene counts
         read_gene_assign_df: a dataframe of read to gene assignment with umi corrected
-    Todo:
-        1. separate the gene assignment df to 1. reads unambiguously assigned to gene 2. reads assigned to multiple gene
-        2. when do the UMI dedup before 1, but need to make sure a same read would not be counted multiple times
     """
 
     read_gene_assign_df = \
         get_read_to_gene_assignment(in_bam, in_gtf_df, methods=demulti_methods)
 
-
-
     # cluster reads with similar genome location (polyT side mapping position)
     print("Clustering reads with similar genome locations ...")
     read_gene_assign_df.sort_values(by=['bc', 'gene_id'], inplace=True)
-    cell_gene_grp = read_gene_assign_df.groupby(['bc', 'gene_id'])
+    cell_gene_grp = read_gene_assign_df.groupby(['bc', 'gene_id'], observed=True)
 
     read_gene_assign_df['cluster'] = \
         cell_gene_grp['pos_3prim'].transform(_map_pos_grouping).astype('category')
@@ -244,13 +246,13 @@ def quantify_gene_single_process(in_gtf_df, in_bam, demulti_methods):
     # correct umi
     print("Correcting UMIs ...")
     read_gene_assign_df['umi_corrected'] = \
-        read_gene_assign_df.groupby(['bc','gene_id','cluster'])['umi']\
+        read_gene_assign_df.groupby(['bc','gene_id','cluster'], observed=True)['umi']\
                            .transform(_umi_correction)
 
     # get gene count
     print("Generating per-gene UMI counts ...")
     gene_count_df = \
-        read_gene_assign_df.groupby(['bc', 'gene_id'])['umi_corrected'].nunique()
+        read_gene_assign_df.groupby(['bc', 'gene_id'], observed=True)['umi_corrected'].nunique()
     
     # convert to matrix
     gene_count_mat = gene_count_df.reset_index().pivot(index='gene_id', 
@@ -343,7 +345,7 @@ def list_duplicated_reads(umi_corrected_df,
 
     out_list = []
     umi_corrected_df = umi_corrected_df[groupby_cols + [umi_col, read_id_col, priority_cols]]
-    for _, group in tqdm(umi_corrected_df.groupby(groupby_cols + [umi_col])):
+    for _, group in tqdm(umi_corrected_df.groupby(groupby_cols + [umi_col], observed=True)):
         if group.shape[0] == 1:
             continue
         else:
@@ -458,17 +460,15 @@ def remove_reads_from_fastq(in_fastq, out_fastq, read_id_lst,
         f_out = open(out_fastq, "w")
 
     read_chunks = helper.read_chunk_generator(f_in, chunk_size)
-    with ThreadPoolExecutor(max_workers=n_process-1) as executor:
-        read_id_lst = set(read_id_lst)
-        # results = [executor.submit(_remove_reads_from_fastq_chunk, input, read_id_set = read_id_lst) for input in read_chunks]
-        results = helper.multiprocessing_submit( _remove_reads_from_fastq_chunk,
-                                        read_chunks,
-                                        n_process,
-                                        read_id_set = read_id_lst,
-                                        schduler = 'thread')
-        
-        for rst in results:
-            f_out.writelines(rst.result())
+    read_id_lst = set(read_id_lst)
+    results = helper.multiprocessing_submit( _remove_reads_from_fastq_chunk,
+                                    read_chunks,
+                                    n_process,
+                                    read_id_set = read_id_lst,
+                                    schduler = 'thread')
+    
+    for rst in results:
+        f_out.writelines(rst.result())
         
     f_in.close()
     f_out.close()

@@ -47,6 +47,7 @@
 #' @importFrom utils write.csv setTxtProgressBar
 #' @importFrom stats chisq.test complete.cases na.omit
 #' @importFrom methods is
+#' @importFrom utils txtProgressBar
 #' @export
 #' @examples
 #' outdir <- tempfile()
