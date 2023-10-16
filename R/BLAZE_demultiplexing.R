@@ -21,8 +21,10 @@
 #' fastq1 <- bfc[[names(BiocFileCache::bfcadd(bfc, 'Fastq1', fastq1_url))]]
 #' outdir <- tempfile()
 #' dir.create(outdir)
+#' \dontrun{
 #' blaze(expect_cells=10, fastq1, overwrite=TRUE)
-#' 
+#' } 
+#'
 #' @importFrom reticulate import_from_path dict
 #' @importFrom basilisk basiliskRun
 #' @export
