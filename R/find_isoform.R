@@ -130,6 +130,22 @@ find_isoform_flames <- function(annotation, genome_fa, genome_bam, outdir, confi
 #'
 #' @export
 annotation_to_fasta <- function(isoform_annotation, genome_fa, outdir, extract_fn) {
+  # check if all the transcript in the annotation is stranded
+  annotation_d <- read.csv(isoform_annotation, sep = "\t", 
+                    header = FALSE, stringsAsFactors = FALSE, 
+                    comment.char = "#")
+  strands  <- annotation_d[,7]
+  if (any(strands == '.')) {
+        strands[strands == '.'] <- '+'
+        annotation_d[,7] <- strands
+        modified_gtf <- paste0(tempfile(),'/tmp.gtf')
+        dir.create(dirname(modified_gtf))
+        write.table(annotation_d, modified_gtf, sep = "\t", 
+                    row.names = FALSE, quote = FALSE, col.names = FALSE)
+        isoform_annotation <- modified_gtf
+    }
+  rm(annotation_d, strands)
+
   out_file <- file.path(outdir, "transcript_assembly.fa")
 
   dna_string_set <- Biostrings::readDNAStringSet(genome_fa)

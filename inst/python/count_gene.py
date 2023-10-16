@@ -62,10 +62,6 @@ def get_read_to_gene_assignment(in_bam, gene_idx_df, methods):
         positions_5prim, overlaps, read_lengths = [[] for i in range(9)]
     
     # process genes in the gene_idx_df
-    # for gene in tqdm(gene_idx_df.itertuples(), 
-    #                 total=gene_idx_df.shape[0], 
-    #                 desc="Processing Genes", unit="gene"):
-    
     for gene in gene_idx_df.itertuples():
         reads_fetch = bam_file.fetch(gene.chr_name, gene.start, gene.end)
         # for each reads, get the reference_name, mapping position, strand
@@ -177,6 +173,20 @@ def flames_read_id_parser(read_id, methods = 'flexiplex'):
         sys.exit("Please specify the correct methods: 'flexiplex' or 'blaze'")
 
 def quantify_gene(in_bam, in_gtf, n_process):
+    """A multi-process wrapper of quantify_gene_single_process 
+       Processing strategy:
+        1. split the gtf file by chromosome
+            2. for each chromosome, run quantify_gene_single_process
+        3. combine the gene count matrix
+       Input:
+        in_bam: bam file path
+        in_gtf: gtf file path
+        n_process: number of process to run
+       return:
+        gene_count_mat: pd.DataFrame, a matrix of gene counts
+        dup_read_lst: a list of duplicated read id
+        umi_lst: a list of umi
+    """
     # identify the demultiplexing methods
     bam_file = pysam.AlignmentFile(in_bam, "rb")
     first_read_id = next(bam_file).query_name
@@ -188,7 +198,7 @@ def quantify_gene(in_bam, in_gtf, n_process):
     chr_names = in_gtf_df.chr_name.unique()
     in_gtf_iter = (in_gtf_df[in_gtf_df.chr_name == x] for x in chr_names)
 
-
+    # run quantify_gene_single_process for each chromosome
     print("Assigning reads to genes...")
     gene_count_mat_dfs, dup_read_lst, umi_lst = [], [], []
     for future in helper.multiprocessing_submit(
@@ -216,15 +226,10 @@ def quantify_gene_single_process(in_gtf_df, in_bam, demulti_methods):
     Input:
         in_bam: bam file path
         in_gtf_df: gtf_df contains the subset of gene to run in a single process
-        estimate_saturation: whether to estimate saturation curve
-        plot_saturation_curve: plot filename for saturation curve, if specified, 
-                              `estimate_saturation` is autimatically set to True
+        demulti_methods: demultiplexing methods, 'flexiplex' or 'blaze'
     Output:
         gene_count_mat: a matrix of gene counts
         read_gene_assign_df: a dataframe of read to gene assignment with umi corrected
-    Todo:
-        1. separate the gene assignment df to 1. reads unambiguously assigned to gene 2. reads assigned to multiple gene
-        2. when do the UMI dedup before 1, but need to make sure a same read would not be counted multiple times
     """
 
     read_gene_assign_df = \
