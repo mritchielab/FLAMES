@@ -8,6 +8,7 @@ import os
 import sys
 import cProfile
 import pstats
+import time
 
 def reverse_complement(seq):
 	'''
@@ -91,8 +92,11 @@ class param:
         return check_res if not silent else True
     
 def multiprocessing_submit(func, iterator, n_process=mp.cpu_count()-1 ,
-                           pbar=True, pbar_unit='Read',pbar_func=len, 
-                           schduler = 'process', *arg, **kwargs):
+                           pbar=True, pbar_unit='Read',pbar_func = lambda *x: 1, 
+                           pbar_format=None,
+                           schduler = 'process', 
+                           preserve_order = True,
+                           *arg, **kwargs):
     """multiple processing or threading, 
     Note: this function is adapted from BLAZE (github.com/shimlab/BLAZE)
     Args:
@@ -107,9 +111,15 @@ def multiprocessing_submit(func, iterator, n_process=mp.cpu_count()-1 ,
     Yields:
         return type of the func: the yield the result in the order of submit
     """
+    if isinstance(iterator, (list, tuple)):
+        iter_len = len(iterator)
+        iterator = iter(iterator)
+    else:
+        iter_len = None
+    
     if pbar:
-        _pbar = tqdm(unit=pbar_unit, desc='Processed')
-        pbar_func = lambda *x: 1
+        _pbar = tqdm(unit=pbar_unit, desc='Processed', 
+                     total=iter_len, bar_format=pbar_format)
 
     # single process
 
@@ -135,54 +145,73 @@ def multiprocessing_submit(func, iterator, n_process=mp.cpu_count()-1 ,
     else:
         green_msg('Error in multiprocessing_submit: schduler should be either process or thread', printit=True)
         sys.exit(1)
-    
-        
+     
     # A dictionary which will contain the future object
     max_queue = n_process + 10
     futures = {}
     n_job_in_queue = 0
-    
-    # make sure the result is yield in the order of submit.
-    job_idx = 0
-    job_to_yield = 0
-    job_completed = {}
 
-    while True:
-        while n_job_in_queue < max_queue:
-            i = next(iterator, None)
-            if i is None:
+    if preserve_order:
+        # make sure the result is yield in the order of submit.
+        job_idx = 0
+        job_to_yield = 0
+        job_completed = {}
+        while True:
+            while n_job_in_queue < max_queue:
+                i = next(iterator, None)
+                if i is None:
+                    break
+                futures[executor.submit(func, i, *arg, **kwargs)] = (pbar_func(i),job_idx)
+                job_idx += 1
+                n_job_in_queue += 1
+
+            # will wait until as least one job finished
+            # batch size as value, release the cpu as soon as one job finished
+            job = next(as_completed(futures), None)
+            # no more job  
+            if job is not None:
+                job_completed[futures[job][1]] = job, futures[job][0]
+                del futures[job]
+                #print(job_completed.keys())
+                # check order
+                if  job_to_yield in job_completed.keys():
+                    n_job_in_queue -= 1
+                    # update pregress bar based on batch size
+                    if pbar:
+                        _pbar.update(job_completed[job_to_yield][1])
+                    yield job_completed[job_to_yield][0]
+                    del job_completed[job_to_yield]
+                    job_to_yield += 1
+            # all jobs finished: yield complelted job in the submit order
+            else:
+                while len(job_completed):
+                    if pbar:
+                        _pbar.update(job_completed[job_to_yield][1])
+                    yield job_completed[job_to_yield][0]
+                    del job_completed[job_to_yield]
+                    job_to_yield += 1
                 break
-            futures[executor.submit(func, i, *arg, **kwargs)] = (pbar_func(i),job_idx)
-            job_idx += 1
-            n_job_in_queue += 1
-
-        # will wait until as least one job finished
-        # batch size as value, release the cpu as soon as one job finished
-        job = next(as_completed(futures), None)
-        # no more job  
-        if job is not None:
-            job_completed[futures[job][1]] = job, futures[job][0]
-            del futures[job]
-            #print(job_completed.keys())
-            # check order
-            if  job_to_yield in job_completed.keys():
+    else:
+        while True:
+            while n_job_in_queue < max_queue:
+                i = next(iterator, None)
+                if i is None:
+                    break
+                futures[executor.submit(func, i, *arg, **kwargs)] = (pbar_func(i),i)
+                n_job_in_queue += 1
+            
+            # will wait until as least one job finished
+            # batch size as value, release the cpu as soon as one job finished
+            job = next(as_completed(futures), None)
+            # no more job  
+            if job is not None:
                 n_job_in_queue -= 1
-                # update pregress bar based on batch size
                 if pbar:
-                    _pbar.update(job_completed[job_to_yield][1])
-                yield job_completed[job_to_yield][0]
-                del job_completed[job_to_yield]
-                job_to_yield += 1
-        # all jobs finished: yield complelted job in the submit order
-        else:
-            while len(job_completed):
-                if pbar:
-                    _pbar.update(job_completed[job_to_yield][1])
-                yield job_completed[job_to_yield][0]
-                del job_completed[job_to_yield]
-                job_to_yield += 1
-            break
-
+                    _pbar.update(futures[job][0])
+                yield job
+                del futures[job]
+            else:
+                break
 # get file with a certian extensions
 def get_files(search_dir, extensions, recursive=True):
     files = []
@@ -268,23 +297,22 @@ def read_chunk_generator(file_handle, chunck_size):
 
 def profile(fn):
     def profiled_fn(*args, **kwargs):
+        
         profiler = cProfile.Profile()
         profiler.enable()
+        start_time = time.time()
         result = fn(*args, **kwargs)
-        profiler.disable()
+        start_time = time.time()
+        end_time = time.time()
+        wall_clock_time = end_time - start_time
         profiler.create_stats()
 
         # Change the filename as needed
         profile_filename = f"{fn.__name__}_profile.cprof"
         profiler.dump_stats(profile_filename)
-        
-        # Optionally, print the profiling results
-        print(f"Profiling results for {fn.__name__}:")
-        with open(profile_filename, "rb") as f:
-            stats = pstats.Stats(profiler, stream=f)
-            stats.strip_dirs()
-            stats.sort_stats("cumulative")
-            stats.print_stats()
-        
+
+        # Calculate the cpu percentage
+        cputime = pstats.Stats(profile_filename).total_tt
+        print(f"CPU percentage: {cputime/wall_clock_time*100}")
         return result
     return profiled_fn

@@ -7,16 +7,16 @@ import numpy as np
 import pandas as pd
 from parse_gene_anno import parseGFF3
 import re
-from tqdm import tqdm
 from collections import Counter
 import fast_edit_distance
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor, as_completed
 import multiprocessing as mp
 import matplotlib.pyplot as plt
 import bisect
+from collections import namedtuple
 
 import helper
-import cProfile
+#import cProfile
 
 def parse_gtf_to_df(in_gtf):
     """
@@ -33,7 +33,7 @@ def parse_gtf_to_df(in_gtf):
         else: 
             continue
     gene_idx_df = pd.DataFrame({"chr_name": chr_name, "gene_id": gene_id, 
-                                "start": start, "end": end})
+                                "start": start, "end": end} )
     return gene_idx_df
 
 def get_read_to_gene_assignment(in_bam, gene_idx_df, methods):
@@ -195,16 +195,20 @@ def quantify_gene(in_bam, in_gtf, n_process):
 
     # spliting the annotated gene by chrom
     in_gtf_df = parse_gtf_to_df(in_gtf)
-    chr_names = in_gtf_df.chr_name.unique()
-    in_gtf_iter = (in_gtf_df[in_gtf_df.chr_name == x] for x in chr_names)
+    in_gtf_list = \
+        [x for x in independent_gene_set_generator(in_gtf_df, in_bam, threads=n_process)]
+    # priorities the process of the largest gene set
+    in_gtf_list = sorted(in_gtf_list, key=lambda x: x.shape[0], reverse=True)
 
     # run quantify_gene_single_process for each chromosome
     print("Assigning reads to genes...")
     gene_count_mat_dfs, dup_read_lst, umi_lst = [], [], []
     for future in helper.multiprocessing_submit(
                             quantify_gene_single_process, 
-                            in_gtf_iter,
-                            pbar=False,
+                            in_gtf_list,
+                            pbar=True,
+                            pbar_unit = "gene_group",
+                            preserve_order = False,
                             n_process=n_process, 
                             in_bam=in_bam, 
                             demulti_methods=demulti_methods):
@@ -215,18 +219,20 @@ def quantify_gene(in_bam, in_gtf, n_process):
         umi_lst.extend(umi_list_sub)
 
     # combine the gene count matrix
+    print("Finalising the gene count matrix ...")
     gene_count_mat = pd.concat(gene_count_mat_dfs, 
                                 copy=False).fillna(0)
     
     return gene_count_mat, dup_read_lst, umi_lst
 
-def quantify_gene_single_process(in_gtf_df, in_bam, demulti_methods):
+def quantify_gene_single_process(in_gtf_df, in_bam, demulti_methods, verbose=False):
     """
     Get gene counts from a bam file and a gtf file.
     Input:
         in_bam: bam file path
         in_gtf_df: gtf_df contains the subset of gene to run in a single process
         demulti_methods: demultiplexing methods, 'flexiplex' or 'blaze'
+        verbose: whether to print the progress
     Output:
         gene_count_mat: a matrix of gene counts
         read_gene_assign_df: a dataframe of read to gene assignment with umi corrected
@@ -236,7 +242,8 @@ def quantify_gene_single_process(in_gtf_df, in_bam, demulti_methods):
         get_read_to_gene_assignment(in_bam, in_gtf_df, methods=demulti_methods)
 
     # cluster reads with similar genome location (polyT side mapping position)
-    print("Clustering reads with similar genome locations ...")
+    if verbose:
+        print("Clustering reads with similar genome locations ...")
     read_gene_assign_df.sort_values(by=['bc', 'gene_id'], inplace=True)
     cell_gene_grp = read_gene_assign_df.groupby(['bc', 'gene_id'], observed=True)
 
@@ -244,13 +251,15 @@ def quantify_gene_single_process(in_gtf_df, in_bam, demulti_methods):
         cell_gene_grp['pos_3prim'].transform(_map_pos_grouping).astype('category')
     
     # correct umi
-    print("Correcting UMIs ...")
+    if verbose:
+        print("Correcting UMIs ...")
     read_gene_assign_df['umi_corrected'] = \
         read_gene_assign_df.groupby(['bc','gene_id','cluster'], observed=True)['umi']\
                            .transform(_umi_correction)
 
     # get gene count
-    print("Generating per-gene UMI counts ...")
+    if verbose:
+        print("Generating per-gene UMI counts ...")
     gene_count_df = \
         read_gene_assign_df.groupby(['bc', 'gene_id'], observed=True)['umi_corrected'].nunique()
     
@@ -345,7 +354,7 @@ def list_duplicated_reads(umi_corrected_df,
 
     out_list = []
     umi_corrected_df = umi_corrected_df[groupby_cols + [umi_col, read_id_col, priority_cols]]
-    for _, group in tqdm(umi_corrected_df.groupby(groupby_cols + [umi_col], observed=True)):
+    for _, group in umi_corrected_df.groupby(groupby_cols + [umi_col], observed=True):
         if group.shape[0] == 1:
             continue
         else:
@@ -388,37 +397,13 @@ def saturation_estimation(corrected_umis, plot_fn=None, num_of_points=500):
 
         plt.figure(figsize=(8, 6))
         plt.plot(read_depth, umi_counts, '-')
-        plt.xlabel("Sequencing Depth")
+        plt.xlabel("Number of reads")
         plt.ylabel("Number of Unique UMIs")
         plt.title(f"Saturation Curve (Saturation = {est*100:.2f}%)")
         plt.grid(True)
         plt.savefig(plot_fn)
 
     return est
-
-def _pd_parellel_apply(groupby_obj, func, num_workers=mp.cpu_count()-1, **kwargs):
-    """
-    Apply function to each group in a pandas groupby object in parallel.
-
-    groupby_obj: A pandas groupby object.
-    func: The function to apply to each group.
-        Note: The function must take a DataFrame as its first argument and return a DataFrame.
-        
-    For the best performance:
-        There is no garuntee that the function will be output in the same order as the groups.
-    """
-    # Split the DataFrame into chunks based on the group column
-    chunks = [group for _, group in groupby_obj]
-
-    # Use ProcessPoolExecutor to apply transform_chunk to each chunk in parallel
-    with ProcessPoolExecutor(max_workers=num_workers) as executor:
-        futures = [executor.submit(func, chunk, **kwargs) for chunk in chunks]
-
-        # Gather the results as they complete
-        results = [future.result() for future in futures]
-
-    # Concatenate the processed chunks back into a single DataFrame/Series
-    result_df = pd.concat(results)
 
 def _remove_reads_from_fastq_chunk(read_chunk, read_id_set):
     """Remove reads from a chunk of fastq file
@@ -463,8 +448,10 @@ def remove_reads_from_fastq(in_fastq, out_fastq, read_id_lst,
     read_id_lst = set(read_id_lst)
     results = helper.multiprocessing_submit( _remove_reads_from_fastq_chunk,
                                     read_chunks,
-                                    n_process,
+                                    n_process=12,
+                                    pbar_func=lambda *x: chunk_size/4,
                                     read_id_set = read_id_lst,
+                                    preserve_order=False,
                                     schduler = 'thread')
     
     for rst in results:
@@ -499,13 +486,12 @@ def quantification(annotation, outdir, pipeline, n_process=12, saturation_curve=
         print("Generating deduplicated fastq file ...")
         remove_reads_from_fastq(in_fastq, out_fastq, dup_read_lst, n_process)
 
-
-
         return
 
     elif pipeline == "bulk":
         """Gene quantification is not implemented in bulk pipeline
         """
+        print("Gene quantification has not been implemented in bulk pipeline ...")
         return
 
     elif pipeline == "sc_multi_sample":
@@ -533,9 +519,84 @@ def quantification(annotation, outdir, pipeline, n_process=12, saturation_curve=
 
             print("Generating deduplicated fastq file ...")
             remove_reads_from_fastq(in_fastq, out_fastq, dup_read_lst, n_process)
-
-
         return
 
     else:
         raise ValueError(f"Unknown pipeline type {pipeline}")
+    
+def independent_gene_set_generator(gtf_df, bam_file, threads=1):
+    """
+    generate independent gene set from gtf_df and bam_file so that there is no
+    read mapped spanning two gene sets. As a result, the gene set can be processed
+    independently.
+    input: 
+        gtf_df: pandas.DataFrame, result from parse_gtf_to_df
+        bam_file: str filename
+        threads: int, number of threads to use in pysam
+    """
+    def _yield_genes_per_chr(gtf_df, bam):
+        """
+        yield genes per chromosome
+        Input:
+            gtf_df: pandas.DataFrame, result from parse_gtf_to_df, contains only one chromosome
+            bam: pysam.AlignmentFile
+        """
+        genome_region = namedtuple('genome_region', ['start', 'end'])
+        prev_intval = genome_region(None, None)
+        yield_genes_idx = []
+        for gene in gtf_df.itertuples():
+            if not len(yield_genes_idx):
+                prev_intval = genome_region(gene.start, gene.end)
+                yield_genes_idx.append(gene.Index)
+                continue
+            elif gene.start < prev_intval.end:
+                if next(bam.fetch(chr, gene.start,prev_intval.end), None):
+                    yield_genes_idx.append(gene.Index)
+                    prev_intval._replace(end = max(prev_intval.end, gene.end))
+                else:
+                    yield gtf_df.loc[yield_genes_idx]
+                    yield_genes_idx = [gene.Index]
+                    prev_intval = genome_region(gene.start, gene.end)
+            elif gene.start == prev_intval.end:
+                if next(bam.fetch(chr, gene.start-1,gene.start+1), None):
+                    yield_genes_idx.append(gene.Index)
+                    prev_intval._replace(end = gene.end)
+                else:
+                    yield gtf_df.loc[yield_genes_idx]
+                    yield_genes_idx = [gene.Index]
+                    prev_intval = genome_region(gene.start, gene.end)
+            elif gene.start > prev_intval.end:
+                if _check_read_spanning_region(bam, chr, prev_intval.end, gene.start+1):
+                    yield_genes_idx.append(gene.Index)
+                    prev_intval._replace(end = gene.end)
+                else:    
+                    yield gtf_df.loc[yield_genes_idx]
+                    yield_genes_idx = [gene.Index]
+                    prev_intval = genome_region(gene.start, gene.end)
+        yield gtf_df.loc[yield_genes_idx]
+
+    # check whether there is any read mapped fully spanning  a genome region
+    def _check_read_spanning_region(bam, chr, start, end):
+        """
+        check whether there is any read mapped fully spanning a genome region
+        (primary alignment only)
+        input:
+            bam: pysam.AlignmentFile
+            chr: str
+            start: int
+            end: int
+        """
+        for read in bam.fetch(chr, end-1, end):
+            if read.is_secondary or read.is_supplementary:
+                continue
+            else:
+                if read.reference_start <= start:
+                    return True
+                else:
+                    return False
+    # main function
+    gtf_df = gtf_df.sort_values(by=['chr_name', 'start'], ascending=True)
+    bam = pysam.AlignmentFile(bam_file, 'rb', threads=threads)
+    for chr in gtf_df.chr_name.unique():
+        yield from _yield_genes_per_chr(gtf_df[gtf_df.chr_name==chr], bam)
+    bam.close()
