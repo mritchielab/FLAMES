@@ -11,7 +11,7 @@ create_config(outdir, type = "sc_3end", ...)
 
 \item{type}{use an example config, available values:
 \itemize{
- \item{"sc_5end"}{ - config for 5' end ONT reads}
+ \item{"sc_3end"}{ - config for 10x 3' end ONT reads}
  \item{"SIRV"}{ - config for the SIRV example reads}
 }}
 
