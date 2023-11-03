@@ -8,7 +8,7 @@ Authors@R: c(
               email="tian.l@wehi.edu.au"),
        person("Changqing", "Wang", role=c("aut", "cre"),
               email="wang.ch@wehi.edu.au"),
-       person("Youpei", "You", role=c("aut"),
+       person("Yupei", "You", role=c("aut"),
               email="you.yu@wehi.edu.au"),
        person("Oliver", "Voogd", role=c("aut"),
               email="voogd.o@wehi.edu.au"),

@@ -476,7 +476,7 @@ def quantification(annotation, outdir, pipeline, n_process=12, saturation_curve=
         gene_count_mat, dup_read_lst, umi_lst = \
                                 quantify_gene(in_bam, annotation, n_process)
 
-        pd.DataFrame({'umi':umi_lst}).to_csv("umi_lst.csv")
+        #pd.DataFrame({'umi':umi_lst}).to_csv(outdir+"/umi_lst.csv")
 
         gene_count_mat.to_csv(out_csv)
 
@@ -510,7 +510,7 @@ def quantification(annotation, outdir, pipeline, n_process=12, saturation_curve=
             gene_count_mat, dup_read_lst, umi_lst = \
                                     quantify_gene(sample_bam, annotation, n_process)
 
-            pd.DataFrame({'umi':umi_lst}).to_csv("umi_lst.csv")
+            #pd.DataFrame({'umi':umi_lst}).to_csv(f"{outdir}/{sample}_umi_lst.csv")
 
             gene_count_mat.to_csv(out_csv)
 
