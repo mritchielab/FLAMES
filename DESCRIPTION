@@ -6,11 +6,11 @@ Date: 2023-10-2
 Authors@R: c(
        person("Luyi", "Tian", role=c("aut"),
               email="tian.l@wehi.edu.au"),
-       person("Changqing", "Wang", role=c("aut"),
+       person("Changqing", "Wang", role=c("aut", "cre"),
               email="wang.ch@wehi.edu.au"),
        person("Youpei", "You", role=c("aut"),
               email="you.yu@wehi.edu.au"),
-       person("Oliver", "Voogd", role=c("aut", "cre"),
+       person("Oliver", "Voogd", role=c("aut"),
               email="voogd.o@wehi.edu.au"),
        person("Jakob", "Schuster", role=c("aut"),
               email="schuster.j@wehi.edu.au"),
