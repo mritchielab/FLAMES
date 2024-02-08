@@ -64,6 +64,7 @@ find_isoform_bambu <- function(annotation, genome_fa, genome_bam, outdir, config
                 quant = TRUE, 
                 discovery = TRUE,
                 lowMemory = TRUE,
+                NDR = config$isoform_parameters$bambu_ndr,
                 ncore = ifelse(is.vector(genome_bam), length(genome_bam), 1)
         ))
 
@@ -165,8 +166,8 @@ annotation_to_fasta <- function(isoform_annotation, genome_fa, outdir, extract_f
 
   dna_string_set <- Biostrings::readDNAStringSet(genome_fa)
   names(dna_string_set) <- gsub(" .*$", "", names(dna_string_set))
+  txdb <- GenomicFeatures::makeTxDbFromGFF(isoform_annotation)
   if (missing(extract_fn)) {
-    txdb <- GenomicFeatures::makeTxDbFromGFF(isoform_annotation)
     tr_string_set <- GenomicFeatures::extractTranscriptSeqs(dna_string_set, txdb,
       use.names = TRUE)
   } else {

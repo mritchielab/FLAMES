@@ -30,6 +30,8 @@ fastq1_url <- 'https://raw.githubusercontent.com/shimlab/BLAZE/main/test/data/FA
 fastq1 <- bfc[[names(BiocFileCache::bfcadd(bfc, 'Fastq1', fastq1_url))]]
 outdir <- tempfile()
 dir.create(outdir)
+\dontrun{
 blaze(expect_cells=10, fastq1, overwrite=TRUE)
+} 
 
 }
