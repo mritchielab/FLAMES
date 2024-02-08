@@ -105,3 +105,80 @@ sc_mutations <- function(sce, barcode_tsv, bam_short, out_dir, genome_fa, annot,
     print.data.frame(head(table, n = 20L))
     table
 }
+
+extract_nt <- function(ref, seqname, pos) {
+  mapply(function(seqname, pos) {
+    as.character(ref[[seqname]][pos])
+  }, seqname, pos)
+}
+
+homopolymer_pct <- function(ref, seqname, pos, include_alt, n = 5) {
+  mapply(function(seqname, pos, include_alt) {
+    if (pos == 1 | pos == length(ref[[seqname]])) {
+      return(TRUE) # variant at the ends should not be considered
+    }
+
+    start <- max(1, pos - n)
+    end <- min(length(ref[[seqname]]), pos + n)
+    if (include_alt) {
+      ref[[seqname]][start:end] |>
+        as.character() |>
+        strsplit("") |>
+        unlist() |>
+        table() |>
+        as.data.frame() |>
+        dplyr::mutate(pct = Freq / sum(Freq)) |>
+        dplyr::pull(pct) |>
+        max()
+    } else {
+      # exclude the position itself
+      ref[[seqname]][c(start:(pos - 1), (pos + 1):end)] |>
+        as.character() |>
+        strsplit("") |>
+        unlist() |>
+        table() |>
+        as.data.frame() |>
+        dplyr::mutate(pct = Freq / sum(Freq)) |>
+        dplyr::pull(pct) |>
+        max()
+    }
+   }, seqname, pos, include_alt)
+}
+
+find_variants <- function(bam_path, reference, gene_grange) {
+  # read bam file
+  pile <- Rsamtools::pileup(bam_path,
+    pileupParam = Rsamtools::PileupParam(
+      max_depth = .Machine$integer.max - 1, min_base_quality = 0, min_mapq = 0,
+      min_nucleotide_depth = 5, min_minor_allele_depth = 0,
+      distinguish_strands = FALSE, distinguish_nucleotides = TRUE,
+      ignore_query_Ns = TRUE, include_deletions = TRUE, include_insertions = TRUE,
+      left_bins = NULL, query_bins = NULL, cycle_bins = NULL
+    ),
+    scanBamParam = Rsamtools::ScanBamParam(which = gene_grange)
+  )
+
+  pile$ref <- extract_nt(reference, pile$seqnames, pile$pos) # add reference allele
+
+  mutations <- pile |>
+    dplyr::filter(as.character(nucleotide) != ref)
+
+  # add variant frequency
+  mutations$sum <- mapply(function(i, j) { # seqname, pos
+    pile |>
+      dplyr::filter(seqnames == i, pos == j) |>
+      dplyr::pull(count) |>
+      sum()
+  }, mutations$seqnames, mutations$pos)
+  mutations <- mutations |>
+    # + counted twice for insertions (one for the current position and one for insertion)
+    # still get freq > 1 (probably) due to ignore_query_Ns and min depths
+    dplyr::mutate(freq = ifelse(nucleotide == "+" & count * 2 < sum, count * 2 / sum, count / sum))
+
+  if (nrow(mutations) == 0) {
+    return(mutations)
+  } else {
+    mutations$gene <- gene_grange$gene_name
+    return(mutations)
+  }
+}
