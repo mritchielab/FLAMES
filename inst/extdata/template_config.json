@@ -38,6 +38,7 @@
         "min_cnt_pct": 0.001,
         "min_sup_pct": 0.2,
         "bambu_trust_reference": true,
+        "bambu_discovery":false,
         "bambu_ndr": null,
         "strand_specific": 0,
         "remove_incomp_reads": 4,
