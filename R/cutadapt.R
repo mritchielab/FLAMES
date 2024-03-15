@@ -14,7 +14,7 @@ cutadapt <- function(args) {
   basiliskRun(env = flames_env, fun = function(x) {
     subprocess <- reticulate::import("subprocess")
     builtin <- reticulate::import_builtins()
-    output <- subprocess$check_output(paste("cutadapt", as.list(x), sep=" "), shell=TRUE)
+    output <- subprocess$check_output(paste(c("cutadapt", x), collapse=" "), shell=TRUE)
     output_str <- builtin$str(output, encoding="utf-8")
     builtin$print(output_str)
 
