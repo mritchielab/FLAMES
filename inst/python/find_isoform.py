@@ -71,3 +71,20 @@ def find_isoform_multisample(gff3, genome_bams, isoform_gff3, tss_tes_stat, geno
 
     sys.stdout.flush()
     return {"transcript_dict": transcript_dict, "transcript_dict_i": transcript_dict_i}
+
+
+if __name__=="__main__":
+    data  = "/Users/voogd.o/Documents/FLAMESintermediate/SIRV/"
+    genome_bam = data + "FLAMESout/align2genome.bam"
+    gff3 = data + "SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf"
+    genomefa = data +"SIRV_isoforms_multi-fasta_170612a.fasta"
+    config_file = data +  "SIRV_config_default.json"
+
+    out = "/Users/voogd.o/Documents/FLAMESintermediate/SIRV/flamesc++out/py/"
+    isoform_gff3 = out + "isoform_annotated.gff3"
+    tss_tes_stat = out +"tss_tes.bedgraph"
+    transcript_fa = out + "transcript_assembly.fa"
+	
+    config = {'comment': 'this is the default config for SIRV spike-in data. use splice annotation on alignment.', 'pipeline_parameters': {'seed': 2022, 'do_genome_alignment': True, 'do_isoform_identification': True, 'bambu_isoform_identification': False, 'do_read_realignment': True, 'do_transcript_quantification': True}, 'barcode_parameters': {'max_edit_distance': 2, 'has_UMI': False}, 'isoform_parameters': {'generate_raw_isoform': True, 'max_dist': 10, 'max_ts_dist': 100, 'max_splice_match_dist': 10, 'min_fl_exon_len': 40, 'max_site_per_splice': 3, 'min_sup_cnt': 10, 'min_cnt_pct': 0.01, 'min_sup_pct': 0.2, 'bambu_trust_reference': True, 'strand_specific': 1, 'remove_incomp_reads': 5, 'downsample_ratio': 1}, 'alignment_parameters': {'use_junctions': True, 'no_flank': True}, 'realign_parameters': {'use_annotation': True}, 'transcript_counting': {'min_tr_coverage': 0.75, 'min_read_coverage': 0.75}}
+
+    find_isoform(gff3, genome_bam, isoform_gff3, tss_tes_stat, genomefa, transcript_fa, 1, config, "")

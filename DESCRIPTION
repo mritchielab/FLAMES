@@ -78,8 +78,9 @@ Suggests:
     R.utils,
     ShortRead,
     uwot,
-    testthat (>= 3.0.0)
-LinkingTo: Rcpp, Rhtslib, zlibbioc
+    testthat (>= 3.0.0),
+    xml2
+LinkingTo: Rcpp, Rhtslib, zlibbioc, testthat
 SystemRequirements: GNU make, C++17
 RoxygenNote: 7.2.3
 VignetteBuilder: knitr
