@@ -1,110 +1,133 @@
+variant_count_tb <- function(bam_path, seqname, pos, indel, barcodes) {
+  # allele by barcode matrix (value: read count)
+  variant_count_matrix(
+    bam_path = bam_path,
+    seqname = seqname, pos = pos, indel = indel, barcodes = barcodes
+  ) |>
+    tibble::as_tibble(rownames = "allele") |>
+    # pivot to long format: allele, barcode, allele_count
+    tidyr::pivot_longer(
+      cols = -tidyselect::matches("allele"),
+      values_to = "allele_count", names_to = "barcode"
+    ) |>
+    dplyr::group_by(barcode) |>
+    dplyr::mutate(
+      cell_total_reads = sum(allele_count),
+      pct = allele_count / cell_total_reads,
+      pos = pos, seqname = seqname
+    ) |>
+    dplyr::ungroup()
+}
+
+#' Variant count for single-cell data
 #'
-#' FLAMES variant calling
+#' Count the number of reads supporting each variants at the given positions for each cell.
 #'
-#' Candidate SNVs identified with filtering by coverage threshold,
-#' and allele frequency range.
-#'
-#' Takes the \code{SingleCellExperiment} object from \code{sc_long_pipeline} and the cell barcodes as \code{barcode}.
-#' Alternatively, input can also be provided as \code{out_dir}, \code{genome_fa}, \code{annot}, \code{barcode}.
-#'
-#' @param sce The \code{SingleCellExperiment} object from \code{sc_long_pipeline}
-#'
-#' @param genome_fa (Optional) Reference genome FASTA file. Use this parameter is if you do not wish \code{sc_mutation} to use the
-#' reference genome FASTA file from the \code{sce}'s metadata.
-#'
-#' @param bam_short (Optional) short read alignment BAM file. If provided, it is used to filter the variations. Variations in long-read data with enough short read coverage but no alternative allele will not be reported.
-#'
-#' @param out_dir (Optional) Output folder of sc_long_pipeline. Output files from this function will also be saved here.
-#' Use this parameter if you do not have the \code{SingleCellExperiment} object.
-#'
-#' @param barcode_tsv TSV file for cell barcodes
-#'
-#' @param annot (Optional) The file path to gene annotation file in gff3 format. If provided as \code{FALSE} then the \code{isoform_annotated.gff3} from \code{sc_longread_pipeline} will be used, if not provided then the path in the \code{SingleCellExperiment} object will be used.
-#'
-#' @param known_positions (Optional) A list of known positions, with by chromosome name followed by the position, e.g. ('chr1', 123, 'chr1', 124, 'chrX', 567). These locations will not be filtered and its allele frequencies will be reported.
-#'
-#' @param min_cov The coverage threshold for filtering candidate SNVs. Positions with reads less then this number will not be considered.
-#'
-#' @param report_pct The allele frequency range for filtering candidate SNVs. Positions with less or higher allele frequency will not be reported. The default is 0.10-0.90
-#'
-#' @return
-#' a \code{data.frame} containing the following columns:
-#' \itemize{
-#'  \item{chr}{ - the chromosome where the mutation is located}
-#'  \item{position}
-#'  \item{REF}{ - the reference allele}
-#'  \item{ALT}{ - the alternative allele}
-#'  \item{REF_frequency}{ - reference allele frequency}
-#'  \item{REF_frequency_in_short_reads}{ - reference allele frequency in short reads (-1 when short reads not provided)}
-#'  \item{hypergeom_test_p_value}
-#'  \item{sequence_entropy}
-#'  \item{INDEL_frequency}
-#'  \item{adj_p}{ - the adjusted p-value (by Benjamini–Hochberg correction)}
-#' }
-#' The table is sorted by decreasing adjusted P value.
-#'
-#' files saved to out_dir/mutation:
-#' \itemize{
-#'      \item{ref_cnt.csv.gz}
-#'      \item{alt_cnt.csv.gz}
-#'      \item{allele_stat.csv.gz}
-#'      \item{freq_summary.csv}
-#' }
-#'
-#' @importFrom utils write.csv
-#' @importFrom S4Vectors head
-#' @importFrom basilisk basiliskRun
-#'
+#' @param bam_path character(1) or character(n): path to the bam file(s) aligned to the 
+#' reference genome (NOT the transcriptome! Unless the postions are also from the transcriptome).
+#' @param seqnames character(n): chromosome names of the postions to count alleles.
+#' @param positions integer(n): positions, 1-based, same length as seqnames. The positions to count alleles.
+#' @param indel logical(1): whether to count indels (TRUE) or SNPs (FALSE).
+#' @param barcodes character(n) when bam_path is a single file, or list of character(n) 
+#' when bam_path is a list of files paths. The cell barcodes to count alleles for. 
+#' Only reads with these barcodes will be counted.
+#' @param threads integer(1): number of threads to use. Maximum number of threads is 
+#' the number of bam files * number of positions.
+#' @return A tibble with columns: allele, barcode, allele_count, cell_total_reads, pct, pos, seqname.
 #' @examples
 #' outdir <- tempfile()
 #' dir.create(outdir)
-#' bc_allow <- file.path(outdir, "bc_allow.tsv")
 #' genome_fa <- file.path(outdir, "rps24.fa")
-#' R.utils::gunzip(filename = system.file("extdata/bc_allow.tsv.gz", package = "FLAMES"), destname = bc_allow, remove = FALSE)
 #' R.utils::gunzip(filename = system.file("extdata/rps24.fa.gz", package = "FLAMES"), destname = genome_fa, remove = FALSE)
-#'
-#' \dontrun{
+#' download.file('https://raw.githubusercontent.com/mritchielab/FLAMES/devel/tests/testthat/demultiplexed.fq', 
+#'   destfile = file.path(outdir, 'demultipelxed.fq')) # can't be bothered to run demultiplexing again
 #' if (is.character(locate_minimap2_dir())) {
-#'     sce <- FLAMES::sc_long_pipeline(
-#'         genome_fa = genome_fa,
-#'         fastq = system.file("extdata/fastq", package = "FLAMES"),
-#'         annotation = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),
-#'         outdir = outdir,
-#'         reference_csv = bc_allow
-#'     )
-#'     sc_mutations(sce, barcode_tsv = file.path(outdir, "bc_allow.tsv"), min_cov = 2, report_pct = c(0, 1))
-#' }
+#'   minimap2_align( # align to genome
+#'       config = jsonlite::fromJSON(system.file('extdata/SIRV_config_default.json', package = 'FLAMES')),
+#'       fa_file = genome_fa,
+#'       fq_in = file.path(outdir, 'demultipelxed.fq'),
+#'       annot = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),
+#'       outdir = outdir
+#'   )
+#'   snps_tb <- sc_mutations(
+#'     bam_path = file.path(outdir, "align2genome.bam"),
+#'     seqnames = c("chr14", "chr14"),
+#'     positions = c(1260, 2714), # positions of interest
+#'     indel = FALSE,
+#'     barcodes = read.delim(system.file("extdata/bc_allow.tsv.gz", package = "FLAMES"), header = FALSE)$V1
+#'   )
+#'   head(snps_tb)
+#'   snps_tb |> 
+#'     dplyr::filter(pos == 1260) |> 
+#'     dplyr::group_by(allele) |> 
+#'     dplyr::summarise(count = sum(allele_count)) # should be identical to samtools pileup
 #' }
 #' @export
-sc_mutations <- function(sce, barcode_tsv, bam_short, out_dir, genome_fa, annot, known_positions = NULL, min_cov = 100, report_pct = c(0.10, 0.90)) {
-    cat("\n\n\n\n\n\n")
-    if (!missing(sce)) {
-        if (missing(annot)) {
-            annot <- sce@metadata$OutputFiles$AnnotationFile
-        }
-        if (missing(genome_fa)) {
-            genome_fa <- sce@metadata$OutputFiles$genome_fa
-        }
-        if (missing(out_dir)) {
-            out_dir <- sce@metadata$OutputFiles$outdir
-        }
-    }
+sc_mutations <- function(bam_path, seqnames, positions, indel = FALSE, barcodes, threads = 1) {
+  stopifnot(
+    "seqnames not the same length as positions" =
+      length(seqnames) == length(positions)
+  )
 
-    python_path <- system.file("python", package = "FLAMES")
-    basiliskRun(env = flames_env, fun = function(fa, bam, dir, barcode, gff, positions, mincov, reportpct) {
-        convert <- reticulate::import_from_path("sc_mutations", python_path)
-        convert$sc_mutations(fa, bam, dir, barcode, gff, positions, mincov, reportpct)
-    }, fa = genome_fa, bam = ifelse(missing("bam_short"), FALSE, bam_short), dir = out_dir, barcode = barcode_tsv, gff = annot, positions = known_positions, mincov = min_cov, reportpct = report_pct)
+  if (length(bam_path) == 1) {
+    # single bam file, parallelize over positions
+    stopifnot(
+      "barcodes must be a character vector" =
+        is.character(barcodes)
+    )
+    variants <- parallel::mcmapply(
+      FUN = function(seqname, pos) {
+        variant_count_tb(bam_path, seqname, pos, indel, barcodes)
+      },
+      seqname = seqnames, pos = positions, SIMPLIFY = FALSE, mc.cores = threads
+    )
+  } else {
+    # multiple bam files, parallelize over bam files
+    stopifnot(
+      "barcodes must be a list of character vectors, same length as bam_path" =
+        is.list(barcodes) & length(barcodes) == length(bam_path)
+    )
+    # data frame of all combinations between (seqname, pos) and (bam_path, barcodes)
+    args_grid <- expand.grid(
+      mutation_index = seq_along(positions),
+      bam_index = seq_along(bam_path),
+      stringsAsFactors = FALSE
+    ) |>
+      dplyr::mutate(
+        seqname = seqnames[mutation_index],
+        pos = positions[mutation_index],
+        sample_bam = bam_path[bam_index],
+        sample_barcodes = barcodes[bam_index]
+      ) |>
+      dplyr::select(-mutation_index, -bam_index)
 
-    allele_stat_csv <- file.path(out_dir, "mutation", "allele_stat.csv.gz")
-    table <- read.csv(allele_stat_csv)
-    table$adj_p <- stats::p.adjust(table$hypergeom_test_p_value)
-    table <- table[order(table$adj_p), ]
-    rownames(table) <- NULL
-    write.csv(table, file = gzfile(allele_stat_csv), row.names = FALSE)
-    print.data.frame(head(table, n = 20L))
-    table
+    variants <- parallel::mcmapply(
+      FUN = function(sample_bam, seqname, pos, sample_barcodes) {
+        variant_count_tb(sample_bam, seqname, pos, indel, sample_barcodes) |>
+          dplyr::mutate(bam_file = sample_bam)
+      },
+      sample_bam = args_grid$sample_bam, seqname = args_grid$seqname,
+      pos = args_grid$pos, sample_barcodes = args_grid$sample_barcodes,
+      SIMPLIFY = FALSE, mc.cores = threads
+    )
+  }
+
+  errors <- variants[sapply(variants, \(x) inherits(x, "try-error"))]
+  if (length(errors) > 0) {
+    warning(paste0(
+      length(errors), " errors encountered out of ", length(variants), " positions * BAMs checked:"
+    ))
+    sapply(errors, \(x) x[1]) |>
+      table() |>
+      print()
+  }
+
+  variants <- variants[sapply(variants, \(x) !inherits(x, "try-error"))] |>
+    dplyr::bind_rows()
+
+  return(variants)
 }
+
 
 extract_nt <- function(ref, seqname, pos) {
   mapply(function(seqname, pos) {
@@ -145,6 +168,7 @@ homopolymer_pct <- function(ref, seqname, pos, include_alt, n = 5) {
    }, seqname, pos, include_alt)
 }
 
+# WIP: too much sequencing errrors / splice sites
 find_variants <- function(bam_path, reference, gene_grange) {
   # read bam file
   pile <- Rsamtools::pileup(bam_path,

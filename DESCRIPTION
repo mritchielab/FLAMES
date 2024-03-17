@@ -67,7 +67,9 @@ Imports:
     withr,
     zlibbioc,
     future,
-    methods
+    methods,
+    tibble,
+    tidyselect
 Suggests: 
     BiocStyle,
     GEOquery,
@@ -87,7 +89,7 @@ VignetteBuilder: knitr
 URL: https://github.com/OliverVoogd/FLAMES
 Config/testthat/edition: 3
 Depends: 
-    R (>= 2.10)
+    R (>= 2.10),
     txdbmaker (>= 0.99)
 LazyData: true
 StagedInstall: no

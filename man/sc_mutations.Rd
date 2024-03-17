@@ -2,91 +2,66 @@
 % Please edit documentation in R/sc_mutations.R
 \name{sc_mutations}
 \alias{sc_mutations}
-\title{FLAMES variant calling}
+\title{Variant count for single-cell data}
 \usage{
 sc_mutations(
-  sce,
-  barcode_tsv,
-  bam_short,
-  out_dir,
-  genome_fa,
-  annot,
-  known_positions = NULL,
-  min_cov = 100,
-  report_pct = c(0.1, 0.9)
+  bam_path,
+  seqnames,
+  positions,
+  indel = FALSE,
+  barcodes,
+  threads = 1
 )
 }
 \arguments{
-\item{sce}{The \code{SingleCellExperiment} object from \code{sc_long_pipeline}}
+\item{bam_path}{character(1) or character(n): path to the bam file(s) aligned to the 
+reference genome (NOT the transcriptome! Unless the postions are also from the transcriptome).}
 
-\item{barcode_tsv}{TSV file for cell barcodes}
+\item{seqnames}{character(n): chromosome names of the postions to count alleles.}
 
-\item{bam_short}{(Optional) short read alignment BAM file. If provided, it is used to filter the variations. Variations in long-read data with enough short read coverage but no alternative allele will not be reported.}
+\item{positions}{integer(n): positions, 1-based, same length as seqnames. The positions to count alleles.}
 
-\item{out_dir}{(Optional) Output folder of sc_long_pipeline. Output files from this function will also be saved here.
-Use this parameter if you do not have the \code{SingleCellExperiment} object.}
+\item{indel}{logical(1): whether to count indels (TRUE) or SNPs (FALSE).}
 
-\item{genome_fa}{(Optional) Reference genome FASTA file. Use this parameter is if you do not wish \code{sc_mutation} to use the
-reference genome FASTA file from the \code{sce}'s metadata.}
+\item{barcodes}{character(n) when bam_path is a single file, or list of character(n) 
+when bam_path is a list of files paths. The cell barcodes to count alleles for. 
+Only reads with these barcodes will be counted.}
 
-\item{annot}{(Optional) The file path to gene annotation file in gff3 format. If provided as \code{FALSE} then the \code{isoform_annotated.gff3} from \code{sc_longread_pipeline} will be used, if not provided then the path in the \code{SingleCellExperiment} object will be used.}
-
-\item{known_positions}{(Optional) A list of known positions, with by chromosome name followed by the position, e.g. ('chr1', 123, 'chr1', 124, 'chrX', 567). These locations will not be filtered and its allele frequencies will be reported.}
-
-\item{min_cov}{The coverage threshold for filtering candidate SNVs. Positions with reads less then this number will not be considered.}
-
-\item{report_pct}{The allele frequency range for filtering candidate SNVs. Positions with less or higher allele frequency will not be reported. The default is 0.10-0.90}
+\item{threads}{integer(1): number of threads to use. Maximum number of threads is 
+the number of bam files * number of positions.}
 }
 \value{
-a \code{data.frame} containing the following columns:
-\itemize{
- \item{chr}{ - the chromosome where the mutation is located}
- \item{position}
- \item{REF}{ - the reference allele}
- \item{ALT}{ - the alternative allele}
- \item{REF_frequency}{ - reference allele frequency}
- \item{REF_frequency_in_short_reads}{ - reference allele frequency in short reads (-1 when short reads not provided)}
- \item{hypergeom_test_p_value}
- \item{sequence_entropy}
- \item{INDEL_frequency}
- \item{adj_p}{ - the adjusted p-value (by Benjamini–Hochberg correction)}
-}
-The table is sorted by decreasing adjusted P value.
-
-files saved to out_dir/mutation:
-\itemize{
-     \item{ref_cnt.csv.gz}
-     \item{alt_cnt.csv.gz}
-     \item{allele_stat.csv.gz}
-     \item{freq_summary.csv}
-}
+A tibble with columns: allele, barcode, allele_count, cell_total_reads, pct, pos, seqname.
 }
 \description{
-Candidate SNVs identified with filtering by coverage threshold,
-and allele frequency range.
-}
-\details{
-Takes the \code{SingleCellExperiment} object from \code{sc_long_pipeline} and the cell barcodes as \code{barcode}.
-Alternatively, input can also be provided as \code{out_dir}, \code{genome_fa}, \code{annot}, \code{barcode}.
+Count the number of reads supporting each variants at the given positions for each cell.
 }
 \examples{
 outdir <- tempfile()
 dir.create(outdir)
-bc_allow <- file.path(outdir, "bc_allow.tsv")
 genome_fa <- file.path(outdir, "rps24.fa")
-R.utils::gunzip(filename = system.file("extdata/bc_allow.tsv.gz", package = "FLAMES"), destname = bc_allow, remove = FALSE)
 R.utils::gunzip(filename = system.file("extdata/rps24.fa.gz", package = "FLAMES"), destname = genome_fa, remove = FALSE)
-
-\dontrun{
+download.file('https://raw.githubusercontent.com/mritchielab/FLAMES/devel/tests/testthat/demultiplexed.fq', 
+  destfile = file.path(outdir, 'demultipelxed.fq')) # can't be bothered to run demultiplexing again
 if (is.character(locate_minimap2_dir())) {
-    sce <- FLAMES::sc_long_pipeline(
-        genome_fa = genome_fa,
-        fastq = system.file("extdata/fastq", package = "FLAMES"),
-        annotation = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),
-        outdir = outdir,
-        reference_csv = bc_allow
-    )
-    sc_mutations(sce, barcode_tsv = file.path(outdir, "bc_allow.tsv"), min_cov = 2, report_pct = c(0, 1))
-}
+  minimap2_align( # align to genome
+      config = jsonlite::fromJSON(system.file('extdata/SIRV_config_default.json', package = 'FLAMES')),
+      fa_file = genome_fa,
+      fq_in = file.path(outdir, 'demultipelxed.fq'),
+      annot = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),
+      outdir = outdir
+  )
+  snps_tb <- sc_mutations(
+    bam_path = file.path(outdir, "align2genome.bam"),
+    seqnames = c("chr14", "chr14"),
+    positions = c(1260, 2714), # positions of interest
+    indel = FALSE,
+    barcodes = read.delim(system.file("extdata/bc_allow.tsv.gz", package = "FLAMES"), header = FALSE)$V1
+  )
+  head(snps_tb)
+  snps_tb |> 
+    dplyr::filter(pos == 1260) |> 
+    dplyr::group_by(allele) |> 
+    dplyr::summarise(count = sum(allele_count)) # should be identical to samtools pileup
 }
 }

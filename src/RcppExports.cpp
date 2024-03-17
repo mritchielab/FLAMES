@@ -47,10 +47,26 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// variant_count_matrix
+Rcpp::NumericMatrix variant_count_matrix(Rcpp::String bam_path, Rcpp::String seqname, int pos, bool indel, Rcpp::StringVector barcodes);
+RcppExport SEXP _FLAMES_variant_count_matrix(SEXP bam_pathSEXP, SEXP seqnameSEXP, SEXP posSEXP, SEXP indelSEXP, SEXP barcodesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::String >::type bam_path(bam_pathSEXP);
+    Rcpp::traits::input_parameter< Rcpp::String >::type seqname(seqnameSEXP);
+    Rcpp::traits::input_parameter< int >::type pos(posSEXP);
+    Rcpp::traits::input_parameter< bool >::type indel(indelSEXP);
+    Rcpp::traits::input_parameter< Rcpp::StringVector >::type barcodes(barcodesSEXP);
+    rcpp_result_gen = Rcpp::wrap(variant_count_matrix(bam_path, seqname, pos, indel, barcodes));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_FLAMES_find_isoform_multithread", (DL_FUNC) &_FLAMES_find_isoform_multithread, 8},
     {"_FLAMES_flexiplex", (DL_FUNC) &_FLAMES_flexiplex, 10},
+    {"_FLAMES_variant_count_matrix", (DL_FUNC) &_FLAMES_variant_count_matrix, 5},
     {NULL, NULL, 0}
 };
 
