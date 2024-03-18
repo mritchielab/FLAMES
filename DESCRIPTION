@@ -70,7 +70,9 @@ Imports:
     future,
     methods,
     tibble,
-    tidyselect
+    tidyselect,
+    IRanges,
+    txdbmaker
 Suggests: 
     BiocStyle,
     GEOquery,
@@ -90,7 +92,6 @@ VignetteBuilder: knitr
 URL: https://github.com/OliverVoogd/FLAMES
 Config/testthat/edition: 3
 Depends: 
-    R (>= 4.3.0),
-    txdbmaker (>= 0.99)
+    R (>= 4.3.0)
 LazyData: true
 StagedInstall: no
