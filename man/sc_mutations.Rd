@@ -14,7 +14,7 @@ sc_mutations(
 )
 }
 \arguments{
-\item{bam_path}{character(1) or character(n): path to the bam file(s) aligned to the 
+\item{bam_path}{character(1) or character(n): path to the bam file(s) aligned to the
 reference genome (NOT the transcriptome! Unless the postions are also from the transcriptome).}
 
 \item{seqnames}{character(n): chromosome names of the postions to count alleles.}
@@ -23,11 +23,11 @@ reference genome (NOT the transcriptome! Unless the postions are also from the t
 
 \item{indel}{logical(1): whether to count indels (TRUE) or SNPs (FALSE).}
 
-\item{barcodes}{character(n) when bam_path is a single file, or list of character(n) 
-when bam_path is a list of files paths. The cell barcodes to count alleles for. 
+\item{barcodes}{character(n) when bam_path is a single file, or list of character(n)
+when bam_path is a list of files paths. The cell barcodes to count alleles for.
 Only reads with these barcodes will be counted.}
 
-\item{threads}{integer(1): number of threads to use. Maximum number of threads is 
+\item{threads}{integer(1): number of threads to use. Maximum number of threads is
 the number of bam files * number of positions.}
 }
 \value{
@@ -41,15 +41,16 @@ outdir <- tempfile()
 dir.create(outdir)
 genome_fa <- file.path(outdir, "rps24.fa")
 R.utils::gunzip(filename = system.file("extdata/rps24.fa.gz", package = "FLAMES"), destname = genome_fa, remove = FALSE)
-download.file('https://raw.githubusercontent.com/mritchielab/FLAMES/devel/tests/testthat/demultiplexed.fq', 
-  destfile = file.path(outdir, 'demultipelxed.fq')) # can't be bothered to run demultiplexing again
+download.file("https://raw.githubusercontent.com/mritchielab/FLAMES/devel/tests/testthat/demultiplexed.fq",
+  destfile = file.path(outdir, "demultipelxed.fq")
+) # can't be bothered to run demultiplexing again
 if (is.character(locate_minimap2_dir())) {
   minimap2_align( # align to genome
-      config = jsonlite::fromJSON(system.file('extdata/SIRV_config_default.json', package = 'FLAMES')),
-      fa_file = genome_fa,
-      fq_in = file.path(outdir, 'demultipelxed.fq'),
-      annot = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),
-      outdir = outdir
+    config = jsonlite::fromJSON(system.file("extdata/SIRV_config_default.json", package = "FLAMES")),
+    fa_file = genome_fa,
+    fq_in = file.path(outdir, "demultipelxed.fq"),
+    annot = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),
+    outdir = outdir
   )
   snps_tb <- sc_mutations(
     bam_path = file.path(outdir, "align2genome.bam"),
@@ -59,9 +60,9 @@ if (is.character(locate_minimap2_dir())) {
     barcodes = read.delim(system.file("extdata/bc_allow.tsv.gz", package = "FLAMES"), header = FALSE)$V1
   )
   head(snps_tb)
-  snps_tb |> 
-    dplyr::filter(pos == 1260) |> 
-    dplyr::group_by(allele) |> 
+  snps_tb |>
+    dplyr::filter(pos == 1260) |>
+    dplyr::group_by(allele) |>
     dplyr::summarise(count = sum(allele_count)) # should be identical to samtools pileup
 }
 }
