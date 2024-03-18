@@ -24,7 +24,8 @@ Description: Semi-supervised isoform detection and annotation from both bulk and
 biocViews: RNASeq, SingleCell, Transcriptomics, DataImport, 
             DifferentialSplicing, AlternativeSplicing, GeneExpression,
             LongRead
-License: GPL (>= 2)
+BugReports: https://github.com/mritchielab/FLAMES/issues
+License: GPL (>= 3)
 Encoding: UTF-8
 Imports: 
     basilisk,
@@ -89,7 +90,7 @@ VignetteBuilder: knitr
 URL: https://github.com/OliverVoogd/FLAMES
 Config/testthat/edition: 3
 Depends: 
-    R (>= 2.10),
+    R (>= 4.30),
     txdbmaker (>= 0.99)
 LazyData: true
 StagedInstall: no
