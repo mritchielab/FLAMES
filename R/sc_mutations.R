@@ -232,6 +232,11 @@ find_variants_grange <- function(bam_path, reference, gene_grange, min_nucleotid
 #' @param min_nucleotide_depth integer(1): minimum read depth for a position to be
 #' considered a variant.
 #' @param threads integer(1): number of threads to use.
+#' @param homopolymer_window integer(1): the window size to calculate the homopolymer
+#' percentage. The homopolymer percentage is calculated as the percentage of the most
+#' frequent nucleotide in a window of \code{-homopolymer_window} to \code{homopolymer_window}
+#' nucleotides around the variant position, excluding the variant position itself.
+#' This is useful for filtering out Nanopore sequencing errors in homopolymer regions.
 #' @return A tibble with columns: seqnames, pos, nucleotide, count, sum, freq, ref, gene,
 #' homopolymer_pct. The homopolymer percentage is calculated as the percentage of the
 #' most frequent nucleotide in a window of \code{homopolymer_window} nucleotides around

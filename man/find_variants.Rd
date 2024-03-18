@@ -25,6 +25,12 @@ a GTF/GFF annotation file with \code{anno <- rtracklayer::import(file)}.}
 \item{min_nucleotide_depth}{integer(1): minimum read depth for a position to be
 considered a variant.}
 
+\item{homopolymer_window}{integer(1): the window size to calculate the homopolymer
+percentage. The homopolymer percentage is calculated as the percentage of the most
+frequent nucleotide in a window of \code{-homopolymer_window} to \code{homopolymer_window}
+nucleotides around the variant position, excluding the variant position itself.
+This is useful for filtering out Nanopore sequencing errors in homopolymer regions.}
+
 \item{threads}{integer(1): number of threads to use.}
 }
 \value{
