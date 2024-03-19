@@ -90,15 +90,31 @@ find_isoform_bambu <- function(annotation, genome_fa, genome_bam, outdir, config
 #' @importFrom Rsamtools indexFa
 #' @importFrom basilisk basiliskRun
 find_isoform_flames <- function(annotation, genome_fa, genome_bam, outdir, config) {
+    if (!all(file.exists(paste0(genome_bam, ".bai")))) {
+        stop(c("Cannot find corresponding bam file(s) ", paste0(genome_bam, ".bai"), ". Cancelling find_isoform."))
+    }
+    isoform_annotation <- file.path(outdir, "isoform_annotated.gff3")
+    tss_stat <- file.path(outdir, "tss_tes.bedgraph")
+    transcript_assembly <- file.path(outdir, "transcript_assembly.fa")
+    raw_splice <- file.path(outdir, "splice_raw.gff3")
+
     if (length(genome_bam) == 1) {
-        ret <- basiliskRun(env = flames_env, fun = function(gff3, genome, iso, tss, fa, tran, ds, conf, raw) {
-            python_path <- system.file("python", package = "FLAMES")
-            find <- reticulate::import_from_path("find_isoform", python_path)
-            ret <- find$find_isoform(gff3, genome, iso, tss, fa, tran, ds, conf, raw)
-            ret
-        },
-        gff3 = annotation, genome = genome_bam, iso = file.path(outdir, "isoform_annotated.gff3"), tss = file.path(outdir, "tss_tes.bedgraph"), fa = genome_fa, tran = file.path(outdir, "transcript_assembly.fa"), ds = config$isoform_parameters$downsample_ratio, conf = config, raw = ifelse(config$isoform_parameters$generate_raw_isoform, file.path(outdir, "splice_raw.gff3"), FALSE)
-        )
+        if (config$pipeline_parameters$multithread_isoform_identification) {
+            # C++ Multithreaded implementation of python find_isoform
+            find_isoform_multithread(
+                annotation, genome_bam, isoform_annotation, tss_stat, genome_fa, transcript_assembly, config$isoform_parameters, ifelse(config$isoform_parameters$generate_raw_isoform, raw_splice, "")
+            )
+            annotation_to_fasta(isoform_annotation, genome_fa, outdir)
+        } else {
+            ret <- basiliskRun(flames_env, function(gff3, genome, iso, tss, fa, tran, ds, conf, raw) {
+                python_path <- system.file("python", package = "FLAMES")
+                find <- reticulate::import_from_path("find_isoform", python_path)
+                ret <- find$find_isoform(gff3, genome, iso, tss, fa, tran, ds, conf, raw)
+                ret
+            },
+            gff3 = annotation, genome = genome_bam, iso = file.path(outdir, "isoform_annotated.gff3"), tss = file.path(outdir, "tss_tes.bedgraph"), fa = genome_fa, tran = file.path(outdir, "transcript_assembly.fa"), ds = config$isoform_parameters$downsample_ratio, conf = config, raw = ifelse(config$isoform_parameters$generate_raw_isoform, file.path(outdir, "splice_raw.gff3"), FALSE)
+            )
+        }
     } else {
         ret <- basiliskRun(env = flames_env, fun = function(gff3, genome, iso, tss, fa, tran, ds, conf, raw) {
             python_path <- system.file("python", package = "FLAMES")
@@ -106,7 +122,7 @@ find_isoform_flames <- function(annotation, genome_fa, genome_bam, outdir, confi
             ret <- find$find_isoform_multisample(gff3, genome, iso, tss, fa, tran, ds, conf, raw)
             ret
         },
-        gff3 = annotation, genome = genome_bam, iso = file.path(outdir, "isoform_annotated.gff3"), tss = file.path(outdir, "tss_tes.bedgraph"), fa = genome_fa, tran = file.path(outdir, "transcript_assembly.fa"), ds = config$isoform_parameters$downsample_ratio, conf = config, raw = ifelse(config$isoform_parameters$generate_raw_isoform, file.path(outdir, "splice_raw.gff3"), FALSE)
+        gff3 = annotation, genome = genome_bam, iso = isoform_annotation, tss = tss_stat, fa = genome_fa, tran = transcript_assembly, ds = config$isoform_parameters$downsample_ratio, conf = config, raw = ifelse(config$isoform_parameters$generate_raw_isoform, raw_splice, FALSE)
         )
     }
     # we then need to use Rsamtools to index transcript_fa

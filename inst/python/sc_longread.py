@@ -1177,6 +1177,7 @@ def group_bam2isoform(bam_in, out_gff3, out_stat, summary_csv, chr_to_blocks, ge
     tss_tes_stat = open(out_stat, "w")
     isoform_dict = {}
     fa_dict = {}
+
     for c in get_fa(fa_f):
         fa_dict[c[0]] = c[1]
     for ch in sorted(chr_to_blocks.keys()):
@@ -1200,6 +1201,7 @@ def group_bam2isoform(bam_in, out_gff3, out_stat, summary_csv, chr_to_blocks, ge
                 blocks = get_blocks(rec)
                 junctions = blocks_to_junctions(blocks)
                 tmp_isoform.add_isoform(junctions, rec.is_reverse)
+
             if len(tmp_isoform) > 0:
                 tmp_isoform.update_all_splice()
                 tmp_isoform.filter_TSS_TES(
@@ -1217,8 +1219,7 @@ def group_bam2isoform(bam_in, out_gff3, out_stat, summary_csv, chr_to_blocks, ge
                     splice_raw.write(tmp_isoform.raw_splice_to_gff3())
                 iso_annotated.write(tmp_isoform.isoform_to_gff3(
                     isoform_pct=config["isoform_parameters"]["min_cnt_pct"]))
-        # with open(iso_exact,"w") as out_f:
-    #    out_f.write("##gff-version 3\n")
+
     tss_tes_stat.close()
     iso_annotated.close()
     bamfile.close()

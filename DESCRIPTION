@@ -1,7 +1,7 @@
 Package: FLAMES
 Type: Package
 Title: FLAMES: Full Length Analysis of Mutations and Splicing in long read RNA-seq data
-Version: 1.9.0
+Version: 1.9.1
 Date: 2023-10-2
 Authors@R: c(
        person("Luyi", "Tian", role=c("aut"),
@@ -24,7 +24,8 @@ Description: Semi-supervised isoform detection and annotation from both bulk and
 biocViews: RNASeq, SingleCell, Transcriptomics, DataImport, 
             DifferentialSplicing, AlternativeSplicing, GeneExpression,
             LongRead
-License: GPL (>= 2)
+BugReports: https://github.com/mritchielab/FLAMES/issues
+License: GPL (>= 3)
 Encoding: UTF-8
 Imports: 
     basilisk,
@@ -67,7 +68,11 @@ Imports:
     withr,
     zlibbioc,
     future,
-    methods
+    methods,
+    tibble,
+    tidyselect,
+    IRanges,
+    txdbmaker
 Suggests: 
     BiocStyle,
     GEOquery,
@@ -78,14 +83,15 @@ Suggests:
     R.utils,
     ShortRead,
     uwot,
-    testthat (>= 3.0.0)
-LinkingTo: Rcpp, Rhtslib, zlibbioc
+    testthat (>= 3.0.0),
+    xml2
+LinkingTo: Rcpp, Rhtslib, zlibbioc, testthat
 SystemRequirements: GNU make, C++17
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 VignetteBuilder: knitr
 URL: https://github.com/OliverVoogd/FLAMES
 Config/testthat/edition: 3
 Depends: 
-    R (>= 2.10)
+    R (>= 4.3.0)
 LazyData: true
 StagedInstall: no

@@ -1,3 +1,4 @@
+#include "flexiplex.h"
 // Copyright 2022 Nadia Davidson
 // This program is distributed under the MIT License.
 // We also ask that you cite this software in publications
@@ -21,7 +22,7 @@
 #include <vector>
 // [[Rcpp::plugins(cpp17)]]
 
-#include "./utility/edlib-1.2.7/edlib.h"
+#include "../utility/edlib-1.2.7/edlib.h"
 #include "htslib/kseq.h"
 #include "zlib.h"
 
@@ -479,7 +480,7 @@ bool file_exists(const std::string &filename) {
 //' @return integer return value. 0 represents normal return.
 //' @export
 // [[Rcpp::export]]
-int flexiplex(Rcpp::String reads_in, Rcpp::String barcodes_file,
+int flexiplex_cpp(Rcpp::String reads_in, Rcpp::String barcodes_file,
               bool bc_as_readid, int max_bc_editdistance,
               int max_flank_editdistance, Rcpp::StringVector pattern,
               Rcpp::String reads_out, Rcpp::String stats_out,

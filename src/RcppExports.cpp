@@ -10,6 +10,23 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// find_isoform_multithread
+void find_isoform_multithread(const std::string& gff3, const std::string& genome_bam, const std::string& isoform_gff3, const std::string& tss_tes_stat, const std::string& genomefa, const std::string& transcript_fa, const Rcpp::List& isoform_parameters, const std::string& raw_splice_isoform);
+RcppExport SEXP _FLAMES_find_isoform_multithread(SEXP gff3SEXP, SEXP genome_bamSEXP, SEXP isoform_gff3SEXP, SEXP tss_tes_statSEXP, SEXP genomefaSEXP, SEXP transcript_faSEXP, SEXP isoform_parametersSEXP, SEXP raw_splice_isoformSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::string& >::type gff3(gff3SEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type genome_bam(genome_bamSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type isoform_gff3(isoform_gff3SEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type tss_tes_stat(tss_tes_statSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type genomefa(genomefaSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type transcript_fa(transcript_faSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type isoform_parameters(isoform_parametersSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type raw_splice_isoform(raw_splice_isoformSEXP);
+    find_isoform_multithread(gff3, genome_bam, isoform_gff3, tss_tes_stat, genomefa, transcript_fa, isoform_parameters, raw_splice_isoform);
+    return R_NilValue;
+END_RCPP
+}
 // flexiplex
 int flexiplex(Rcpp::String reads_in, Rcpp::String barcodes_file, bool bc_as_readid, int max_bc_editdistance, int max_flank_editdistance, Rcpp::StringVector pattern, Rcpp::String reads_out, Rcpp::String stats_out, Rcpp::String bc_out, int n_threads);
 RcppExport SEXP _FLAMES_flexiplex(SEXP reads_inSEXP, SEXP barcodes_fileSEXP, SEXP bc_as_readidSEXP, SEXP max_bc_editdistanceSEXP, SEXP max_flank_editdistanceSEXP, SEXP patternSEXP, SEXP reads_outSEXP, SEXP stats_outSEXP, SEXP bc_outSEXP, SEXP n_threadsSEXP) {
@@ -30,9 +47,26 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// variant_count_matrix
+Rcpp::NumericMatrix variant_count_matrix(Rcpp::String bam_path, Rcpp::String seqname, int pos, bool indel, Rcpp::StringVector barcodes);
+RcppExport SEXP _FLAMES_variant_count_matrix(SEXP bam_pathSEXP, SEXP seqnameSEXP, SEXP posSEXP, SEXP indelSEXP, SEXP barcodesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::String >::type bam_path(bam_pathSEXP);
+    Rcpp::traits::input_parameter< Rcpp::String >::type seqname(seqnameSEXP);
+    Rcpp::traits::input_parameter< int >::type pos(posSEXP);
+    Rcpp::traits::input_parameter< bool >::type indel(indelSEXP);
+    Rcpp::traits::input_parameter< Rcpp::StringVector >::type barcodes(barcodesSEXP);
+    rcpp_result_gen = Rcpp::wrap(variant_count_matrix(bam_path, seqname, pos, indel, barcodes));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_FLAMES_find_isoform_multithread", (DL_FUNC) &_FLAMES_find_isoform_multithread, 8},
     {"_FLAMES_flexiplex", (DL_FUNC) &_FLAMES_flexiplex, 10},
+    {"_FLAMES_variant_count_matrix", (DL_FUNC) &_FLAMES_variant_count_matrix, 5},
     {NULL, NULL, 0}
 };
 
