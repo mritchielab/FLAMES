@@ -246,6 +246,11 @@ sc_long_pipeline <-
             cat(format(Sys.time(), "%X %a %b %d %Y"), "Isoform identificaiton done\n")
         } else {
             cat("#### Skip isoform identificaiton\n")
+            # create transcript_assembly.fa using GTF if not exists
+            if (!file.exists(file.path(outdir, "transcript_assembly.fa"))) {
+                cat("#### Generating transcript_assembly.fa from annotation\n")
+                annotation_to_fasta(annotation, genome_fa, outdir)
+            } 
         }
        
         
@@ -257,6 +262,11 @@ sc_long_pipeline <-
             } else {
                 infq_realign <- infq
             }
+            
+
+
+
+            # minimap2_realign looks for the transcript_assembly.fa file in the outdir
             minimap2_realign(config, infq_realign, outdir, minimap2_dir, prefix = NULL, 
                              threads = config$pipeline_parameters$threads)
         } else {

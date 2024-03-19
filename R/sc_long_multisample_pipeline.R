@@ -278,7 +278,17 @@ sc_long_multisample_pipeline <-
         # find isofroms
         if (config$pipeline_parameters$do_isoform_identification) {
             find_isoform(annotation, genome_fa, genome_bam, outdir, config)
+        } else {
+            cat("#### Skip isoform identificaiton\n")
+            # create transcript_assembly.fa using GTF if not exists
+            if (!file.exists(file.path(outdir, "transcript_assembly.fa"))) {
+                cat("#### Generating transcript_assembly.fa from annotation\n")
+                annotation_to_fasta(annotation, genome_fa, outdir)
+            } 
         }
+
+
+
 
         # realign to transcript
         if (config$pipeline_parameters$do_read_realignment) {
