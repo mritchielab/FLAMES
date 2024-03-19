@@ -1,7 +1,7 @@
 #' @importFrom basilisk BasiliskEnvironment
 flames_env <- BasiliskEnvironment(
     envname = "flames_env", pkgname = "FLAMES",
-    pip = c("fast-edit-distance==1.2.1", "blaze2==2.1.*", "matplotlib==3.5.3"),
+    pip = c("fast-edit-distance==1.2.1", "blaze2==2.2.*", "matplotlib==3.5.3"),
     packages = c(
         "python==3.10",
         "numpy==1.25.0",
