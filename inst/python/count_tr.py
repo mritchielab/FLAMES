@@ -64,7 +64,8 @@ def umi_dedup(l, has_UMI, max_ed=1):
 
 
 def wrt_tr_to_csv(bc_tr_count_dict, transcript_dict, csv_f, 
-                    transcript_dict_ref=None, has_UMI=False,print_saturation=False):
+                    transcript_dict_ref=None, has_UMI=False,
+                    print_saturation=False):
     """
     Write transcript count to csv file
     """
@@ -517,15 +518,27 @@ def realigned_bam_coverage(bam_in, fa_idx_f, coverage_dir):
 # this is the main function
 def quantification(config_dict, annotation, outdir, pipeline):
     transcript_fa_idx = os.path.join(outdir, "transcript_assembly.fa.fai")
-    isoform_gff3 = os.path.join(outdir, "isoform_annotated.gtf" if os.path.isfile(os.path.join(outdir, "isoform_annotated.gtf")) else "isoform_annotated.gff3")
+
+
+    if os.path.isfile(os.path.join(outdir, "isoform_annotated.gtf")):
+        isoform_gff3 = os.path.join(outdir, "isoform_annotated.gtf")
+        flag_iso_ident = True
+    elif os.path.isfile(os.path.join(outdir, "isoform_annotated.gff3")):
+        isoform_gff3 = os.path.join(outdir, "isoform_annotated.gff3")
+        flag_iso_ident = True
+    else:
+        isoform_gff3 = annotation
+        flag_iso_ident = False
+
     isoform_gff3_f = os.path.join(outdir, "isoform_annotated.filtered.gff3")
     FSM_anno_out = os.path.join(outdir, "isoform_FSM_annotation.csv")
 
     # parsing gff file in background (concurrent future)
     executor = concurrent.futures.ProcessPoolExecutor(5)
     futures = {}
-    futures['parse_gff_tree_anno'] = executor.submit(parse_gff_tree, annotation)
     futures['parse_gff_tree_iso'] = executor.submit(parse_gff_tree, isoform_gff3)
+    if flag_iso_ident:
+        futures['parse_gff_tree_anno'] = executor.submit(parse_gff_tree, annotation)
 
     if pipeline == "sc_single_sample":
         realign_bam = os.path.join(outdir, "realign2transcript.bam")
@@ -539,9 +552,13 @@ def quantification(config_dict, annotation, outdir, pipeline):
             config_dict["transcript_counting"]["min_read_coverage"],
             bc_file = False)
         
-        chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = futures['parse_gff_tree_anno'].result()
-        chr_to_gene_i, transcript_dict_i, gene_to_transcript_i, transcript_to_exon_i = futures['parse_gff_tree_iso'].result()
 
+        chr_to_gene_i, transcript_dict_i, gene_to_transcript_i, transcript_to_exon_i = futures['parse_gff_tree_iso'].result()
+        if flag_iso_ident: 
+            _, transcript_dict, _, _ = futures['parse_gff_tree_anno'].result()
+        else:
+            transcript_dict = None
+            
         tr_cnt = wrt_tr_to_csv(bc_tr_count_dict, transcript_dict_i, tr_cnt_csv,
                             transcript_dict, "UMI" in config_dict["barcode_parameters"]["pattern"].keys())
         wrt_tr_to_csv(bc_tr_badcov_count_dict, transcript_dict_i, tr_badcov_cnt_csv,
@@ -563,9 +580,12 @@ def quantification(config_dict, annotation, outdir, pipeline):
             config_dict["transcript_counting"]["min_read_coverage"])
 
 
-        chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = futures['parse_gff_tree_anno'].result()
         chr_to_gene_i, transcript_dict_i, gene_to_transcript_i, transcript_to_exon_i = futures['parse_gff_tree_iso'].result()
-
+        if flag_iso_ident: 
+            _, transcript_dict, _, _ = futures['parse_gff_tree_anno'].result()
+        else:
+            transcript_dict = None
+            
         tr_cnt = wrt_tr_to_csv(
             bc_tr_count_dict, transcript_dict_i, tr_cnt_csv,
                 transcript_dict, has_UMI=False, print_saturation = False)
@@ -580,9 +600,13 @@ def quantification(config_dict, annotation, outdir, pipeline):
     elif pipeline == "sc_multi_sample":
         realign_bam = [os.path.join(outdir, f) for f in os.listdir(outdir) if f[-23:] == "_realign2transcript.bam"]
         tr_kept = realigment_min_sup_reads_filter(realign_bam, transcript_fa_idx, config_dict["isoform_parameters"]["min_sup_cnt"])
-        chr_to_gene, transcript_dict, gene_to_transcript, transcript_to_exon = futures['parse_gff_tree_anno'].result()
+        
         chr_to_gene_i, transcript_dict_i, gene_to_transcript_i, transcript_to_exon_i = futures['parse_gff_tree_iso'].result()
-
+        if flag_iso_ident: 
+            _, transcript_dict, _, _ = futures['parse_gff_tree_anno'].result()
+        else:
+            transcript_dict = None
+            
         for sample_bam in  realign_bam:
             sys.stderr.write("parsing " + sample_bam + "...\n")
             sample = os.path.basename(sample_bam).replace('_realign2transcript.bam','')
