@@ -65,9 +65,9 @@ int flexiplex(Rcpp::String reads_in, Rcpp::String barcodes_file,
 
 #include "main-functions/pileup_readid.h"
 // [[Rcpp::export]]
-Rcpp::NumericMatrix variant_count_matrix(Rcpp::String bam_path,
-                                             Rcpp::String seqname, int pos,
-                                             bool indel,
-                                             Rcpp::StringVector barcodes) {
-  return variant_count_matrix_cpp(bam_path, seqname, pos, indel, barcodes);
+Rcpp::NumericMatrix
+variant_count_matrix(Rcpp::String bam_path, Rcpp::String seqname, int pos,
+                     bool indel, Rcpp::StringVector barcodes, bool verbose) {
+  return variant_count_matrix_cpp(bam_path, seqname, pos, indel, barcodes,
+                                  verbose);
 }

@@ -56,7 +56,8 @@ int readdata(void *data, bam1_t *b) {
 Rcpp::NumericMatrix variant_count_matrix_cpp(Rcpp::String bam_path,
                                              Rcpp::String seqname, int pos,
                                              bool indel,
-                                             Rcpp::StringVector barcodes) {
+                                             Rcpp::StringVector barcodes,
+                                             bool verbose) {
   if (pos > 1) {
     // htslib is 0-based
     pos = pos - 1;
@@ -110,11 +111,13 @@ Rcpp::NumericMatrix variant_count_matrix_cpp(Rcpp::String bam_path,
   if (umi_idx == std::string::npos || id_idx == std::string::npos) {
     Rcpp::stop("Unexpected read id format: %s", read_id);
   }
-  Rcpp::Rcout << "Checking read ID format:\n"
-              << "ReadID: " << read_id << "\n"
-              << "barcode: " << read_id.substr(0, id_idx) << "\n"
-              << "UMI: " << read_id.substr(id_idx + 1, umi_idx - id_idx - 1)
-              << "\n";
+  if (verbose) {
+    Rcpp::Rcout << "Checking read ID format:\n"
+                << "ReadID: " << read_id << "\n"
+                << "barcode: " << read_id.substr(0, id_idx) << "\n"
+                << "UMI: " << read_id.substr(id_idx + 1, umi_idx - id_idx - 1)
+                << "\n";
+  }
   bam_destroy1(bam_tmp);
 
   std::unordered_map<std::string, std::unordered_map<std::string, unsigned int>>

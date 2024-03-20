@@ -143,6 +143,7 @@ find_isoform_flames <- function(annotation, genome_fa, genome_bam, outdir, confi
 #' @importFrom Biostrings readDNAStringSet writeXStringSet
 #' @importFrom GenomicFeatures extractTranscriptSeqs makeTxDbFromGFF
 #' @importFrom Rsamtools indexFa
+#' @importFrom utils write.table
 #'
 #' @examples
 #' fasta <- annotation_to_fasta(system.file("extdata/rps24.gtf.gz", package = "FLAMES"), system.file("extdata/rps24.fa.gz", package = "FLAMES"), tempdir())

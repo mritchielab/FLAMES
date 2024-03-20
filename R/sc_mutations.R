@@ -1,10 +1,10 @@
-variant_count_tb <- function(bam_path, seqname, pos, indel, barcodes) {
+variant_count_tb <- function(bam_path, seqname, pos, indel, barcodes, verbose = TRUE) {
   # allele by barcode matrix (value: read count)
   tryCatch(
     {
       variant_count_matrix( # throws Rcpp::exception when no reads at pos
         bam_path = bam_path,
-        seqname = seqname, pos = pos, indel = indel, barcodes = barcodes
+        seqname = seqname, pos = pos, indel = indel, barcodes = barcodes, verbose = verbose
       ) |>
         tibble::as_tibble(rownames = "allele") |>
         # pivot to long format: allele, barcode, allele_count
@@ -92,7 +92,7 @@ sc_mutations <- function(bam_path, seqnames, positions, indel = FALSE, barcodes,
     message(paste0(format(Sys.time(), "%H:%M:%S "), "Got 1 bam file, parallelizing over each position ..."))
     variants <- parallel::mcmapply(
       FUN = function(seqname, pos) {
-        variant_count_tb(bam_path, seqname, pos, indel, barcodes)
+        variant_count_tb(bam_path, seqname, pos, indel, barcodes, verbose = FALSE)
       },
       seqname = seqnames, pos = positions, SIMPLIFY = FALSE, mc.cores = threads
     )
@@ -119,7 +119,7 @@ sc_mutations <- function(bam_path, seqnames, positions, indel = FALSE, barcodes,
     message(paste0(format(Sys.time(), "%H:%M:%S "), "Multi-threading over bam files x positions ..."))
     variants <- parallel::mcmapply(
       FUN = function(sample_bam, seqname, pos, sample_barcodes) {
-        variant_count_tb(sample_bam, seqname, pos, indel, sample_barcodes) |>
+        variant_count_tb(sample_bam, seqname, pos, indel, sample_barcodes, verbose = FALSE) |>
           dplyr::mutate(bam_file = sample_bam)
       },
       sample_bam = args_grid$sample_bam, seqname = args_grid$seqname,
@@ -253,7 +253,7 @@ find_variants_grange <- function(bam_path, reference, gene_grange, min_nucleotid
 #' returned. If \code{FALSE}, all variants will be returned, which could take significantly
 #' longer time.
 #' @param names_from character(1): the column name in the metadata column of the annotation
-#' (\code(mcols(annotation)[, names_from])) to use for the \code{region} column in the output.
+#' (\code{mcols(annotation)[, names_from]}) to use for the \code{region} column in the output.
 #' @return A tibble with columns: seqnames, pos, nucleotide, count, sum, freq, ref, region,
 #' homopolymer_pct, bam_path The homopolymer percentage is calculated as the percentage of the
 #' most frequent nucleotide in a window of \code{homopolymer_window} nucleotides around
@@ -265,7 +265,7 @@ find_variants_grange <- function(bam_path, reference, gene_grange, min_nucleotid
 #' R.utils::gunzip(filename = system.file("extdata/rps24.fa.gz", package = "FLAMES"), destname = genome_fa, remove = FALSE)
 #' download.file("https://raw.githubusercontent.com/mritchielab/FLAMES/devel/tests/testthat/demultiplexed.fq",
 #'   destfile = file.path(outdir, "demultipelxed.fq")
-#' ) # cant be bothered to run demultiplexing again
+#' ) # can't be bothered to run demultiplexing again
 #' if (is.character(locate_minimap2_dir())) {
 #'   minimap2_align( # align to genome
 #'     config = jsonlite::fromJSON(system.file("extdata/SIRV_config_default.json", package = "FLAMES")),
@@ -300,19 +300,11 @@ find_variants <- function(bam_path, reference, annotation, min_nucleotide_depth 
 
   if (!annotated_region_only) {
     message(paste0(format(Sys.time(), "%H:%M:%S "), "Adding unannotated gaps ..."))
-    # GenomicRanges::gaps do not return the gap at the end of each chromosome,
-    # so we add a dummy end to each sequence
-    ends <- sapply(
-      seq_along(reference),
-      function(x) {
-        GenomicRanges::GRanges(
-          names(reference)[x],
-          IRanges::IRanges(length(reference[[x]]), length(reference[[x]]))
-        )
-      }
-    )
-    # throws warning about not sequence levels in common, expected
-    annotation <- c(annotation, do.call(c, ends))
+    # parsed annotation might not have seqlengths in seqinfo
+    GenomeInfoDb::seqinfo(annotation) <- Biostrings::seqinfo(reference)
+    if (any(is.na(GenomeInfoDb::seqlengths(annotation)))) {
+      stop("Missing seqlengths in seqinfo of annotation")
+    }
     annotation <- c(annotation, GenomicRanges::gaps(annotation))
   }
 
