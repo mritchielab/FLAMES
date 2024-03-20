@@ -10,6 +10,8 @@ find_variants(
   annotation,
   min_nucleotide_depth = 100,
   homopolymer_window = 3,
+  annotated_region_only = FALSE,
+  names_from = "gene_name",
   threads = 1
 )
 }
@@ -29,12 +31,23 @@ considered a variant.}
 percentage. The homopolymer percentage is calculated as the percentage of the most
 frequent nucleotide in a window of \code{-homopolymer_window} to \code{homopolymer_window}
 nucleotides around the variant position, excluding the variant position itself.
+Calculation of the homopolymer percentage is skipped when \code{homopolymer_window = 0}.
 This is useful for filtering out Nanopore sequencing errors in homopolymer regions.}
 
-\item{threads}{integer(1): number of threads to use.}
+\item{annotated_region_only}{logical(1): whether to only consider variants outside
+annotated regions. If \code{TRUE}, only variants outside annotated regions will be
+returned. If \code{FALSE}, all variants will be returned, which could take significantly
+longer time.}
+
+\item{names_from}{character(1): the column name in the metadata column of the annotation
+(\code(mcols(annotation)[, names_from])) to use for the \code{region} column in the output.}
+
+\item{threads}{integer(1): number of threads to use. Threading is done over each
+annotated region and (if \code{annotated_region_only = FALSE}) unannotated gaps for
+each bam file.}
 }
 \value{
-A tibble with columns: seqnames, pos, nucleotide, count, sum, freq, ref, gene,
+A tibble with columns: seqnames, pos, nucleotide, count, sum, freq, ref, region,
 homopolymer_pct. The homopolymer percentage is calculated as the percentage of the
 most frequent nucleotide in a window of \code{homopolymer_window} nucleotides around
 the variant position, excluding the variant position itself.
@@ -57,7 +70,7 @@ genome_fa <- file.path(outdir, "rps24.fa")
 R.utils::gunzip(filename = system.file("extdata/rps24.fa.gz", package = "FLAMES"), destname = genome_fa, remove = FALSE)
 download.file("https://raw.githubusercontent.com/mritchielab/FLAMES/devel/tests/testthat/demultiplexed.fq",
   destfile = file.path(outdir, "demultipelxed.fq")
-) # can't be bothered to run demultiplexing again
+) # cant be bothered to run demultiplexing again
 if (is.character(locate_minimap2_dir())) {
   minimap2_align( # align to genome
     config = jsonlite::fromJSON(system.file("extdata/SIRV_config_default.json", package = "FLAMES")),

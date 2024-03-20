@@ -1,22 +1,35 @@
 variant_count_tb <- function(bam_path, seqname, pos, indel, barcodes) {
   # allele by barcode matrix (value: read count)
-  variant_count_matrix(
-    bam_path = bam_path,
-    seqname = seqname, pos = pos, indel = indel, barcodes = barcodes
-  ) |>
-    tibble::as_tibble(rownames = "allele") |>
-    # pivot to long format: allele, barcode, allele_count
-    tidyr::pivot_longer(
-      cols = -tidyselect::matches("allele"),
-      values_to = "allele_count", names_to = "barcode"
-    ) |>
-    dplyr::group_by(barcode) |>
-    dplyr::mutate(
-      cell_total_reads = sum(allele_count),
-      pct = allele_count / cell_total_reads,
-      pos = pos, seqname = seqname
-    ) |>
-    dplyr::ungroup()
+  tryCatch(
+    {
+      variant_count_matrix( # throws Rcpp::exception when no reads at pos
+        bam_path = bam_path,
+        seqname = seqname, pos = pos, indel = indel, barcodes = barcodes
+      ) |>
+        tibble::as_tibble(rownames = "allele") |>
+        # pivot to long format: allele, barcode, allele_count
+        tidyr::pivot_longer(
+          cols = -tidyselect::matches("allele"),
+          values_to = "allele_count", names_to = "barcode"
+        ) |>
+        dplyr::group_by(barcode) |>
+        dplyr::mutate(
+          cell_total_reads = sum(allele_count),
+          pct = allele_count / cell_total_reads,
+          pos = pos, seqname = seqname
+        ) |>
+        dplyr::ungroup()
+    },
+    error = function(e) {
+      if (inherits(e, "Rcpp::exception") & conditionMessage(e) == "Failed to fetch an alignment") {
+        message(paste0("No reads found at ", seqname, ":", pos, " in ", bam_path))
+        message("Returning empty tibble")
+        return(tibble::tibble())
+      } else {
+        stop(e)
+      }
+    }
+  )
 }
 
 #' Variant count for single-cell data
@@ -76,6 +89,7 @@ sc_mutations <- function(bam_path, seqnames, positions, indel = FALSE, barcodes,
       "barcodes must be a character vector" =
         is.character(barcodes)
     )
+    message(paste0(format(Sys.time(), "%H:%M:%S "), "Got 1 bam file, parallelizing over each position ..."))
     variants <- parallel::mcmapply(
       FUN = function(seqname, pos) {
         variant_count_tb(bam_path, seqname, pos, indel, barcodes)
@@ -102,6 +116,7 @@ sc_mutations <- function(bam_path, seqnames, positions, indel = FALSE, barcodes,
       ) |>
       dplyr::select(-mutation_index, -bam_index)
 
+    message(paste0(format(Sys.time(), "%H:%M:%S "), "Multi-threading over bam files x positions ..."))
     variants <- parallel::mcmapply(
       FUN = function(sample_bam, seqname, pos, sample_barcodes) {
         variant_count_tb(sample_bam, seqname, pos, indel, sample_barcodes) |>
@@ -113,19 +128,9 @@ sc_mutations <- function(bam_path, seqnames, positions, indel = FALSE, barcodes,
     )
   }
 
-  errors <- variants[sapply(variants, \(x) inherits(x, "try-error"))]
-  if (length(errors) > 0) {
-    warning(paste0(
-      length(errors), " errors encountered out of ", length(variants), " positions * BAMs checked:"
-    ))
-    sapply(errors, \(x) x[1]) |>
-      table() |>
-      print()
-  }
-
-  variants <- variants[sapply(variants, \(x) !inherits(x, "try-error"))] |>
+  message(paste0(format(Sys.time(), "%H:%M:%S "), "Merging results ..."))
+  variants <- variants |>
     dplyr::bind_rows()
-
   return(variants)
 }
 
@@ -172,7 +177,8 @@ homopolymer_pct <- function(ref, seqname, pos, include_alt = FALSE, n = 3, threa
 
 # WIP: too much sequencing errrors / splice sites
 # find variants in a single grange
-find_variants_grange <- function(bam_path, reference, gene_grange, min_nucleotide_depth) {
+find_variants_grange <- function(bam_path, reference, gene_grange, min_nucleotide_depth,
+                                 names_from) {
   # read bam file
   mutations <- Rsamtools::pileup(bam_path,
     pileupParam = Rsamtools::PileupParam(
@@ -204,11 +210,13 @@ find_variants_grange <- function(bam_path, reference, gene_grange, min_nucleotid
 
   if (nrow(mutations) == 0) {
     return(mutations)
-  } else if (!is.null(gene_grange$gene_name)) {
-    mutations$gene <- gene_grange$gene_name
-    return(mutations)
   } else {
-    mutations$gene <- NA # no gene name / gap
+    mutations$bam_path <- bam_path
+    if (names_from %in% colnames(S4Vectors::mcols(gene_grange))) {
+      mutations$region <- S4Vectors::mcols(gene_grange)[, names_from]
+    } else {
+      mutations$region <- NA # no gene name / gap
+    }
     return(mutations)
   }
 }
@@ -231,14 +239,23 @@ find_variants_grange <- function(bam_path, reference, gene_grange, min_nucleotid
 #' a GTF/GFF annotation file with \code{anno <- rtracklayer::import(file)}.
 #' @param min_nucleotide_depth integer(1): minimum read depth for a position to be
 #' considered a variant.
-#' @param threads integer(1): number of threads to use.
+#' @param threads integer(1): number of threads to use. Threading is done over each
+#' annotated region and (if \code{annotated_region_only = FALSE}) unannotated gaps for
+#' each bam file.
 #' @param homopolymer_window integer(1): the window size to calculate the homopolymer
 #' percentage. The homopolymer percentage is calculated as the percentage of the most
 #' frequent nucleotide in a window of \code{-homopolymer_window} to \code{homopolymer_window}
 #' nucleotides around the variant position, excluding the variant position itself.
+#' Calculation of the homopolymer percentage is skipped when \code{homopolymer_window = 0}.
 #' This is useful for filtering out Nanopore sequencing errors in homopolymer regions.
-#' @return A tibble with columns: seqnames, pos, nucleotide, count, sum, freq, ref, gene,
-#' homopolymer_pct. The homopolymer percentage is calculated as the percentage of the
+#' @param annotated_region_only logical(1): whether to only consider variants outside
+#' annotated regions. If \code{TRUE}, only variants outside annotated regions will be
+#' returned. If \code{FALSE}, all variants will be returned, which could take significantly
+#' longer time.
+#' @param names_from character(1): the column name in the metadata column of the annotation
+#' (\code(mcols(annotation)[, names_from])) to use for the \code{region} column in the output.
+#' @return A tibble with columns: seqnames, pos, nucleotide, count, sum, freq, ref, region,
+#' homopolymer_pct, bam_path The homopolymer percentage is calculated as the percentage of the
 #' most frequent nucleotide in a window of \code{homopolymer_window} nucleotides around
 #' the variant position, excluding the variant position itself.
 #' @examples
@@ -248,7 +265,7 @@ find_variants_grange <- function(bam_path, reference, gene_grange, min_nucleotid
 #' R.utils::gunzip(filename = system.file("extdata/rps24.fa.gz", package = "FLAMES"), destname = genome_fa, remove = FALSE)
 #' download.file("https://raw.githubusercontent.com/mritchielab/FLAMES/devel/tests/testthat/demultiplexed.fq",
 #'   destfile = file.path(outdir, "demultipelxed.fq")
-#' ) # can't be bothered to run demultiplexing again
+#' ) # cant be bothered to run demultiplexing again
 #' if (is.character(locate_minimap2_dir())) {
 #'   minimap2_align( # align to genome
 #'     config = jsonlite::fromJSON(system.file("extdata/SIRV_config_default.json", package = "FLAMES")),
@@ -267,65 +284,79 @@ find_variants_grange <- function(bam_path, reference, gene_grange, min_nucleotid
 #' }
 #' @export
 find_variants <- function(bam_path, reference, annotation, min_nucleotide_depth = 100,
-                          homopolymer_window = 3, threads = 1) {
+                          homopolymer_window = 3, annotated_region_only = FALSE,
+                          names_from = "gene_name", threads = 1) {
   if (is.character(reference)) {
+    message(paste0(format(Sys.time(), "%H:%M:%S "), "Reading reference ..."))
     reference <- Biostrings::readDNAStringSet(reference)
     # get rid of the `1` from >chr1 1
     names(reference) <- sapply(names(reference), function(x) strsplit(x, " ")[[1]][1])
   }
   if (is.character(annotation)) {
-    annotation <- rtracklayer::import(annotation)
+    message(paste0(format(Sys.time(), "%H:%M:%S "), "Reading annotation ..."))
+    annotation <- rtracklayer::import(annotation) |>
+      (\(x) x[S4Vectors::mcols(x)$type == "gene", ])()
   }
 
-  # GenomicRanges::gaps do not return the gap at the end of each chromosome, 
-  # so we add a dummy end to each sequence
-  ends <- sapply(
-    seq_along(reference),
-    function(x) {
-      GenomicRanges::GRanges(
-        names(reference)[x],
-        IRanges::IRanges(length(reference[[x]]), length(reference[[x]]))
-      )
-    }
-  )
-  # throws warning about not sequence levels in common, expected
-  annotation <- c(annotation, do.call(c, ends)) 
-  annotation <- c(annotation, GenomicRanges::gaps(annotation))
+  if (!annotated_region_only) {
+    message(paste0(format(Sys.time(), "%H:%M:%S "), "Adding unannotated gaps ..."))
+    # GenomicRanges::gaps do not return the gap at the end of each chromosome,
+    # so we add a dummy end to each sequence
+    ends <- sapply(
+      seq_along(reference),
+      function(x) {
+        GenomicRanges::GRanges(
+          names(reference)[x],
+          IRanges::IRanges(length(reference[[x]]), length(reference[[x]]))
+        )
+      }
+    )
+    # throws warning about not sequence levels in common, expected
+    annotation <- c(annotation, do.call(c, ends))
+    annotation <- c(annotation, GenomicRanges::gaps(annotation))
+  }
 
   if (length(bam_path) == 1) {
+    message(paste0(format(Sys.time(), "%H:%M:%S "), "Got 1 bam file, parallelizing over each region ..."))
     variants <- parallel::mclapply(
       sapply(seq_along(annotation), function(x) annotation[x]), function(grange) {
-        find_variants_grange(bam_path, reference, grange, min_nucleotide_depth)
+        find_variants_grange(bam_path, reference, grange, min_nucleotide_depth, names_from)
       },
       mc.cores = threads
     )
   } else {
     # multi-threading over bam files x granges
+    message(paste0(format(Sys.time(), "%H:%M:%S "), "Got multiple bam files, preparing for multi-threading ..."))
     args_grid <- expand.grid(
       grange = seq_along(annotation), # does not work on GRanges directly
-      bam = bam_path
-    ) |>
-      dplyr::mutate(
-        grange = sapply(grange, function(x) annotation[x])
-      )
+      bam = bam_path,
+      stringsAsFactors = FALSE
+    )
+
+    message(paste0(format(Sys.time(), "%H:%M:%S "), "Multi-threading over bam files x ranges ..."))
     variants <- parallel::mcmapply(
       FUN = function(bam, grange) {
-        find_variants_grange(bam, reference, grange, min_nucleotide_depth)
+        find_variants_grange(bam, reference, annotation[grange], min_nucleotide_depth, names_from)
       },
       bam = args_grid$bam, grange = args_grid$grange, mc.cores = threads,
       SIMPLIFY = FALSE
     )
   }
 
+  message(paste0(format(Sys.time(), "%H:%M:%S "), "Merging results ..."))
   variants <- dplyr::bind_rows(variants)
   if (nrow(variants) == 0) {
     # otherwise homopolymer_pct will fail
     return(variants)
   }
 
-  variants$homopolymer_pct <- homopolymer_pct(
-    reference, variants$seqnames, variants$pos,
-    include_alt = FALSE, n = 3, threads = threads
-  )
+  if (homopolymer_window > 1) {
+    message(paste0(format(Sys.time(), "%H:%M:%S "), "Calculating homopolymer percentages ..."))
+    variants$homopolymer_pct <- homopolymer_pct(
+      reference, variants$seqnames, variants$pos,
+      include_alt = FALSE, n = homopolymer_window, threads = threads
+    )
+  }
+
   return(variants)
 }
