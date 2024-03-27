@@ -56,7 +56,7 @@
  *
  *  Created by Mengyao Zhao on 6/22/10.
  *  Copyright 2010 Boston College. All rights reserved.
- *	Version 1.2.4
+ *	Version 1.2.5
  *	Last revision by Mengyao Zhao on 2022-Apr-17.
  *
  *  The lazy-F loop implementation was derived from SWPS3, which is
@@ -65,8 +65,6 @@
  *  The core SW loop referenced the swsse2 implementation, which is
  *  BSD licensed under Micharl Farrar.
  */
-
-// #include <Rcpp.h>
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -310,7 +308,9 @@ static alignment_end* sw_sse2_byte (const int8_t* ref,
 				_mm_store_si128(pvHStore + j, vH);
 				vH = _mm_subs_epu8(vH, vGapO);
 				vF = _mm_subs_epu8(vF, vGapE);
-				if (UNLIKELY(! _mm_movemask_epi8(_mm_cmpgt_epi8(vF, vH)))) goto end;
+                vTemp = _mm_subs_epu8(vF, vH);
+                vTemp = _mm_cmpeq_epi8 (vTemp, vZero);
+                if (UNLIKELY(_mm_movemask_epi8(vTemp) == 0xffff)) goto end;
 			}
 		}
 
@@ -711,7 +711,7 @@ static cigar* banded_sw (const int8_t* ref,
 				op = 'D';
 				break;
 			default:
-				// Rcpp::warning("Trace back error: %d.\n", direction_line[temp1 - 1]);
+				// fprintf(stderr, "Trace back error: %d.\n", direction_line[temp1 - 1]);
 				free(direction);
 				free(h_c);
 				free(e_b);
@@ -837,7 +837,7 @@ s_align* ssw_align (const s_profile* prof,
 	r->cigarLen = 0;
     r->flag = 0;
 	if (maskLen < 15) {
-		// Rcpp::warning("When maskLen < 15, the function ssw_align doesn't return 2nd best alignment information.\n");
+		// fprintf(stderr, "When maskLen < 15, the function ssw_align doesn't return 2nd best alignment information.\n");
 	}
 
 	// Find the alignment scores and ending positions
@@ -848,7 +848,7 @@ s_align* ssw_align (const s_profile* prof,
 			bests = sw_sse2_word(ref, 0, refLen, readLen, weight_gapO, weight_gapE, prof->profile_word, -1, maskLen);
 			word = 1;
 		} else if (bests[0].score == 255) {
-			// Rcpp::warning("Please set 2 to the score_size parameter of the function ssw_init, otherwise the alignment results will be incorrect.\n");
+			// fprintf(stderr, "Please set 2 to the score_size parameter of the function ssw_init, otherwise the alignment results will be incorrect.\n");
 			free(r);
 			return NULL;
 		}
@@ -856,7 +856,7 @@ s_align* ssw_align (const s_profile* prof,
 		bests = sw_sse2_word(ref, 0, refLen, readLen, weight_gapO, weight_gapE, prof->profile_word, -1, maskLen);
 		word = 1;
 	}else {
-		// Rcpp::warning("Please call the function ssw_init before ssw_align.\n");
+		// fprintf(stderr, "Please call the function ssw_init before ssw_align.\n");
 		free(r);
 		return NULL;
 	}
@@ -888,7 +888,7 @@ s_align* ssw_align (const s_profile* prof,
 	r->read_begin1 = r->read_end1 - bests_reverse[0].read;
 
     if (UNLIKELY(r->score1 > bests_reverse[0].score)) { // banded_sw result will miss a small part
-		// Rcpp::warning("Warning: The alignment path of one pair of sequences may miss a small part. [ssw.c ssw_align]\n");
+		// fprintf(stderr, "Warning: The alignment path of one pair of sequences may miss a small part. [ssw.c ssw_align]\n");
         r->flag = 2;  
     }
     free(bests_reverse);
