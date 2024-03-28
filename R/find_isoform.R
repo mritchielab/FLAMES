@@ -141,7 +141,8 @@ find_isoform_flames <- function(annotation, genome_fa, genome_bam, outdir, confi
 #' @return Path to the outputted transcriptome assembly
 #'
 #' @importFrom Biostrings readDNAStringSet writeXStringSet
-#' @importFrom GenomicFeatures extractTranscriptSeqs makeTxDbFromGFF
+#' @importFrom GenomicFeatures extractTranscriptSeqs
+#' @importFrom txdbmaker makeTxDbFromGFF
 #' @importFrom Rsamtools indexFa
 #' @importFrom utils write.table
 #'
@@ -171,7 +172,7 @@ annotation_to_fasta <- function(isoform_annotation, genome_fa, outdir, extract_f
 
   dna_string_set <- Biostrings::readDNAStringSet(genome_fa)
   names(dna_string_set) <- gsub(" .*$", "", names(dna_string_set))
-  txdb <- GenomicFeatures::makeTxDbFromGFF(isoform_annotation)
+  txdb <- txdbmaker::makeTxDbFromGFF(isoform_annotation)
   if (missing(extract_fn)) {
     tr_string_set <- GenomicFeatures::extractTranscriptSeqs(dna_string_set, txdb,
       use.names = TRUE)

@@ -1,5 +1,6 @@
 #include "edit_dist.h"
 
+#include <stdint.h>
 #include <string>
 #include <vector>
 #include <map>

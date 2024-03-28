@@ -4,6 +4,7 @@
 #' that only differ by the 5' / 3' end. This could be useful for plotting average
 #' coverage plots.
 #' 
+#' @importFrom txdbmaker makeTxDbFromGFF makeTxDbFromGRanges
 #' @importFrom rtracklayer import
 #' @importFrom S4Vectors split
 #' @importFrom GenomicRanges strand
@@ -26,11 +27,11 @@
 filter_annotation <- function(annotation, keep = "tss_differ") {
   if (is.character(annotation)) {
     annotation <- annotation |>
-      GenomicFeatures::makeTxDbFromGFF() |>
+      txdbmaker::makeTxDbFromGFF() |>
       GenomicFeatures::transcripts()
   } else {
     annotation <- annotation |>
-      GenomicFeatures::makeTxDbFromGRanges() |>
+      txdbmaker::makeTxDbFromGRanges() |>
       GenomicFeatures::transcripts()
   }
 
@@ -54,7 +55,7 @@ filter_annotation <- function(annotation, keep = "tss_differ") {
 #' @description Plot the average read coverages for each length bin or a 
 #' perticular isoform
 #' 
-#' @importFrom GenomicFeatures makeTxDbFromGFF transcripts
+#' @importFrom GenomicFeatures transcripts
 #' @importFrom GenomicAlignments readGAlignments seqnames 
 #' @importFrom GenomicRanges width strand granges coverage
 #' @importFrom Rsamtools ScanBamParam
