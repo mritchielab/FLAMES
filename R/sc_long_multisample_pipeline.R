@@ -83,7 +83,7 @@
 #' ShortRead::writeFastq(sample(reads, size = 500, replace = TRUE), file.path(outdir, "fastq/sample2.fq.gz"), mode = "w", full = FALSE)
 #' ShortRead::writeFastq(sample(reads, size = 500, replace = TRUE), file.path(outdir, "fastq/sample3.fq.gz"), mode = "w", full = FALSE)
 #'
-#' if (is.character(locate_minimap2_dir())) {
+#' if (all(is.character(sys_which(c("minimap2", "k8"))))) {
 #'     sce_list <- FLAMES::sc_long_multisample_pipeline(
 #'         annotation = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),
 #'         fastqs = file.path(outdir, "fastq", list.files(file.path(outdir, "fastq"))),
@@ -100,7 +100,8 @@ sc_long_multisample_pipeline <-
              outdir,
              genome_fa,
              sample_names = NULL,
-             minimap2_dir = NULL,
+             minimap2 = NULL,
+             k8 = NULL,
              barcodes_file = NULL,
              expect_cell_numbers = NULL,
              config_file = NULL) {
@@ -110,7 +111,6 @@ sc_long_multisample_pipeline <-
             genome_bam = NULL,
             outdir,
             genome_fa,
-            minimap2_dir,
             config_file
         )
 
@@ -246,7 +246,8 @@ sc_long_multisample_pipeline <-
         }
         cat("input fastqs:", paste0(infqs, sep = "\n"), "\n")
         cat("output directory:", outdir, "\n")
-        cat("directory containing minimap2:", minimap2_dir, "\n")
+        cat("minimap2 path:", minimap2, "\n")
+        cat("k8 path:", k8, "\n")
 
         # align reads to genome
         # if (!using_bam && config$pipeline_parameters$do_genome_alignment) {
@@ -260,7 +261,8 @@ sc_long_multisample_pipeline <-
                     infqs[i],
                     annotation,
                     outdir,
-                    minimap2_dir,
+                    minimap2,
+                    k8,
                     prefix = samples[i],
                     threads = config$pipeline_parameters$threads
                 )
@@ -300,7 +302,7 @@ sc_long_multisample_pipeline <-
             }
             for (i in 1:length(samples)) {
                 cat(paste0(c("\tRealigning sample ", samples[i], "...\n")))
-                minimap2_realign(config, infqs_realign[i], outdir, minimap2_dir, prefix = samples[i], 
+                minimap2_realign(config, infqs_realign[i], outdir, minimap2, prefix = samples[i], 
                                  threads = config$pipeline_parameters$threads)
             }
         } else {

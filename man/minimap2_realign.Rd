@@ -8,9 +8,10 @@ minimap2_realign(
   config,
   fq_in,
   outdir,
-  minimap2_dir,
+  minimap2,
+  samtools = NULL,
   prefix = NULL,
-  threads = NULL
+  threads = 1
 )
 }
 \arguments{
@@ -20,7 +21,7 @@ minimap2_realign(
 
 \item{outdir}{Output folder}
 
-\item{minimap2_dir}{Path to the directory containing minimap2}
+\item{minimap2}{Path to minimap2 binary}
 
 \item{prefix}{String, the prefix (e.g. sample name) for the outputted BAM file}
 
@@ -42,7 +43,7 @@ genome_fa <- bfc[[names(BiocFileCache::bfcadd(bfc, 'genome.fa', paste(file_url, 
 annotation <- bfc[[names(BiocFileCache::bfcadd(bfc, 'annot.gtf', paste(file_url, 'SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf', sep = '/')))]]
 outdir <- tempfile()
 dir.create(outdir)
-if (is.character(locate_minimap2_dir())) {
+if (all(is.character(sys_which(c("minimap2", "k8"))))) {
     fasta <- annotation_to_fasta(annotation, genome_fa, outdir)
     minimap2_realign(
         config = jsonlite::fromJSON(system.file('extdata/SIRV_config_default.json', package = 'FLAMES')),

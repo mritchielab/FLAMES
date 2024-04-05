@@ -40,7 +40,8 @@ bulk_long_pipeline <-
              fastq,
              outdir,
              genome_fa,
-             minimap2_dir = NULL,
+             minimap2 = NULL,
+             k8 = NULL,
              config_file = NULL) {
         checked_args <- check_arguments(
             annotation,
@@ -48,12 +49,10 @@ bulk_long_pipeline <-
             genome_bam = NULL,
             outdir,
             genome_fa,
-            minimap2_dir,
             config_file
         )
 
         config <- checked_args$config
-        minimap2_dir <- checked_args$minimap2_dir
 
         # create output directory if one doesn't exist
         if (!dir.exists(outdir)) {
@@ -93,7 +92,8 @@ bulk_long_pipeline <-
         cat("genome fasta:", genome_fa, "\n")
         cat("input fastq files:", gsub("$", "\n", fastq_files))
         cat("output directory:", outdir, "\n")
-        cat("directory containing minimap2:", minimap2_dir, "\n")
+        cat("minimap2 path:", minimap2, "\n")
+        cat("k8 path:", k8, "\n")
 
         if (config$pipeline_parameters$do_genome_alignment) {
             cat("#### Aligning reads to genome using minimap2\n")
@@ -105,7 +105,8 @@ bulk_long_pipeline <-
                     fastq_files[i],
                     annotation,
                     outdir,
-                    minimap2_dir,
+                    minimap2,
+                    k8,
                     prefix = samples[i],
                     threads = config$pipeline_parameters$threads
                 )
@@ -124,7 +125,7 @@ bulk_long_pipeline <-
             cat("#### Realign to transcript using minimap2\n")
             for (i in 1:length(samples)) {
                 cat(paste0(c("\tRealigning sample ", samples[i], "...\n")))
-                minimap2_realign(config, fastq_files[i], outdir, minimap2_dir, prefix = samples[i], 
+                minimap2_realign(config, fastq_files[i], outdir, minimap2, prefix = samples[i], 
                                  threads = config$pipeline_parameters$threads)
             }
         } else {

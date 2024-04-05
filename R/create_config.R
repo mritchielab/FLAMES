@@ -89,7 +89,6 @@ check_arguments <-
              genome_bam,
              outdir,
              genome_fa,
-             minimap2_dir,
              config_file) {
         if (!dir.exists(outdir)) {
             cat("Output directory does not exists: one is being created\n")
@@ -125,10 +124,6 @@ check_arguments <-
             }
         }
 
-        if (config$pipeline_parameters$do_genome_alignment || config$pipeline_parameters$do_read_realignment) {
-            minimap2_dir <- locate_minimap2_dir(minimap2_dir = minimap2_dir)
-        }
-
         if (config$pipeline_parameters$bambu_isoform_identification) {
             if (Matrix::tail(stringr::str_split(annotation, "\\.")[[1]], n = 1) != "gtf") {
                 stop("Bambu requires GTF format for annotation file.\n")
@@ -140,5 +135,5 @@ check_arguments <-
                 cat("Configured to use", config$pipeline_parameters$threads, "cores, detected", n_cores, "\n")
         }
 
-        return(list(config = config, minimap2_dir = minimap2_dir))
+        return(list(config = config))
     }

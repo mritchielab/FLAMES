@@ -55,7 +55,7 @@ variant_count_tb <- function(bam_path, seqname, pos, indel, barcodes, verbose = 
 #' download.file("https://raw.githubusercontent.com/mritchielab/FLAMES/devel/tests/testthat/demultiplexed.fq",
 #'   destfile = file.path(outdir, "demultipelxed.fq")
 #' ) # can't be bothered to run demultiplexing again
-#' if (is.character(locate_minimap2_dir())) {
+#' if (all(is.character(sys_which(c("minimap2", "k8"))))) {
 #'   minimap2_align( # align to genome
 #'     config = jsonlite::fromJSON(system.file("extdata/SIRV_config_default.json", package = "FLAMES")),
 #'     fa_file = genome_fa,
@@ -266,7 +266,7 @@ find_variants_grange <- function(bam_path, reference, gene_grange, min_nucleotid
 #' download.file("https://raw.githubusercontent.com/mritchielab/FLAMES/devel/tests/testthat/demultiplexed.fq",
 #'   destfile = file.path(outdir, "demultipelxed.fq")
 #' ) # can't be bothered to run demultiplexing again
-#' if (is.character(locate_minimap2_dir())) {
+#' if (all(is.character(sys_which(c("minimap2", "k8"))))) {
 #'   minimap2_align( # align to genome
 #'     config = jsonlite::fromJSON(system.file("extdata/SIRV_config_default.json", package = "FLAMES")),
 #'     fa_file = genome_fa,

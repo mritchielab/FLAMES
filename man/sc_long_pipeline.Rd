@@ -10,7 +10,8 @@ sc_long_pipeline(
   genome_bam = NULL,
   outdir,
   genome_fa,
-  minimap2_dir = NULL,
+  minimap2 = NULL,
+  k8 = NULL,
   barcodes_file = NULL,
   expect_cell_number = NULL,
   config_file = NULL
@@ -27,7 +28,7 @@ sc_long_pipeline(
 
 \item{genome_fa}{The file path to genome fasta file.}
 
-\item{minimap2_dir}{Path to the directory containing minimap2, if it is not in PATH. Only required if either or both of
+\item{minimap2}{Path to minimap2, if it is not in PATH. Only required if either or both of
 \code{do_genome_align} and \code{do_read_realign} are \code{TRUE}.}
 
 \item{barcodes_file}{The file path to the reference csv used for demultiplexing in flexiplex. If not specified, the
@@ -105,7 +106,7 @@ genome_fa <- file.path(outdir, "rps24.fa")
 R.utils::gunzip(filename = system.file("extdata/bc_allow.tsv.gz", package = "FLAMES"), destname = bc_allow, remove = FALSE)
 R.utils::gunzip(filename = system.file("extdata/rps24.fa.gz", package = "FLAMES"), destname = genome_fa, remove = FALSE)
 
-if (is.character(locate_minimap2_dir())) {
+if (all(is.character(sys_which(c("minimap2", "k8"))))) {
     sce <- FLAMES::sc_long_pipeline(
         genome_fa = genome_fa,
         fastq = system.file("extdata/fastq", package = "FLAMES"),

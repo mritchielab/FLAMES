@@ -10,10 +10,11 @@ minimap2_align(
   fq_in,
   annot,
   outdir,
-  minimap2_dir,
-  samtools = NULL,
+  minimap2 = NA,
+  k8 = NA,
+  samtools = NA,
   prefix = NULL,
-  threads = NULL
+  threads = 1
 )
 }
 \arguments{
@@ -27,7 +28,7 @@ minimap2_align(
 
 \item{outdir}{Output folder}
 
-\item{minimap2_dir}{Path to the directory containing minimap2}
+\item{minimap2}{Path to minimap2 binary}
 
 \item{samtools}{path to the samtools binary, required for large datasets since \code{Rsamtools} does not support \code{CSI} indexing}
 
@@ -52,7 +53,7 @@ genome_fa <- bfc[[names(BiocFileCache::bfcadd(bfc, 'genome.fa', paste(file_url, 
 annotation <- bfc[[names(BiocFileCache::bfcadd(bfc, 'annot.gtf', paste(file_url, 'SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf', sep = '/')))]]
 outdir <- tempfile()
 dir.create(outdir)
-if (is.character(locate_minimap2_dir())) {
+if (all(is.character(sys_which(c("minimap2", "k8"))))) {
     minimap2_align(
         config = jsonlite::fromJSON(system.file('extdata/SIRV_config_default.json', package = 'FLAMES')),
         fa_file = genome_fa,

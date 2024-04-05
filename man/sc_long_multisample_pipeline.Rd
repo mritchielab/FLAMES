@@ -10,7 +10,8 @@ sc_long_multisample_pipeline(
   outdir,
   genome_fa,
   sample_names = NULL,
-  minimap2_dir = NULL,
+  minimap2 = NULL,
+  k8 = NULL,
   barcodes_file = NULL,
   expect_cell_numbers = NULL,
   config_file = NULL
@@ -32,7 +33,7 @@ folders containing fastq files, each folder will be treated as a sample.}
 Default to the file names of input fastq files, or folder names if \code{fastqs} is
 a vector of folders.}
 
-\item{minimap2_dir}{Path to the directory containing minimap2, if it is not in PATH. Only required if either or both of
+\item{minimap2}{Path to minimap2, if it is not in PATH. Only required if either or both of
 \code{do_genome_align} and \code{do_read_realign} are \code{TRUE}.}
 
 \item{barcodes_file}{The file path to the reference csv used for demultiplexing in flexiplex. If not specified, the
@@ -104,7 +105,7 @@ ShortRead::writeFastq(sample(reads, size = 500, replace = TRUE), file.path(outdi
 ShortRead::writeFastq(sample(reads, size = 500, replace = TRUE), file.path(outdir, "fastq/sample2.fq.gz"), mode = "w", full = FALSE)
 ShortRead::writeFastq(sample(reads, size = 500, replace = TRUE), file.path(outdir, "fastq/sample3.fq.gz"), mode = "w", full = FALSE)
 
-if (is.character(locate_minimap2_dir())) {
+if (all(is.character(sys_which(c("minimap2", "k8"))))) {
     sce_list <- FLAMES::sc_long_multisample_pipeline(
         annotation = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),
         fastqs = file.path(outdir, "fastq", list.files(file.path(outdir, "fastq"))),

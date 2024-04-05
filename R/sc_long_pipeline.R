@@ -33,7 +33,7 @@
 #' @param genome_bam Optional file path to a bam file to use instead of fastq file (skips initial alignment step)
 #' @param outdir The path to directory to store all output files.
 #' @param genome_fa The file path to genome fasta file.
-#' @param minimap2_dir Path to the directory containing minimap2, if it is not in PATH. Only required if either or both of
+#' @param minimap2 Path to minimap2, if it is not in PATH. Only required if either or both of
 #' \code{do_genome_align} and \code{do_read_realign} are \code{TRUE}.
 #' @param config_file File path to the JSON configuration file. If specified, \code{config_file} overrides
 #' all configuration parameters
@@ -93,7 +93,7 @@
 #' R.utils::gunzip(filename = system.file("extdata/bc_allow.tsv.gz", package = "FLAMES"), destname = bc_allow, remove = FALSE)
 #' R.utils::gunzip(filename = system.file("extdata/rps24.fa.gz", package = "FLAMES"), destname = genome_fa, remove = FALSE)
 #'
-#' if (is.character(locate_minimap2_dir())) {
+#' if (all(is.character(sys_which(c("minimap2", "k8"))))) {
 #'     sce <- FLAMES::sc_long_pipeline(
 #'         genome_fa = genome_fa,
 #'         fastq = system.file("extdata/fastq", package = "FLAMES"),
@@ -109,7 +109,8 @@ sc_long_pipeline <-
              genome_bam = NULL,
              outdir,
              genome_fa,
-             minimap2_dir = NULL,
+             minimap2 = NULL,
+             k8 = NULL,
              barcodes_file = NULL,
              expect_cell_number = NULL,
              config_file = NULL
@@ -120,12 +121,10 @@ sc_long_pipeline <-
             genome_bam,
             outdir,
             genome_fa,
-            minimap2_dir,
             config_file
         )
         cat(format(Sys.time(), "%X %a %b %d %Y"), "Start running\n")
         config <- checked_args$config
-        minimap2_dir <- checked_args$minimap2_dir
 
         infq <- NULL
         if (config$pipeline_parameters$do_barcode_demultiplex) {
@@ -204,7 +203,8 @@ sc_long_pipeline <-
         }
         cat("input fastq:", infq, "\n")
         cat("output directory:", outdir, "\n")
-        cat("directory containing minimap2:", minimap2_dir, "\n")
+        cat("minimap2 path:", minimap2, "\n")
+        cat("k8 path:", k8, "\n")
 
         # align reads to genome
         # if (!using_bam && config$pipeline_parameters$do_genome_alignment) {
@@ -216,7 +216,8 @@ sc_long_pipeline <-
                 infq,
                 annotation,
                 outdir,
-                minimap2_dir,
+                minimap2,
+                k8,
                 prefix = NULL,
                 threads = config$pipeline_parameters$threads
             )
@@ -267,7 +268,7 @@ sc_long_pipeline <-
 
 
             # minimap2_realign looks for the transcript_assembly.fa file in the outdir
-            minimap2_realign(config, infq_realign, outdir, minimap2_dir, prefix = NULL, 
+            minimap2_realign(config, infq_realign, outdir, minimap2, prefix = NULL, 
                              threads = config$pipeline_parameters$threads)
         } else {
             cat("#### Skip read realignment\n")
@@ -391,7 +392,7 @@ generate_bulk_summarized <- function(out_files, load_genome_anno = NULL) {
 #' R.utils::gunzip(filename = system.file("extdata/rps24.fa.gz", package = "FLAMES"), destname = genome_fa, remove = FALSE)
 #' annotation <- system.file("extdata/rps24.gtf.gz", package = "FLAMES")
 #'
-#' if (is.character(locate_minimap2_dir())) {
+#' if (all(is.character(sys_which(c("minimap2", "k8"))))) {
 #'     sce <- FLAMES::sc_long_pipeline(
 #'         genome_fa = genome_fa,
 #'         fastq = system.file("extdata/fastq", package = "FLAMES"),

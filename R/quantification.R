@@ -153,7 +153,7 @@ quantify_gene <- function(annotation, outdir, n_process, pipeline = "sc_single_s
 #' config <- jsonlite::fromJSON(create_config(outdir, bambu_isoform_identification = TRUE, min_tr_coverage = 0.1, min_read_coverage = 0.1, min_sup_cnt = 1))
 #' file.copy(annotation, file.path(outdir, "isoform_annotated.gtf"))
 #' \dontrun{
-#' if (is.character(locate_minimap2_dir())) {
+#' if (all(is.character(sys_which(c("minimap2", "k8"))))) {
 #'     minimap2_realign(
 #'         config = config, outdir = outdir,
 #'         fq_in = fastq1

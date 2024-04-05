@@ -9,7 +9,7 @@
 #' @param fq_in File path to the fastq file used as a query sequence file
 #' @param annot Genome annotation file used to create junction bed files
 #' @param outdir Output folder
-#' @param minimap2_dir Path to the directory containing minimap2
+#' @param minimap2 Path to minimap2 binary
 #' @param prefix String, the prefix (e.g. sample name) for the outputted BAM file
 #' @param threads Integer, threads for minimap2 to use, see minimap2 documentation for details,
 #' FLAMES will try to detect cores if this parameter is not provided.
@@ -18,7 +18,6 @@
 #' @return a \code{data.frame} summarising the reads aligned
 #' @seealso [minimap2_realign()]
 #'
-#' @importFrom parallel detectCores
 #' @importFrom Rsamtools sortBam indexBam asBam
 #' @export
 #' @examples
@@ -30,7 +29,7 @@
 #' annotation <- bfc[[names(BiocFileCache::bfcadd(bfc, 'annot.gtf', paste(file_url, 'SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf', sep = '/')))]]
 #' outdir <- tempfile()
 #' dir.create(outdir)
-#' if (is.character(locate_minimap2_dir())) {
+#' if (all(is.character(sys_which(c("minimap2", "k8"))))) {
 #'     minimap2_align(
 #'         config = jsonlite::fromJSON(system.file('extdata/SIRV_config_default.json', package = 'FLAMES')),
 #'         fa_file = genome_fa,
@@ -39,24 +38,30 @@
 #'         outdir = outdir
 #'     )
 #' }
-minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2_dir, samtools = NULL,
-  prefix = NULL, threads = NULL) {
+minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2 = NA, k8 = NA, samtools = NA,
+  prefix = NULL, threads = 1) {
   cat(format(Sys.time(), "%X %a %b %d %Y"), "minimap2_align\n")
-
-  if (missing("threads") || is.null(threads)) {
-    threads <- parallel::detectCores()
-  }
 
   if (!is.null(prefix)) {
     prefix <- paste0(prefix, "_")
   }
 
-  if (missing("minimap2_dir") || is.null(minimap2_dir) || is.na(minimap2_dir)) {
-    minimap2_dir <- locate_minimap2_dir()
+  if (missing("minimap2") || is.null(minimap2) || is.na(minimap2) || minimap2 =="") {
+    minimap2 <- sys_which("minimap2")
+    if (is.na(minimap2)) {
+      stop("minimap2 not found, please make sure it is installed and provide its path as the minimap2 argument")
+    }
   }
 
-  if (missing("samtools") || is.null(samtools)) {
-    samtools <- locate_samtools()
+  if (missing("k8") || is.null(k8) || is.na(k8) || k8 =="") {
+    k8 <- sys_which("k8")
+    if (is.na(k8)) {
+      stop("k8 not found, please make sure it is installed and provide its path as the k8 argument")
+    }
+  }
+
+  if (missing("samtools") || is.null(samtools) || is.na(samtools) || samtools =="") {
+    samtools <- sys_which("samtools")
   }
 
   minimap2_args <- c("-ax", "splice", "-t", threads, "-k14", "--secondary=no",
@@ -66,18 +71,10 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2_dir, 
   }
 
   # k8 paftools.js gff2bend gff > bed12
+  paftoolsjs <- system.file("paftools.js", package = "FLAMES")
   if (config$alignment_parameters$use_junctions) {
-    if (file_test("-f", file.path(minimap2_dir, "k8")) && file_test("-f", file.path(minimap2_dir,
-      "paftools.js"))) {
-      paftoolsjs_path <- minimap2_dir
-    } else if (file_test("-f", file.path(dirname(minimap2_dir), "k8")) && file_test("-f",
-      file.path(dirname(minimap2_dir), "paftools.js"))) {
-      paftoolsjs_path <- dirname(minimap2_dir)
-    } else {
-      stop("Could not locate k8 and/or paftools.js in the minimap2 folder, they are required for converting annotation to bed12 files")
-    }
-    paftoolsjs_status <- base::system2(command = file.path(paftoolsjs_path, "k8"),
-      args = c(file.path(paftoolsjs_path, "paftools.js"), "gff2bed", annot,
+    paftoolsjs_status <- base::system2(command = k8,
+      args = c(paftoolsjs, "gff2bed", annot,
         ">", file.path(outdir, "tmp_splice_anno.bed12")))
     if (!is.null(base::attr(paftoolsjs_status, "status")) && base::attr(paftoolsjs_status,
       "status") != 0) {
@@ -92,7 +89,7 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2_dir, 
   # /.../FLAMES_datasets/MuSC/FLAMES_out/tmp_align.sam --seed 2022
   # /.../GRCm38.primary_assembly.genome.fa /.../trimmed_MSC.fastq.gz
   if (is.character(samtools)) {
-    minimap2_status <- base::system2(command = file.path(minimap2_dir, "minimap2"),
+    minimap2_status <- base::system2(command = minimap2,
       args = base::append(minimap2_args, c(fa_file, fq_in, "|", samtools, "view -bS -@ 4 -o",
         file.path(outdir, paste0(prefix, "tmp_align.bam")), "-")))
     if (!is.null(base::attr(minimap2_status, "status")) && base::attr(minimap2_status,
@@ -105,7 +102,8 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2_dir, 
     index_status <- base::system2(command = samtools, args = c("index", file.path(outdir,
       paste0(prefix, "align2genome.bam"))))
   } else {
-    minimap2_status <- base::system2(command = file.path(minimap2_dir, "minimap2"),
+    message("samtools not found, using Rsamtools instead")
+    minimap2_status <- base::system2(command = minimap2,
       args = base::append(minimap2_args, c(fa_file, fq_in, "-o", file.path(outdir,
         paste0(prefix, "tmp_align.sam")))))
     if (!is.null(base::attr(minimap2_status, "status")) && base::attr(minimap2_status,
@@ -137,7 +135,7 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2_dir, 
 #' @param config Parsed list of FLAMES config file
 #' @param fq_in File path to the fastq file used as a query sequence file
 #' @param outdir Output folder
-#' @param minimap2_dir Path to the directory containing minimap2
+#' @param minimap2 Path to minimap2 binary
 #' @param prefix String, the prefix (e.g. sample name) for the outputted BAM file
 #' @param threads Integer, threads for minimap2 to use, see minimap2 documentation for details,
 #' FLAMES will try to detect cores if this parameter is not provided.
@@ -145,7 +143,6 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2_dir, 
 #' @return a \code{data.frame} summarising the reads aligned
 #' @seealso [minimap2_align()]
 #'
-#' @importFrom parallel detectCores
 #' @importFrom Rsamtools sortBam indexBam asBam
 #' @export
 #' @examples
@@ -157,7 +154,7 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2_dir, 
 #' annotation <- bfc[[names(BiocFileCache::bfcadd(bfc, 'annot.gtf', paste(file_url, 'SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf', sep = '/')))]]
 #' outdir <- tempfile()
 #' dir.create(outdir)
-#' if (is.character(locate_minimap2_dir())) {
+#' if (all(is.character(sys_which(c("minimap2", "k8"))))) {
 #'     fasta <- annotation_to_fasta(annotation, genome_fa, outdir)
 #'     minimap2_realign(
 #'         config = jsonlite::fromJSON(system.file('extdata/SIRV_config_default.json', package = 'FLAMES')),
@@ -165,29 +162,30 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2_dir, 
 #'         outdir = outdir
 #'     )
 #' }
-minimap2_realign <- function(config, fq_in, outdir, minimap2_dir, prefix = NULL,
-  threads = NULL) {
+minimap2_realign <- function(config, fq_in, outdir, minimap2, samtools = NULL, prefix = NULL,
+  threads = 1) {
   cat(format(Sys.time(), "%X %a %b %d %Y"), "minimap2_realign\n")
-
-  if (missing("threads") || is.null(threads)) {
-    threads <- parallel::detectCores()
-  }
 
   if (!is.null(prefix)) {
     prefix <- paste0(prefix, "_")
   }
 
-  samtools <- locate_samtools()
+  if (missing("minimap2") || is.null(minimap2) || is.na(minimap2) || minimap2 =="") {
+    minimap2 <- sys_which("minimap2")
+    if (is.na(minimap2)) {
+      stop("minimap2 not found, please make sure it is installed and provide its path as the minimap2 argument")
+    }
+  }
 
-  if (missing("minimap2_dir") || is.null(minimap2_dir) || is.na(minimap2_dir)) {
-    minimap2_dir <- locate_minimap2_dir()
+  if (missing("samtools") || is.null(samtools) || is.na(samtools) || samtools =="") {
+    samtools <- sys_which("samtools")
   }
 
   minimap2_args <- c("-ax", "map-ont", "-p", "0.9", "--end-bonus", "10", "-N",
     "3", "-t", threads, "--seed", config$pipeline_parameters$seed)
 
   if (is.character(samtools)) {
-    minimap2_status <- base::system2(command = file.path(minimap2_dir, "minimap2"),
+    minimap2_status <- base::system2(command = minimap2,
       args = base::append(minimap2_args, c(file.path(outdir, "transcript_assembly.fa"),
         fq_in, "|", samtools, "view -bS -@ 4 -o", file.path(outdir,
           paste0(prefix, "tmp_align.bam")), "-")))
@@ -201,7 +199,8 @@ minimap2_realign <- function(config, fq_in, outdir, minimap2_dir, prefix = NULL,
     index_status <- base::system2(command = samtools, args = c("index", file.path(outdir,
       paste0(prefix, "realign2transcript.bam"))))
   } else {
-    minimap2_status <- base::system2(command = file.path(minimap2_dir, "minimap2"),
+    message("samtools not found, using Rsamtools instead")
+    minimap2_status <- base::system2(command = minimap2,
       args = base::append(minimap2_args, c(file.path(outdir, "transcript_assembly.fa"),
         fq_in, "-o", file.path(outdir, paste0(prefix, "tmp_align.sam")))))
     if (!is.null(base::attr(minimap2_status, "status")) && base::attr(minimap2_status,
@@ -223,54 +222,22 @@ minimap2_realign <- function(config, fq_in, outdir, minimap2_dir, prefix = NULL,
     samtools))
 }
 
-#' locate parent folder of minimap2
+#' Sys.which wrapper
+#' Wrapper for Sys.which that replaces "" with NA
 #' @description
-#' locate minimap2, or validate that minimap2 exists under minimap2_dir
-#' @param minimap2_dir (Optional) folder that includes minimap2
-#' @return Path to the parent folder of minimap2 if available, or
-#' FALSE if minimap2 could not be found.
+#' The \code{base::Sys.which} function returns "" if the command is not found
+#' on some systems and \code{NA} on others. This wrapper replaces "" with
+#' \code{NA}
+#' @param command character, the command to search for
+#' @return character, the path to the command or \code{NA}
 #' @examples
-#' locate_minimap2_dir()
+#' sys_which("minimap2")
 #' @export
-locate_minimap2_dir <- function(minimap2_dir = NULL) {
-  if (!is.null(minimap2_dir)) { 
-    if (file_test("-f", minimap2_dir) && grepl("minimap2$", minimap2_dir)) {
-      minimap2_dir <- dirname(minimap2_dir)
-    } else if (!(file_test("-d", minimap2_dir) && file_test("-f", file.path(minimap2_dir, "minimap2")))) {
-      # stop('Error finding minimap2 in minimap2_dir')
-      return(FALSE)
-    }
-
-    return(minimap2_dir);
-  }
-
-  minimap2_exists <- base::system2(command="command", args=c("-v", "minimap2"));
-  if (minimap2_exists != 0) {
-    # minimap2 can't be found at all
-    return(NULL);
-  }
-
-  which_minimap2 <- base::system2(command = "command", args = c("-v", "minimap2"), stdout = TRUE, stderr = TRUE)
-
-  if (!is.null(which_minimap2)) {
-    return(dirname(which_minimap2))
-  } else {
-    return (NULL);
-  }
-}
-
-locate_samtools <- function() {
-  which_samtools <- base::system2(command = "command", args = c("-v", "samtools"))
-  if (which_samtools == 0) {
-    return(
-      base::system2(
-        command = "command",
-        args = c("-v", "samtools"),
-        stderr = TRUE, stdout = TRUE
-      )
-    )
-  }
-  return(FALSE)
+sys_which <- function(command) {
+  which_command <- Sys.which(command)
+  # replace "" with NA
+  which_command[which_command == ""] <- NA
+  return(which_command)
 }
 
 # total mapped primary secondary
