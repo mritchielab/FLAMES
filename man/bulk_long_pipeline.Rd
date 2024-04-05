@@ -26,6 +26,8 @@ bulk_long_pipeline(
 \item{minimap2}{Path to minimap2, if it is not in PATH. Only required if either or both of
 \code{do_genome_align} and \code{do_read_realign} are \code{TRUE}.}
 
+\item{k8}{Path to the k8 Javascript shell binary. Only required if \code{do_genome_align} is \code{TRUE}.}
+
 \item{config_file}{File path to the JSON configuration file. If specified, \code{config_file} overrides
 all configuration parameters}
 }
@@ -102,7 +104,7 @@ unlink(c(fastq1, fastq2)) # the original files can be deleted
 
 outdir <- tempfile()
 dir.create(outdir)
-if (is.character(locate_minimap2_dir())) {
+if (all(is.character(sys_which(c("minimap2", "k8"))))) {
   se <- bulk_long_pipeline(
     annotation = annotation, fastq = fastq_dir, outdir = outdir, genome_fa = genome_fa,
     config_file = system.file("extdata/SIRV_config_default.json", package = "FLAMES")

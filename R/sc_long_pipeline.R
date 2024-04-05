@@ -35,6 +35,7 @@
 #' @param genome_fa The file path to genome fasta file.
 #' @param minimap2 Path to minimap2, if it is not in PATH. Only required if either or both of
 #' \code{do_genome_align} and \code{do_read_realign} are \code{TRUE}.
+#' @param k8 Path to the k8 Javascript shell binary. Only required if \code{do_genome_align} is \code{TRUE}.
 #' @param config_file File path to the JSON configuration file. If specified, \code{config_file} overrides
 #' all configuration parameters
 #' @param barcodes_file The file path to the reference csv used for demultiplexing in flexiplex. If not specified, the 

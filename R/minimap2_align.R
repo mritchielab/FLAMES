@@ -10,6 +10,7 @@
 #' @param annot Genome annotation file used to create junction bed files
 #' @param outdir Output folder
 #' @param minimap2 Path to minimap2 binary
+#' @param k8 Path to the k8 Javascript shell binary
 #' @param prefix String, the prefix (e.g. sample name) for the outputted BAM file
 #' @param threads Integer, threads for minimap2 to use, see minimap2 documentation for details,
 #' FLAMES will try to detect cores if this parameter is not provided.

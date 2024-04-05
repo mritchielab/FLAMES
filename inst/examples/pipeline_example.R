@@ -15,7 +15,7 @@ unlink(c(fastq1, fastq2)) # the original files can be deleted
 
 outdir <- tempfile()
 dir.create(outdir)
-if (is.character(locate_minimap2_dir())) {
+if (all(is.character(sys_which(c("minimap2", "k8"))))) {
   se <- bulk_long_pipeline(
     annotation = annotation, fastq = fastq_dir, outdir = outdir, genome_fa = genome_fa,
     config_file = system.file("extdata/SIRV_config_default.json", package = "FLAMES")

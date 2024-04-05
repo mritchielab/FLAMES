@@ -30,6 +30,8 @@ minimap2_align(
 
 \item{minimap2}{Path to minimap2 binary}
 
+\item{k8}{Path to the k8 Javascript shell binary}
+
 \item{samtools}{path to the samtools binary, required for large datasets since \code{Rsamtools} does not support \code{CSI} indexing}
 
 \item{prefix}{String, the prefix (e.g. sample name) for the outputted BAM file}
