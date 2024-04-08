@@ -57,7 +57,7 @@
 #' R.utils::gunzip(filename = system.file("extdata/bc_allow.tsv.gz", package = "FLAMES"), destname = bc_allow, remove = FALSE)
 #' R.utils::gunzip(filename = system.file("extdata/rps24.fa.gz", package = "FLAMES"), destname = genome_fa, remove = FALSE)
 #'
-#' if (all(is.character(sys_which(c("minimap2", "k8"))))) {
+#' if (!any(is.na(sys_which(c("minimap2", "k8"))))) {
 #'   sce <- FLAMES::sc_long_pipeline(
 #'     genome_fa = genome_fa,
 #'     fastq = system.file("extdata/fastq", package = "FLAMES"),

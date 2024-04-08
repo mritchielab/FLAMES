@@ -30,7 +30,7 @@
 #' annotation <- bfc[[names(BiocFileCache::bfcadd(bfc, 'annot.gtf', paste(file_url, 'SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf', sep = '/')))]]
 #' outdir <- tempfile()
 #' dir.create(outdir)
-#' if (all(is.character(sys_which(c("minimap2", "k8"))))) {
+#' if (!any(is.na(sys_which(c("minimap2", "k8"))))) {
 #'     minimap2_align(
 #'         config = jsonlite::fromJSON(system.file('extdata/SIRV_config_default.json', package = 'FLAMES')),
 #'         fa_file = genome_fa,
@@ -89,7 +89,7 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2 = NA,
   # /.../FLAMES_out/tmp_splice_anno.bed12 --junc-bonus 1 -k14 --secondary=no -o
   # /.../FLAMES_datasets/MuSC/FLAMES_out/tmp_align.sam --seed 2022
   # /.../GRCm38.primary_assembly.genome.fa /.../trimmed_MSC.fastq.gz
-  if (is.character(samtools)) {
+  if (!is.na(samtools)) {
     minimap2_status <- base::system2(command = minimap2,
       args = base::append(minimap2_args, c(fa_file, fq_in, "|", samtools, "view -bS -@ 4 -o",
         file.path(outdir, paste0(prefix, "tmp_align.bam")), "-")))
@@ -155,7 +155,7 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2 = NA,
 #' annotation <- bfc[[names(BiocFileCache::bfcadd(bfc, 'annot.gtf', paste(file_url, 'SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf', sep = '/')))]]
 #' outdir <- tempfile()
 #' dir.create(outdir)
-#' if (all(is.character(sys_which(c("minimap2", "k8"))))) {
+#' if (!any(is.na(sys_which(c("minimap2", "k8"))))) {
 #'     fasta <- annotation_to_fasta(annotation, genome_fa, outdir)
 #'     minimap2_realign(
 #'         config = jsonlite::fromJSON(system.file('extdata/SIRV_config_default.json', package = 'FLAMES')),
@@ -185,7 +185,7 @@ minimap2_realign <- function(config, fq_in, outdir, minimap2, samtools = NULL, p
   minimap2_args <- c("-ax", "map-ont", "-p", "0.9", "--end-bonus", "10", "-N",
     "3", "-t", threads, "--seed", config$pipeline_parameters$seed)
 
-  if (is.character(samtools)) {
+  if (!is.na(samtools)) {
     minimap2_status <- base::system2(command = minimap2,
       args = base::append(minimap2_args, c(file.path(outdir, "transcript_assembly.fa"),
         fq_in, "|", samtools, "view -bS -@ 4 -o", file.path(outdir,

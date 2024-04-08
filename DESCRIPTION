@@ -87,7 +87,7 @@ Suggests:
     testthat (>= 3.0.0),
     xml2
 LinkingTo: Rcpp, Rhtslib, zlibbioc, testthat
-SystemRequirements: GNU make, C++17
+SystemRequirements: GNU make, C++17, samtools (>= 1.14), minimap2 (>= 2.28)
 RoxygenNote: 7.3.1
 VignetteBuilder: knitr
 URL: https://github.com/OliverVoogd/FLAMES

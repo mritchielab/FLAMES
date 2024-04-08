@@ -82,7 +82,7 @@ filter_annotation <- function(annotation, keep = "tss_differ") {
 #' annotation <- bfc[[names(BiocFileCache::bfcadd(bfc, 'annot.gtf', paste(file_url, 'SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf', sep = '/')))]]
 #' outdir <- tempfile()
 #' dir.create(outdir)
-#' if (all(is.character(sys_which(c("minimap2", "k8"))))) {
+#' if (!any(is.na(sys_which(c("minimap2", "k8"))))) {
 #'     fasta <- annotation_to_fasta(annotation, genome_fa, outdir)
 #'     minimap2_realign(
 #'         config = jsonlite::fromJSON(system.file('extdata/SIRV_config_default.json', package = 'FLAMES')),

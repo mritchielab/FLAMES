@@ -12,12 +12,18 @@
 #' }
 #' @param ... Configuration parameters.
 #' \itemize{
-#'  \item{do_genome_align}{ - Boolean. Specifies whether to run the genome alignment step. \code{TRUE} is recommended}
-#'  \item{do_isoform_id}{ - Boolean. Specifies whether to run the isoform identification step. \code{TRUE} is recommended}
-#'  \item{do_read_realign}{ - Boolean. Specifies whether to run the read realignment step. \code{TRUE} is recommended}
-#'  \item{do_transcript_quanti}{ - Boolean. Specifies whether to run the transcript quantification step. \code{TRUE} is recommended}
-#'  \item{gen_raw_isoform}{ - Boolean.}
-#'  \item{has_UMI}{ - Boolean. Specifies if the data contains UMI.}
+#'  \item{seed}{ - Integer. Seed for minimap2.}
+#'  \item{threads}{ - Number of threads to use.}
+#'  \item{do_barcode_demultiplex}{ - Boolean. Specifies whether to run the barcode demultiplexing step.}
+#'  \item{do_genome_alignment}{ - Boolean. Specifies whether to run the genome alignment step. \code{TRUE} is recommended}
+#'  \item{do_gene_quantification}{ - Boolean. Specifies whether to run gene quantification using the genome alignment results. \code{TRUE} is recommended}
+#'  \item{do_isoform_identification}{ - Boolean. Specifies whether to run the isoform identification step. \code{TRUE} is recommended}
+#'  \item{bambu_isoform_identification}{ - Boolean. Whether to use Bambu for isoform identification.}
+#'  \item{multithread_isoform_identification}{ - Boolean. Whether to use FLAMES' new multithreaded Cpp implementation for isoform identification.}
+#'  \item{do_read_realignment}{ - Boolean. Specifies whether to run the read realignment step. \code{TRUE} is recommended}
+#'  \item{do_transcript_quantification}{ - Boolean. Specifies whether to run the transcript quantification step. \code{TRUE} is recommended}
+#'  \item{barcode_parameters}{ - List. Parameters for barcode demultiplexing passed to \code{find_barcode} (except \code{fastq}, \code{barcodes_file}, \code{stats_out}, \code{reads_out}) and \code{threads}, which are set by the pipeline, see \code{?find_barcode} for more details.}
+#'  \item{generate_raw_isoform}{ - Boolean. Whether to generate all isoforms for debugging purpose.}
 #'  \item{max_dist}{ - Maximum distance allowed when merging splicing sites in isoform consensus clustering.}
 #'  \item{max_ts_dist}{ - Maximum distance allowed when merging transcript start/end position in isoform consensus clustering.}
 #'  \item{max_splice_match_dist}{ - Maximum distance allowed when merging splice site called from the data and the reference annotation.}

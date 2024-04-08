@@ -35,7 +35,7 @@ genome_fa <- bfc[[names(BiocFileCache::bfcadd(bfc, "genome.fa", paste(file_url, 
 annotation <- bfc[[names(BiocFileCache::bfcadd(bfc, "annot.gtf", paste(file_url, "SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf", sep = "/")))]]
 outdir <- tempfile()
 dir.create(outdir)
-if (all(is.character(sys_which(c("minimap2", "k8"))))) {
+if (!any(is.na(sys_which(c("minimap2", "k8"))))) {
     config <- jsonlite::fromJSON(system.file("extdata/SIRV_config_default.json", package = "FLAMES"))
     minimap2_align(
         config = config,
