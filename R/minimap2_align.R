@@ -79,7 +79,9 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2 = NA,
         ">", file.path(outdir, "tmp_splice_anno.bed12")))
     if (!is.null(base::attr(paftoolsjs_status, "status")) && base::attr(paftoolsjs_status,
       "status") != 0) {
-      stop(paste0("error running k8 paftools.js gff2bed:\n", paftoolsjs_status))
+      stop(paste0("error running k8 paftools.js gff2bed:\n", paftoolsjs_status, "\n",
+        "Are you using NCBI GFF3? It is not well supported by minimap2's paftools.js"))
+      ))
     }
     minimap2_args <- base::append(minimap2_args, c("--junc-bed", file.path(outdir,
       "tmp_splice_anno.bed12"), "--junc-bonus", "1"))
