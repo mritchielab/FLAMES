@@ -23,6 +23,8 @@ minimap2_realign(
 
 \item{minimap2}{Path to minimap2 binary}
 
+\item{samtools}{path to the samtools binary, required for large datasets since \code{Rsamtools} does not support \code{CSI} indexing}
+
 \item{prefix}{String, the prefix (e.g. sample name) for the outputted BAM file}
 
 \item{threads}{Integer, threads for minimap2 to use, see minimap2 documentation for details,

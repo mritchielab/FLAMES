@@ -81,7 +81,6 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2 = NA,
       "status") != 0) {
       stop(paste0("error running k8 paftools.js gff2bed:\n", paftoolsjs_status, "\n",
         "Are you using NCBI GFF3? It is not well supported by minimap2's paftools.js"))
-      ))
     }
     minimap2_args <- base::append(minimap2_args, c("--junc-bed", file.path(outdir,
       "tmp_splice_anno.bed12"), "--junc-bonus", "1"))
@@ -139,6 +138,7 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2 = NA,
 #' @param fq_in File path to the fastq file used as a query sequence file
 #' @param outdir Output folder
 #' @param minimap2 Path to minimap2 binary
+#' @param samtools path to the samtools binary, required for large datasets since \code{Rsamtools} does not support \code{CSI} indexing
 #' @param prefix String, the prefix (e.g. sample name) for the outputted BAM file
 #' @param threads Integer, threads for minimap2 to use, see minimap2 documentation for details,
 #' FLAMES will try to detect cores if this parameter is not provided.
