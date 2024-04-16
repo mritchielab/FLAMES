@@ -106,7 +106,7 @@ find_isoform_flames <- function(annotation, genome_fa, genome_bam, outdir, confi
             )
             annotation_to_fasta(isoform_annotation, genome_fa, outdir)
         } else {
-            ret <- basiliskRun(flames_env, function(gff3, genome, iso, tss, fa, tran, ds, conf, raw) {
+            ret <- basiliskRun(env = flames_env, fun = function(gff3, genome, iso, tss, fa, tran, ds, conf, raw) {
                 python_path <- system.file("python", package = "FLAMES")
                 find <- reticulate::import_from_path("find_isoform", python_path)
                 ret <- find$find_isoform(gff3, genome, iso, tss, fa, tran, ds, conf, raw)
