@@ -154,7 +154,7 @@ GFFData parse_gff(const std::string &filename)
                     if (ranges::doesNotContain(data.chr_to_gene[rec.seqname], gene_id)) 
                         data.chr_to_gene[rec.seqname].push_back(gene_id);
                     
-                    data.gene_to_transcript["gene_id"].push_back(rec.attributes["transcript_id"]);
+                    data.gene_to_transcript[gene_id].push_back(rec.attributes["transcript_id"]);
                     data.transcript_dict[rec.attributes["transcript_id"]] = 
                         Pos( rec.seqname, rec.start - 1, rec.end, rec.strand, gene_id);
                 } else if (rec.feature == "exon") {
