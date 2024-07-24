@@ -97,12 +97,16 @@ remove_similar_tr(
     std::unordered_map<std::string, transcriptvector> out_gene_to_transcript;
     
     for (const auto &[gene, transcript] : gene_to_transcript) {
-        // ignore anything short
-        if (transcript.size() < 2) continue;
+        // ignore empty transcripts
+        if (transcript.size() == 0) continue;
+        // if there's only one transcript, add it to the output map
+        if (transcript.size() == 1) {
+            out_gene_to_transcript.at(gene).push_back(transcript.at(0));
+            continue;
+        }
 
         // keep a set of all the duplicates
         std::unordered_set<int> dup_set;
-
         // iterate through every pair of transcripts t1 and t2 in the gene
         for (transcriptIdx1 = 0; transcriptIdx1 < (int)transcript.size() - 1; ++transcriptIdx1) {
             // Don't check for duplicates if already removing this transcript
