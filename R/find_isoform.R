@@ -50,6 +50,13 @@ find_isoform <- function(annotation, genome_fa, genome_bam, outdir, config) {
 #' @importFrom withr with_package
 #' @importFrom SummarizedExperiment assays rowRanges
 find_isoform_bambu <- function(annotation, genome_fa, genome_bam, outdir, config) {
+    # if annotation is .gtf.gz, unzip as a temp file
+    useTempAnnot <- FALSE
+    bambuTempAnnot <- ""
+    if (stringr::str_ends(annotation, ".gz")) {
+        useTempAnnot <- TRUE
+        bambuTempAnnot <- R.utils::gunzip(annotation, remove=FALSE)
+    }
     bambuAnnotations <- bambu::prepareAnnotations(annotation)
     # Tmp fix: remove withr if bambu imports seqlengths properly
     # https://github.com/GoekeLab/bambu/issues/255
@@ -81,6 +88,10 @@ find_isoform_bambu <- function(annotation, genome_fa, genome_bam, outdir, config
     isoform_gtf <- file.path(outdir, "isoform_annotated.gtf") # Bambu outputs GTF
     bambu::writeToGTF(SummarizedExperiment::rowRanges(bambu_out), isoform_gtf) 
     annotation_to_fasta(isoform_gtf, genome_fa, outdir)
+
+    if (useTempAnnot & file.exists(bambuTempAnnot)) {
+        file.remove(bambuTempAnnot);
+    }
 
     # isoform_objects <- list(transcript_dict = NULL, transcript_dict_i = parse_gff_tree(isoform_gtf)$transcript_dict)
     # isoform_objects

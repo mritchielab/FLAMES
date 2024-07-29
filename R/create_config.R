@@ -131,7 +131,7 @@ check_arguments <-
         }
 
         if (config$pipeline_parameters$bambu_isoform_identification) {
-            if (Matrix::tail(stringr::str_split(annotation, "\\.")[[1]], n = 1) != "gtf") {
+            if (!(stringr::str_ends(annotation, ".gtf") | stringr::str_ends(annotation, ".gtf.gz"))) {
                 stop("Bambu requires GTF format for annotation file.\n")
             }
         }
