@@ -271,7 +271,7 @@ def quantify_gene_single_process(in_gtf_df, in_bam, demulti_methods, verbose=Fal
                                     rename_axis(None, axis=1)
 
     # get list of read_id to remove
-    dup_read_lst = list_duplicated_reads(read_gene_assign_df)
+    dedup_read_lst = list_deduplicated_reads(read_gene_assign_df)
 
     # get list of umi (in the form of bc+umi+cluster to avoid collision)
     umi_lst = read_gene_assign_df.bc.astype(str) +\
@@ -279,7 +279,7 @@ def quantify_gene_single_process(in_gtf_df, in_bam, demulti_methods, verbose=Fal
                     read_gene_assign_df.umi_corrected.astype(str) + \
                     read_gene_assign_df.cluster.astype(str)
     
-    return gene_count_mat, dup_read_lst, umi_lst
+    return gene_count_mat, dedup_read_lst, umi_lst
 
 def _map_pos_grouping(mappos, min_dist=20):
     """
@@ -329,7 +329,7 @@ def _umi_correction(umis, max_ed=1):
     # return corrected umi list
     return umi_corrected
 
-def list_duplicated_reads(umi_corrected_df,
+def list_deduplicated_reads(umi_corrected_df,
                             umi_col="umi_corrected", 
                             read_id_col="read_id", 
                             priority_cols="overlap", 
@@ -344,7 +344,7 @@ def list_duplicated_reads(umi_corrected_df,
         priority_cols: The columns to prioritize the reads.
         groupby_cols: The columns to groupby, indicating how the umi correction has be done.
     Output:     
-        txt file
+        list of deduplicated read id
     """
     # group by groupby_cols, and apply deduplication to each group
     # umi_deduplicated_df = umi_corrected_df.groupby(groupby_cols).apply(
@@ -363,11 +363,14 @@ def list_duplicated_reads(umi_corrected_df,
             priorities = group[priority_cols].values
             read_to_keep_mask= priorities==priorities.max()
             if sum(read_to_keep_mask) == 1:
-                read_to_remove = read_ids[~read_to_keep_mask]
+                #read_to_remove = read_ids[~read_to_keep_mask]
+                read_to_keep = read_ids[read_to_keep_mask]
             else:
                 read_to_keep_idx = np.random.choice(np.where(read_to_keep_mask)[0])
-                read_to_remove = np.delete(read_ids, read_to_keep_idx)
-            out_list.extend(read_to_remove)
+                #read_to_remove = np.delete(read_ids, read_to_keep_idx)
+                read_to_keep = read_ids[read_to_keep_idx]
+            #out_list.extend(read_to_remove)
+            out_list.extend(read_to_keep)
 
     return out_list
 
@@ -405,29 +408,29 @@ def saturation_estimation(corrected_umis, plot_fn=None, num_of_points=500):
 
     return est
 
-def _remove_reads_from_fastq_chunk(read_chunk, read_id_set):
-    """Remove reads from a chunk of fastq file
+def _subset_reads_from_fastq_chunk(read_chunk, read_id_set):
+    """Keep reads from a chunk of fastq file
     Input:
         read_chunk: a chunk of fastq lines
-        read_id_set: a set of read id to remove
+        read_id_set: a set of read id to keep
     Output: 
         a list of fastq lines to keep
     """
     out_lst = []
     for i in range(0, len(read_chunk), 4):
         read_id = read_chunk[i].strip()[1:]
-        if read_id not in read_id_set:
+        if read_id in read_id_set:
             out_lst.extend(read_chunk[i:i+4])
     return out_lst
 
-def remove_reads_from_fastq(in_fastq, out_fastq, read_id_lst, 
+def subset_reads_from_fastq(in_fastq, out_fastq, read_id_lst, 
                             n_process,
                             chunk_size=10_000):
-    """ Subset fastq file by substracting reads in read id list
+    """ Subset fastq file by keep only the reads in read id list
         Input:
             in_fastq: input fastq file
             out_fastq: output fastq file
-            read_id_lst: list of read id to remove
+            read_id_lst: list of read id to keep
             chunk_size: number of reads to read in each chunk
         Output:
             output fastq file
@@ -446,7 +449,7 @@ def remove_reads_from_fastq(in_fastq, out_fastq, read_id_lst,
 
     read_chunks = helper.read_chunk_generator(f_in, chunk_size)
     read_id_lst = set(read_id_lst)
-    results = helper.multiprocessing_submit( _remove_reads_from_fastq_chunk,
+    results = helper.multiprocessing_submit( _subset_reads_from_fastq_chunk,
                                     read_chunks,
                                     n_process=12,
                                     pbar_func=lambda *x: chunk_size/4,
@@ -473,7 +476,7 @@ def quantification(annotation, outdir, pipeline, n_process=12, saturation_curve=
         out_read_lst = os.path.join(outdir, "duplicated_read_id.txt")
         out_fastq = os.path.join(outdir, "matched_reads_dedup.fastq")
 
-        gene_count_mat, dup_read_lst, umi_lst = \
+        gene_count_mat, dedup_read_lst, umi_lst = \
                                 quantify_gene(in_bam, annotation, n_process)
 
         #pd.DataFrame({'umi':umi_lst}).to_csv(outdir+"/umi_lst.csv")
@@ -484,8 +487,7 @@ def quantification(annotation, outdir, pipeline, n_process=12, saturation_curve=
         saturation_estimation(umi_lst, out_fig)  
 
         print("Generating deduplicated fastq file ...")
-        remove_reads_from_fastq(in_fastq, out_fastq, dup_read_lst, n_process)
-
+        subset_reads_from_fastq(in_fastq, out_fastq, dedup_read_lst, n_process)
         return
 
     elif pipeline == "bulk":
@@ -518,7 +520,7 @@ def quantification(annotation, outdir, pipeline, n_process=12, saturation_curve=
             saturation_estimation(umi_lst, out_fig)  
 
             print("Generating deduplicated fastq file ...")
-            remove_reads_from_fastq(in_fastq, out_fastq, dup_read_lst, n_process)
+            subset_reads_from_fastq(in_fastq, out_fastq, dup_read_lst, n_process)
         return
 
     else:
