@@ -1,4 +1,3 @@
-# quantify gene
 import pysam
 import sys
 import os
@@ -466,14 +465,17 @@ def subset_reads_from_fastq(in_fastq, out_fastq, read_id_lst,
     return
 
 # this is the main function
-def quantification(annotation, outdir, pipeline, n_process=12, saturation_curve=True):
+def quantification(annotation, outdir, pipeline, 
+                  n_process=12, saturation_curve=True,
+                  infq=None,  sample_names=None, **kwargs):
 
     if pipeline == "sc_single_sample":
-        in_fastq = os.path.join(outdir, "matched_reads.fastq")
+        if not infq:
+            infq = os.path.join(outdir, "matched_reads.fastq")
         in_bam = os.path.join(outdir, "align2genome.bam")
         out_csv = os.path.join(outdir, "gene_count.csv")
         out_fig = os.path.join(outdir, "saturation_curve.png") if saturation_curve else None
-        out_read_lst = os.path.join(outdir, "duplicated_read_id.txt")
+        #out_read_lst = os.path.join(outdir, "duplicated_read_id.txt")
         out_fastq = os.path.join(outdir, "matched_reads_dedup.fastq")
 
         gene_count_mat, dedup_read_lst, umi_lst = \
@@ -487,7 +489,7 @@ def quantification(annotation, outdir, pipeline, n_process=12, saturation_curve=
         saturation_estimation(umi_lst, out_fig)  
 
         print("Generating deduplicated fastq file ...")
-        subset_reads_from_fastq(in_fastq, out_fastq, dedup_read_lst, n_process)
+        subset_reads_from_fastq(infq, out_fastq, dedup_read_lst, n_process)
         return
 
     elif pipeline == "bulk":
@@ -497,17 +499,17 @@ def quantification(annotation, outdir, pipeline, n_process=12, saturation_curve=
         return
 
     elif pipeline == "sc_multi_sample":
-        in_bams = \
-            [os.path.join(outdir, f) for f in os.listdir(outdir) if f[-17:] == "_align2genome.bam"]
-        for sample_bam in in_bams:
+        if not sample_names:
+            raise ValueError("Please specify the sample names")
+        
+        for idx, sample in enumerate(sample_names):
+            sample_bam = os.path.join(outdir, sample + "_align2genome.bam")
             sys.stderr.write("parsing " + sample_bam + "...\n")
-            
-            sample = os.path.basename(sample_bam).replace('_align2genome.bam','')
-            in_fastq = os.path.join(outdir,sample+ "_"+ "matched_reads.fastq")
+            in_fastq = infq[idx] if infq is not None else os.path.join(outdir,sample+ "_"+ "matched_reads.fastq")
             out_fastq = os.path.join(outdir,sample+ "_"+ "matched_reads_dedup.fastq")
             out_csv = os.path.join(outdir, sample+ "_"+"gene_count.csv")
             out_fig = os.path.join(outdir, sample+ "_"+"saturation_curve.png") if saturation_curve else None
-            out_read_lst = os.path.join(outdir, sample+ "_"+"deduplicated_read_id.txt")
+            #out_read_lst = os.path.join(outdir, sample+ "_"+"deduplicated_read_id.txt")
             
             gene_count_mat, dup_read_lst, umi_lst = \
                                     quantify_gene(sample_bam, annotation, n_process)

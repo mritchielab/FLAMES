@@ -273,8 +273,8 @@ sc_long_multisample_pipeline <-
 
         # gene quantification and UMI deduplication
         if (config$pipeline_parameters$do_gene_quantification) {
-            quantify_gene(annotation, outdir, config$pipeline_parameters$threads,
-                        pipeline = "sc_multi_sample")
+            quantify_gene(annotation, outdir, infqs, config$pipeline_parameters$threads,
+                        pipeline = "sc_multi_sample", samples=samples)
         }
 
         # find isofroms
