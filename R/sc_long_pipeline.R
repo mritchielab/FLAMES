@@ -154,8 +154,8 @@ sc_long_pipeline <-
                 # run flexiplex
                 cat(format(Sys.time(), "%X %a %b %d %Y"), "Demultiplexing using flexiplex...\n")
                 if (!file.exists(barcodes_file)) {
-                    stop("The brcodes_file ",barcodes_file, " doesn't exists. Please check the path.",
-                    " If you do not have a barcode file, please set `brcodes_file = NULL` to run BLAZE.")
+                    stop("The barcodes_file ",barcodes_file, " doesn't exists. Please check the path.",
+                    " If you do not have a barcode file, please set `barcodes_file = NULL` to run BLAZE.")
                 }
                 cat("Matching cell barcodes...\n")
                 infq <- file.path(outdir, "matched_reads.fastq")
@@ -179,7 +179,7 @@ sc_long_pipeline <-
         } else {
             infq <- fastq
             cat("Skipping Demultiplexing step...\n")
-            cat("Please make sure the `",infq,"`` is the the demultiplexing output from previous FLAEMS call.\n")
+            cat("Please make sure the `",infq,"`` is the demultiplexing output from previous FLAMES call.\n")
         } # requesting to not match barcodes implies `fastq` has already been run through the
         # function in a previous FLAMES call
         cat("Running FLAMES pipeline...\n")

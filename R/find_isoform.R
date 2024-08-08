@@ -54,8 +54,10 @@ find_isoform_bambu <- function(annotation, genome_fa, genome_bam, outdir, config
     useTempAnnot <- FALSE
     bambuTempAnnot <- ""
     if (stringr::str_ends(annotation, ".gz")) {
+        cat("Unzipping annotation file for bambu\n")
         useTempAnnot <- TRUE
         bambuTempAnnot <- R.utils::gunzip(annotation, remove=FALSE)
+        annotation <- bambuTempAnnot # override using zipped annotation file
     }
     bambuAnnotations <- bambu::prepareAnnotations(annotation)
     # Tmp fix: remove withr if bambu imports seqlengths properly
