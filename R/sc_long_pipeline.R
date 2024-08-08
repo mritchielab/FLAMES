@@ -231,7 +231,7 @@ sc_long_pipeline <-
         if (config$pipeline_parameters$do_gene_quantification) {
             cat(format(Sys.time(), "%X %a %b %d %Y"), "Start gene quantification and UMI deduplication\n")
             
-            quantify_gene(annotation, outdir, config$pipeline_parameters$threads,
+            quantify_gene(annotation, outdir, infq, config$pipeline_parameters$threads,
                         pipeline = "sc_single_sample")
             
             cat(format(Sys.time(), "%X %a %b %d %Y"), "Gene quantification and UMI deduplication done!\n")

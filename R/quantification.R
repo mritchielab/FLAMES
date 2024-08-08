@@ -104,7 +104,7 @@ wrt_tr_to_csv <-
 #' @return The count matrix will be saved in the output folder as \code{transcript_count.csv.gz}.
 #' @importFrom reticulate import_from_path dict
 #' @importFrom basilisk basiliskRun
-quantify_gene <- function(annotation, outdir, n_process, pipeline = "sc_single_sample") {
+quantify_gene <- function(annotation, outdir, infq, n_process,  pipeline = "sc_single_sample", samples=NULL) {
     cat(format(Sys.time(), "%X %a %b %d %Y"), "quantify genes \n")
 
     if (grepl("\\.gff3?(\\.gz)?$", annotation)) {
@@ -119,14 +119,17 @@ quantify_gene <- function(annotation, outdir, n_process, pipeline = "sc_single_s
         stop("Incorrect number of genome alignment files found.\n")
     }
     
-    basiliskRun(env = flames_env, fun = function(annotation, outdir,pipeline) {
+    basiliskRun(env = flames_env, fun = function(annotation, outdir, pipeline, n_process, infq, samples) {
         python_path <- system.file("python", package = "FLAMES")
         count <- reticulate::import_from_path("count_gene", python_path)
-        count$quantification(annotation, outdir, pipeline, n_process)
+        count$quantification(annotation, outdir, pipeline, n_process, infq=infq, sample_names=samples)
     },
     annotation = annotation,
     outdir = outdir,
-    pipeline = pipeline
+    pipeline = pipeline,
+    n_process = n_process,
+    infq = infq,
+    samples = samples
     )
 }
 
@@ -187,8 +190,6 @@ quantify_transcript <- function(annotation, outdir, config, pipeline = "sc_singl
     outdir = outdir,
     pipeline = pipeline
     )
-
-
 }
 
 # example for Rsamtools
