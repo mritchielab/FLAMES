@@ -119,18 +119,25 @@ quantify_gene <- function(annotation, outdir, infq, n_process,  pipeline = "sc_s
         stop("Incorrect number of genome alignment files found.\n")
     }
     
-    basiliskRun(env = flames_env, fun = function(annotation, outdir, pipeline, n_process, infq, samples) {
-        python_path <- system.file("python", package = "FLAMES")
-        count <- reticulate::import_from_path("count_gene", python_path)
-        count$quantification(annotation, outdir, pipeline, n_process, infq=infq, sample_names=samples)
-    },
-    annotation = annotation,
-    outdir = outdir,
-    pipeline = pipeline,
-    n_process = n_process,
-    infq = infq,
-    samples = samples
-    )
+    tryCatch({
+        basiliskRun(env = flames_env, fun = function(annotation, outdir, pipeline, n_process, infq, samples) {
+            python_path <- system.file("python", package = "FLAMES")
+            count <- reticulate::import_from_path("count_gene", python_path)
+            count$quantification(annotation, outdir, pipeline, n_process, infq=infq, sample_names=samples)
+        },
+        annotation = annotation,
+        outdir = outdir,
+        pipeline = pipeline,
+        n_process = n_process,
+        infq = infq,
+        samples = samples
+        )
+    } , error = function(e) {
+        # Capture the Python error using py_last_error()
+        py_error <- reticulate::py_last_error()
+        py_error_message <- py_error$message
+        stop("Error when quantifying genes:\n", py_error_message)
+        })
 }
 
 #' Transcript quantification

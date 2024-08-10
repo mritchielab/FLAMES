@@ -183,7 +183,7 @@ def quantify_gene(in_bam, in_gtf, n_process):
         n_process: number of process to run
        return:
         gene_count_mat: pd.DataFrame, a matrix of gene counts
-        dup_read_lst: a list of duplicated read id
+        dedup_read_lst: a list of duplicated read id
         umi_lst: a list of umi
     """
     # identify the demultiplexing methods
@@ -201,7 +201,7 @@ def quantify_gene(in_bam, in_gtf, n_process):
 
     # run quantify_gene_single_process for each chromosome
     print("Assigning reads to genes...")
-    gene_count_mat_dfs, dup_read_lst, umi_lst = [], [], []
+    gene_count_mat_dfs, dedup_read_lst, umi_lst = [], [], []
     for future in helper.multiprocessing_submit(
                             quantify_gene_single_process, 
                             in_gtf_list,
@@ -212,9 +212,9 @@ def quantify_gene(in_bam, in_gtf, n_process):
                             in_bam=in_bam, 
                             demulti_methods=demulti_methods):
         
-        gene_count_mat, dup_read_lst_sub, umi_list_sub = future.result()
+        gene_count_mat, dedup_read_lst_sub, umi_list_sub = future.result()
         gene_count_mat_dfs.append(gene_count_mat)
-        dup_read_lst.extend(dup_read_lst_sub)
+        dedup_read_lst.extend(dedup_read_lst_sub)
         umi_lst.extend(umi_list_sub)
 
     # combine the gene count matrix
@@ -222,9 +222,9 @@ def quantify_gene(in_bam, in_gtf, n_process):
     gene_count_mat = pd.concat(gene_count_mat_dfs, 
                                 copy=False).fillna(0)
     
-    return gene_count_mat, dup_read_lst, umi_lst
+    return gene_count_mat, dedup_read_lst, umi_lst
 
-def quantify_gene_single_process(in_gtf_df, in_bam, demulti_methods, verbose=False):
+def quantify_gene_single_process(in_gtf_df, in_bam, demulti_methods, cluster_3prim = False, verbose=False):
     """
     Get gene counts from a bam file and a gtf file.
     Input:
@@ -234,7 +234,8 @@ def quantify_gene_single_process(in_gtf_df, in_bam, demulti_methods, verbose=Fal
         verbose: whether to print the progress
     Output:
         gene_count_mat: a matrix of gene counts
-        read_gene_assign_df: a dataframe of read to gene assignment with umi corrected
+        dedup_read_lst: a list of duplicated read id
+        umi_lst: a list of umi (not deduplicated, in the form of bc+umi+cluster)
     """
 
     read_gene_assign_df = \
@@ -246,12 +247,18 @@ def quantify_gene_single_process(in_gtf_df, in_bam, demulti_methods, verbose=Fal
     read_gene_assign_df.sort_values(by=['bc', 'gene_id'], inplace=True)
     cell_gene_grp = read_gene_assign_df.groupby(['bc', 'gene_id'], observed=True)
 
-    read_gene_assign_df['cluster'] = \
-        cell_gene_grp['pos_3prim'].transform(_map_pos_grouping).astype('category')
+
+    if cluster_3prim:
+        read_gene_assign_df['cluster'] = \
+            cell_gene_grp['pos_3prim'].transform(_map_pos_grouping).astype('category')
+    else:
+        read_gene_assign_df['cluster'] = "NA"
     
     # correct umi
     if verbose:
         print("Correcting UMIs ...")
+    
+
     read_gene_assign_df['umi_corrected'] = \
         read_gene_assign_df.groupby(['bc','gene_id','cluster'], observed=True)['umi']\
                            .transform(_umi_correction)
@@ -269,7 +276,7 @@ def quantify_gene_single_process(in_gtf_df, in_bam, demulti_methods, verbose=Fal
     gene_count_mat = gene_count_mat.rename_axis(None, axis=0).\
                                     rename_axis(None, axis=1)
 
-    # get list of read_id to remove
+    # get list of read_id to keep
     dedup_read_lst = list_deduplicated_reads(read_gene_assign_df)
 
     # get list of umi (in the form of bc+umi+cluster to avoid collision)
@@ -280,7 +287,7 @@ def quantify_gene_single_process(in_gtf_df, in_bam, demulti_methods, verbose=Fal
     
     return gene_count_mat, dedup_read_lst, umi_lst
 
-def _map_pos_grouping(mappos, min_dist=20):
+def _map_pos_grouping(mappos, min_dist=50):
     """
     Group mapping positions into clusters. 
     Output the cluster id in the same order of input mappos.
@@ -355,20 +362,18 @@ def list_deduplicated_reads(umi_corrected_df,
     umi_corrected_df = umi_corrected_df[groupby_cols + [umi_col, read_id_col, priority_cols]]
     for _, group in umi_corrected_df.groupby(groupby_cols + [umi_col], observed=True):
         if group.shape[0] == 1:
+            out_list.extend(group[read_id_col].values)
             continue
         else:
-            # remove one read with the highest priority, randomly break ties
+            # keep one read with the highest priority, randomly break ties
             read_ids = group[read_id_col].values
             priorities = group[priority_cols].values
             read_to_keep_mask= priorities==priorities.max()
             if sum(read_to_keep_mask) == 1:
-                #read_to_remove = read_ids[~read_to_keep_mask]
                 read_to_keep = read_ids[read_to_keep_mask]
             else:
                 read_to_keep_idx = np.random.choice(np.where(read_to_keep_mask)[0])
-                #read_to_remove = np.delete(read_ids, read_to_keep_idx)
                 read_to_keep = read_ids[read_to_keep_idx]
-            #out_list.extend(read_to_remove)
             out_list.extend(read_to_keep)
 
     return out_list
@@ -468,20 +473,16 @@ def subset_reads_from_fastq(in_fastq, out_fastq, read_id_lst,
 def quantification(annotation, outdir, pipeline, 
                   n_process=12, saturation_curve=True,
                   infq=None,  sample_names=None, **kwargs):
-
     if pipeline == "sc_single_sample":
         if not infq:
             infq = os.path.join(outdir, "matched_reads.fastq")
         in_bam = os.path.join(outdir, "align2genome.bam")
         out_csv = os.path.join(outdir, "gene_count.csv")
         out_fig = os.path.join(outdir, "saturation_curve.png") if saturation_curve else None
-        #out_read_lst = os.path.join(outdir, "duplicated_read_id.txt")
         out_fastq = os.path.join(outdir, "matched_reads_dedup.fastq")
 
         gene_count_mat, dedup_read_lst, umi_lst = \
                                 quantify_gene(in_bam, annotation, n_process)
-
-        #pd.DataFrame({'umi':umi_lst}).to_csv(outdir+"/umi_lst.csv")
 
         gene_count_mat.to_csv(out_csv)
 
@@ -511,7 +512,7 @@ def quantification(annotation, outdir, pipeline,
             out_fig = os.path.join(outdir, sample+ "_"+"saturation_curve.png") if saturation_curve else None
             #out_read_lst = os.path.join(outdir, sample+ "_"+"deduplicated_read_id.txt")
             
-            gene_count_mat, dup_read_lst, umi_lst = \
+            gene_count_mat, dedup_read_lst, umi_lst = \
                                     quantify_gene(sample_bam, annotation, n_process)
 
             #pd.DataFrame({'umi':umi_lst}).to_csv(f"{outdir}/{sample}_umi_lst.csv")
@@ -522,7 +523,7 @@ def quantification(annotation, outdir, pipeline,
             saturation_estimation(umi_lst, out_fig)  
 
             print("Generating deduplicated fastq file ...")
-            subset_reads_from_fastq(in_fastq, out_fastq, dup_read_lst, n_process)
+            subset_reads_from_fastq(in_fastq, out_fastq, dedup_read_lst, n_process)
         return
 
     else:
