@@ -98,8 +98,11 @@ wrt_tr_to_csv <-
 #' 
 #' @param annotation The file path to the annotation file in GFF3 format
 #' @param outdir The path to directory to store all output files.
+#' @param infq The input FASTQ file.
 #' @param n_process The number of processes to use for parallelization.
 #' @param pipeline The pipeline type as a character string, either \code{sc_single_sample} (single-cell, single-sample),
+#' @param samples A vector of sample names, default to the file names of input fastq files, 
+#' or folder names if \code{fastqs} is a vector of folders.
 #' \code{bulk} (bulk, single or multi-sample), or \code{sc_multi_sample} (single-cell, multiple samples)
 #' @return The count matrix will be saved in the output folder as \code{transcript_count.csv.gz}.
 #' @importFrom reticulate import_from_path dict

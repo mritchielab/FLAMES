@@ -4,16 +4,28 @@
 \alias{quantify_gene}
 \title{Gene quantification}
 \usage{
-quantify_gene(annotation, outdir, n_process, pipeline = "sc_single_sample")
+quantify_gene(
+  annotation,
+  outdir,
+  infq,
+  n_process,
+  pipeline = "sc_single_sample",
+  samples = NULL
+)
 }
 \arguments{
 \item{annotation}{The file path to the annotation file in GFF3 format}
 
 \item{outdir}{The path to directory to store all output files.}
 
+\item{infq}{The input FASTQ file.}
+
 \item{n_process}{The number of processes to use for parallelization.}
 
-\item{pipeline}{The pipeline type as a character string, either \code{sc_single_sample} (single-cell, single-sample),
+\item{pipeline}{The pipeline type as a character string, either \code{sc_single_sample} (single-cell, single-sample),}
+
+\item{samples}{A vector of sample names, default to the file names of input fastq files, 
+or folder names if \code{fastqs} is a vector of folders.
 \code{bulk} (bulk, single or multi-sample), or \code{sc_multi_sample} (single-cell, multiple samples)}
 }
 \value{

@@ -14,7 +14,7 @@ file is required under the output folder of the SCE object.}
 }
 \value{
 a \code{data.frame} containing the following columns:
-\itemize{
+\describe{
  \item{gene_id}{ - differentially transcribed genes }
  \item{X_value}{ - the X value for the DTU gene}
  \item{df}{ - degrees of freedom of the approximate chi-squared distribution of the test statistic }

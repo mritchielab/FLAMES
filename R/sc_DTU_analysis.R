@@ -25,7 +25,7 @@
 #' @param min_count The minimum UMI count threshold for filtering isoforms.
 #'
 #' @return a \code{data.frame} containing the following columns:
-#' \itemize{
+#' \describe{
 #'  \item{gene_id}{ - differentially transcribed genes }
 #'  \item{X_value}{ - the X value for the DTU gene}
 #'  \item{df}{ - degrees of freedom of the approximate chi-squared distribution of the test statistic }

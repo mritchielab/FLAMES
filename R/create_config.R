@@ -6,12 +6,12 @@
 #'
 #' @param outdir the destination directory for the configuratio nfile
 #' @param type use an example config, available values:
-#' \itemize{
+#' \describe{
 #'  \item{"sc_3end"}{ - config for 10x 3' end ONT reads}
 #'  \item{"SIRV"}{ - config for the SIRV example reads}
 #' }
 #' @param ... Configuration parameters.
-#' \itemize{
+#' \describe{
 #'  \item{seed}{ - Integer. Seed for minimap2.}
 #'  \item{threads}{ - Number of threads to use.}
 #'  \item{do_barcode_demultiplex}{ - Boolean. Specifies whether to run the barcode demultiplexing step.}

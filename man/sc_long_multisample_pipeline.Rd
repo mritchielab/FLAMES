@@ -84,7 +84,7 @@ arguments are through the configuration JSON file \code{config_file}. the \code{
 section specifies which steps are to be executed in the pipeline - by default, all
 steps are executed. The \code{isoform_parameters} section affects isoform detection - key
 parameters include:
-\itemize{
+\describe{
 \item{\code{Min_sup_cnt}}{ which causes transcripts with less reads aligned than
 it's value to be discarded}
 \item{\code{MAX_TS_DIST}}{ which merges transcripts with the same intron
