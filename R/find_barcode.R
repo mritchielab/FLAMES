@@ -26,7 +26,6 @@
 #'   barcodes_file = bc_allow
 #' )
 #' @return invisible()
-#' @import zlibbioc
 #' @md
 #' @export
 find_barcode <- function(
