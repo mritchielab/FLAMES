@@ -1,0 +1,10 @@
+url: https://mritchielab.github.io/FLAMES
+
+template:
+  bootstrap: 5
+  bootswatch: flatly
+
+home:
+  title: "FLAMES"
+  type: inverse
+
