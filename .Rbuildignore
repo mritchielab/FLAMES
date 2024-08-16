@@ -10,3 +10,7 @@
 ^\.github$
 ^data-raw$
 ^LICENSE\.md$
+^CODE_OF_CONDUCT\.md$
+^\.BBSoptions$
+^Dockerfile$
+^_pkgdown\.yml$
