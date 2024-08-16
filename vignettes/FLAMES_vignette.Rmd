@@ -24,9 +24,7 @@ The FLAMES package provides a framework for performing single-cell and bulk read
 
 This R package represents an enhanced iteration of the FLAMES Python module that originally designed to support the research work presented in *Comprehensive characterization of single-cell full-length isoforms in human and mouse with long-read sequencing* by Tian et al [-@flames]. This upgraded R version not only simplifies the installation and execution processes but also incorporates additional functionality, streamlining the analysis of single-cell full-length isoforms using long-read sequencing data. 
 
-```{r workflow, echo=FALSE, fig.align='center', fig.cap='FLAMES pipeline workflow summary'}
-knitr::include_graphics(system.file("images/FLAMESpipeline-01.png", package = "FLAMES"))
-```
+![(#fig:workflow) FLAMES pipeline](FLAMESpipeline-01.png){width=800px}
 
 When processing single cell data, FLAMES can be run on data generated from long-read platform with or without matched short-read sequencing data. If only the long reads are available, FLAMES takes as input the long reads in fastq files. The `blaze()` function is then called to demultiplex the long reads into cell-specific fastq files. If the short-read data are unavailable, FLAMES incorporates the [BLAZE](https://github.com/shimlab/BLAZE) as `blaze()` function to identify cell barcodes solely from long reads [@blaze]. The `blaze()` function is called to locate the barcode sequencing in the long-reads, identify barcode allow-list directly from long reads, assign reads to cells (i.e., demultiplexing) and trims the cell barcodes and the flanking UMI sequence. 
 
