@@ -6,6 +6,12 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>FLAMES • FLAMES</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
@@ -31,17 +37,15 @@
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="active nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/FLAMES_vignette.html">FLAMES</a></li>
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-vignettes" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Vignettes</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes">
+<li><a class="dropdown-item" href="../articles/FLAMES_vignette.html">FLAMES package demo</a></li>
   </ul>
 </li>
       </ul>
 <ul class="navbar-nav">
-<li class="nav-item"><form class="form-inline" role="search">
- <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
-</form></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/mritchielab/FLAMES/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/mritchielab/FLAMES"><span class="fa fa-github"></span></a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://bioconductor.org/packages/FLAMES"><span class="fa fa-book"></span></a></li>
       </ul>
 </div>
 
@@ -54,8 +58,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-
-      <h1>FLAMES</h1>
+      <img src="../logo.svg" class="logo" alt=""><h1>FLAMES</h1>
                         <h4 data-toc-skip class="author">Oliver Voogd,
 Changqing Wang, Yupei You</h4>
             
@@ -195,7 +198,7 @@ already been demultiplexed.</p>
 <span><span class="co">#&gt; Registered S3 method overwritten by 'GGally':</span></span>
 <span><span class="co">#&gt;   method from   </span></span>
 <span><span class="co">#&gt;   +.gg   ggplot2</span></span>
-<span><span class="co">#&gt; Writing configuration parameters to:  /tmp/RtmpPlxv0Z/file1ad6657bcfa7/config_file_6870.json</span></span></code></pre></div>
+<span><span class="co">#&gt; Writing configuration parameters to:  /tmp/RtmpvWnMvI/file1b7330e38921/config_file_7027.json</span></span></code></pre></div>
 <p>The optional argument <code>config_file</code> can be given to both
 <code><a href="../reference/bulk_long_pipeline.html">bulk_long_pipeline()</a></code> and <code><a href="../reference/sc_long_pipeline.html">sc_long_pipeline()</a></code> in
 order to customise the execution of the pipelines. It is expected to be
@@ -379,7 +382,7 @@ output files.</p>
 <span><span class="va">outdir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">outdir</span><span class="op">)</span></span>
 <span><span class="va">config_file</span> <span class="op">&lt;-</span> <span class="fu">FLAMES</span><span class="fu">::</span><span class="fu"><a href="../reference/create_config.html">create_config</a></span><span class="op">(</span><span class="va">outdir</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Writing configuration parameters to:  /tmp/RtmpPlxv0Z/file1ad6400d03b1/config_file_6870.json</span></span></code></pre></div>
+<span><span class="co">#&gt; Writing configuration parameters to:  /tmp/RtmpvWnMvI/file1b733482ebbe/config_file_7027.json</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="flames-execution-1">FLAMES execution<a class="anchor" aria-label="anchor" href="#flames-execution-1"></a>
@@ -508,7 +511,7 @@ Please make sure to cite when using these tools.</p>
 <span><span class="co">#&gt;  [19] MultiAssayExperiment_1.30.3 backports_1.5.0            </span></span>
 <span><span class="co">#&gt;  [21] magrittr_2.0.3              limma_3.60.4               </span></span>
 <span><span class="co">#&gt;  [23] Hmisc_5.1-3                 sass_0.4.9                 </span></span>
-<span><span class="co">#&gt;  [25] rmarkdown_2.27              jquerylib_0.1.4            </span></span>
+<span><span class="co">#&gt;  [25] rmarkdown_2.28              jquerylib_0.1.4            </span></span>
 <span><span class="co">#&gt;  [27] yaml_2.3.10                 metapod_1.12.0             </span></span>
 <span><span class="co">#&gt;  [29] reticulate_1.38.0           ggbio_1.52.0               </span></span>
 <span><span class="co">#&gt;  [31] cowplot_1.1.3               DBI_1.2.3                  </span></span>
@@ -539,7 +542,7 @@ Please make sure to cite when using these tools.</p>
 <span><span class="co">#&gt;  [81] progress_1.2.3              tools_4.4.1                </span></span>
 <span><span class="co">#&gt;  [83] ragg_1.3.2                  Rcpp_1.0.13                </span></span>
 <span><span class="co">#&gt;  [85] glue_1.7.0                  gridExtra_2.3              </span></span>
-<span><span class="co">#&gt;  [87] SparseArray_1.4.8           xfun_0.46                  </span></span>
+<span><span class="co">#&gt;  [87] SparseArray_1.4.8           xfun_0.47                  </span></span>
 <span><span class="co">#&gt;  [89] MatrixGenerics_1.16.0       GenomeInfoDb_1.40.1        </span></span>
 <span><span class="co">#&gt;  [91] dplyr_1.1.4                 HDF5Array_1.32.1           </span></span>
 <span><span class="co">#&gt;  [93] withr_3.0.1                 BiocManager_1.30.23        </span></span>
