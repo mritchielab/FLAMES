@@ -52,6 +52,15 @@ reference:
       - combine_sce
       - sc_DTU_analysis
       - filter_annotation
+      - get_GRangesList
+      - demultiplex_sockeye
+      - parse_gff_tree
+      - plot_demultiplex
+      - sc_reduce_dims
+      - scmixology_lib10
+      - scmixology_lib10_transcripts
+      - scmixology_lib90
+      - sys_which
 
 navbar:
   structure:
