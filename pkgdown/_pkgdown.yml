@@ -1,0 +1,86 @@
+url: https://mritchielab.github.io/FLAMES
+
+template:
+  bootstrap: 5
+  bootswatch: flatly
+
+home:
+  title: "FLAMES"
+  type: inverse
+
+reference:
+  - title: About FLAMES
+    contents:
+      - FLAMES
+  - title: Pipelines
+    contents:
+      - sc_long_pipeline
+      - sc_long_multisample_pipeline
+      - bulk_long_pipeline
+  - title: Barcode demultiplexing
+    contents:
+      - find_barcode
+      - blaze
+      - flexiplex
+      - cutadapt
+  - title: Alignment
+    contents:
+      - minimap2_align
+      - minimap2_realign
+      - annotation_to_fasta
+  - title: Transcript identification
+    contents:
+      - find_isoform
+  - title: Quantification
+    contents:
+      - quantify_gene
+      - quantify_transcript
+  - title: Mutation calling
+    contents:
+      - find_variants
+      - sc_mutations
+  - title: Visualization
+    contents:
+      - plot_coverage
+      - sc_heatmap_expression
+      - sc_umap_expression
+  - title: Miscellaneous
+    contents:
+      - create_config
+      - create_sce_from_dir
+      - create_se_from_dir
+      - combine_sce
+      - sc_DTU_analysis
+      - filter_annotation
+
+navbar:
+  structure:
+    left: [reference, vignettes]
+    right: [github, bioc]
+
+  components:
+    reference:
+      text: Reference
+      menu:
+      icon:
+      href: reference/index.html
+
+    vignettes:
+      text: Vignettes
+      menu:
+        - text: FLAMES package demo
+          href: articles/FLAMES_vignette.html
+      icon:
+      href:
+
+    github:
+      text:
+      menu:
+      icon: fa-github
+      href: https://github.com/mritchielab/FLAMES
+    bioc:
+      text:
+      menu:
+      icon: fa-book
+      href: https://bioconductor.org/packages/FLAMES
+
