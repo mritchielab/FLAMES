@@ -125,7 +125,12 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2 = NA,
   if (config$alignment_parameters$use_junctions) {
     file.remove(file.path(outdir, "tmp_splice_anno.bed12"))
   }
-  return(get_flagstat(file.path(outdir, paste0(prefix, "align2genome.bam")), samtools))
+
+  if (!is.na(samtools)) {
+    return(get_flagstat(file.path(outdir, paste0(prefix, "align2genome.bam")), samtools))
+  }
+  # No equivalent to samtools flagstat in Rsamtools
+  # Rsamtools::quickBamFlagSummary does not return anything
 }
 
 
@@ -221,8 +226,10 @@ minimap2_realign <- function(config, fq_in, outdir, minimap2, samtools = NULL, p
   }
   file.remove(file.path(outdir, paste0(prefix, "tmp_align.bam")))
 
-  return(get_flagstat(file.path(outdir, paste0(prefix, "realign2transcript.bam")),
-    samtools))
+  if (!is.na(samtools)) {
+    return(get_flagstat(file.path(outdir, paste0(prefix, "realign2transcript.bam")),
+      samtools))
+  }
 }
 
 #' Sys.which wrapper
