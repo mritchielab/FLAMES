@@ -108,7 +108,8 @@ def get_read_to_gene_assignment(in_bam, gene_idx_df, methods):
     read_gene_assign_df = pd.DataFrame({"chr_name": chr_names, "gene_id": gene_ids,
                                         "bc": bcs, "umi": umis, "read_id": read_ids,
                                         "pos_5prim": positions_5prim, "pos_3prim": positions_3prim,
-                                        "overlap": overlaps, "read_length": read_lengths})  
+                                        "overlap": overlaps, "read_length": read_lengths}) 
+
     # close bam file
     bam_file.close()
     # deduplication row with same gene_id and read_id
@@ -285,7 +286,7 @@ def quantify_gene_single_process(in_gtf_df, in_bam, demulti_methods, cluster_3pr
                     read_gene_assign_df.umi_corrected.astype(str) + \
                     read_gene_assign_df.cluster.astype(str)
     
-    return gene_count_mat, dedup_read_lst, umi_lst
+    return gene_count_mat, dedup_read_lst, umi_lst, read_gene_assign_df
 
 def _map_pos_grouping(mappos, min_dist=50):
     """
@@ -370,11 +371,11 @@ def list_deduplicated_reads(umi_corrected_df,
             priorities = group[priority_cols].values
             read_to_keep_mask= priorities==priorities.max()
             if sum(read_to_keep_mask) == 1:
-                read_to_keep = read_ids[read_to_keep_mask]
+                read_to_keep = read_ids[read_to_keep_mask][0]
             else:
                 read_to_keep_idx = np.random.choice(np.where(read_to_keep_mask)[0])
                 read_to_keep = read_ids[read_to_keep_idx]
-            out_list.extend(read_to_keep)
+            out_list.append(read_to_keep)
 
     return out_list
 
