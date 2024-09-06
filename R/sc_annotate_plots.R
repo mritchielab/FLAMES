@@ -36,118 +36,81 @@
 #' @importFrom MultiAssayExperiment MultiAssayExperiment experiments<- experiments
 #' @export
 #' @md
-combine_sce <- function(short_read_large, short_read_small, long_read_sce, remove_duplicates = FALSE) {
-  if (is.character(short_read_large)) {
-    short_read_large <- read10xCounts(short_read_large)
-  }
-  stopifnot(is(short_read_large, "SingleCellExperiment"))
-  if (is.character(short_read_small)) {
-    short_read_small <- read10xCounts(short_read_small)
-  }
-  stopifnot(is(short_read_small, "SingleCellExperiment"))
-
-  if (is.null(colnames(short_read_large)) || is.null(colnames(short_read_small))) {
-    if ("Barcode" %in% names(colData(short_read_large)) && "Barcode" %in% names(colData(short_read_small))) {
-      colnames(short_read_large) <- gsub("-1$", "", colData(short_read_large)$Barcode)
-      colnames(short_read_small) <- gsub("-1$", "", colData(short_read_small)$Barcode)
-    } else {
-      stop("Error getting cell barcode.")
-    }
+combine_sce <- function(sce_with_lr, sce_without_lr) {
+  if (is.character(sce_without_lr)) {
+    sce_without_lr <- read10xCounts(sce_without_lr)
   }
 
-  # Always remove cells with duplicated barcodes from the larger library
-  # remove_duplicates determines whether they aer kept in the smaller library
-  dup_bc <- colnames(short_read_small[, colnames(short_read_small) %in% colnames(short_read_large)])
-  short_read_large <- short_read_large[, !(colnames(short_read_large) %in% dup_bc)]
-  if (remove_duplicates) {
-    short_read_small <- short_read_small[, !(colnames(short_read_small) %in%
-      dup_bc)]
+  if (!is.null(colData(sce_with_lr)$Barcode) & !is.null(colData(sce_without_lr)$Barcode)) {
+    duplicated_barcodes <- intersect(colData(sce_with_lr)$Barcode, colData(sce_without_lr)$Barcode)
+    sce_without_lr <- sce_without_lr[, !colData(sce_without_lr)$Barcode %in% duplicated_barcodes]
+  } else if (!is.null(colnames(sce_with_lr)) & !is.null(colnames(sce_without_lr))) {
+    duplicated_barcodes <- intersect(colnames(sce_with_lr), colnames(sce_without_lr))
+    sce_without_lr <- sce_without_lr[, !colnames(sce_without_lr) %in% duplicated_barcodes]
   }
 
-  gene_intersection <- intersect(rownames(short_read_large), rownames(short_read_small))
-  rowData(short_read_large) <- NULL
-  colData(short_read_large) <- NULL
-  rowData(short_read_small) <- NULL
-  colData(short_read_small) <- NULL
-  short_read_all <- cbind(short_read_large[gene_intersection, ], short_read_small[gene_intersection,
-    ])
+  gene_intersect <- intersect(rownames(sce_with_lr), rownames(sce_without_lr))
+  sce_with_lr <- sce_with_lr[gene_intersect,]
+  sce_without_lr <- sce_without_lr[gene_intersect,]
 
-  sampleMap <- rbind(DataFrame(assay = "gene_counts", primary = colnames(short_read_all),
-    colname = colnames(short_read_all)), DataFrame(assay = "transcript_counts",
-    primary = colnames(long_read_sce), colname = colnames(long_read_sce)))
+  combined_sce <- SingleCellExperiment(assays = list(counts = cbind(counts(sce_with_lr), counts(sce_without_lr))))
 
-  colLib <- DataFrame(row.names = unique(sampleMap$colname))
-  colLib$Lib_small <- rownames(colLib) %in% colnames(short_read_small)
+  # altExp with NA values for sce_without_lr
+  tr_counts <- cbind(
+    counts(altExp(sce_with_lr, "transcript")),
+    matrix(NA, nrow = nrow(altExp(sce_with_lr, "transcript")), ncol = ncol(sce_without_lr))
+  )
+  colnames(tr_counts) <- c(colnames(sce_with_lr), colnames(sce_without_lr))
+  tr_sce <- SingleCellExperiment(assays = list(counts = tr_counts))
 
-  return(MultiAssayExperiment::MultiAssayExperiment(list(gene_counts = short_read_all,
-    transcript_counts = long_read_sce), sampleMap = sampleMap, colData = colLib))
+  rowData(tr_sce) <- rowData(altExp(sce_with_lr, "transcript"))
+  rowRanges(tr_sce) <- rowRanges(altExp(sce_with_lr, "transcript"))
+  rowData(combined_sce) <- rowData(sce_with_lr)
+  rowRanges(combined_sce) <- rowRanges(sce_with_lr)
+
+  altExp(combined_sce, "transcript") <- tr_sce
+  combined_sce
 }
 
-#' runPCA and runUMAP wrapper
-#'
-#' runPCA and runUMAP wrapper for combined SCE object from \code{combine_sce} 
-#'
-#' @details
-#' This function takes the combined \code{MultiAssayExperiment} object from 
-#' \code{combine_sce} and run \code{scater::runUMAP} and / or \code{scran::fixedPCA}
-#'
-#' @param multiAssay The \code{MultiAssayExperiment} object from \code{combine_sce()}.
-#' @param n_pcs The number of principal components to generate.
-#' @param n_hvgs The number of variable genes to use for running PCA.
-#'
-#' @return the \code{MultiAssayExperiment} with reduced dimensions
-#' 
-#' @examples
-#' combined_sce <- combine_sce(
-#'     short_read_large = scmixology_lib90,
-#'     short_read_small = scmixology_lib10,
-#'     long_read_sce = scmixology_lib10_transcripts,
-#'     remove_duplicates = FALSE)
-#' sc_reduce_dims(multiAssay = combined_sce)
-#' 
-#' @importFrom scater runUMAP
-#' @importFrom scuttle logNormCounts computeLibraryFactors quickPerCellQC
-#' @importFrom scran fixedPCA getTopHVGs modelGeneVar
-#' 
-#' @export
-#' @md
-sc_reduce_dims <- function(multiAssay, n_pcs = 40, n_hvgs = 2000) {
-
-  experiments(multiAssay)$transcript_counts <- experiments(multiAssay)$transcript_counts |>
-    quickPerCellQC() |>
-    logNormCounts()
-  if (!"mean" %in% names(rowData(experiments(multiAssay)$transcript_counts))) {
-    experiments(multiAssay)$transcript_counts <- addPerFeatureQC(experiments(multiAssay)$transcript_counts)  # needed for sorting
+sc_isoform_impute <- function(combined_sce, dimred = "PCA") {
+  if (!"transcript" %in% names(altExps(combined_sce))) {
+    stop("transcript counts not found")
   }
-
-  if (!("PCA" %in% reducedDimNames(experiments(multiAssay)$gene_counts)) || dim(experiments(multiAssay)$gene_counts@int_colData$reducedDims$PCA)[2] <
-    n_pcs) {
-    cat("Running PCA for experiments(multiAssay)$gene_counts ...\n")
-    experiments(multiAssay)$gene_counts <- experiments(multiAssay)$gene_counts |>
-      quickPerCellQC() |>
-      logNormCounts()
-    hvgs <- getTopHVGs(modelGeneVar(experiments(multiAssay)$gene_counts), n = n_hvgs)
-    experiments(multiAssay)$gene_counts <- fixedPCA(experiments(multiAssay)$gene_counts,
-      rank = n_pcs, subset.row = hvgs)
-  } else if (dim(experiments(multiAssay)$gene_counts@int_colData$reducedDims$PCA)[2] >
-    n_pcs) {
-    message(paste0(c("experiments(multiAssay)$gene_counts have ", dim(experiments(multiAssay)$gene_counts@int_colData$reducedDims$PCA)[2],
-      " PCs, using the first ", n_pcs, " PCs since n_pcs set to ", n_pcs, "\n")))
-    experiments(multiAssay)$gene_counts@int_colData$reducedDims$tmp <- experiments(multiAssay)$gene_counts@int_colData$reducedDims$PCA[,
-      1:n_pcs]
-    experiments(multiAssay)$gene_counts@int_colData$reducedDims$tmp <- NULL
+  if (!"logcounts" %in% names(assays(combined_sce))) {
+    combined_sce <- scuttle::logNormCounts(combined_sce)
   }
-
-  if (!("UMAP" %in% reducedDimNames(experiments(multiAssay)$gene_counts))) {
-    cat("Running UMAP for experiments(multiAssay)$gene_counts ...\n")
-    experiments(multiAssay)$gene_counts <- runUMAP(experiments(multiAssay)$gene_counts,
-      dimred = "PCA")
-  } else {
-    cat("Skipping runUMAP...\n")
+  if (! "PCA" %in% reducedDimNames(combined_sce)) {
+    combined_sce <- scater::runPCA(combined_sce)
   }
+  if (!"UMAP" %in% reducedDimNames(combined_sce) & dimred == "UMAP") {
+    combined_sce <- scater::runUMAP(combined_sce)
+  }
+  snn <- scran::buildSNNGraph(combined_sce, use.dimred = dimred)
+  snn_mat <- igraph::as_adjacency_matrix(snn, attr = "weight")
+  diag(snn_mat) <- ceiling(max(snn_mat))
 
-  return(multiAssay)
+  imputed_count <- sc_impute_expression(counts(altExp(combined_sce, "transcript")), snn_mat)
+  assay(altExp(combined_sce, "transcript"), 'logcounts') <- imputed_count
+  combined_sce
 }
+
+sc_impute_expression <- function(mtx, distance_matrix) {
+
+  cat("Imputing transcript counts ...\n")
+  expr_impute <- matrix(0, nrow(mtx), ncol(mtx))
+  rownames(expr_impute) <- rownames(mtx)
+  colnames(expr_impute) <- colnames(mtx)
+
+  cols_with_counts <- apply(mtx, 2, function(x){!any(is.na(x))})
+  expr_impute[, cols_with_counts] <- scuttle::normalizeCounts(mtx[, cols_with_counts])
+  expr_impute <- expr_impute %*% distance_matrix
+  colnames(expr_impute) <- colnames(mtx)
+
+  expr_impute <- t(t(expr_impute)/colSums(distance_matrix))
+
+  expr_impute
+}
+
 
 #' @importFrom stats quantile
 reduce_quantile <- function(x, q = 0.05) {
@@ -156,26 +119,6 @@ reduce_quantile <- function(x, q = 0.05) {
   x
 }
 
-#' @importFrom Matrix colSums
-sc_impute_expression <- function(expression_subsample, distance_matrix, sample_lib, scale_exprsion = TRUE) {
-
-  cat("Imputing transcript counts ...\n")
-  expr_all <- matrix(0, nrow(expression_subsample), length(sample_lib))  # dim: transcripts x cells, initialised to 0
-  rownames(expr_all) <- rownames(expression_subsample)
-  colnames(expr_all) <- names(sample_lib)
-
-  expr_all[, colnames(expression_subsample)] <- expression_subsample
-  expr_all <- expr_all %*% distance_matrix
-  colnames(expr_all) <- names(sample_lib)
-
-  expr_all <- t(t(expr_all)/colSums(distance_matrix))
-
-  if (scale_exprsion) {
-  expr_all <- scale(expr_all)
-  expr_all <- t(apply(expr_all, 1, reduce_quantile))
-  }
-  expr_all
-}
 
 #' FLAMES UMAP plots
 #'
@@ -223,169 +166,7 @@ sc_impute_expression <- function(expression_subsample, distance_matrix, sample_l
 #' @md
 sc_umap_expression <- function(gene, multiAssay, impute = FALSE, grided = TRUE, n_isoforms = 4, transcript_ids,
   n_pcs = 40, col_low = "#313695", col_mid = "#FFFFBF", col_high = "#A50026") {
-
-  multiAssay <- sc_reduce_dims(multiAssay, n_pcs)
-
-  sample_lib <- factor(multiAssay[, , "gene_counts"]$Lib_small)
-  levels(sample_lib) <- gsub("FALSE", "large", gsub("TRUE", "small", levels(sample_lib)))
-  names(sample_lib) <- colnames(multiAssay[, , "gene_counts"])[["gene_counts"]]
-
-  if (!grided) {
-    if (!missing(transcript_ids) && length(transcript_ids) > 2) {
-      stop("grided = FALSE can only plot 2 isoforms, consider setting it to TRUE\n")
-    } 
-    if (!missing(n_isoforms) && n_isoforms > 2) {
-      stop("grided = FALSE can only plot 2 isoforms, consider setting n_isoforms = 2 or
-        grided = TRUE\n")} 
-  }
-
-  # row_meta columns: 'transcript_id', 'gene_id', 'FSM_match', 'mean',
-  # 'detected', 'gene_name' rows: transcript_id
-  row_meta <- as.data.frame(rowData(experiments(multiAssay)$transcript_counts))
-  if (!missing(transcript_ids) && !is.null(transcript_ids)) {
-    if (!all(transcript_ids %in% rownames(row_meta))) {
-      message(paste0(c("transcript_id(s) ", paste(transcript_ids[!(transcript_ids %in%
-        rownames(transcript_id))], sep = " "), " not found\n")))
-    }
-    row_meta <- row_meta %>%
-      dplyr::filter(transcript_id %in% transcript_ids)
-    stopifnot(`no transcript_id match` = dim(row_meta)[1] == 0)
-  } else {
-    row_meta <- row_meta %>%
-      dplyr::filter(gene_id == gene) %>%
-      slice_max(n = n_isoforms, order_by = mean)  # keep top n isoforms per gene
-    if (dim(row_meta)[1] < 2) {
-      stop(paste0("Alternative isoform not found for the given gene: ", gene))
-    }
-  }
-
-  # apply selection to sce
-  tr_sce_multi <- experiments(multiAssay[rownames(row_meta), names(sample_lib)[which(sample_lib ==
-    "small")], "transcript_counts"])$transcript_counts
-  if (n_isoforms > nrow(row_meta)) {
-    n_isoforms <- nrow(row_meta)
-    message(paste0(c("Only ", n_isoforms, " isoforms found for this gene.\n")))
-  }
-
-  # Isoform alignment visualization
-  isoform_sel <- rowRanges(experiments(multiAssay)$transcript_counts[row_meta$FSM_match,
-    ])
-  # isoform_sel <- isoform_sel[row_meta$FSM_match] # Order by expression levels
-  if (grided) {
-    plot_isoforms <- ggbio::autoplot(isoform_sel, label = TRUE) + theme_bw() +
-      theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank(), axis.line = element_line(colour = "black"))
-    # ggbio::geom_alignment does not follow the order in isoform_sel
-  } else {
-    fill_by_isoform <- c(rep(col_low, length(isoform_sel[[1]])), rep(col_high,
-      length(isoform_sel[[2]])))
-    plot_isoforms <- ggbio::autoplot(isoform_sel, label = TRUE, fill = fill_by_isoform) +
-      theme_bw() + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-      panel.background = element_blank(), axis.line = element_line(colour = "black"))
-  }
-
-  # Could try using stat_stepping() to get the order of isoforms
-  # https://github.com/lawremi/ggbio/issues/149
-  tr_order <- rev(names(isoform_sel)[match(1:n_isoforms, plot_isoforms$layers[[length(plot_isoforms$layers)]]$data$stepping)])
-  # isoform_sel <- isoform_sel[tr_order]
-
-  # expression levels
-  if (impute) {
-    snn <- buildSNNGraph(experiments(multiAssay)$gene_counts, use.dimred = "PCA")
-    snn_mat <- as_adjacency_matrix(snn, attr = "weight")
-    diag(snn_mat) <- ceiling(max(snn_mat))
-    expr_all <- sc_impute_expression(logcounts(tr_sce_multi), snn_mat, sample_lib)
-  }
-  # Expressions without imputation (Lib_20)
-  expr_20 <- matrix(0, dim(tr_sce_multi)[1], sum(sample_lib == "small"))
-  rownames(expr_20) <- rownames(tr_sce_multi)
-  colnames(expr_20) <- names(sample_lib[sample_lib == "small"])
-  expr_20[, colnames(tr_sce_multi)] <- logcounts(tr_sce_multi)
-  expr_20 <- scale(expr_20)
-  expr_20 <- t(apply(expr_20, 1, reduce_quantile))
-
-  # scale() will produce NaN values for cell with 0 counts for all isoforms
-  # using na.value = 'grey' for UMAPs
-
-  ### Plot with UMAP from lib_all
-  cat("Plotting expression UMAPs ...\n")
-  umap_all <- as.data.frame(experiments(multiAssay)$gene_counts@int_colData$reducedDims$UMAP)
-  colnames(umap_all) <- c("x", "y")
-
-  umap_80 <- umap_all[sample_lib == "large", ]
-  colnames(umap_80) <- c("x", "y")
-
-  umap_20 <- umap_all[sample_lib == "small", ]
-  colnames(umap_20) <- c("x", "y")
-
-  umap_20 <- cbind(t(expr_20), umap_20)
-
-  ggplot_theme_bw <- theme_bw() + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-    panel.background = element_blank(), panel.border = element_blank(), axis.line = element_line(colour = "black"),
-    axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.text.y = element_blank(),
-    axis.ticks.y = element_blank(), legend.position = "none")
-
-  if (!grided) {
-    if (impute) {
-      gradient_col <- expr_all[names(isoform_sel)[1], ]/(expr_all[names(isoform_sel)[1],
-        ] + expr_all[names(isoform_sel)[2], ])
-      plot_expression_umaps <- ggplot() + 
-      geom_point(data = umap_all, aes(x = x, y = y, col = gradient_col), alpha = 0.7, size = 0.7) + 
-      labs(x = "Dim1", y = "Dim2", col = "scaled imputed expression") +
-      scale_colour_gradient2(low = col_low, mid = col_mid, high = col_high, na.value = "grey", midpoint = 0.5) + 
-      ggplot_theme_bw
-    } else {
-      gradient_col <- expr_20[names(isoform_sel)[1], ]/(expr_20[names(isoform_sel)[1],
-        ] + expr_20[names(isoform_sel)[2], ])
-      plot_expression_umaps <- ggplot() + 
-      geom_point(data = umap_80, aes(x = x, y = y), alpha = 0.2, size = 0.2, col = "grey", show.legend = FALSE) +
-      geom_point(data = umap_20, aes(x = x, y = y, col = gradient_col), alpha = 0.7, size = 0.7) + 
-      labs(x = "Dim1", y = "Dim2", col = "scaled expression") +
-      scale_colour_gradient2(low = col_low, mid = col_mid, high = col_high, na.value = "grey", midpoint = 0.5) + 
-      ggplot_theme_bw
-    }
-    return(plot_grid(plot_isoforms@ggplot, plot_expression_umaps, ncol = 1, rel_heights = c(1, 2.5)))
-  }
-  if (impute) {
-    umap_all <- cbind(t(expr_all), umap_all)
-    # ggplot2 lazy evaluation with for loops may need to unquote idx with !!
-    # operator
-    plot_idx <- function(idx) {
-      p <- ggplot() + 
-      geom_point(data = umap_all, aes(x = x, y = y, col = umap_all[, idx]), alpha = 0.7, size = 0.2) +
-      labs(x = "Dim1", y = "Dim2", col = "scaled expression", title = colnames(umap_all)[idx]) +
-      scale_colour_gradient2(low = col_low, mid = col_mid, high = col_high, na.value = "grey", 
-        midpoint = median(umap_all[, idx], na.rm = TRUE)) +
-      ggplot_theme_bw
-    }
-  } else {
-    plot_idx <- function(idx) {
-      p <- ggplot() + 
-      geom_point(data = umap_80, aes(x = x, y = y), alpha = 0.2, size = 0.2, col = "grey", show.legend = FALSE) +
-      geom_point(data = umap_20, aes(x = x, y = y, col = umap_20[, idx]), alpha = 0.7, size = 0.7) +
-      labs(x = "Dim1", y = "Dim2", col = "scaled expression", title = colnames(umap_20)[idx]) +
-      scale_colour_gradient2(low = col_low, mid = col_mid, high = col_high,
-          na.value = "grey", midpoint = median(umap_20[, idx], na.rm = TRUE)) +
-      ggplot_theme_bw
-      p
-    }
-  }
-
-  plot_expression_umaps <- lapply(1:n_isoforms, plot_idx)
-  plot_expression_umaps <- plot_expression_umaps[match(tr_order, colnames(umap_20)[1:n_isoforms])]
-
-  legend <- ggplot(data.frame(x = 1:2, y = 1:2)) + geom_point(aes(x = x, y = y,
-    col = c(-1, 1))) + labs(col = "scaled expression") + scale_colour_gradient2(low = col_low,
-    mid = col_mid, high = col_high, breaks = c(-0.8, 0.8), labels = c("Low",
-      "High"))
-  legend <- get_legend(legend + theme(legend.box.margin = margin(0, 0, 0, 12)))
-  combined_isoform_plot <- plot_grid(plotlist = c(list(annotation = plot_isoforms@ggplot),
-    plot_expression_umaps))
-  combined_isoform_plot <- plot_grid(combined_isoform_plot, legend, rel_widths = c(3,
-    0.4))
-  return(combined_isoform_plot)
 }
-
 
 #' FLAMES heetmap plots
 #'
@@ -434,146 +215,38 @@ sc_umap_expression <- function(gene, multiAssay, impute = FALSE, grided = TRUE, 
 #' 
 #' @export
 #' @md
-sc_heatmap_expression <- function(gene, multiAssay, impute = FALSE, n_isoforms = 4, transcript_ids, n_pcs = 40,
+plot_isoform_heatmap <- function(sce, gene_id, transcript_ids, n = 4,
   isoform_legend_width = 7, col_low = "#313695", col_mid = "#FFFFBF", col_high = "#A50026", color_quantile = 0.95) {
 
-  multiAssay <- sc_reduce_dims(multiAssay, n_pcs)
+  transcript_ids <- get_top_transcript_ids(sce, gene_id, transcript_ids, n)
+  sce <- sce[match(transcript_ids, rowData(sce)$transcript_id),]
+  legends_heatmap <- plot_top_isoforms(sce, gene_id, transcript_ids, n, format = 'list')
 
-  sample_lib <- factor(multiAssay[, , "gene_counts"]$Lib_small)
-  levels(sample_lib) <- gsub("FALSE", "large", gsub("TRUE", "small", levels(sample_lib)))
-  names(sample_lib) <- colnames(multiAssay[, , "gene_counts"])[["gene_counts"]]
-
-  # row_meta columns: 'transcript_id', 'gene_id', 'FSM_match', 'mean',
-  # 'detected', 'gene_name' rows: transcript_id
-  row_meta <- as.data.frame(rowData(experiments(multiAssay)$transcript_counts))
-  if (!missing(transcript_ids) && !is.null(transcript_ids)) {
-    if (!all(transcript_ids %in% rownames(row_meta))) {
-      message(paste0(c("transcript_id(s) ", paste(transcript_ids[!(transcript_ids %in%
-        rownames(transcript_id))], sep = " "), " not found\n")))
-    }
-    row_meta <- row_meta %>%
-      dplyr::filter(transcript_id %in% transcript_ids)
-    stopifnot(`no transcript_id match` = dim(row_meta)[1] == 0)
-  } else {
-    row_meta <- row_meta %>%
-      dplyr::filter(gene_id == gene) %>%
-      slice_max(n = n_isoforms, order_by = mean)  # keep top n isoforms per gene
-    if (dim(row_meta)[1] < 2) {
-      stop(paste0("Alternative isoform not found for the given gene: ", gene))
-    }
-  }
-
-  # apply top n to sce
-  tr_sce_multi <- experiments(multiAssay[rownames(row_meta),
-        names(sample_lib)[which(sample_lib == "small")],
-        "transcript_counts"])$transcript_counts 
-  if (n_isoforms > nrow(row_meta)) {
-    n_isoforms <- nrow(row_meta)
-    message(paste0(c("Only ", n_isoforms, " isoforms found for this gene.\n")))
-  }
-
-  # Alignment info
-  isoform_sel <- rowRanges(experiments(multiAssay)$transcript_counts[row_meta$FSM_match, ])
-  # isoform_sel <- isoform_sel[row_meta$FSM_match] # Order by expression levels
-  if (length(isoform_sel) == 2) {
-    fill_by_isoform <- c(rep(col_low, length(isoform_sel[[1]])), rep(col_high, length(isoform_sel[[2]])))
-    plot_isoforms <- ggbio::autoplot(isoform_sel, label = TRUE, fill = fill_by_isoform) +
-      theme_bw() + theme(
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank(), axis.line = element_line(colour = "black")
-      )
-  } else {
-    plot_isoforms <- ggbio::autoplot(isoform_sel, label = TRUE) +
-      theme_bw() + theme(
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank(), axis.line = element_line(colour = "black")
-      )
-    # ggbio::geom_alignment does not follow the order in isoform_sel
-  }
-
-  # Could try using stat_stepping() to get the order of isoforms
-  # https://github.com/lawremi/ggbio/issues/149
-  tr_order <- rev(names(isoform_sel)[match(1:n_isoforms, plot_isoforms$layers[[length(plot_isoforms$layers)]]$data$stepping)])
-  # isoform_sel <- isoform_sel[tr_order]
-
-  legends_heatmap <- list()
-  for (i in names(isoform_sel)) {
-    p <- ggplot(isoform_sel[[i]]) +
-      geom_alignment(
-        label = FALSE, range.geom = "rect",
-        gap.geom = "arrow", utr.geom = "rect"
-      ) +
-      xlim(c(min(min(start(isoform_sel))), max(max(end(isoform_sel))))) +
-      theme(
-        axis.line = element_blank(), axis.text.x = element_blank(),
-        axis.text.y = element_blank(), axis.ticks = element_blank(),
-        axis.title.x = element_blank(), axis.title.y = element_blank(),
-        legend.position = "none", panel.background = element_blank(),
-        panel.border = element_blank(), panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(), plot.background = element_blank(),
-        plot.margin = margin(20, 0, 20, 0), plot.title = element_text(hjust = 0.5)
-      ) +
-      labs(title = i)
-    legends_heatmap[[i]] <- p@ggplot
-  }
-  legends_heatmap <- legends_heatmap[tr_order]
-
-  flames_outdir <- experiments(multiAssay)$transcript_counts@metadata$OutputFiles$outdir
-  if (!is.null(flames_outdir) && file.exists(file.path(flames_outdir, "cluster_annotation.csv"))) {
-    cluster_barcode <- read.csv(file.path(flames_outdir, "cluster_annotation.csv"), stringsAsFactors = FALSE)
-    cluster_barcode <- cluster_barcode[, c("barcode_seq", "groups")]
-    rownames(cluster_barcode) <- cluster_barcode[, "barcode_seq"]
-  } else if (!is.null(multiAssay$cell_type)) {
-    cluster_barcode <- data.frame(barcode_seq = names(sample_lib), groups = multiAssay[,names(sample_lib),]$cell_type)
-    rownames(cluster_barcode) <- cluster_barcode[, "barcode_seq"]
-  }
-
-  group_annotation <- function(cluster_barcode) {
-    n <- length(table(cluster_barcode))
+  group_annotation <- function(x) {
+    n <- length(unique(x))
     if (n > 11 || n < 2) {
-      column_anno <- columnAnnotation(df = cluster_barcode)
+      column_anno <- HeatmapAnnotation(x)
     } else if (n == 2) {
-      palette <- brewer.pal(n = 3, name = heatmap_annotation_colors)[c(1, 3)]
-      names(palette) <- names(table(cluster_barcode))
-      column_anno <- columnAnnotation(
-        df = cluster_barcode,
-        col = list(groups = palette)
+      palette <- brewer.pal(n = 3, name = "PuRd")[c(1, 3)]
+      names(palette) <- levels(x)
+      column_anno <- HeatmapAnnotation(
+        group = x,
+        col = list(group = palette)
       )
     } else {
-      palette <- brewer.pal(n, name = heatmap_annotation_colors)
-      names(palette) <- names(table(cluster_barcode))
-      column_anno <- columnAnnotation(
-        df = cluster_barcode,
-        col = list(groups = palette)
+      palette <- brewer.pal(n, name = "Spectral")
+      names(palette) <- unique(x)
+      column_anno <- HeatmapAnnotation(
+        group = x,
+        col = list(group = palette)
       )
     }
     return(column_anno)
   }
 
-  # Error in hclust(x) : NA/NaN/Inf in foreign function call (arg 10)
-  # removing NaN cells from expr_20 and expr_all
-  if (impute) {
-    snn <- buildSNNGraph(experiments(multiAssay)$gene_counts, use.dimred = "PCA")
-    snn_mat <- as_adjacency_matrix(snn, attr = "weight")
-    diag(snn_mat) <- ceiling(max(snn_mat))
-    expr_heatmap <- sc_impute_expression(logcounts(tr_sce_multi), snn_mat, sample_lib)
-  } else {
-    expr_heatmap <- matrix(0, dim(tr_sce_multi)[1], sum(sample_lib == "small"))
-    rownames(expr_heatmap) <- rownames(tr_sce_multi)
-    colnames(expr_heatmap) <- names(sample_lib[sample_lib == "small"])
-    expr_heatmap[, colnames(tr_sce_multi)] <- logcounts(tr_sce_multi)
-    expr_heatmap <- scale(expr_heatmap)
-    expr_heatmap <- t(apply(expr_heatmap, 1, reduce_quantile))
-  }
-  expr_heatmap <- expr_heatmap[, !apply(expr_heatmap, 2, function(x) {
-    any(is.na(x))
-  })]
-
-  cell_order <- stats::hclust(stats::dist(t(expr_heatmap)))$order
-  if (exists('cluster_barcode')) {
-    cluster_barcode <- cluster_barcode[colnames(expr_heatmap)[cell_order], "groups", drop = FALSE]
-  }
-  expr_heatmap <- expr_heatmap[tr_order, cell_order]
+  sce <- sce[, stats::hclust(stats::dist(t(logcounts(sce))))$order]
+  expr_heatmap <- logcounts(sce) |>
+    scale()
 
   expr_color_mapping <- function(expr_matrix) {
     if (color_quantile > 1 || color_quantile < 0) {
@@ -592,13 +265,102 @@ sc_heatmap_expression <- function(gene, multiAssay, impute = FALSE, n_isoforms =
 
   return(
     Heatmap(expr_heatmap,
-      name = ifelse(impute, "imputed expression", "scaled expression"),
+      name = "scaled expression",
       cluster_rows = FALSE, cluster_columns = FALSE, use_raster = FALSE,
       show_column_names = FALSE, show_row_names = FALSE, 
       # https://www.r-bloggers.com/2017/02/use-switch-instead-of-ifelse-to-return-a-null/
-      top_annotation = switch(exists('cluster_barcode'), group_annotation(cluster_barcode)),
+      top_annotation = switch(!is.null(colLabels(sce)), group_annotation(colLabels(sce))),
       left_annotation = rowAnnotation(isoform = isoform_annotation, annotation_name_rot = 0),
       col = expr_color_mapping(expr_heatmap)
     )
   )
+}
+
+get_top_transcript_ids <- function(sce, gene_id, transcript_ids, n){
+  if (missing(transcript_ids)) {
+    sce <- sce[rowData(sce)$gene_id == gene_id, ]
+    sce <- sce[order(rowSums(counts(sce)), decreasing = TRUE), ]
+    if (nrow(sce) > n) {
+      sce <- sce[1:n, ]
+    }
+  } else {
+    # sce <- sce[rowData(sce)$transcript_id %in% transcript_ids, ]
+    # sce <- sce[order(rowSums(counts(sce)), decreasing = TRUE), ]
+    return(transcript_ids)
+  }
+  return(rowData(sce)$transcript_id)
+}
+
+plot_top_isoforms <- function(sce, gene_id, transcript_ids, n = 4, format = 'plot_grid') {
+  transcript_ids <- get_top_transcript_ids(sce, gene_id, transcript_ids, n)
+  sce <- sce[match(transcript_ids, rowData(sce)$transcript_id),]
+  transcripts <- rowRanges(sce)
+  x_range <- c(
+    min(min(start(transcripts))),
+    max(max(end(transcripts)))
+  )
+
+  chr <- lapply(seqnames(transcripts), function(x){as.character(unique(x))}) |>
+    unlist() |>
+    unique()
+  if (length(chr) > 1) {
+    stop("transcripts span multiple chromosomes, unable to plot")
+  }
+
+  plot_list <- list()
+  for (i in seq_along(transcript_ids)) {
+    p <- ggplot(transcripts[i]) +
+      ggbio::geom_alignment(
+        label = TRUE, range.geom = "rect",
+        gap.geom = "arrow", utr.geom = "rect"
+      ) + 
+      xlim(x_range) + 
+      theme_void()
+    if (i == length(transcript_ids)) {
+      p <- p +
+        theme(
+          axis.line.x = element_line(),
+          axis.ticks.x = element_line(),
+          axis.text.x = element_text(),
+          axis.title.x = element_text()
+        )
+        # labs(x = chr)
+        # coord_cartesian(xlim = x_range)
+    }
+    plot_list <- append(plot_list, list(p@ggplot))
+  }
+  if (format == 'list') {
+    return(plot_list)
+  }
+  return(cowplot::plot_grid(plotlist = plot_list, ncol = 1))
+}
+
+plot_isoform_umap <- function(sce, gene_id, transcript_ids, n = 4, reduced_dim_name = "UMAP", 
+  expr_func = function(x){SingleCellExperiment::logcounts(x)}, 
+  col_low = "#313695", col_mid = "#FFFFBF", col_high = "#A50026", format = 'plot_grid', ...) {
+  transcript_ids <- get_top_transcript_ids(sce, gene_id, transcript_ids, n)
+  sce <- sce[match(transcript_ids, rowData(sce)$transcript_id),]
+  isoform_plot <- plot_top_isoforms(sce, gene_id, transcript_ids, n)
+  df <- data.frame(
+    x = reducedDim(sce, reduced_dim_name)[,1],
+    y = reducedDim(sce, reduced_dim_name)[,2]
+  )
+
+  umaps <- list()
+  for (i in seq_along(transcript_ids)) {
+    df$expr <- expr_func(sce)[i,]
+    p <- ggplot(df) +
+      geom_point(aes(x = x, y = y, col = expr), alpha = 0.7, size = 0.2) +
+      labs(x = "Dim1", y = "Dim2", col = "expression") +
+      scale_colour_gradient2(low = col_low, mid = col_mid, high = col_high,
+        na.value = "grey", midpoint = median(df$expr)) +
+      theme_bw()
+    umaps <- append(umaps, list(p))
+  }
+
+  plot_list <- c(list(isoform_plot), umaps)
+  if (format == 'list') {
+    return(umaps)
+  }
+  return(cowplot::plot_grid(plotlist = plot_list, ...))
 }
