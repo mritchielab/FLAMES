@@ -4,47 +4,40 @@
 \alias{combine_sce}
 \title{Combine SCE}
 \usage{
-combine_sce(
-  short_read_large,
-  short_read_small,
-  long_read_sce,
-  remove_duplicates = FALSE
-)
+combine_sce(sce_with_lr, sce_without_lr)
 }
 \arguments{
-\item{short_read_large}{The SCE object, or path to the HDF5 file, or folder containing the matrix file,
-corresponding to the larger short-read sample}
+\item{sce_with_lr}{A \code{SingleCellExperiment} object with both long and short reads. The long-read
+transcript counts should be stored in the 'transcript' altExp slot.}
 
-\item{short_read_small}{The SCE object, or path to the HDF5 file, or folder containing the matrix file,
-corresponding to the smaller short-read sample}
-
-\item{long_read_sce}{The SCE object of the transcript counts, from the long-read pipelines.}
-
-\item{remove_duplicates}{determines whether cells with duplicated barcodes aer kept in the smaller library (
-they are always removed from the larger library)}
+\item{sce_without_lr}{A \code{SingleCellExperiment} object with only short reads.}
 }
 \value{
-A \code{MultiAssayExperiment} object, with 'gene_counts' and 'transcript_counts' experiments.
+A \code{SingleCellExperiment} object with combined gene counts and a "transcript" altExp slot.
 }
 \description{
-Combine long- and short-read SingleCellExperiment objects
+Combine FLT-seq SingleCellExperiment objects
 }
 \details{
-Takes the long-read SCE object from the long-read pipeline and the short-read SCE object,
-creates a \code{MultiAssayExperiment} object with the two \code{SingleCellExperiment} objects.
-Cells with duplicated barcodes are removed from the larger library.
+For protcols like FLT-seq that generate two libraries, one with both short and long reads,
+and one with only short reads, this function combines the two libraries into a single
+\code{SingleCellExperiment} object. For the library with both long and short reads, the long-read
+transcript counts should be stored in the 'transcript' altExp slot of the \code{SingleCellExperiment}
+object. This function will combine the short-read gene counts of both libraries, and for the
+transcripts counts, it will leave \code{NA} values for the cells from the short-read only library.
+The \code{sc_impute_transcript} function can then be used to impute the \code{NA} values.
 }
 \examples{
-library(SingleCellExperiment)
-a <- SingleCellExperiment(assays = list(counts = matrix(rpois(100, 5), ncol = 10)))
-b <- SingleCellExperiment(assays = list(counts = matrix(rpois(100, 5), ncol = 10)))
-long_read <- SingleCellExperiment(assays = list(counts = matrix(rpois(100, 5), ncol = 10)))
-colData(a)$Barcode <- paste0(1:10, '-1')
-colData(b)$Barcode <- paste0(8:17, '-1')
-colnames(long_read) <- as.character(2:11)
-rownames(a) <- as.character(101:110)
-rownames(b) <- as.character(103:112)
-rownames(long_read) <- as.character(1001:1010)
-combine_sce(short_read_large = a, short_read_small = b, long_read_sce = long_read)
+with_lr <- SingleCellExperiment::SingleCellExperiment(assays = list(counts = matrix(rpois(100, 5), ncol = 10)))
+without_lr <- SingleCellExperiment::SingleCellExperiment(assays = list(counts = matrix(rpois(200, 5), ncol = 20)))
+long_read <- SingleCellExperiment::SingleCellExperiment(assays = list(counts = matrix(rpois(50, 5), ncol = 10)))
+SingleCellExperiment::altExp(with_lr, "transcript") <- long_read
+SummarizedExperiment::colData(with_lr)$Barcode <- paste0(1:10, "-1")
+SummarizedExperiment::colData(without_lr)$Barcode <- paste0(8:27, "-1")
+rownames(with_lr) <- as.character(101:110)
+rownames(without_lr) <- as.character(103:112)
+rownames(long_read) <- as.character(1001:1005)
+combined_sce <- FLAMES::combine_sce(sce_with_lr = with_lr, sce_without_lr = without_lr)
+combined_sce
 
 }

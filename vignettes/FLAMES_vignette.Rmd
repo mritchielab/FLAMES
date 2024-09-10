@@ -127,23 +127,20 @@ if (!any(is.na(sys_which(c("minimap2", "k8"))))) {
 The `combine_sce()` and `sc_annotate_plots()` can be used for visulisation with experiment designs similar to `FLT-seq`. The `combine_sce()` function combines the `SingleCellExperiment` objects of 1) the short-read gene counts from the larger subsample, 2) the short-read gene counts from the smaller subsample and 3) the transcript counts from the larger subsample into a `MultiAssayExperiment` object. The `sc_annotate_plots()` function can then use it to produce annotated plots.
 ```{r, eval=FALSE, message=FALSE, warning=FALSE}
 library(FLAMES)
-library(MultiAssayExperiment)
 
-combined_sce <- combine_sce(
-    short_read_large = scmixology_lib90,
-    short_read_small = scmixology_lib10,
-    long_read_sce = scmixology_lib10_transcripts,
-    remove_duplicates = FALSE) |>
-  sc_reduce_dims(n_pcs = 20, n_hvgs = 1000)
+scmixology_lib10 <- scmixology_lib10[, colSums(counts(scmixology_lib10)) > 0]
+sce_lr <- scmixology_lib10[, colnames(scmixology_lib10) %in% colnames(scmixology_lib10_transcripts)]
+altExp(sce_lr, "transcript") <- scmixology_lib10_transcripts[, colnames(sce_lr)]
 
-sc_umap_expression(gene = "ENSG00000108107", multiAssay = combined_sce)
-sc_heatmap_expression(gene = "ENSG00000108107", multiAssay = combined_sce)
+combined_sce <- combine_sce(sce_lr, scmixology_lib90)
+combined_sce <- combined_sce |>
+  scuttle::logNormCounts() |>
+  scater::runPCA() |>
+  scater::runUMAP()
+combined_sce_impute <- sc_isoform_impute(combined_sce)
 
-scater::plotReducedDim(
-    experiments(combined_sce)$gene_counts,
-    dimred = "PCA",
-    colour_by = colData(combined_sce
-        [,,"gene_counts"])[,"Lib_small",drop=FALSE])
+plot_isoform_reduced_dim(combined_sce, 'ENSG00000108107')
+plot_isoform_reduced_dim(combined_sce_impute, 'ENSG00000108107')
 ```
 
 ### FLAMES termination
@@ -275,3 +272,4 @@ utils::sessionInfo()
 ```
 
 # References
+

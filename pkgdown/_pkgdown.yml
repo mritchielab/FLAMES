@@ -42,21 +42,24 @@ reference:
   - title: Visualization
     contents:
       - plot_coverage
-      - sc_heatmap_expression
-      - sc_umap_expression
+      - plot_isoform_heatmap
+      - plot_isoform_reduced_dim
+      - plot_isoforms
+  - title: Analysis of FLT-seq sub-samlped data
+    contents:
+      - combine_sce
+      - sc_impute_transcript
   - title: Miscellaneous
     contents:
       - create_config
       - create_sce_from_dir
       - create_se_from_dir
-      - combine_sce
       - sc_DTU_analysis
       - filter_annotation
       - get_GRangesList
       - demultiplex_sockeye
       - parse_gff_tree
       - plot_demultiplex
-      - sc_reduce_dims
       - scmixology_lib10
       - scmixology_lib10_transcripts
       - scmixology_lib90
