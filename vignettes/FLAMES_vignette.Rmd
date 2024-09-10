@@ -124,22 +124,45 @@ if (!any(is.na(sys_which(c("minimap2", "k8"))))) {
 ```
 
 ## Visulisation
-The `combine_sce()` and `sc_annotate_plots()` can be used for visulisation with experiment designs similar to `FLT-seq`. The `combine_sce()` function combines the `SingleCellExperiment` objects of 1) the short-read gene counts from the larger subsample, 2) the short-read gene counts from the smaller subsample and 3) the transcript counts from the larger subsample into a `MultiAssayExperiment` object. The `sc_annotate_plots()` function can then use it to produce annotated plots.
-```{r, eval=FALSE, message=FALSE, warning=FALSE}
+The `plot_isoform_reduced_dim()` function can be used to visualise the isoform expression in reduced dimensions. The function takes a `SingleCellExperiment` object and either a gene ID or a vector of transcript IDs as input. If the `SingleCellExperiment` object contains gene counts with the transcript counts stored as the "transcript" `altExp` slot, the function will use the reduced dimensions of the gene counts and plot the transcript expression values.
+```{r, eval=TRUE, message=FALSE, warning=FALSE, fig.width=15, fig.height=10}
 library(FLAMES)
+library(SingleCellExperiment)
 
+# just the transcript counts
+scmixology_lib10_transcripts |>
+  scuttle::logNormCounts() |>
+  scater::runPCA() |>
+  scater::runUMAP() |>
+  plot_isoform_reduced_dim('ENSG00000108107')
+
+# SCE with gene counts as main assay and transcript counts as altExp
 scmixology_lib10 <- scmixology_lib10[, colSums(counts(scmixology_lib10)) > 0]
 sce_lr <- scmixology_lib10[, colnames(scmixology_lib10) %in% colnames(scmixology_lib10_transcripts)]
 altExp(sce_lr, "transcript") <- scmixology_lib10_transcripts[, colnames(sce_lr)]
+sce_lr |>
+  scuttle::logNormCounts() |>
+  scater::runPCA() |>
+  scater::runUMAP() |>
+  plot_isoform_reduced_dim('ENSG00000108107')
+```
 
+### Imputation
+For experiments where the long-read is preformed on a subsample of cells and short-reads are preformed on the full sample, the `combine_sce()` function can be used to combine the `SingleCellExperiment` objects of the two samples. The first argument should be the subsample where the main assay is the gene counts and the transcript counts is saved as the "transcript" `altExp` slot. The second argument should be the other sample with only gene counts. This function returns a `SingleCellExperiment` object with the main assay containing the combined gene counts and a "transcript" `altExp` slot, where cells missing long-read data have `NA` values.
+The `sc_impute_transcript()` function can be then used to impute the missing transcript counts using the gene counts.
+The `plot_isoform_reduced_dim()` function can handle the `SingleCellExperiment` object with the combined gene and transcript counts, with or without imputed values, `NA` values will be plotted in grey.
+
+```{r, eval=TRUE, message=FALSE, warning=FALSE, fig.width=15, fig.height=10}
 combined_sce <- combine_sce(sce_lr, scmixology_lib90)
 combined_sce <- combined_sce |>
   scuttle::logNormCounts() |>
   scater::runPCA() |>
   scater::runUMAP()
-combined_sce_impute <- sc_isoform_impute(combined_sce)
-
+# plot without imputation
 plot_isoform_reduced_dim(combined_sce, 'ENSG00000108107')
+
+# impute missing transcript counts
+combined_sce_impute <- sc_impute_transcript(combined_sce)
 plot_isoform_reduced_dim(combined_sce_impute, 'ENSG00000108107')
 ```
 

@@ -13,7 +13,7 @@ plot_isoform_heatmap(
   col_low = "#313695",
   col_mid = "#FFFFBF",
   col_high = "#A50026",
-  color_quantile = 0.95
+  color_quantile = 1
 )
 }
 \arguments{

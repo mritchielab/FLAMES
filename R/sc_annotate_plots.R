@@ -172,14 +172,6 @@ impute <- function(mtx, distance_matrix) {
   expr_impute
 }
 
-
-#' @importFrom stats quantile
-reduce_quantile <- function(x, q = 0.05) {
-  x[x < quantile(x, q, na.rm = TRUE)] <- quantile(x, q, na.rm = TRUE)
-  x[x > quantile(x, 1 - q, na.rm = TRUE)] <- quantile(x, 1 - q, na.rm = TRUE)
-  x
-}
-
 # @importFrom SingleCellExperiment counts rowData
 get_top_transcript_ids <- function(sce, gene_id, transcript_ids, n) {
   if (missing(transcript_ids)) {
@@ -245,28 +237,25 @@ plot_isoforms <- function(sce, gene_id, transcript_ids, n = 4, format = "plot_gr
   for (i in seq_along(transcript_ids)) {
     p <- ggplot(transcripts[i]) +
       ggbio::geom_alignment(
-        label = TRUE, range.geom = "rect",
+        label = FALSE, range.geom = "rect",
         gap.geom = "arrow", utr.geom = "rect"
       ) +
       xlim(x_range) +
-      theme_void()
-    if (i == length(transcript_ids)) {
-      p <- p +
-        theme(
-          axis.line.x = element_line(),
-          axis.ticks.x = element_line(),
-          axis.text.x = element_text(),
-          axis.title.x = element_text()
-        )
-      # labs(x = chr)
-      # coord_cartesian(xlim = x_range)
-    }
+      theme_void() +
+      theme(plot.margin = unit(c(0.5,0,0.5,0), "cm"))
     plot_list <- append(plot_list, list(p@ggplot))
   }
+  names(plot_list) <- transcript_ids
   if (format == "list") {
     return(plot_list)
   }
-  return(cowplot::plot_grid(plotlist = plot_list, ncol = 1))
+  return(
+    cowplot::plot_grid(
+      plotlist = plot_list, ncol = 1,
+      labels = transcript_ids, hjust = 0, 
+      label_fontface = 'plain', label_size = 10
+    )
+  )
 }
 
 #' FLAMES heetmap plots
@@ -307,7 +296,7 @@ plot_isoforms <- function(sce, gene_id, transcript_ids, n = 4, format = "plot_gr
 #' @md
 plot_isoform_heatmap <- function(
     sce, gene_id, transcript_ids, n = 4,
-    isoform_legend_width = 7, col_low = "#313695", col_mid = "#FFFFBF", col_high = "#A50026", color_quantile = 0.95) {
+    isoform_legend_width = 7, col_low = "#313695", col_mid = "#FFFFBF", col_high = "#A50026", color_quantile = 1) {
   transcript_ids <- get_top_transcript_ids(sce, gene_id, transcript_ids, n)
   sce <- sce[match(transcript_ids, rowData(sce)$transcript_id), ]
   legends_heatmap <- plot_isoforms(sce, gene_id, transcript_ids, n, format = "list")
@@ -338,7 +327,7 @@ plot_isoform_heatmap <- function(
 
   expr_color_mapping <- function(expr_matrix) {
     if (color_quantile > 1 || color_quantile < 0) {
-      color_quantile <- 0.95
+      color_quantile <- 1
     }
     breaks <- rep(0, 3)
     breaks[1] <- quantile(expr_matrix, 1- color_quantile, na.rm = TRUE)
@@ -394,6 +383,7 @@ plot_isoform_heatmap <- function(
 #' @param col_low Color for cells with low expression levels in UMAPs.
 #' @param col_mid Color for cells with intermediate expression levels in UMAPs.
 #' @param col_high Color for cells with high expression levels in UMAPs.
+#' @param color_quantile The lower and upper expression quantile to be displayed bewteen \code{col_low} and \code{col_high}, e.g. with \code{color_quantile = 0.95}, cells with expressions higher than 95% of other cells will all be shown in \code{col_high}, and cells with expression lower than 95% of other cells will all be shown in \code{col_low}.
 #' @param ... Additional arguments to pass to \code{plot_grid}.
 #'
 #' @return a \code{ggplot} object of the UMAP(s)
@@ -418,7 +408,7 @@ plot_isoform_heatmap <- function(
 #' @importFrom BiocGenerics colnames rownames
 #' @importFrom scuttle normalizeCounts
 #' @importFrom cowplot plot_grid
-#' @importFrom ggplot2 aes element_line element_text
+#' @importFrom ggplot2 aes element_line element_text ggtitle theme_minimal
 #' @importFrom ggplot2 ggplot geom_point labs scale_colour_gradient2 theme_bw
 #' @export
 #' @md
@@ -427,11 +417,15 @@ plot_isoform_reduced_dim <- function(
     use_gene_dimred = FALSE, expr_func = function(x) {
       SingleCellExperiment::logcounts(x)
     },
-    col_low = "#313695", col_mid = "#FFFFBF", col_high = "#A50026", format = "plot_grid", ...) {
+    col_low = "#313695", col_mid = "#FFFFBF", col_high = "#A50026", color_quantile = 1, format = "plot_grid", ...) {
 
   if (!"transcript_id" %in% colnames(rowData(sce)) & "transcript" %in% altExpNames(sce)) {
     use_gene_dimred <- TRUE
   }
+  if (color_quantile > 1 || color_quantile < 0) {
+    color_quantile <- 1
+  }
+
 
   df <- data.frame(
     x = reducedDim(sce, reduced_dim_name)[, 1],
@@ -464,21 +458,26 @@ plot_isoform_reduced_dim <- function(
   umaps <- list()
   for (i in seq_along(transcript_ids)) {
     df$expr <- expr_func(sce)[i, ]
-    p <- ggplot(df) +
-      geom_point(aes(x = x, y = y, col = expr), alpha = 0.7, size = 0.2) +
-      labs(x = "Dim1", y = "Dim2", col = "expression") +
+    df_na <- df[is.na(df$expr), ]
+    df_not_na <- df[!is.na(df$expr), ]
+    p <- ggplot(df_na) +
+      geom_point(aes(x = x, y = y, col = expr), alpha = 0.5, size = 0.2) +
+      geom_point(data = df_not_na, aes(x = x, y = y, col = expr), alpha = 0.8, size = 0.2) +
+      labs(x = "", y = "", col = "expression") +
       scale_colour_gradient2(
         low = col_low, mid = col_mid, high = col_high,
-        na.value = "grey",  limits = quantile(df$expr, na.rm = TRUE, c(0.05, 0.95)),
-        midpoint = mean(quantile(df$expr, na.rm = TRUE, c(0.05, 0.95))),
+        na.value = "grey",  limits = quantile(df$expr, na.rm = TRUE, c(1-color_quantile, color_quantile)),
+        midpoint = mean(quantile(df$expr, na.rm = TRUE, c(1-color_quantile, color_quantile))),
       ) +
-      theme_bw()
+      ggtitle(transcript_ids[i]) +
+      theme_minimal() +
+      theme(axis.text = element_blank())
     umaps <- append(umaps, list(p))
   }
 
   plot_list <- c(list(isoform_plot), umaps)
   if (format == "list") {
-    return(umaps)
+    return(plot_list)
   }
   return(cowplot::plot_grid(plotlist = plot_list, ...))
 }
