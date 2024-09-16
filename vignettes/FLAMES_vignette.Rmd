@@ -125,7 +125,7 @@ if (!any(is.na(sys_which(c("minimap2", "k8"))))) {
 
 ## Visulisation
 The `plot_isoform_reduced_dim()` function can be used to visualise the isoform expression in reduced dimensions. The function takes a `SingleCellExperiment` object and either a gene ID or a vector of transcript IDs as input. If the `SingleCellExperiment` object contains gene counts with the transcript counts stored as the "transcript" `altExp` slot, the function will use the reduced dimensions of the gene counts and plot the transcript expression values.
-```{r, eval=TRUE, message=FALSE, warning=FALSE, fig.width=15, fig.height=10}
+```{r, eval=TRUE, message=FALSE, warning=FALSE, fig.width=15, fig.height=10, dpi=36}
 library(FLAMES)
 library(SingleCellExperiment)
 
@@ -152,7 +152,7 @@ For experiments where the long-read is preformed on a subsample of cells and sho
 The `sc_impute_transcript()` function can be then used to impute the missing transcript counts using the gene counts.
 The `plot_isoform_reduced_dim()` function can handle the `SingleCellExperiment` object with the combined gene and transcript counts, with or without imputed values, `NA` values will be plotted in grey.
 
-```{r, eval=TRUE, message=FALSE, warning=FALSE, fig.width=15, fig.height=10}
+```{r, eval=TRUE, message=FALSE, warning=FALSE, fig.width=15, fig.height=10, dpi=36}
 combined_sce <- combine_sce(sce_lr, scmixology_lib90)
 combined_sce <- combined_sce |>
   scuttle::logNormCounts() |>

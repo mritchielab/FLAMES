@@ -6,6 +6,7 @@
 ^\.github$
 ^inst/data$
 ^doc$
+^docs$
 ^Meta$
 ^\.github$
 ^data-raw$
@@ -14,3 +15,5 @@
 ^\.BBSoptions$
 ^Dockerfile$
 ^_pkgdown\.yml$
+^pkgdown$
+\.o$
