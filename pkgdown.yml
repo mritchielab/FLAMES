@@ -1,9 +1,9 @@
 pandoc: '3.2'
 pkgdown: 2.1.0.9000
-pkgdown_sha: ee72108bc3a9827dcf313817525652dbd9d4284d
+pkgdown_sha: bbf246ea0e115fa39486bee5be80f91903c0081b
 articles:
   FLAMES_vignette: FLAMES_vignette.html
-last_built: 2024-09-10T11:27Z
+last_built: 2024-09-16T06:50Z
 urls:
   reference: https://mritchielab.github.io/FLAMES/reference
   article: https://mritchielab.github.io/FLAMES/articles
