@@ -73,7 +73,7 @@ download.file("https://raw.githubusercontent.com/mritchielab/FLAMES/devel/tests/
 ) # can't be bothered to run demultiplexing again
 if (!any(is.na(sys_which(c("minimap2", "k8"))))) {
   minimap2_align( # align to genome
-    config = jsonlite::fromJSON(system.file("extdata/SIRV_config_default.json", package = "FLAMES")),
+    config = jsonlite::fromJSON(system.file("extdata/config_sclr_nanopore_3end.json", package = "FLAMES")),
     fa_file = genome_fa,
     fq_in = file.path(outdir, "demultipelxed.fq"),
     annot = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),

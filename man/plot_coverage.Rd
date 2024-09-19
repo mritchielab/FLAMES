@@ -43,7 +43,7 @@ dir.create(outdir)
 if (!any(is.na(sys_which(c("minimap2", "k8"))))) {
     fasta <- annotation_to_fasta(annotation, genome_fa, outdir)
     minimap2_realign(
-        config = jsonlite::fromJSON(system.file('extdata/SIRV_config_default.json', package = 'FLAMES')),
+        config = jsonlite::fromJSON(system.file('extdata/config_sclr_nanopore_3end.json', package = 'FLAMES')),
         fq_in = fastq1,
         outdir = outdir
     )

@@ -36,7 +36,7 @@ annotation <- bfc[[names(BiocFileCache::bfcadd(bfc, "annot.gtf", paste(file_url,
 outdir <- tempfile()
 dir.create(outdir)
 if (!any(is.na(sys_which(c("minimap2", "k8"))))) {
-    config <- jsonlite::fromJSON(system.file("extdata/SIRV_config_default.json", package = "FLAMES"))
+    config <- jsonlite::fromJSON(system.file("extdata/config_sclr_nanopore_3end.json", package = "FLAMES"))
     minimap2_align(
         config = config,
         fa_file = genome_fa,

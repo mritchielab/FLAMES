@@ -9,7 +9,8 @@ flames_env <- BasiliskEnvironment(
         "pysam==0.21.0",
         "cutadapt==4.4",
         "tqdm==4.64.1",
-        "pandas==1.3.5"
+        "pandas==1.3.5",
+        "oarfish==0.6.2"
     ),
     channels = c("conda-forge", "bioconda", "defaults")
 )

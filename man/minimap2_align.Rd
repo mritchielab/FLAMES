@@ -57,7 +57,7 @@ outdir <- tempfile()
 dir.create(outdir)
 if (!any(is.na(sys_which(c("minimap2", "k8"))))) {
     minimap2_align(
-        config = jsonlite::fromJSON(system.file('extdata/SIRV_config_default.json', package = 'FLAMES')),
+        config = jsonlite::fromJSON(system.file('extdata/config_sclr_nanopore_3end.json', package = 'FLAMES')),
         fa_file = genome_fa,
         fq_in = fastq1,
         annot = annotation,

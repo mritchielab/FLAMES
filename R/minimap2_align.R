@@ -32,7 +32,7 @@
 #' dir.create(outdir)
 #' if (!any(is.na(sys_which(c("minimap2", "k8"))))) {
 #'     minimap2_align(
-#'         config = jsonlite::fromJSON(system.file('extdata/SIRV_config_default.json', package = 'FLAMES')),
+#'         config = jsonlite::fromJSON(system.file('extdata/config_sclr_nanopore_3end.json', package = 'FLAMES')),
 #'         fa_file = genome_fa,
 #'         fq_in = fastq1,
 #'         annot = annotation,
@@ -145,6 +145,8 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2 = NA,
 #' @param minimap2 Path to minimap2 binary
 #' @param samtools path to the samtools binary, required for large datasets since \code{Rsamtools} does not support \code{CSI} indexing
 #' @param prefix String, the prefix (e.g. sample name) for the outputted BAM file
+#' @param minimap2_args vector of command line arguments to pass to minimap2
+#' @param sort_by String, If provided, sort the BAM file by this tag instead of by position.
 #' @param threads Integer, threads for minimap2 to use, see minimap2 documentation for details,
 #' FLAMES will try to detect cores if this parameter is not provided.
 #'
@@ -154,24 +156,21 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2 = NA,
 #' @importFrom Rsamtools sortBam indexBam asBam
 #' @export
 #' @examples
-#' temp_path <- tempfile()
-#' bfc <- BiocFileCache::BiocFileCache(temp_path, ask = FALSE)
-#' file_url <- 'https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data'
-#' fastq1 <- bfc[[names(BiocFileCache::bfcadd(bfc, 'Fastq1', paste(file_url, 'fastq/sample1.fastq.gz', sep = '/')))]]
-#' genome_fa <- bfc[[names(BiocFileCache::bfcadd(bfc, 'genome.fa', paste(file_url, 'SIRV_isoforms_multi-fasta_170612a.fasta', sep = '/')))]]
-#' annotation <- bfc[[names(BiocFileCache::bfcadd(bfc, 'annot.gtf', paste(file_url, 'SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf', sep = '/')))]]
 #' outdir <- tempfile()
 #' dir.create(outdir)
-#' if (!any(is.na(sys_which(c("minimap2", "k8"))))) {
+#' if (is.na(sys_which(c("minimap2")))) {
+#'     annotation <- system.file('extdata', 'rps24.gtf.gz', package = 'FLAMES')
+#'     genome_fa <- system.file('extdata', 'rps24.fa.gz', package = 'FLAMES')
 #'     fasta <- annotation_to_fasta(annotation, genome_fa, outdir)
+#'     fastq <- system.file('extdata', 'fastq', 'demultiplexed.fq.gz', package = 'FLAMES')
 #'     minimap2_realign(
-#'         config = jsonlite::fromJSON(system.file('extdata/SIRV_config_default.json', package = 'FLAMES')),
-#'         fq_in = fastq1,
+#'         config = jsonlite::fromJSON(system.file('extdata/config_sclr_nanopore_3end.json', package = 'FLAMES')),
+#'         fq_in = fastq,
 #'         outdir = outdir
 #'     )
 #' }
 minimap2_realign <- function(config, fq_in, outdir, minimap2, samtools = NULL, prefix = NULL,
-  threads = 1) {
+  minimap2_args, sort_by, threads = 1) {
   cat(format(Sys.time(), "%X %a %b %d %Y"), "minimap2_realign\n")
 
   if (!is.null(prefix)) {
@@ -189,8 +188,10 @@ minimap2_realign <- function(config, fq_in, outdir, minimap2, samtools = NULL, p
     samtools <- sys_which("samtools")
   }
 
-  minimap2_args <- c("-ax", "map-ont", "-p", "0.9", "--end-bonus", "10", "-N",
-    "3", "-t", threads, "--seed", config$pipeline_parameters$seed)
+  if (missing("minimap2_args") || !is.character(minimap2_args)) {
+    minimap2_args <- c("-ax", "map-ont", "-p", "0.9", "-y", "--end-bonus", "10", "-N",
+      "3", "-t", threads, "--seed", config$pipeline_parameters$seed)
+  }
 
   if (!is.na(samtools)) {
     minimap2_status <- base::system2(command = minimap2,
@@ -201,9 +202,11 @@ minimap2_realign <- function(config, fq_in, outdir, minimap2, samtools = NULL, p
       "status") != 0) {
       stop(paste0("error running minimap2:\n", minimap2_status))
     }
-    sort_status <- base::system2(command = samtools, args = c("sort", file.path(outdir,
-      paste0(prefix, "tmp_align.bam")), "-o", file.path(outdir, paste0(prefix,
-      "realign2transcript.bam"))))
+    sort_status <- base::system2(command = samtools, args = c("sort", 
+      # -t TAG     Sort by value of TAG.
+      switch(!(missing(sort_by)), c("-t", sort_by)),
+      file.path(outdir, paste0(prefix, "tmp_align.bam")), "-o",
+      file.path(outdir, paste0(prefix, "realign2transcript.bam"))))
     index_status <- base::system2(command = samtools, args = c("index", file.path(outdir,
       paste0(prefix, "realign2transcript.bam"))))
   } else {
@@ -219,7 +222,7 @@ minimap2_realign <- function(config, fq_in, outdir, minimap2, samtools = NULL, p
     Rsamtools::asBam(file.path(outdir, paste0(prefix, "tmp_align.sam")), file.path(outdir,
       paste0(prefix, "tmp_align")))
     Rsamtools::sortBam(file.path(outdir, paste0(prefix, "tmp_align.bam")), file.path(outdir,
-      paste0(prefix, "realign2transcript")))
+      paste0(prefix, "realign2transcript")), byTag = switch(!missing(sort_by), sort_by))
     Rsamtools::indexBam(file.path(outdir, paste0(prefix, "realign2transcript.bam")))
 
     file.remove(file.path(outdir, paste0(prefix, "tmp_align.sam")))

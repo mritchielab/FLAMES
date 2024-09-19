@@ -404,8 +404,9 @@ void print_read(const std::string &read_id, const std::string &read,
     std::ostringstream ss;
     ss << (b + 1) << "of" << vec_bc.size();
     const std::string &barcode = vec_bc[b].barcode;
+    // also add the proper FASTQ way: \tCB:Z:barcode\tUB:Z:umi
     std::string new_read_id =
-        barcode + "_" + vec_bc[b].umi + "#" + read_id + ss.str();
+        barcode + "_" + vec_bc[b].umi + "#" + read_id + ss.str() + "\tCB:Z:" + barcode + "\tUB:Z:" + vec_bc[b].umi;
 
     // work out the start and end base in case multiple barcodes
     if (vec_bc.at(b).flank_end == std::string::npos) {

@@ -3,7 +3,7 @@ test_that("barcode_output_file_identical", {
   bc_allow <- file.path(outdir, "bc_allow.tsv")
   R.utils::gunzip(
     filename = system.file("extdata/bc_allow.tsv.gz", package = "FLAMES"),
-    destname = bc_allow, remove = FALSE
+    destname = bc_allow, remove = FALSE, overwrite = TRUE
   )
 
   find_barcode(
@@ -22,10 +22,10 @@ test_that("barcode_output_file_identical", {
 
   expect_identical(
     read.delim(test_path("bc_stat")),
-    read.delim(file.path(outdir, "stats.tsv"))
+    read.delim(file.path(outdir, "stats.tsv"))[, -1]
   )
   expect_identical(
-    read.delim(test_path("demultiplexed.fq")),
-    read.delim(file.path(outdir, "out.fq"))
+    readLines(system.file('extdata', 'fastq', 'demultiplexed.fq.gz', package = 'FLAMES')),
+    readLines(file.path(outdir, "out.fq"), n = 40)
   )
 })

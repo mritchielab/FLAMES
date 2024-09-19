@@ -11,6 +11,8 @@ minimap2_realign(
   minimap2,
   samtools = NULL,
   prefix = NULL,
+  minimap2_args,
+  sort_by,
   threads = 1
 )
 }
@@ -27,6 +29,10 @@ minimap2_realign(
 
 \item{prefix}{String, the prefix (e.g. sample name) for the outputted BAM file}
 
+\item{minimap2_args}{vector of command line arguments to pass to minimap2}
+
+\item{sort_by}{String, If provided, sort the BAM file by this tag instead of by position.}
+
 \item{threads}{Integer, threads for minimap2 to use, see minimap2 documentation for details,
 FLAMES will try to detect cores if this parameter is not provided.}
 }
@@ -37,19 +43,16 @@ a \code{data.frame} summarising the reads aligned
 Uses minimap2 to re-align reads to transcriptome
 }
 \examples{
-temp_path <- tempfile()
-bfc <- BiocFileCache::BiocFileCache(temp_path, ask = FALSE)
-file_url <- 'https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data'
-fastq1 <- bfc[[names(BiocFileCache::bfcadd(bfc, 'Fastq1', paste(file_url, 'fastq/sample1.fastq.gz', sep = '/')))]]
-genome_fa <- bfc[[names(BiocFileCache::bfcadd(bfc, 'genome.fa', paste(file_url, 'SIRV_isoforms_multi-fasta_170612a.fasta', sep = '/')))]]
-annotation <- bfc[[names(BiocFileCache::bfcadd(bfc, 'annot.gtf', paste(file_url, 'SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf', sep = '/')))]]
 outdir <- tempfile()
 dir.create(outdir)
-if (!any(is.na(sys_which(c("minimap2", "k8"))))) {
+if (is.na(sys_which(c("minimap2")))) {
+    annotation <- system.file('extdata', 'rps24.gtf.gz', package = 'FLAMES')
+    genome_fa <- system.file('extdata', 'rps24.fa.gz', package = 'FLAMES')
     fasta <- annotation_to_fasta(annotation, genome_fa, outdir)
+    fastq <- system.file('extdata', 'fastq', 'demultiplexed.fq.gz', package = 'FLAMES')
     minimap2_realign(
-        config = jsonlite::fromJSON(system.file('extdata/SIRV_config_default.json', package = 'FLAMES')),
-        fq_in = fastq1,
+        config = jsonlite::fromJSON(system.file('extdata/config_sclr_nanopore_3end.json', package = 'FLAMES')),
+        fq_in = fastq,
         outdir = outdir
     )
 }
