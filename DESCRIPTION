@@ -49,6 +49,7 @@ Imports:
     jsonlite,
     magrittr,
     Matrix,
+    MatrixGenerics,
     parallel,
     reticulate,
     Rsamtools,

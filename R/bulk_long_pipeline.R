@@ -35,108 +35,105 @@
 #' @importFrom BiocGenerics cbind colnames rownames start end
 #' @importFrom Rsamtools indexBam
 #' @export
-bulk_long_pipeline <-
-    function(annotation,
-             fastq,
-             outdir,
-             genome_fa,
-             minimap2 = NULL,
-             k8 = NULL,
-             config_file = NULL) {
-        checked_args <- check_arguments(
-            annotation,
-            fastq,
-            genome_bam = NULL,
-            outdir,
-            genome_fa,
-            config_file
-        )
+bulk_long_pipeline <- function(
+    annotation, fastq, outdir, genome_fa,
+    minimap2 = NULL, k8 = NULL, config_file = NULL) {
+  checked_args <- check_arguments(
+    annotation,
+    fastq,
+    genome_bam = NULL,
+    outdir,
+    genome_fa,
+    config_file
+  )
+  config <- checked_args$config
 
-        config <- checked_args$config
+  # create output directory if one doesn't exist
+  if (!dir.exists(outdir)) {
+    cat("Output directory does not exists: one is being created\n")
+    dir.create(outdir)
+    print(outdir)
+  }
 
-        # create output directory if one doesn't exist
-        if (!dir.exists(outdir)) {
-            cat("Output directory does not exists: one is being created\n")
-            dir.create(outdir)
-            print(outdir)
-        }
+  if (utils::file_test("-d", fastq)) {
+    fastq_files <- file.path(fastq, list.files(fastq))
+    fastq_files <- fastq_files[grepl("\\.(fastq|fq)(\\.gz)?$", fastq_files) & utils::file_test("-f", fastq_files)]
+  } else if (utils::file_test("-f", fastq)) {
+    fastq_files <- fastq
+  } else {
+    stop("fastq must be a valid path to a folder or a FASTQ file")
+  }
+  samples <- gsub("\\.(fastq|fq)(\\.gz)?$", "", basename(fastq_files))
 
-        if (utils::file_test("-d", fastq)) {
-            fastq_files <- file.path(fastq, list.files(fastq))
-            fastq_files <- fastq_files[grepl("\\.(fastq|fq)(\\.gz)?$", fastq_files) & utils::file_test("-f", fastq_files)]
-        } else if (utils::file_test("-f", fastq)) {
-            fastq_files <- fastq
-        } else {
-            stop("fastq must be a valid path to a folder or a FASTQ file")
-        }
-        samples <- gsub("\\.(fastq|fq)(\\.gz)?$", "", basename(fastq_files))
-
-        using_bam <- FALSE
-        genome_bam <- file.path(outdir, paste0(samples, "_", "align2genome.bam"))
-        if (all(utils::file_test("-f", genome_bam))) {
-            cat("Found all corresponding '[sample]_align2genome.bam' files, will skip initial alignment.\n")
-            using_bam <- TRUE
-            config$pipeline_parameters$do_genome_alignment <- FALSE
-            if (!all(
-                utils::file_test("-f", file.path(outdir, paste0(samples, "_", "align2genome.bam.bai"))) |
-                utils::file_test("-f", file.path(outdir, paste0(samples, "_", "align2genome.bam.csi"))))) {
-                for (bam in genome_bam) {
-                    Rsamtools::indexBam(bam)
-                }
-            }
-        }
-
-        cat("#### Input parameters:\n")
-        cat(jsonlite::toJSON(config, pretty = TRUE), "\n")
-        cat("gene annotation:", annotation, "\n")
-        cat("genome fasta:", genome_fa, "\n")
-        cat("input fastq files:", gsub("$", "\n", fastq_files))
-        cat("output directory:", outdir, "\n")
-        cat("minimap2 path:", minimap2, "\n")
-        cat("k8 path:", k8, "\n")
-
-        if (config$pipeline_parameters$do_genome_alignment) {
-            cat("#### Aligning reads to genome using minimap2\n")
-            for (i in 1:length(samples)) {
-                cat(paste0(c("\tAligning sample ", samples[i], "...\n")))
-                minimap2_align(
-                    config,
-                    genome_fa,
-                    fastq_files[i],
-                    annotation,
-                    outdir,
-                    minimap2,
-                    k8,
-                    prefix = samples[i],
-                    threads = config$pipeline_parameters$threads
-                )
-            }
-        } else {
-            cat("#### Skip aligning reads to genome\n")
-        }
-
-        # find isofroms
-        if (config$pipeline_parameters$do_isoform_identification) {
-            find_isoform(annotation, genome_fa, genome_bam, outdir, config)
-        }
-
-        # realign to transcript
-        if (config$pipeline_parameters$do_read_realignment) {
-            cat("#### Realign to transcript using minimap2\n")
-            for (i in 1:length(samples)) {
-                cat(paste0(c("\tRealigning sample ", samples[i], "...\n")))
-                minimap2_realign(config, fastq_files[i], outdir, minimap2, prefix = samples[i], 
-                                 threads = config$pipeline_parameters$threads)
-            }
-        } else {
-            cat("#### Skip read realignment\n")
-        }
-
-        # quantification
-        if (config$pipeline_parameters$do_transcript_quantification) {
-            cat("#### Generating transcript count matrix\n")
-            return(quantify_transcript(annotation = annotation, outdir = outdir, config = config, pipeline = "bulk"))
-        } else {
-            cat("#### Skip transcript quantification\n")
-        }
+  using_bam <- FALSE
+  genome_bam <- file.path(outdir, paste0(samples, "_", "align2genome.bam"))
+  if (all(utils::file_test("-f", genome_bam))) {
+    cat("Found all corresponding '[sample]_align2genome.bam' files, will skip initial alignment.\n")
+    using_bam <- TRUE
+    config$pipeline_parameters$do_genome_alignment <- FALSE
+    if (!all(
+      utils::file_test("-f", file.path(outdir, paste0(samples, "_", "align2genome.bam.bai"))) |
+        utils::file_test("-f", file.path(outdir, paste0(samples, "_", "align2genome.bam.csi")))
+    )) {
+      for (bam in genome_bam) {
+        Rsamtools::indexBam(bam)
+      }
     }
+  }
+
+  cat("#### Input parameters:\n")
+  cat(jsonlite::toJSON(config, pretty = TRUE), "\n")
+  cat("gene annotation:", annotation, "\n")
+  cat("genome fasta:", genome_fa, "\n")
+  cat("input fastq files:", gsub("$", "\n", fastq_files))
+  cat("output directory:", outdir, "\n")
+  cat("minimap2 path:", minimap2, "\n")
+  cat("k8 path:", k8, "\n")
+
+  if (config$pipeline_parameters$do_genome_alignment) {
+    cat("#### Aligning reads to genome using minimap2\n")
+    for (i in 1:length(samples)) {
+      cat(paste0(c("\tAligning sample ", samples[i], "...\n")))
+      minimap2_align(
+        config,
+        genome_fa,
+        fastq_files[i],
+        annotation,
+        outdir,
+        minimap2,
+        k8,
+        prefix = samples[i],
+        threads = config$pipeline_parameters$threads
+      )
+    }
+  } else {
+    cat("#### Skip aligning reads to genome\n")
+  }
+
+  # find isofroms
+  if (config$pipeline_parameters$do_isoform_identification) {
+    find_isoform(annotation, genome_fa, genome_bam, outdir, config)
+  }
+
+  # realign to transcript
+  if (config$pipeline_parameters$do_read_realignment) {
+    cat("#### Realign to transcript using minimap2\n")
+    for (i in 1:length(samples)) {
+      cat(paste0(c("\tRealigning sample ", samples[i], "...\n")))
+      minimap2_realign(config, fastq_files[i], outdir, minimap2,
+        prefix = samples[i],
+        threads = config$pipeline_parameters$threads
+      )
+    }
+  } else {
+    cat("#### Skip read realignment\n")
+  }
+
+  # quantification
+  if (config$pipeline_parameters$do_transcript_quantification) {
+    cat("#### Generating transcript count matrix\n")
+    return(quantify_transcript(annotation = annotation, outdir = outdir, config = config, pipeline = "bulk"))
+  } else {
+    cat("#### Skip transcript quantification\n")
+  }
+}
