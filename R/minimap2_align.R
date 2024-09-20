@@ -158,7 +158,7 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2 = NA,
 #' @examples
 #' outdir <- tempfile()
 #' dir.create(outdir)
-#' if (is.na(sys_which(c("minimap2")))) {
+#' if (!any(is.na(sys_which(c("minimap2", "k8"))))) {
 #'     annotation <- system.file('extdata', 'rps24.gtf.gz', package = 'FLAMES')
 #'     genome_fa <- system.file('extdata', 'rps24.fa.gz', package = 'FLAMES')
 #'     fasta <- annotation_to_fasta(annotation, genome_fa, outdir)

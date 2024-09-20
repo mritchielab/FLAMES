@@ -28,13 +28,13 @@ R.utils::gunzip(filename = system.file("extdata/rps24.fa.gz", package = "FLAMES"
 annotation <- system.file("extdata/rps24.gtf.gz", package = "FLAMES")
 
 if (!any(is.na(sys_which(c("minimap2", "k8"))))) {
-    sce <- FLAMES::sc_long_pipeline(
-        genome_fa = genome_fa,
-        fastq = system.file("extdata/fastq", package = "FLAMES"),
-        annotation = annotation,
-        outdir = outdir,
-        barcodes_file = bc_allow
-    )
-    sce_2 <- create_sce_from_dir(outdir, annotation)
+  sce <- FLAMES::sc_long_pipeline(
+    genome_fa = genome_fa,
+    fastq = system.file("extdata/fastq", package = "FLAMES"),
+    annotation = annotation,
+    outdir = outdir,
+    barcodes_file = bc_allow
+  )
+  sce_2 <- create_sce_from_dir(outdir, annotation)
 }
 }
