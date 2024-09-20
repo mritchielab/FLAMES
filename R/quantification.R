@@ -143,7 +143,7 @@ quantify_gene <- function(annotation, outdir, infq, n_process,  pipeline = "sc_s
         })
 }
 
-#' Transcript quantification
+#' FLAMES Transcript quantification
 #' @description Calculate the transcript count matrix by parsing the re-alignment file.
 #' @param annotation The file path to the annotation file in GFF3 format
 #' @param outdir The path to directory to store all output files.
@@ -171,11 +171,11 @@ quantify_gene <- function(annotation, outdir, infq, n_process,  pipeline = "sc_s
 #'         config = config, outdir = outdir,
 #'         fq_in = fastq1
 #'     )
-#'     quantify_transcript(annotation, outdir, config, pipeline = "bulk")
+#'     quantify_transcript_flames(annotation, outdir, config, pipeline = "bulk")
 #' }
 #' }
 #' @export
-quantify_transcript <- function(annotation, outdir, config, pipeline = "sc_single_sample") {
+quantify_transcript_flames <- function(annotation, outdir, config, pipeline = "sc_single_sample", samples) {
     cat(format(Sys.time(), "%X %a %b %d %Y"), "quantify transcripts \n")
 
     if (grepl("\\.gff3?(\\.gz)?$", annotation)) {
@@ -200,6 +200,99 @@ quantify_transcript <- function(annotation, outdir, config, pipeline = "sc_singl
     outdir = outdir,
     pipeline = pipeline
     )
+
+  if (pipeline == "sc_single_sample") {
+    out_files <- list(
+      "annotation" = annotation,
+      # "genome_fa" = genome_fa,
+      "counts" = file.path(outdir, "transcript_count.csv.gz"),
+      "isoform_annotated" = file.path(outdir, "isoform_annotated.filtered.gff3"),
+      "transcript_assembly" = file.path(outdir, "transcript_assembly.fa"),
+      # "align_bam" = genome_bam,
+      "realign2transcript" = file.path(outdir, "realign2transcript.bam"),
+      # "tss_tes" = file.path(outdir, "tss_tes.bedgraph"),
+      "fsm_annotation" = file.path(outdir, "isoform_FSM_annotation.csv"),
+      "outdir" = outdir
+    )
+    load_genome_anno <- rtracklayer::import(annotation, feature.type = c("exon", "utr"))
+    sce <- generate_sc_singlecell(out_files, load_genome_anno = load_genome_anno)
+    return(sce)
+  } else if (pipeline == "sc_multi_sample") {
+    sce_list <- as.list(1:length(samples))
+    names(sce_list) <- samples
+    load_genome_anno <- rtracklayer::import(annotation, feature.type = c("exon", "utr"))
+    for (i in 1:length(samples)) {
+      out_files <- list(
+        "annotation" = annotation,
+        "counts" = file.path(outdir, paste0(samples[i], "_transcript_count.csv.gz")),
+        "isoform_annotated" = file.path(outdir, ifelse(config$pipeline_parameters$bambu_isoform_identification, "isoform_annotated.gtf", "isoform_annotated.gff3")),
+        "transcript_assembly" = file.path(outdir, "transcript_assembly.fa"),
+        "realign2transcript" = file.path(outdir, paste0(samples[i], "_realign2transcript.bam")),
+        "outdir" = outdir,
+        "fsm_annotation" = file.path(outdir, "isoform_FSM_annotation.csv")
+      )
+        sce_list[[i]] <- generate_sc_singlecell(out_files, load_genome_anno = load_genome_anno)
+    }
+    return(sce_list)
+  } else if (pipeline == "bulk") {
+    out_files <- list(
+      "annotation" = annotation,
+      "counts" = file.path(outdir, "transcript_count.csv.gz"),
+      "isoform_annotated" = file.path(outdir, "isoform_annotated.filtered.gff3"),
+      "transcript_assembly" = file.path(outdir, "transcript_assembly.fa"),
+      "realign2transcript" = file.path(outdir, list.files(outdir))[grepl("realign2transcript\\.bam$", list.files(outdir))],
+      "outdir" = outdir,
+      "fsm_annotation" = file.path(outdir, "isoform_FSM_annotation.csv")
+    )
+    load_genome_anno <- rtracklayer::import(annotation, feature.type = c("exon", "utr"))
+    se <- generate_bulk_summarized(out_files, load_genome_anno = load_genome_anno)
+    return(se)
+  }
+}
+
+#' @importFrom basilisk obtainEnvironmentPath basiliskRun
+run_oarfish <- function(realign_bam, outdir, threads = 1, oarfish_bin) {
+  if (missing(oarfish_bin)) {
+    oarfish_bin <- file.path(basilisk::obtainEnvironmentPath(flames_env), 'bin', 'oarfish')
+    if (!file.exists(oarfish_bin)) {
+      basilisk::basiliskRun(env = flames_env, fun = function(){})
+    }
+  }
+  stopifnot(file.exists(oarfish_bin), "oarfish binary not found")
+
+  oarfish_status <- base::system2(
+    command = oarfish_bin,
+    args = c("--single-cell", "--alignments", realign_bam, "-j", threads, "--output", outdir)
+  )
+  if (!is.null(base::attr(oarfish_status, "status")) && base::attr(oarfish_status,
+    "status") != 0) {
+    stop(paste0("error running oarfish:\n", oarfish_status))
+  }
+}
+
+parse_oarfish_output <- function(outdir) {
+  mtx <- t(Matrix::readMM(file.path(outdir, ".count.mtx")))
+  rownames(mtx) <- read.delim(file.path(outdir, '.features.txt'), header = F)$V1
+  mtx <- mtx[rowSums(mtx) > 0, ]
+  sce <- SingleCellExperiment::SingleCellExperiment(assays = list(counts = mtx))
+}
+
+quantify_transcript_oarfish <- function(outdir, config, pipeline = "sc_single_sample") {
+  realign_bam <- list.files(outdir)[grepl("_?realign2transcript\\.bam$", list.files(outdir))]
+  if (pipeline == "sc_single_sample") {
+    run_oarfish(realign_bam, outdir, threads = config$pipeline_parameters$threads)
+    return(parse_oarfish_output(outdir))
+  } else {
+    stop("Multi-sample pipeline not supported for Oarfish.")
+  }
+}
+
+quantify_transcript <- function(annotation, outdir, config, pipeline = "sc_single_sample") {
+  if (config$pipeline_parameters$oarfish_quantification) {
+    return(quantify_transcript_oarfish(outdir, config, pipeline))
+  } else {
+    return(quantify_transcript_flames(annotation, outdir, config, pipeline))
+  }
 }
 
 # example for Rsamtools

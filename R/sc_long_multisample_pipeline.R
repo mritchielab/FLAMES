@@ -313,29 +313,7 @@ sc_long_multisample_pipeline <-
         # TODO: implement filtering in R
         if (config$pipeline_parameters$do_transcript_quantification) {
             cat("#### Generating transcript count matrix\n")
-            quantify_transcript(annotation = annotation, outdir = outdir, config = config, pipeline = "sc_multi_sample")
-
-            sce_list <- as.list(1:length(samples))
-            names(sce_list) <- samples
-            load_genome_anno <- rtracklayer::import(annotation, feature.type = c("exon", "utr"))
-
-            for (i in 1:length(samples)) {
-                out_files <- list(
-                    "annotation" = annotation,
-                    "genome_fa" = genome_fa,
-                    "counts" = file.path(outdir, paste0(samples[i], "_transcript_count.csv.gz")),
-                    "isoform_annotated" = file.path(outdir, ifelse(config$pipeline_parameters$bambu_isoform_identification, "isoform_annotated.gtf", "isoform_annotated.gff3")),
-                    "transcript_assembly" = file.path(outdir, "transcript_assembly.fa"),
-                    "config" = config,
-                    "align_bam" = genome_bam[i],
-                    "realign2transcript" = file.path(outdir, paste0(samples[i], "_realign2transcript.bam")),
-                    "outdir" = outdir,
-                    "fsm_annotation" = file.path(outdir, "isoform_FSM_annotation.csv")
-                )
-                sce_list[[i]] <- generate_sc_singlecell(out_files, load_genome_anno = load_genome_anno)
-            }
-
-            return(sce_list)
+            return(quantify_transcript(annotation = annotation, outdir = outdir, config = config, pipeline = "sc_multi_sample"), samples = samples)
         } else {
             cat("#### Skip transcript quantification\n")
         }

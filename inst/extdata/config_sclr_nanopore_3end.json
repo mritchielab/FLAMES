@@ -10,7 +10,8 @@
         "bambu_isoform_identification": false,
         "multithread_isoform_identification": true,
         "do_read_realignment": true,
-        "do_transcript_quantification": true
+        "do_transcript_quantification": true,
+        "oarfish_quantification": true
     },
     "barcode_parameters": {
         "max_bc_editdistance": 2,

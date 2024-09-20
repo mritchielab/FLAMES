@@ -278,31 +278,12 @@ sc_long_pipeline <-
         # transcript quantification
         if (config$pipeline_parameters$do_transcript_quantification) {
             cat("#### Generating transcript count matrix\n")
-            quantify_transcript(annotation = annotation, 
+            return(quantify_transcript(annotation = annotation, 
                                 outdir = outdir, 
                                 pipeline = "sc_single_sample",
-                                config = config)
-
-            out_files <- list(
-                "annotation" = annotation,
-                "genome_fa" = genome_fa,
-                "counts" = file.path(outdir, "transcript_count.csv.gz"),
-                "isoform_annotated" = file.path(outdir, "isoform_annotated.filtered.gff3"),
-                "transcript_assembly" = file.path(outdir, "transcript_assembly.fa"),
-                "align_bam" = genome_bam,
-                "realign2transcript" = file.path(outdir, "realign2transcript.bam"),
-                "tss_tes" = file.path(outdir, "tss_tes.bedgraph"),
-                "outdir" = outdir
-            )
-
-            load_genome_anno <- rtracklayer::import(annotation, feature.type = c("exon", "utr"))
-            sce <- generate_sc_singlecell(out_files, load_genome_anno = load_genome_anno)
-
-            return(sce)
-        } else {
-            cat("#### Skip transcript quantification\n")
-        }
+                                config = config))
     }
+}
 
 #' @importFrom utils read.csv
 #' @importFrom GenomicRanges GRangesList GRanges

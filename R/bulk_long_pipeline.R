@@ -135,23 +135,7 @@ bulk_long_pipeline <-
         # quantification
         if (config$pipeline_parameters$do_transcript_quantification) {
             cat("#### Generating transcript count matrix\n")
-            quantify_transcript(annotation = annotation, outdir = outdir, config = config, pipeline = "bulk")
-
-            out_files <- list(
-                "annotation" = annotation,
-                "genome_fa" = genome_fa,
-                "counts" = file.path(outdir, "transcript_count.csv.gz"),
-                "isoform_annotated" = file.path(outdir, "isoform_annotated.filtered.gff3"),
-                "transcript_assembly" = file.path(outdir, "transcript_assembly.fa"),
-                "align_bam" = genome_bam,
-                "realign2transcript" = file.path(outdir, list.files(outdir))[grepl("realign2transcript\\.bam$", list.files(outdir))],
-                "tss_tes" = file.path(outdir, "tss_tes.bedgraph"),
-                "outdir" = outdir
-            )
-            load_genome_anno <- rtracklayer::import(annotation, feature.type = c("exon", "utr"))
-
-            se <- generate_bulk_summarized(out_files, load_genome_anno = load_genome_anno)
-            return(se)
+            return(quantify_transcript(annotation = annotation, outdir = outdir, config = config, pipeline = "bulk"))
         } else {
             cat("#### Skip transcript quantification\n")
         }
