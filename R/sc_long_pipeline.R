@@ -265,12 +265,16 @@ sc_long_pipeline <-
                 infq_realign <- infq
             }
             
-
-
-
             # minimap2_realign looks for the transcript_assembly.fa file in the outdir
-            minimap2_realign(config, infq_realign, outdir, minimap2, prefix = NULL, 
+            # https://combine-lab.github.io/oarfish/
+            if (config$pipeline_parameters$oarfish_quantification) {
+                minimap2_realign(config, infq_realign, outdir, minimap2, prefix = NULL, 
+                             threads = config$pipeline_parameters$threads,
+                             minimap2_args = "--eqx -N 100 -ax map-ont -y", sort_by = "CB")
+            } else {
+                minimap2_realign(config, infq_realign, outdir, minimap2, prefix = NULL, 
                              threads = config$pipeline_parameters$threads)
+            }
         } else {
             cat("#### Skip read realignment\n")
         }

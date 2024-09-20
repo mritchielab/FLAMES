@@ -302,8 +302,14 @@ sc_long_multisample_pipeline <-
             }
             for (i in 1:length(samples)) {
                 cat(paste0(c("\tRealigning sample ", samples[i], "...\n")))
-                minimap2_realign(config, infqs_realign[i], outdir, minimap2, prefix = samples[i], 
-                                 threads = config$pipeline_parameters$threads)
+                if (config$pipeline_parameters$oarfish_quantification) {
+                    minimap2_realign(config, infqs_realign[i], outdir, minimap2, prefix = samples[i], 
+                                     threads = config$pipeline_parameters$threads,
+                                     minimap2_args = "--eqx -N 100 -ax map-ont -y", sort_by = "CB")
+                } else {
+                    minimap2_realign(config, infqs_realign[i], outdir, minimap2, prefix = samples[i], 
+                                     threads = config$pipeline_parameters$threads)
+                }
             }
         } else {
             cat("#### Skip read realignment\n")
@@ -313,7 +319,7 @@ sc_long_multisample_pipeline <-
         # TODO: implement filtering in R
         if (config$pipeline_parameters$do_transcript_quantification) {
             cat("#### Generating transcript count matrix\n")
-            return(quantify_transcript(annotation = annotation, outdir = outdir, config = config, pipeline = "sc_multi_sample"), samples = samples)
+            return(quantify_transcript(annotation = annotation, outdir = outdir, config = config, pipeline = "sc_multi_sample", samples = samples))
         } else {
             cat("#### Skip transcript quantification\n")
         }

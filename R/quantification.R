@@ -149,6 +149,7 @@ quantify_gene <- function(annotation, outdir, infq, n_process,  pipeline = "sc_s
 #' @param outdir The path to directory to store all output files.
 #' @param config Parsed FLAMES configurations.
 #' @param pipeline The pipeline type as a character string, either \code{sc_single_sample} (single-cell, single-sample),
+#' @param samples A vector of sample names, required for \code{sc_multi_sample} pipeline.
 #' \code{bulk} (bulk, single or multi-sample), or \code{sc_multi_sample} (single-cell, multiple samples)
 #' @return The count matrix will be saved in the output folder as \code{transcript_count.csv.gz}.
 #' @importFrom basilisk basiliskRun
@@ -251,47 +252,93 @@ quantify_transcript_flames <- function(annotation, outdir, config, pipeline = "s
 }
 
 #' @importFrom basilisk obtainEnvironmentPath basiliskRun
-run_oarfish <- function(realign_bam, outdir, threads = 1, oarfish_bin) {
+run_oarfish <- function(realign_bam, outdir, threads = 1, sample, oarfish_bin) {
   if (missing(oarfish_bin)) {
     oarfish_bin <- file.path(basilisk::obtainEnvironmentPath(flames_env), 'bin', 'oarfish')
     if (!file.exists(oarfish_bin)) {
       basilisk::basiliskRun(env = flames_env, fun = function(){})
     }
   }
-  stopifnot(file.exists(oarfish_bin), "oarfish binary not found")
+  stopifnot("oarfish binary not found" = file.exists(oarfish_bin))
+  if (missing(sample)) {
+    sample <- "oarfish"
+  }
 
   oarfish_status <- base::system2(
     command = oarfish_bin,
-    args = c("--single-cell", "--alignments", realign_bam, "-j", threads, "--output", outdir)
+    args = c("--single-cell", "--alignments", file.path(outdir, realign_bam),
+      "-j", threads, "--output", file.path(outdir, sample)),
   )
-  if (!is.null(base::attr(oarfish_status, "status")) && base::attr(oarfish_status,
-    "status") != 0) {
+  if (oarfish_status != 0) {
     stop(paste0("error running oarfish:\n", oarfish_status))
   }
+
+  return(file.path(outdir, sample))
 }
 
-parse_oarfish_output <- function(outdir) {
-  mtx <- t(Matrix::readMM(file.path(outdir, ".count.mtx")))
-  rownames(mtx) <- read.delim(file.path(outdir, '.features.txt'), header = F)$V1
-  mtx <- mtx[rowSums(mtx) > 0, ]
+#' @importFrom MatrixGenerics rowSums
+#' @importFrom Matrix readMM
+#' @importFrom SingleCellExperiment SingleCellExperiment
+parse_oarfish_output <- function(oarfish_out) {
+  mtx <- t(Matrix::readMM(paste0(oarfish_out, ".count.mtx")))
+  rownames(mtx) <- read.delim(paste0(oarfish_out, '.features.txt'), header = F)$V1
+  mtx <- mtx[MatrixGenerics::rowSums(mtx) > 0, ]
   sce <- SingleCellExperiment::SingleCellExperiment(assays = list(counts = mtx))
 }
 
-quantify_transcript_oarfish <- function(outdir, config, pipeline = "sc_single_sample") {
+quantify_transcript_oarfish <- function(outdir, config, pipeline = "sc_single_sample", samples) {
   realign_bam <- list.files(outdir)[grepl("_?realign2transcript\\.bam$", list.files(outdir))]
   if (pipeline == "sc_single_sample") {
-    run_oarfish(realign_bam, outdir, threads = config$pipeline_parameters$threads)
-    return(parse_oarfish_output(outdir))
+    oarfish_out <- run_oarfish(realign_bam, outdir, threads = config$pipeline_parameters$threads)
+    return(parse_oarfish_output(oarfish_out))
   } else {
-    stop("Multi-sample pipeline not supported for Oarfish.")
+    sce_list <- as.list(1:length(samples))
+    names(sce_list) <- samples
+    for (i in 1:length(samples)) {
+      realign_bam <- list.files(outdir)[grepl(paste0(samples[i], "_realign2transcript\\.bam$"), list.files(outdir))]
+      oarfish_out <- run_oarfish(realign_bam, outdir, threads = config$pipeline_parameters$threads, sample = samples[i])
+      sce_list[[i]] <- parse_oarfish_output(oarfish_out)
+    }
+    return(sce_list)
   }
 }
 
-quantify_transcript <- function(annotation, outdir, config, pipeline = "sc_single_sample") {
+#' Transcript quantification
+#' @description Calculate the transcript count matrix by parsing the re-alignment file.
+#' @param annotation The file path to the annotation file in GFF3 format
+#' @param outdir The path to directory to store all output files.
+#' @param config Parsed FLAMES configurations.
+#' @param pipeline The pipeline type as a character string, either \code{sc_single_sample} (single-cell, single-sample),
+#' @param samples A vector of sample names, required for \code{sc_multi_sample} pipeline.
+#' \code{bulk} (bulk, single or multi-sample), or \code{sc_multi_sample} (single-cell, multiple samples)
+#' @return The count matrix will be saved in the output folder as \code{transcript_count.csv.gz}.
+#' @examples
+#' temp_path <- tempfile()
+#' bfc <- BiocFileCache::BiocFileCache(temp_path, ask = FALSE)
+#' file_url <- "https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data"
+#' fastq1 <- bfc[[names(BiocFileCache::bfcadd(bfc, "Fastq1", paste(file_url, "fastq/sample1.fastq.gz", sep = "/")))]]
+#' genome_fa <- bfc[[names(BiocFileCache::bfcadd(bfc, "genome.fa", paste(file_url, "SIRV_isoforms_multi-fasta_170612a.fasta", sep = "/")))]]
+#' annotation <- bfc[[names(BiocFileCache::bfcadd(bfc, "annot.gtf", paste(file_url, "SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf", sep = "/")))]]
+#' outdir <- tempfile()
+#' dir.create(outdir)
+#' fasta <- annotation_to_fasta(annotation, genome_fa, outdir)
+#' config <- jsonlite::fromJSON(create_config(outdir, bambu_isoform_identification = TRUE, min_tr_coverage = 0.1, min_read_coverage = 0.1, min_sup_cnt = 1))
+#' file.copy(annotation, file.path(outdir, "isoform_annotated.gtf"))
+#' \dontrun{
+#' if (!any(is.na(sys_which(c("minimap2", "k8"))))) {
+#'     minimap2_realign(
+#'         config = config, outdir = outdir,
+#'         fq_in = fastq1
+#'     )
+#'     quantify_transcript_flames(annotation, outdir, config, pipeline = "bulk")
+#' }
+#' }
+#' @export
+quantify_transcript <- function(annotation, outdir, config, pipeline = "sc_single_sample", samples) {
   if (config$pipeline_parameters$oarfish_quantification) {
-    return(quantify_transcript_oarfish(outdir, config, pipeline))
+    return(quantify_transcript_oarfish(outdir, config, pipeline, samples))
   } else {
-    return(quantify_transcript_flames(annotation, outdir, config, pipeline))
+    return(quantify_transcript_flames(annotation, outdir, config, pipeline, samples))
   }
 }
 
