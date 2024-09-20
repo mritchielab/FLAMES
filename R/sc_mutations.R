@@ -52,14 +52,11 @@ variant_count_tb <- function(bam_path, seqname, pos, indel, barcodes, verbose = 
 #' dir.create(outdir)
 #' genome_fa <- file.path(outdir, "rps24.fa")
 #' R.utils::gunzip(filename = system.file("extdata/rps24.fa.gz", package = "FLAMES"), destname = genome_fa, remove = FALSE)
-#' download.file("https://raw.githubusercontent.com/mritchielab/FLAMES/devel/tests/testthat/demultiplexed.fq",
-#'   destfile = file.path(outdir, "demultipelxed.fq")
-#' ) # can't be bothered to run demultiplexing again
 #' if (!any(is.na(sys_which(c("minimap2", "k8"))))) {
 #'   minimap2_align( # align to genome
 #'     config = jsonlite::fromJSON(system.file("extdata/config_sclr_nanopore_3end.json", package = "FLAMES")),
 #'     fa_file = genome_fa,
-#'     fq_in = file.path(outdir, "demultipelxed.fq"),
+#'     fq_in = system.file("extdata", "fastq", "demultiplexed.fq.gz", package = "FLAMES"),
 #'     annot = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),
 #'     outdir = outdir
 #'   )
@@ -262,15 +259,11 @@ find_variants_grange <- function(bam_path, reference, gene_grange, min_nucleotid
 #' outdir <- tempfile()
 #' dir.create(outdir)
 #' genome_fa <- file.path(outdir, "rps24.fa")
-#' R.utils::gunzip(filename = system.file("extdata/rps24.fa.gz", package = "FLAMES"), destname = genome_fa, remove = FALSE)
-#' download.file("https://raw.githubusercontent.com/mritchielab/FLAMES/devel/tests/testthat/demultiplexed.fq",
-#'   destfile = file.path(outdir, "demultipelxed.fq")
-#' ) # can't be bothered to run demultiplexing again
 #' if (!any(is.na(sys_which(c("minimap2", "k8"))))) {
 #'   minimap2_align( # align to genome
 #'     config = jsonlite::fromJSON(system.file("extdata/config_sclr_nanopore_3end.json", package = "FLAMES")),
 #'     fa_file = genome_fa,
-#'     fq_in = file.path(outdir, "demultipelxed.fq"),
+#'     fq_in = system.file("extdata", "fastq", "demultiplexed.fq.gz", package = "FLAMES"),
 #'     annot = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),
 #'     outdir = outdir
 #'   )
