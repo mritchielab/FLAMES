@@ -37,7 +37,7 @@
 #' The table is sorted by decreasing P-values. It will also be saved as \code{sc_DTU_analysis.csv} under the
 #' output folder.
 #'
-#' @importFrom dplyr group_by ungroup summarise_at top_n left_join summarise groups mutate filter_at any_vars select_if select all_of 
+#' @importFrom dplyr group_by ungroup summarise_at top_n left_join summarise groups mutate filter_at any_vars select_if select all_of all_vars
 #' @importFrom tidyr gather pivot_wider as_tibble
 #' @importFrom magrittr "%>%"
 #' @importFrom S4Vectors DataFrame
@@ -178,7 +178,7 @@ sc_DTU_analysis <- function(sce, min_count = 15) {
     return(filtered_tr_ids)
   }
   
-  all_grp <- levels(colLabels(tr_sce_multi))
+  all_grp <- levels(factor(colLabels(tr_sce_multi)))
   sel_tr <- Reduce(union, lapply(all_grp, filter_tr))
   counts_group <- counts_group[counts_group$tr_id %in% sel_tr, ]
   counts_group <- counts_group %>%

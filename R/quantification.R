@@ -252,7 +252,7 @@ quantify_transcript_flames <- function(annotation, outdir, config, pipeline = "s
 }
 
 #' @importFrom basilisk obtainEnvironmentPath basiliskRun
-run_oarfish <- function(realign_bam, outdir, threads = 1, sample, oarfish_bin) {
+run_oarfish <- function(realign_bam, outdir, threads = 1, sample, oarfish_bin, single_cell = TRUE) {
   if (missing(oarfish_bin)) {
     oarfish_bin <- file.path(basilisk::obtainEnvironmentPath(flames_env), 'bin', 'oarfish')
     if (!file.exists(oarfish_bin)) {
@@ -266,7 +266,8 @@ run_oarfish <- function(realign_bam, outdir, threads = 1, sample, oarfish_bin) {
 
   oarfish_status <- base::system2(
     command = oarfish_bin,
-    args = c("--single-cell", "--alignments", file.path(outdir, realign_bam),
+    args = c(switch(single_cell, "--single-cell"),
+      "--alignments", file.path(outdir, realign_bam),
       "-j", threads, "--output", file.path(outdir, sample)),
   )
   if (oarfish_status != 0) {
@@ -279,27 +280,46 @@ run_oarfish <- function(realign_bam, outdir, threads = 1, sample, oarfish_bin) {
 #' @importFrom MatrixGenerics rowSums
 #' @importFrom Matrix readMM
 #' @importFrom SingleCellExperiment SingleCellExperiment
-parse_oarfish_output <- function(oarfish_out) {
+parse_oarfish_sc_output <- function(oarfish_out) {
   mtx <- t(Matrix::readMM(paste0(oarfish_out, ".count.mtx")))
   rownames(mtx) <- read.delim(paste0(oarfish_out, '.features.txt'), header = F)$V1
-  mtx <- mtx[MatrixGenerics::rowSums(mtx) > 0, ]
+  # mtx <- mtx[MatrixGenerics::rowSums(mtx) > 0, ]
   sce <- SingleCellExperiment::SingleCellExperiment(assays = list(counts = mtx))
+}
+
+#' @importFrom SummarizedExperiment SummarizedExperiment
+parse_oarfish_bulk_output <- function(oarfish_outs, sample_names) {
+  mtx_list <- lapply(oarfish_outs, function(oarfish_out) {
+    read.delim(paste0(oarfish_out, ".quant"), header = T, row.names = 1)[,"num_reads", drop = F]
+  })
+  mtx <- do.call(cbind, mtx_list)
+  colnames(mtx) <- sample_names
+  SummarizedExperiment::SummarizedExperiment(assays = list(counts = mtx))
 }
 
 quantify_transcript_oarfish <- function(outdir, config, pipeline = "sc_single_sample", samples) {
   realign_bam <- list.files(outdir)[grepl("_?realign2transcript\\.bam$", list.files(outdir))]
   if (pipeline == "sc_single_sample") {
     oarfish_out <- run_oarfish(realign_bam, outdir, threads = config$pipeline_parameters$threads)
-    return(parse_oarfish_output(oarfish_out))
-  } else {
+    return(parse_oarfish_sc_output(oarfish_out))
+  } else if (pipeline == "sc_multi_sample") {
     sce_list <- as.list(1:length(samples))
     names(sce_list) <- samples
     for (i in 1:length(samples)) {
       realign_bam <- list.files(outdir)[grepl(paste0(samples[i], "_realign2transcript\\.bam$"), list.files(outdir))]
       oarfish_out <- run_oarfish(realign_bam, outdir, threads = config$pipeline_parameters$threads, sample = samples[i])
-      sce_list[[i]] <- parse_oarfish_output(oarfish_out)
+      sce_list[[i]] <- parse_oarfish_sc_output(oarfish_out)
     }
     return(sce_list)
+  } else if (pipeline == "bulk") {
+    oarfish_out <- rep(NA, length(samples))
+    for (i in 1:length(samples)) {
+      realign_bam <- list.files(outdir)[grepl(paste0(samples[i], "_realign2transcript\\.bam$"), list.files(outdir))]
+      oarfish_out[i] <- run_oarfish(realign_bam, outdir, threads = config$pipeline_parameters$threads, sample = samples[i], single_cell = FALSE)
+    }
+    return(parse_oarfish_bulk_output(oarfish_out, samples))
+  } else {
+    stop(paste0("Unknown pipeline: ", pipeline))
   }
 }
 
@@ -334,11 +354,11 @@ quantify_transcript_oarfish <- function(outdir, config, pipeline = "sc_single_sa
 #' }
 #' }
 #' @export
-quantify_transcript <- function(annotation, outdir, config, pipeline = "sc_single_sample", samples) {
+quantify_transcript <- function(annotation, outdir, config, pipeline = "sc_single_sample", ...) {
   if (config$pipeline_parameters$oarfish_quantification) {
-    return(quantify_transcript_oarfish(outdir, config, pipeline, samples))
+    return(quantify_transcript_oarfish(outdir, config, pipeline, ...))
   } else {
-    return(quantify_transcript_flames(annotation, outdir, config, pipeline, samples))
+    return(quantify_transcript_flames(annotation, outdir, config, pipeline, ...))
   }
 }
 

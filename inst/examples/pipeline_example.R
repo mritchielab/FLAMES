@@ -23,4 +23,3 @@ if (!any(is.na(sys_which(c("minimap2", "k8"))))) {
 
   se_2 <- create_se_from_dir(outdir = outdir, annotation = annotation)
 }
-

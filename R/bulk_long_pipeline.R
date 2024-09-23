@@ -118,12 +118,23 @@ bulk_long_pipeline <- function(
   # realign to transcript
   if (config$pipeline_parameters$do_read_realignment) {
     cat("#### Realign to transcript using minimap2\n")
-    for (i in 1:length(samples)) {
-      cat(paste0(c("\tRealigning sample ", samples[i], "...\n")))
-      minimap2_realign(config, fastq_files[i], outdir, minimap2,
-        prefix = samples[i],
-        threads = config$pipeline_parameters$threads
-      )
+    if (config$pipeline_parameters$oarfish_quantification) {
+      for (i in 1:length(samples)) {
+        cat(paste0(c("\tRealigning sample ", samples[i], "...\n")))
+        minimap2_realign(config, fastq_files[i], outdir, minimap2,
+          prefix = samples[i],
+          threads = config$pipeline_parameters$threads,
+          minimap2_args = "--eqx -N 100 -ax map-ont", sort_by = NA
+        )
+      }
+    } else {
+      for (i in 1:length(samples)) {
+        cat(paste0(c("\tRealigning sample ", samples[i], "...\n")))
+        minimap2_realign(config, fastq_files[i], outdir, minimap2,
+          prefix = samples[i],
+          threads = config$pipeline_parameters$threads
+        )
+      }
     }
   } else {
     cat("#### Skip read realignment\n")
@@ -132,7 +143,7 @@ bulk_long_pipeline <- function(
   # quantification
   if (config$pipeline_parameters$do_transcript_quantification) {
     cat("#### Generating transcript count matrix\n")
-    return(quantify_transcript(annotation = annotation, outdir = outdir, config = config, pipeline = "bulk"))
+    return(quantify_transcript(annotation = annotation, outdir = outdir, config = config, pipeline = "bulk", samples = samples))
   } else {
     cat("#### Skip transcript quantification\n")
   }
