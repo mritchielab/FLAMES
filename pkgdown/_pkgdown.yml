@@ -63,7 +63,7 @@ reference:
       - scmixology_lib10
       - scmixology_lib10_transcripts
       - scmixology_lib90
-      - sys_which
+      - find_bin
 
 navbar:
   structure:

@@ -35,7 +35,7 @@ unlink(c(fastq1, fastq2)) # the original files can be deleted
 
 outdir <- tempfile()
 dir.create(outdir)
-if (!any(is.na(sys_which(c("minimap2", "k8"))))) {
+if (!any(is.na(find_bin(c("minimap2", "k8"))))) {
   se <- bulk_long_pipeline(
     annotation = annotation, fastq = fastq_dir, outdir = outdir, genome_fa = genome_fa,
     config_file = create_config(outdir, type = "sc_3end", threads = 1, no_flank = TRUE)

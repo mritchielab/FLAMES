@@ -67,7 +67,7 @@ the trailing number to match the chromosome names in the bam file, for example w
 outdir <- tempfile()
 dir.create(outdir)
 genome_fa <- system.file("extdata/rps24.fa.gz", package = "FLAMES")
-if (!any(is.na(sys_which(c("minimap2", "k8"))))) {
+if (!any(is.na(find_bin(c("minimap2", "k8"))))) {
   minimap2_align( # align to genome
     config = jsonlite::fromJSON(system.file("extdata/config_sclr_nanopore_3end.json", package = "FLAMES")),
     fa_file = genome_fa,

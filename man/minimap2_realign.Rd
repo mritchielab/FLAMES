@@ -45,7 +45,7 @@ Uses minimap2 to re-align reads to transcriptome
 \examples{
 outdir <- tempfile()
 dir.create(outdir)
-if (!any(is.na(sys_which(c("minimap2", "k8"))))) {
+if (!any(is.na(find_bin(c("minimap2", "k8"))))) {
     annotation <- system.file('extdata', 'rps24.gtf.gz', package = 'FLAMES')
     genome_fa <- system.file('extdata', 'rps24.fa.gz', package = 'FLAMES')
     fasta <- annotation_to_fasta(annotation, genome_fa, outdir)

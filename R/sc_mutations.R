@@ -52,7 +52,7 @@ variant_count_tb <- function(bam_path, seqname, pos, indel, barcodes, verbose = 
 #' dir.create(outdir)
 #' genome_fa <- file.path(outdir, "rps24.fa")
 #' R.utils::gunzip(filename = system.file("extdata/rps24.fa.gz", package = "FLAMES"), destname = genome_fa, remove = FALSE)
-#' if (!any(is.na(sys_which(c("minimap2", "k8"))))) {
+#' if (!any(is.na(find_bin(c("minimap2", "k8"))))) {
 #'   minimap2_align( # align to genome
 #'     config = jsonlite::fromJSON(system.file("extdata/config_sclr_nanopore_3end.json", package = "FLAMES")),
 #'     fa_file = genome_fa,
@@ -259,7 +259,7 @@ find_variants_grange <- function(bam_path, reference, gene_grange, min_nucleotid
 #' outdir <- tempfile()
 #' dir.create(outdir)
 #' genome_fa <- system.file("extdata/rps24.fa.gz", package = "FLAMES")
-#' if (!any(is.na(sys_which(c("minimap2", "k8"))))) {
+#' if (!any(is.na(find_bin(c("minimap2", "k8"))))) {
 #'   minimap2_align( # align to genome
 #'     config = jsonlite::fromJSON(system.file("extdata/config_sclr_nanopore_3end.json", package = "FLAMES")),
 #'     fa_file = genome_fa,

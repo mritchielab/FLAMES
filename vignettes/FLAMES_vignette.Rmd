@@ -90,7 +90,7 @@ Once the initial variables have been setup, the pipeline can be run using:
 ```{r, eval=FALSE, echo=TRUE}
 library(FLAMES)
 # do not run if minimap2 cannot be found
-if (!any(is.na(sys_which(c("minimap2", "k8"))))) {
+if (!any(is.na(find_bin(c("minimap2", "k8"))))) {
   sce <- sc_long_pipeline(
     annotation = annot, fastq = fastq, genome_fa = genome_fa,
     outdir = outdir, config_file = config_file, expect_cell_number = 10)
@@ -103,7 +103,7 @@ The pipeline can alse be run by calling the consituent steps sequentially:
 ```{r, eval=FALSE, echo=TRUE}
 library(FLAMES)
 # do not run if minimap2 cannot be found
-if (!any(is.na(sys_which(c("minimap2", "k8"))))) {
+if (!any(is.na(find_bin(c("minimap2", "k8"))))) {
   config <- jsonlite::fromJSON(config_file)
   # find_barcode(...)
   genome_bam <- rownames(minimap2_align(
@@ -228,7 +228,7 @@ config_file <- FLAMES::create_config(outdir)
 Once the environment has been setup, the pipeline can be executed by running:
 ```{r, eval=FALSE, echo=TRUE}
 library(FLAMES)
-if (!any(is.na(sys_which(c("minimap2", "k8"))))) {
+if (!any(is.na(find_bin(c("minimap2", "k8"))))) {
   summarizedExperiment <- bulk_long_pipeline(
     annot = annot, fastq = fastq_dir, outdir = outdir,
     genome_fa = genome_fa, config_file = config_file

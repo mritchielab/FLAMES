@@ -107,7 +107,7 @@ ShortRead::writeFastq(sample(reads, size = 500, replace = TRUE), file.path(outdi
 ShortRead::writeFastq(sample(reads, size = 500, replace = TRUE), file.path(outdir, "fastq/sample2.fq.gz"), mode = "w", full = FALSE)
 ShortRead::writeFastq(sample(reads, size = 500, replace = TRUE), file.path(outdir, "fastq/sample3.fq.gz"), mode = "w", full = FALSE)
 
-if (!any(is.na(sys_which(c("minimap2", "k8"))))) {
+if (!any(is.na(find_bin(c("minimap2", "k8"))))) {
   sce_list <- FLAMES::sc_long_multisample_pipeline(
     annotation = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),
     fastqs = file.path(outdir, "fastq", list.files(file.path(outdir, "fastq"))),

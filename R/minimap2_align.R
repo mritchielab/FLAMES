@@ -30,7 +30,7 @@
 #' annotation <- bfc[[names(BiocFileCache::bfcadd(bfc, 'annot.gtf', paste(file_url, 'SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf', sep = '/')))]]
 #' outdir <- tempfile()
 #' dir.create(outdir)
-#' if (!any(is.na(sys_which(c("minimap2", "k8"))))) {
+#' if (!any(is.na(find_bin(c("minimap2", "k8"))))) {
 #'     minimap2_align(
 #'         config = jsonlite::fromJSON(system.file('extdata/config_sclr_nanopore_3end.json', package = 'FLAMES')),
 #'         fa_file = genome_fa,
@@ -48,21 +48,21 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2 = NA,
   }
 
   if (missing("minimap2") || is.null(minimap2) || is.na(minimap2) || minimap2 =="") {
-    minimap2 <- sys_which("minimap2")
+    minimap2 <- find_bin("minimap2")
     if (is.na(minimap2)) {
       stop("minimap2 not found, please make sure it is installed and provide its path as the minimap2 argument")
     }
   }
 
   if (missing("k8") || is.null(k8) || is.na(k8) || k8 =="") {
-    k8 <- sys_which("k8")
+    k8 <- find_bin("k8")
     if (is.na(k8)) {
       stop("k8 not found, please make sure it is installed and provide its path as the k8 argument")
     }
   }
 
   if (missing("samtools") || is.null(samtools) || is.na(samtools) || samtools =="") {
-    samtools <- sys_which("samtools")
+    samtools <- find_bin("samtools")
   }
 
   minimap2_args <- c("-ax", "splice", "-t", threads, "-k14", "--secondary=no",
@@ -90,36 +90,19 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2 = NA,
   # /.../FLAMES_out/tmp_splice_anno.bed12 --junc-bonus 1 -k14 --secondary=no -o
   # /.../FLAMES_datasets/MuSC/FLAMES_out/tmp_align.sam --seed 2022
   # /.../GRCm38.primary_assembly.genome.fa /.../trimmed_MSC.fastq.gz
-  if (!is.na(samtools)) {
-    minimap2_status <- base::system2(command = minimap2,
-      args = base::append(minimap2_args, c(fa_file, fq_in, "|", samtools, "view -bS -@ 4 -o",
-        file.path(outdir, paste0(prefix, "tmp_align.bam")), "-")))
-    if (!is.null(base::attr(minimap2_status, "status")) && base::attr(minimap2_status,
-      "status") != 0) {
-      stop(paste0("error running minimap2:\n", minimap2_status))
-    }
-    sort_status <- base::system2(command = samtools, args = c("sort", file.path(outdir,
-      paste0(prefix, "tmp_align.bam")), "-o", file.path(outdir, paste0(prefix,
-      "align2genome.bam"))))
-    index_status <- base::system2(command = samtools, args = c("index", file.path(outdir,
-      paste0(prefix, "align2genome.bam"))))
-  } else {
-    message("samtools not found, using Rsamtools instead")
-    minimap2_status <- base::system2(command = minimap2,
-      args = base::append(minimap2_args, c(fa_file, fq_in, "-o", file.path(outdir,
-        paste0(prefix, "tmp_align.sam")))))
-    if (!is.null(base::attr(minimap2_status, "status")) && base::attr(minimap2_status,
-      "status") != 0) {
-      stop(paste0("error running minimap2:\n", minimap2_status))
-    }
-
-    Rsamtools::asBam(file.path(outdir, paste0(prefix, "tmp_align.sam")), file.path(outdir,
-      paste0(prefix, "tmp_align")))
-    Rsamtools::sortBam(file.path(outdir, paste0(prefix, "tmp_align.bam")), file.path(outdir,
-      paste0(prefix, "align2genome")))
-    Rsamtools::indexBam(file.path(outdir, paste0(prefix, "align2genome.bam")))
-    file.remove(file.path(outdir, paste0(prefix, "tmp_align.sam")))
+  stopifnot("Samtools not found" = !is.na(samtools))
+  minimap2_status <- base::system2(command = minimap2,
+    args = base::append(minimap2_args, c(fa_file, fq_in, "|", samtools, "view -b -o",
+      file.path(outdir, paste0(prefix, "tmp_align.bam")), "-")))
+  if (!is.null(base::attr(minimap2_status, "status")) && base::attr(minimap2_status,
+    "status") != 0) {
+    stop(paste0("error running minimap2:\n", minimap2_status))
   }
+  sort_status <- base::system2(command = samtools, args = c("sort", file.path(outdir,
+    paste0(prefix, "tmp_align.bam")), "-o", file.path(outdir, paste0(prefix,
+    "align2genome.bam"))))
+  index_status <- base::system2(command = samtools, args = c("index", file.path(outdir,
+    paste0(prefix, "align2genome.bam"))))
   file.remove(file.path(outdir, paste0(prefix, "tmp_align.bam")))
 
   if (config$alignment_parameters$use_junctions) {
@@ -158,7 +141,7 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2 = NA,
 #' @examples
 #' outdir <- tempfile()
 #' dir.create(outdir)
-#' if (!any(is.na(sys_which(c("minimap2", "k8"))))) {
+#' if (!any(is.na(find_bin(c("minimap2", "k8"))))) {
 #'     annotation <- system.file('extdata', 'rps24.gtf.gz', package = 'FLAMES')
 #'     genome_fa <- system.file('extdata', 'rps24.fa.gz', package = 'FLAMES')
 #'     fasta <- annotation_to_fasta(annotation, genome_fa, outdir)
@@ -178,14 +161,14 @@ minimap2_realign <- function(config, fq_in, outdir, minimap2, samtools = NULL, p
   }
 
   if (missing("minimap2") || is.null(minimap2) || is.na(minimap2) || minimap2 =="") {
-    minimap2 <- sys_which("minimap2")
+    minimap2 <- find_bin("minimap2")
     if (is.na(minimap2)) {
       stop("minimap2 not found, please make sure it is installed and provide its path as the minimap2 argument")
     }
   }
 
   if (missing("samtools") || is.null(samtools) || is.na(samtools) || samtools =="") {
-    samtools <- sys_which("samtools")
+    samtools <- find_bin("samtools")
   }
 
   if (missing("minimap2_args") || !is.character(minimap2_args)) {
@@ -193,66 +176,52 @@ minimap2_realign <- function(config, fq_in, outdir, minimap2, samtools = NULL, p
       "3", "-t", threads, "--seed", config$pipeline_parameters$seed)
   }
 
-  if (!is.na(samtools)) {
-    minimap2_status <- base::system2(command = minimap2,
-      args = base::append(minimap2_args, c(file.path(outdir, "transcript_assembly.fa"),
-        fq_in, "|", samtools, "view -bS -@ 4 -o", file.path(outdir,
-          paste0(prefix, "tmp_align.bam")), "-")))
-    if (!is.null(base::attr(minimap2_status, "status")) && base::attr(minimap2_status,
-      "status") != 0) {
-      stop(paste0("error running minimap2:\n", minimap2_status))
-    }
+  stopifnot("Samtools not found" = !is.na(samtools))
+  minimap2_status <- base::system2(command = minimap2,
+    args = base::append(minimap2_args, c(file.path(outdir, "transcript_assembly.fa"),
+      fq_in, "|", samtools, "view -b -o", file.path(outdir,
+        paste0(prefix, "tmp_align.bam")), "-")))
+  if (!is.null(base::attr(minimap2_status, "status")) && base::attr(minimap2_status,
+    "status") != 0) {
+    stop(paste0("error running minimap2:\n", minimap2_status))
+  }
 
-    if (missing(sort_by)) {
-      sort_status <- base::system2(
-        command = samtools, 
-        args = c("sort",
-          file.path(outdir, paste0(prefix, "tmp_align.bam")), "-o",
-          file.path(outdir, paste0(prefix, "realign2transcript.bam"))
-        )
+  if (missing(sort_by)) {
+    cat("Sorting by position\n")
+    sort_status <- base::system2(
+      command = samtools, 
+      args = c("sort",
+        file.path(outdir, paste0(prefix, "tmp_align.bam")), "-o",
+        file.path(outdir, paste0(prefix, "realign2transcript.bam"))
       )
-      index_status <- base::system2(
-        command = samtools, 
-        args = c("index", 
-          file.path(outdir,paste0(prefix, "realign2transcript.bam"))
-        )
+    )
+    index_status <- base::system2(
+      command = samtools, 
+      args = c("index", 
+        file.path(outdir,paste0(prefix, "realign2transcript.bam"))
       )
-    } else if (is.character(sort_by)) {
-      sort_status <- base::system2(
-        command = samtools,
-        args = c("sort", "-t", sort_by,
-          file.path(outdir, paste0(prefix, "tmp_align.bam")), "-o",
-          file.path(outdir, paste0(prefix, "realign2transcript.bam"))
-        )
+    )
+  } else if (is.character(sort_by)) {
+    cat("Sorting by ", sort_by, "\n")
+    sort_status <- base::system2(
+      command = samtools,
+      args = c("sort", "-t", sort_by,
+        file.path(outdir, paste0(prefix, "tmp_align.bam")), "-o",
+        file.path(outdir, paste0(prefix, "realign2transcript.bam"))
       )
-    } else if (is.na(sort_by)) {
-      file.rename(file.path(outdir, paste0(prefix, "tmp_align.bam")), file.path(outdir, paste0(prefix, "realign2transcript.bam")))
-    } else {
-      stop("sort_by must be a character or NA")
-    }
+    )
+  } else if (is.na(sort_by)) {
+    cat("file renamed to ", paste0(prefix, "realign2transcript.bam"), "\n")
+    file.rename(file.path(outdir, paste0(prefix, "tmp_align.bam")), file.path(outdir, paste0(prefix, "realign2transcript.bam")))
+    # sort_status <- base::system2(
+    #   command = samtools,
+    #   args = c("sort", "-n",
+    #     file.path(outdir, paste0(prefix, "tmp_align.bam")), "-o",
+    #     file.path(outdir, paste0(prefix, "realign2transcript.bam"))
+    #   )
+    # )
   } else {
-    message("samtools not found, using Rsamtools instead")
-    minimap2_status <- base::system2(command = minimap2,
-      args = base::append(minimap2_args, c(file.path(outdir, "transcript_assembly.fa"),
-        fq_in, "-o", file.path(outdir, paste0(prefix, "tmp_align.sam")))))
-    if (!is.null(base::attr(minimap2_status, "status")) && base::attr(minimap2_status,
-      "status") != 0) {
-      stop(paste0("error running minimap2:\n", minimap2_status))
-    }
-
-    Rsamtools::asBam(file.path(outdir, paste0(prefix, "tmp_align.sam")), file.path(outdir,
-      paste0(prefix, "tmp_align")))
-    if (missing(sort_by)) {
-      Rsamtools::sortBam(
-        file.path(outdir, paste0(prefix, "tmp_align.bam")), 
-        file.path(outdir,paste0(prefix, "realign2transcript"))
-      )
-      Rsamtools::indexBam(file.path(outdir, paste0(prefix, "realign2transcript.bam")))
-    } else if (is.character(sort_by)) {
-      Rsamtools::sortBam(file.path(outdir, paste0(prefix, "tmp_align.bam")), file.path(outdir,paste0(prefix, "realign2transcript")), byTag = sort_by)
-    } else if (is.na(sort_by)) {
-      file.rename(file.path(outdir, paste0(prefix, "tmp_align.bam")), file.path(outdir, paste0(prefix, "realign2transcript.bam")))
-    }
+    stop("sort_by must be a character or NA")
   }
   file.remove(file.path(outdir, paste0(prefix, "tmp_align.bam")))
 
@@ -262,19 +231,27 @@ minimap2_realign <- function(config, fq_in, outdir, minimap2, samtools = NULL, p
   }
 }
 
-#' Sys.which wrapper
-#' Wrapper for Sys.which that replaces "" with NA
+#' Find path to a binary
+#' Wrapper for Sys.which to find path to a binary
+#' @importFrom withr with_path
 #' @description
-#' The \code{base::Sys.which} function returns "" if the command is not found
-#' on some systems and \code{NA} on others. This wrapper replaces "" with
-#' \code{NA}
+#' This function is a wrapper for \code{base::Sys.which} to find the path
+#' to a command. It also searches within the \code{FLAMES} basilisk conda
+#' environment. This function also replaces "" with \code{NA} in the 
+#' output of \code{base::Sys.which} to make it easier to check if the 
+#' binary is found.
 #' @param command character, the command to search for
 #' @return character, the path to the command or \code{NA}
 #' @examples
-#' sys_which("minimap2")
+#' find_bin("minimap2")
 #' @export
-sys_which <- function(command) {
-  which_command <- Sys.which(command)
+find_bin <- function(command) {
+  conda_bins <- file.path(basilisk::obtainEnvironmentPath(flames_env), 'bin')
+  which_command <- withr::with_path(
+    new = conda_bins,
+    action = "suffix",
+    code = Sys.which(command)
+  )
   # replace "" with NA
   which_command[which_command == ""] <- NA
   return(which_command)
