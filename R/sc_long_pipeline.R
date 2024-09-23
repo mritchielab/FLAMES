@@ -388,7 +388,9 @@ generate_bulk_summarized <- function(out_files, load_genome_anno = NULL) {
 #'     fastq = system.file("extdata/fastq", package = "FLAMES"),
 #'     annotation = annotation,
 #'     outdir = outdir,
-#'     barcodes_file = bc_allow
+#'     barcodes_file = bc_allow,
+#'     config_file = create_config(outdir, oarfish_quantification=FALSE,
+#'       do_gene_quantification=FALSE)
 #'   )
 #'   sce_2 <- create_sce_from_dir(outdir, annotation)
 #' }

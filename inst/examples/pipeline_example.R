@@ -20,6 +20,4 @@ if (!any(is.na(sys_which(c("minimap2", "k8"))))) {
     annotation = annotation, fastq = fastq_dir, outdir = outdir, genome_fa = genome_fa,
     config_file = create_config(outdir, type = "sc_3end", threads = 1, no_flank = TRUE)
   )
-
-  se_2 <- create_se_from_dir(outdir = outdir, annotation = annotation)
 }

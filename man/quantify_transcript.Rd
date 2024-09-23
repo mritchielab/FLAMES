@@ -9,7 +9,7 @@ quantify_transcript(
   outdir,
   config,
   pipeline = "sc_single_sample",
-  samples
+  ...
 )
 }
 \arguments{
@@ -21,7 +21,7 @@ quantify_transcript(
 
 \item{pipeline}{The pipeline type as a character string, either \code{sc_single_sample} (single-cell, single-sample),}
 
-\item{samples}{A vector of sample names, required for \code{sc_multi_sample} pipeline.
+\item{...}{Supply sample names as character vector (e.g. \code{samples = c("name1", "name2", ...)}) for muti-sample or bulk pipeline.
 \code{bulk} (bulk, single or multi-sample), or \code{sc_multi_sample} (single-cell, multiple samples)}
 }
 \value{

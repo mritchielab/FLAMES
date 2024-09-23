@@ -4,11 +4,11 @@
         "seed": 2022,
         "threads" : 8,
         "do_barcode_demultiplex": true,
-        "do_gene_quantification": true,
+        "do_gene_quantification": false,
         "do_genome_alignment": true,
         "do_isoform_identification": true,
         "bambu_isoform_identification": false,
-        "multithread_isoform_identification": true,
+        "multithread_isoform_identification": false,
         "do_read_realignment": true,
         "do_transcript_quantification": true,
         "oarfish_quantification": true

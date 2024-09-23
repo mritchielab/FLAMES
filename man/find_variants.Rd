@@ -66,7 +66,7 @@ the trailing number to match the chromosome names in the bam file, for example w
 \examples{
 outdir <- tempfile()
 dir.create(outdir)
-genome_fa <- file.path(outdir, "rps24.fa")
+genome_fa <- system.file("extdata/rps24.fa.gz", package = "FLAMES")
 if (!any(is.na(sys_which(c("minimap2", "k8"))))) {
   minimap2_align( # align to genome
     config = jsonlite::fromJSON(system.file("extdata/config_sclr_nanopore_3end.json", package = "FLAMES")),
@@ -78,8 +78,8 @@ if (!any(is.na(sys_which(c("minimap2", "k8"))))) {
   variants <- find_variants(
     bam_path = file.path(outdir, "align2genome.bam"),
     reference = genome_fa,
-    annotation = GenomicRanges::GRanges("chr14", IRanges::IRanges(1, 1)),
-    min_nucleotide_depth = 10
+    annotation = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),
+    min_nucleotide_depth = 4
   )
   head(variants)
 }
