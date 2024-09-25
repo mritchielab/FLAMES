@@ -35,6 +35,7 @@ reference:
     contents:
       - quantify_gene
       - quantify_transcript
+      - quantify_transcript_flames
   - title: Mutation calling
     contents:
       - find_variants
