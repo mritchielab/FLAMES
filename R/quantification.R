@@ -254,12 +254,10 @@ quantify_transcript_flames <- function(annotation, outdir, config, pipeline = "s
 #' @importFrom basilisk obtainEnvironmentPath basiliskRun
 run_oarfish <- function(realign_bam, outdir, threads = 1, sample, oarfish_bin, single_cell = TRUE) {
   if (missing(oarfish_bin)) {
-    oarfish_bin <- file.path(basilisk::obtainEnvironmentPath(flames_env), 'bin', 'oarfish')
-    if (!file.exists(oarfish_bin)) {
-      basilisk::basiliskRun(env = flames_env, fun = function(){})
-    }
-  }
-  stopifnot("oarfish binary not found" = file.exists(oarfish_bin))
+    oarfish_bin <- find_bin("oarfish")
+    stopifnot(!is.na(oarfish_bin))
+  } 
+
   if (missing(sample)) {
     sample <- "oarfish"
   }

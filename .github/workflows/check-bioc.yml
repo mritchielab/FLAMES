@@ -221,6 +221,7 @@ jobs:
           DISPLAY: 99.0
         run: |
           options(crayon.enabled = TRUE)
+
           rcmdcheck::rcmdcheck(
               args = c("--no-manual", "--no-vignettes", "--timings"),
               build_args = c("--no-manual", "--keep-empty-dirs", "--no-resave-data"),

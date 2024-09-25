@@ -234,6 +234,7 @@ minimap2_realign <- function(config, fq_in, outdir, minimap2, samtools = NULL, p
 #' Find path to a binary
 #' Wrapper for Sys.which to find path to a binary
 #' @importFrom withr with_path
+#' @importFrom basilisk obtainEnvironmentPath
 #' @description
 #' This function is a wrapper for \code{base::Sys.which} to find the path
 #' to a command. It also searches within the \code{FLAMES} basilisk conda
@@ -246,7 +247,7 @@ minimap2_realign <- function(config, fq_in, outdir, minimap2, samtools = NULL, p
 #' find_bin("minimap2")
 #' @export
 find_bin <- function(command) {
-  conda_bins <- file.path(basilisk::obtainEnvironmentPath(flames_env), 'bin')
+  conda_bins <- file.path(basilisk::obtainEnvironmentPath(bins_env), 'bin')
   which_command <- withr::with_path(
     new = conda_bins,
     action = "suffix",
