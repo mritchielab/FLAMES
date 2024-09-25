@@ -19,6 +19,7 @@
 <url><loc>https://mritchielab.github.io/FLAMES/reference/demultiplex_sockeye.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/filter_annotation.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/find_barcode.html</loc></url>
+<url><loc>https://mritchielab.github.io/FLAMES/reference/find_bin.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/find_isoform.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/find_variants.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/flexiplex.html</loc></url>
@@ -34,6 +35,7 @@
 <url><loc>https://mritchielab.github.io/FLAMES/reference/plot_isoforms.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/quantify_gene.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/quantify_transcript.html</loc></url>
+<url><loc>https://mritchielab.github.io/FLAMES/reference/quantify_transcript_flames.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/sc_DTU_analysis.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/sc_impute_transcript.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/sc_long_multisample_pipeline.html</loc></url>
@@ -42,6 +44,5 @@
 <url><loc>https://mritchielab.github.io/FLAMES/reference/scmixology_lib10.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/scmixology_lib10_transcripts.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/scmixology_lib90.html</loc></url>
-<url><loc>https://mritchielab.github.io/FLAMES/reference/sys_which.html</loc></url>
 </urlset>
 

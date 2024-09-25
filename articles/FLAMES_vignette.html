@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">FLAMES</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -198,7 +198,7 @@ already been demultiplexed.</p>
 <span><span class="co">#&gt; Registered S3 method overwritten by 'GGally':</span></span>
 <span><span class="co">#&gt;   method from   </span></span>
 <span><span class="co">#&gt;   +.gg   ggplot2</span></span>
-<span><span class="co">#&gt; Writing configuration parameters to:  /tmp/RtmpsYpfbT/file1d782cd215af/config_file_7544.json</span></span></code></pre></div>
+<span><span class="co">#&gt; Writing configuration parameters to:  /tmp/Rtmpm6OBjh/file434b66737742/config_file_17227.json</span></span></code></pre></div>
 <p>The optional argument <code>config_file</code> can be given to both
 <code><a href="../reference/bulk_long_pipeline.html">bulk_long_pipeline()</a></code> and <code><a href="../reference/sc_long_pipeline.html">sc_long_pipeline()</a></code> in
 order to customise the execution of the pipelines. It is expected to be
@@ -223,7 +223,7 @@ using:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mritchielab.github.io/FLAMES">FLAMES</a></span><span class="op">)</span></span>
 <span><span class="co"># do not run if minimap2 cannot be found</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/any.html" class="external-link">any</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="fu"><a href="../reference/sys_which.html">sys_which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"minimap2"</span>, <span class="st">"k8"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/any.html" class="external-link">any</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="fu"><a href="../reference/find_bin.html">find_bin</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"minimap2"</span>, <span class="st">"k8"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">sce</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sc_long_pipeline.html">sc_long_pipeline</a></span><span class="op">(</span></span>
 <span>    annotation <span class="op">=</span> <span class="va">annot</span>, fastq <span class="op">=</span> <span class="va">fastq</span>, genome_fa <span class="op">=</span> <span class="va">genome_fa</span>,</span>
 <span>    outdir <span class="op">=</span> <span class="va">outdir</span>, config_file <span class="op">=</span> <span class="va">config_file</span>, expect_cell_number <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
@@ -241,7 +241,7 @@ sequentially:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mritchielab.github.io/FLAMES">FLAMES</a></span><span class="op">)</span></span>
 <span><span class="co"># do not run if minimap2 cannot be found</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/any.html" class="external-link">any</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="fu"><a href="../reference/sys_which.html">sys_which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"minimap2"</span>, <span class="st">"k8"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/any.html" class="external-link">any</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="fu"><a href="../reference/find_bin.html">find_bin</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"minimap2"</span>, <span class="st">"k8"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">config</span> <span class="op">&lt;-</span> <span class="fu">jsonlite</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/jsonlite/man/fromJSON.html" class="external-link">fromJSON</a></span><span class="op">(</span><span class="va">config_file</span><span class="op">)</span></span>
 <span>  <span class="co"># find_barcode(...)</span></span>
 <span>  <span class="va">genome_bam</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="fu"><a href="../reference/minimap2_align.html">minimap2_align</a></span><span class="op">(</span></span>
@@ -422,7 +422,7 @@ output files.</p>
 <span><span class="va">outdir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">outdir</span><span class="op">)</span></span>
 <span><span class="va">config_file</span> <span class="op">&lt;-</span> <span class="fu">FLAMES</span><span class="fu">::</span><span class="fu"><a href="../reference/create_config.html">create_config</a></span><span class="op">(</span><span class="va">outdir</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Writing configuration parameters to:  /tmp/RtmpsYpfbT/file1d78358a0e9b/config_file_7544.json</span></span></code></pre></div>
+<span><span class="co">#&gt; Writing configuration parameters to:  /tmp/Rtmpm6OBjh/file434b262f7e31/config_file_17227.json</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="flames-execution-1">FLAMES execution<a class="anchor" aria-label="anchor" href="#flames-execution-1"></a>
@@ -431,7 +431,7 @@ output files.</p>
 running:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mritchielab.github.io/FLAMES">FLAMES</a></span><span class="op">)</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/any.html" class="external-link">any</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="fu"><a href="../reference/sys_which.html">sys_which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"minimap2"</span>, <span class="st">"k8"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/any.html" class="external-link">any</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="fu"><a href="../reference/find_bin.html">find_bin</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"minimap2"</span>, <span class="st">"k8"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">summarizedExperiment</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bulk_long_pipeline.html">bulk_long_pipeline</a></span><span class="op">(</span></span>
 <span>    annot <span class="op">=</span> <span class="va">annot</span>, fastq <span class="op">=</span> <span class="va">fastq_dir</span>, outdir <span class="op">=</span> <span class="va">outdir</span>,</span>
 <span>    genome_fa <span class="op">=</span> <span class="va">genome_fa</span>, config_file <span class="op">=</span> <span class="va">config_file</span></span>
@@ -537,106 +537,106 @@ Please make sure to cite when using these tools.</p>
 <span><span class="co">#&gt; [8] base     </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; other attached packages:</span></span>
-<span><span class="co">#&gt;  [1] SingleCellExperiment_1.26.0 SummarizedExperiment_1.34.0</span></span>
-<span><span class="co">#&gt;  [3] Biobase_2.64.0              GenomicRanges_1.56.1       </span></span>
-<span><span class="co">#&gt;  [5] GenomeInfoDb_1.40.1         IRanges_2.38.1             </span></span>
-<span><span class="co">#&gt;  [7] S4Vectors_0.42.1            BiocGenerics_0.50.0        </span></span>
-<span><span class="co">#&gt;  [9] MatrixGenerics_1.16.0       matrixStats_1.4.1          </span></span>
-<span><span class="co">#&gt; [11] FLAMES_1.11.1               BiocStyle_2.32.1           </span></span>
+<span><span class="co">#&gt;  [1] SingleCellExperiment_1.27.2 SummarizedExperiment_1.35.1</span></span>
+<span><span class="co">#&gt;  [3] Biobase_2.65.1              GenomicRanges_1.57.1       </span></span>
+<span><span class="co">#&gt;  [5] GenomeInfoDb_1.41.1         IRanges_2.39.2             </span></span>
+<span><span class="co">#&gt;  [7] S4Vectors_0.43.2            BiocGenerics_0.51.1        </span></span>
+<span><span class="co">#&gt;  [9] MatrixGenerics_1.17.0       matrixStats_1.4.1          </span></span>
+<span><span class="co">#&gt; [11] FLAMES_1.11.2               BiocStyle_2.33.1           </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
-<span><span class="co">#&gt;   [1] fs_1.6.4                  ProtGenerics_1.36.0      </span></span>
+<span><span class="co">#&gt;   [1] fs_1.6.4                  ProtGenerics_1.37.1      </span></span>
 <span><span class="co">#&gt;   [3] bitops_1.0-8              httr_1.4.7               </span></span>
 <span><span class="co">#&gt;   [5] RColorBrewer_1.1-3        doParallel_1.0.17        </span></span>
 <span><span class="co">#&gt;   [7] tools_4.4.1               backports_1.5.0          </span></span>
 <span><span class="co">#&gt;   [9] utf8_1.2.4                R6_2.5.1                 </span></span>
-<span><span class="co">#&gt;  [11] HDF5Array_1.32.1          lazyeval_0.2.2           </span></span>
-<span><span class="co">#&gt;  [13] uwot_0.2.2                rhdf5filters_1.16.0      </span></span>
+<span><span class="co">#&gt;  [11] HDF5Array_1.33.6          lazyeval_0.2.2           </span></span>
+<span><span class="co">#&gt;  [13] uwot_0.2.2                rhdf5filters_1.17.0      </span></span>
 <span><span class="co">#&gt;  [15] GetoptLong_1.0.5          withr_3.0.1              </span></span>
 <span><span class="co">#&gt;  [17] prettyunits_1.2.0         GGally_2.2.1             </span></span>
 <span><span class="co">#&gt;  [19] gridExtra_2.3             cli_3.6.3                </span></span>
 <span><span class="co">#&gt;  [21] textshaping_0.4.0         labeling_0.4.3           </span></span>
-<span><span class="co">#&gt;  [23] ggbio_1.52.0              sass_0.4.9               </span></span>
-<span><span class="co">#&gt;  [25] pkgdown_2.1.0.9000        Rsamtools_2.20.0         </span></span>
-<span><span class="co">#&gt;  [27] systemfonts_1.1.0         txdbmaker_1.0.1          </span></span>
+<span><span class="co">#&gt;  [23] ggbio_1.53.0              sass_0.4.9               </span></span>
+<span><span class="co">#&gt;  [25] pkgdown_2.1.1.9000        Rsamtools_2.21.1         </span></span>
+<span><span class="co">#&gt;  [27] systemfonts_1.1.0         txdbmaker_1.1.1          </span></span>
 <span><span class="co">#&gt;  [29] foreign_0.8-87            R.utils_2.12.3           </span></span>
-<span><span class="co">#&gt;  [31] dichromat_2.0-0.1         scater_1.32.1            </span></span>
-<span><span class="co">#&gt;  [33] parallelly_1.38.0         BSgenome_1.72.0          </span></span>
-<span><span class="co">#&gt;  [35] limma_3.60.4              rstudioapi_0.16.0        </span></span>
-<span><span class="co">#&gt;  [37] RSQLite_2.3.7             FNN_1.1.4                </span></span>
+<span><span class="co">#&gt;  [31] dichromat_2.0-0.1         scater_1.33.4            </span></span>
+<span><span class="co">#&gt;  [33] parallelly_1.38.0         BSgenome_1.73.1          </span></span>
+<span><span class="co">#&gt;  [35] limma_3.61.10             rstudioapi_0.16.0        </span></span>
+<span><span class="co">#&gt;  [37] RSQLite_2.3.7             FNN_1.1.4.1              </span></span>
 <span><span class="co">#&gt;  [39] generics_0.1.3            shape_1.4.6.1            </span></span>
-<span><span class="co">#&gt;  [41] BiocIO_1.14.0             dplyr_1.1.4              </span></span>
+<span><span class="co">#&gt;  [41] BiocIO_1.15.2             dplyr_1.1.4              </span></span>
 <span><span class="co">#&gt;  [43] Matrix_1.7-0              ggbeeswarm_0.7.2         </span></span>
 <span><span class="co">#&gt;  [45] fansi_1.0.6               abind_1.4-8              </span></span>
 <span><span class="co">#&gt;  [47] R.methodsS3_1.8.2         lifecycle_1.0.4          </span></span>
-<span><span class="co">#&gt;  [49] yaml_2.3.10               edgeR_4.2.1              </span></span>
-<span><span class="co">#&gt;  [51] rhdf5_2.48.0              SparseArray_1.4.8        </span></span>
-<span><span class="co">#&gt;  [53] BiocFileCache_2.12.0      grid_4.4.1               </span></span>
+<span><span class="co">#&gt;  [49] yaml_2.3.10               edgeR_4.3.16             </span></span>
+<span><span class="co">#&gt;  [51] rhdf5_2.49.0              SparseArray_1.5.39       </span></span>
+<span><span class="co">#&gt;  [53] BiocFileCache_2.13.0      grid_4.4.1               </span></span>
 <span><span class="co">#&gt;  [55] blob_1.2.4                dqrng_0.4.1              </span></span>
-<span><span class="co">#&gt;  [57] crayon_1.5.3              dir.expiry_1.12.0        </span></span>
-<span><span class="co">#&gt;  [59] lattice_0.22-6            beachmat_2.20.0          </span></span>
-<span><span class="co">#&gt;  [61] cowplot_1.1.3             GenomicFeatures_1.56.0   </span></span>
-<span><span class="co">#&gt;  [63] KEGGREST_1.44.1           pillar_1.9.0             </span></span>
-<span><span class="co">#&gt;  [65] knitr_1.48                ComplexHeatmap_2.20.0    </span></span>
-<span><span class="co">#&gt;  [67] metapod_1.12.0            bambu_3.6.0              </span></span>
-<span><span class="co">#&gt;  [69] rjson_0.2.22              xgboost_1.7.8.1          </span></span>
+<span><span class="co">#&gt;  [57] crayon_1.5.3              dir.expiry_1.13.0        </span></span>
+<span><span class="co">#&gt;  [59] lattice_0.22-6            beachmat_2.21.6          </span></span>
+<span><span class="co">#&gt;  [61] cowplot_1.1.3             GenomicFeatures_1.57.0   </span></span>
+<span><span class="co">#&gt;  [63] KEGGREST_1.45.1           pillar_1.9.0             </span></span>
+<span><span class="co">#&gt;  [65] knitr_1.48                ComplexHeatmap_2.21.0    </span></span>
+<span><span class="co">#&gt;  [67] metapod_1.13.0            bambu_3.7.0              </span></span>
+<span><span class="co">#&gt;  [69] rjson_0.2.23              xgboost_1.7.8.1          </span></span>
 <span><span class="co">#&gt;  [71] codetools_0.2-20          glue_1.7.0               </span></span>
 <span><span class="co">#&gt;  [73] data.table_1.16.0         vctrs_0.6.5              </span></span>
 <span><span class="co">#&gt;  [75] png_0.1-8                 gtable_0.3.5             </span></span>
 <span><span class="co">#&gt;  [77] cachem_1.1.0              xfun_0.47                </span></span>
-<span><span class="co">#&gt;  [79] S4Arrays_1.4.1            DropletUtils_1.24.0      </span></span>
+<span><span class="co">#&gt;  [79] S4Arrays_1.5.8            DropletUtils_1.25.2      </span></span>
 <span><span class="co">#&gt;  [81] iterators_1.0.14          statmod_1.5.0            </span></span>
-<span><span class="co">#&gt;  [83] bluster_1.14.0            bit64_4.0.5              </span></span>
+<span><span class="co">#&gt;  [83] bluster_1.15.1            bit64_4.5.2              </span></span>
 <span><span class="co">#&gt;  [85] progress_1.2.3            filelock_1.0.3           </span></span>
 <span><span class="co">#&gt;  [87] bslib_0.8.0               irlba_2.3.5.1            </span></span>
 <span><span class="co">#&gt;  [89] vipor_0.4.7               rpart_4.1.23             </span></span>
 <span><span class="co">#&gt;  [91] colorspace_2.1-1          DBI_1.2.3                </span></span>
 <span><span class="co">#&gt;  [93] Hmisc_5.1-3               nnet_7.3-19              </span></span>
-<span><span class="co">#&gt;  [95] tidyselect_1.2.1          bit_4.0.5                </span></span>
-<span><span class="co">#&gt;  [97] compiler_4.4.1            curl_5.2.2               </span></span>
-<span><span class="co">#&gt;  [99] httr2_1.0.4               graph_1.82.0             </span></span>
-<span><span class="co">#&gt; [101] htmlTable_2.4.3           BiocNeighbors_1.22.0     </span></span>
-<span><span class="co">#&gt; [103] basilisk.utils_1.16.0     xml2_1.3.6               </span></span>
-<span><span class="co">#&gt; [105] desc_1.4.3                DelayedArray_0.30.1      </span></span>
-<span><span class="co">#&gt; [107] bookdown_0.40             rtracklayer_1.64.0       </span></span>
+<span><span class="co">#&gt;  [95] tidyselect_1.2.1          bit_4.5.0                </span></span>
+<span><span class="co">#&gt;  [97] compiler_4.4.1            curl_5.2.3               </span></span>
+<span><span class="co">#&gt;  [99] httr2_1.0.4               graph_1.83.0             </span></span>
+<span><span class="co">#&gt; [101] htmlTable_2.4.3           BiocNeighbors_1.99.1     </span></span>
+<span><span class="co">#&gt; [103] basilisk.utils_1.17.3     xml2_1.3.6               </span></span>
+<span><span class="co">#&gt; [105] desc_1.4.3                DelayedArray_0.31.11     </span></span>
+<span><span class="co">#&gt; [107] bookdown_0.40             rtracklayer_1.65.0       </span></span>
 <span><span class="co">#&gt; [109] checkmate_2.3.2           scales_1.3.0             </span></span>
-<span><span class="co">#&gt; [111] RBGL_1.80.0               rappdirs_0.3.3           </span></span>
+<span><span class="co">#&gt; [111] RBGL_1.81.0               rappdirs_0.3.3           </span></span>
 <span><span class="co">#&gt; [113] stringr_1.5.1             digest_0.6.37            </span></span>
-<span><span class="co">#&gt; [115] rmarkdown_2.28            basilisk_1.16.0          </span></span>
-<span><span class="co">#&gt; [117] XVector_0.44.0            htmltools_0.5.8.1        </span></span>
+<span><span class="co">#&gt; [115] rmarkdown_2.28            basilisk_1.17.2          </span></span>
+<span><span class="co">#&gt; [117] XVector_0.45.0            htmltools_0.5.8.1        </span></span>
 <span><span class="co">#&gt; [119] pkgconfig_2.0.3           base64enc_0.1-3          </span></span>
-<span><span class="co">#&gt; [121] sparseMatrixStats_1.16.0  highr_0.11               </span></span>
+<span><span class="co">#&gt; [121] sparseMatrixStats_1.17.2  highr_0.11               </span></span>
 <span><span class="co">#&gt; [123] dbplyr_2.5.0              fastmap_1.2.0            </span></span>
-<span><span class="co">#&gt; [125] ensembldb_2.28.1          rlang_1.1.4              </span></span>
+<span><span class="co">#&gt; [125] ensembldb_2.29.1          rlang_1.1.4              </span></span>
 <span><span class="co">#&gt; [127] GlobalOptions_0.1.2       htmlwidgets_1.6.4        </span></span>
-<span><span class="co">#&gt; [129] UCSC.utils_1.0.0          DelayedMatrixStats_1.26.0</span></span>
+<span><span class="co">#&gt; [129] UCSC.utils_1.1.0          DelayedMatrixStats_1.27.3</span></span>
 <span><span class="co">#&gt; [131] farver_2.1.2              jquerylib_0.1.4          </span></span>
-<span><span class="co">#&gt; [133] jsonlite_1.8.8            BiocParallel_1.38.0      </span></span>
-<span><span class="co">#&gt; [135] R.oo_1.26.0               BiocSingular_1.20.0      </span></span>
-<span><span class="co">#&gt; [137] VariantAnnotation_1.50.0  RCurl_1.98-1.16          </span></span>
+<span><span class="co">#&gt; [133] jsonlite_1.8.9            BiocParallel_1.39.0      </span></span>
+<span><span class="co">#&gt; [135] R.oo_1.26.0               BiocSingular_1.21.4      </span></span>
+<span><span class="co">#&gt; [137] VariantAnnotation_1.51.0  RCurl_1.98-1.16          </span></span>
 <span><span class="co">#&gt; [139] magrittr_2.0.3            Formula_1.2-5            </span></span>
-<span><span class="co">#&gt; [141] scuttle_1.14.0            GenomeInfoDbData_1.2.12  </span></span>
-<span><span class="co">#&gt; [143] Rhdf5lib_1.26.0           munsell_0.5.1            </span></span>
+<span><span class="co">#&gt; [141] scuttle_1.15.4            GenomeInfoDbData_1.2.12  </span></span>
+<span><span class="co">#&gt; [143] Rhdf5lib_1.27.0           munsell_0.5.1            </span></span>
 <span><span class="co">#&gt; [145] Rcpp_1.0.13               viridis_0.6.5            </span></span>
 <span><span class="co">#&gt; [147] reticulate_1.39.0         stringi_1.8.4            </span></span>
-<span><span class="co">#&gt; [149] zlibbioc_1.50.0           plyr_1.8.9               </span></span>
-<span><span class="co">#&gt; [151] ggstats_0.6.0             parallel_4.4.1           </span></span>
+<span><span class="co">#&gt; [149] zlibbioc_1.51.1           plyr_1.8.9               </span></span>
+<span><span class="co">#&gt; [151] ggstats_0.7.0             parallel_4.4.1           </span></span>
 <span><span class="co">#&gt; [153] listenv_0.9.1             ggrepel_0.9.6            </span></span>
-<span><span class="co">#&gt; [155] Biostrings_2.72.1         hms_1.1.3                </span></span>
+<span><span class="co">#&gt; [155] Biostrings_2.73.1         hms_1.1.3                </span></span>
 <span><span class="co">#&gt; [157] circlize_0.4.16           locfit_1.5-9.10          </span></span>
 <span><span class="co">#&gt; [159] igraph_2.0.3              reshape2_1.4.4           </span></span>
-<span><span class="co">#&gt; [161] biomaRt_2.60.1            ScaledMatrix_1.12.0      </span></span>
-<span><span class="co">#&gt; [163] XML_3.99-0.17             evaluate_0.24.0          </span></span>
-<span><span class="co">#&gt; [165] biovizBase_1.52.0         scran_1.32.0             </span></span>
+<span><span class="co">#&gt; [161] biomaRt_2.61.3            ScaledMatrix_1.13.0      </span></span>
+<span><span class="co">#&gt; [163] XML_3.99-0.17             evaluate_1.0.0           </span></span>
+<span><span class="co">#&gt; [165] biovizBase_1.53.0         scran_1.33.2             </span></span>
 <span><span class="co">#&gt; [167] BiocManager_1.30.25       foreach_1.5.2            </span></span>
 <span><span class="co">#&gt; [169] tidyr_1.3.1               purrr_1.0.2              </span></span>
 <span><span class="co">#&gt; [171] future_1.34.0             clue_0.3-65              </span></span>
 <span><span class="co">#&gt; [173] ggplot2_3.5.1             rsvd_1.0.5               </span></span>
-<span><span class="co">#&gt; [175] restfulr_0.0.15           AnnotationFilter_1.28.0  </span></span>
+<span><span class="co">#&gt; [175] restfulr_0.0.15           AnnotationFilter_1.29.0  </span></span>
 <span><span class="co">#&gt; [177] viridisLite_0.4.2         ragg_1.3.3               </span></span>
-<span><span class="co">#&gt; [179] OrganismDbi_1.46.0        tibble_3.2.1             </span></span>
+<span><span class="co">#&gt; [179] OrganismDbi_1.47.0        tibble_3.2.1             </span></span>
 <span><span class="co">#&gt; [181] memoise_2.0.1             beeswarm_0.4.0           </span></span>
-<span><span class="co">#&gt; [183] AnnotationDbi_1.66.0      GenomicAlignments_1.40.0 </span></span>
+<span><span class="co">#&gt; [183] AnnotationDbi_1.67.0      GenomicAlignments_1.41.0 </span></span>
 <span><span class="co">#&gt; [185] cluster_2.1.6             globals_0.16.3</span></span></code></pre>
 </div>
 <div class="section level2">
@@ -700,7 +700,7 @@ RNA-Seq with BLAZE.”</span> <em>Genome Biology</em> 24 (1): 1–23.
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.9000.</p>
 </div>
 
     </footer>

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">FLAMES</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -81,10 +81,10 @@ The "counts" assay is used to obtain logcounts but left unchanged.</p>
 <span class="r-in"><span><span class="fu">SingleCellExperiment</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/dge.html" class="external-link">counts</a></span><span class="op">(</span><span class="fu">SingleCellExperiment</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/altExps.html" class="external-link">altExp</a></span><span class="op">(</span><span class="va">sce</span><span class="op">)</span><span class="op">)</span><span class="op">[</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="cn">NA</span></span></span>
 <span class="r-in"><span><span class="fu">SingleCellExperiment</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/dge.html" class="external-link">counts</a></span><span class="op">(</span><span class="fu">SingleCellExperiment</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/altExps.html" class="external-link">altExp</a></span><span class="op">(</span><span class="va">sce</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]   NA   NA    9    3    7    1    2    2    6     4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,]   NA   NA    4    2    3    2    3    6    5     3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [3,]   NA   NA    4    4    4    2    3    4    0     9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [4,]   NA   NA    3    4    5    5    2    5    8     5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]   NA   NA    4    5    7    7    4    4    7     4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,]   NA   NA    3    2    4    4    4    4    2     5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3,]   NA   NA    6    7    9    4    3    3    4     3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [4,]   NA   NA    4    6    4    6    9    6    2     5</span>
 <span class="r-in"><span><span class="va">imputed_sce</span> <span class="op">&lt;-</span> <span class="fu">sc_impute_transcript</span><span class="op">(</span><span class="va">sce</span>, k <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>more singular values/vectors requested than available</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>You're computing too large a percentage of total singular values, use a standard svd instead.</span>
@@ -92,15 +92,15 @@ The "counts" assay is used to obtain logcounts but left unchanged.</p>
 <span class="r-in"><span><span class="fu">SingleCellExperiment</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/assays.html" class="external-link">logcounts</a></span><span class="op">(</span><span class="fu">SingleCellExperiment</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/altExps.html" class="external-link">altExp</a></span><span class="op">(</span><span class="va">imputed_sce</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4 x 10 Matrix of class "dgeMatrix"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          [,1]     [,2]     [,3]     [,4]     [,5]     [,6]     [,7]     [,8]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 2.176712 2.284185 3.045487 2.239139 2.795100 1.385431 2.078951 1.534589</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 2.102268 2.281027 2.078951 1.799406 1.826214 2.078951 2.545351 2.742260</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [3,] 2.110705 1.821672 2.078951 2.575685 2.135777 2.078951 2.545351 2.261265</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [4,] 2.513752 2.474709 1.773469 2.575685 2.390508 3.179909 2.078951 2.521716</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 2.721542 2.630257 2.443919 2.515700 2.701595 2.866249 2.255501 2.443919</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 2.065714 2.127489 2.114661 1.529821 2.051662 2.200140 2.255501 2.443919</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3,] 2.502580 2.464166 2.937677 2.927185 3.014020 2.200140 1.937815 2.114661</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [4,] 2.499525 2.588603 2.443919 2.736064 2.051662 2.676461 3.246978 2.937677</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          [,9]    [,10]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 2.606941 2.025535</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 2.390508 1.724027</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [3,] 0.000000 2.983808</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [4,] 2.961526 2.274794</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 3.294008 2.443919</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 1.814209 2.711819</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3,] 2.592955 2.114661</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [4,] 1.814209 2.711819</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
@@ -113,7 +113,7 @@ The "counts" assay is used to obtain logcounts but left unchanged.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.9000.</p>
 </div>
 
     </footer></div>

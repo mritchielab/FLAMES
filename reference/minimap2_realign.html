@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">FLAMES</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -47,6 +47,8 @@
 <span>  <span class="va">minimap2</span>,</span>
 <span>  samtools <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  prefix <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">minimap2_args</span>,</span>
+<span>  <span class="va">sort_by</span>,</span>
 <span>  threads <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -79,6 +81,14 @@
 <dd><p>String, the prefix (e.g. sample name) for the outputted BAM file</p></dd>
 
 
+<dt id="arg-minimap-args">minimap2_args<a class="anchor" aria-label="anchor" href="#arg-minimap-args"></a></dt>
+<dd><p>vector of command line arguments to pass to minimap2</p></dd>
+
+
+<dt id="arg-sort-by">sort_by<a class="anchor" aria-label="anchor" href="#arg-sort-by"></a></dt>
+<dd><p>String, If provided, sort the BAM file by this tag instead of by position.</p></dd>
+
+
 <dt id="arg-threads">threads<a class="anchor" aria-label="anchor" href="#arg-threads"></a></dt>
 <dd><p>Integer, threads for minimap2 to use, see minimap2 documentation for details,
 FLAMES will try to detect cores if this parameter is not provided.</p></dd>
@@ -95,22 +105,33 @@ FLAMES will try to detect cores if this parameter is not provided.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">temp_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">bfc</span> <span class="op">&lt;-</span> <span class="fu">BiocFileCache</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocFileCache/man/BiocFileCache-class.html" class="external-link">BiocFileCache</a></span><span class="op">(</span><span class="va">temp_path</span>, ask <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">file_url</span> <span class="op">&lt;-</span> <span class="st">'https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data'</span></span></span>
-<span class="r-in"><span><span class="va">fastq1</span> <span class="op">&lt;-</span> <span class="va">bfc</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu">BiocFileCache</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocFileCache/man/BiocFileCache-class.html" class="external-link">bfcadd</a></span><span class="op">(</span><span class="va">bfc</span>, <span class="st">'Fastq1'</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">file_url</span>, <span class="st">'fastq/sample1.fastq.gz'</span>, sep <span class="op">=</span> <span class="st">'/'</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="va">genome_fa</span> <span class="op">&lt;-</span> <span class="va">bfc</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu">BiocFileCache</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocFileCache/man/BiocFileCache-class.html" class="external-link">bfcadd</a></span><span class="op">(</span><span class="va">bfc</span>, <span class="st">'genome.fa'</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">file_url</span>, <span class="st">'SIRV_isoforms_multi-fasta_170612a.fasta'</span>, sep <span class="op">=</span> <span class="st">'/'</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="va">annotation</span> <span class="op">&lt;-</span> <span class="va">bfc</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu">BiocFileCache</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocFileCache/man/BiocFileCache-class.html" class="external-link">bfcadd</a></span><span class="op">(</span><span class="va">bfc</span>, <span class="st">'annot.gtf'</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">file_url</span>, <span class="st">'SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf'</span>, sep <span class="op">=</span> <span class="st">'/'</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="va">outdir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">outdir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">outdir</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/any.html" class="external-link">any</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="fu"><a href="sys_which.html">sys_which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"minimap2"</span>, <span class="st">"k8"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/any.html" class="external-link">any</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="fu"><a href="find_bin.html">find_bin</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"minimap2"</span>, <span class="st">"k8"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="va">annotation</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'extdata'</span>, <span class="st">'rps24.gtf.gz'</span>, package <span class="op">=</span> <span class="st">'FLAMES'</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="va">genome_fa</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'extdata'</span>, <span class="st">'rps24.fa.gz'</span>, package <span class="op">=</span> <span class="st">'FLAMES'</span><span class="op">)</span></span></span>
 <span class="r-in"><span>    <span class="va">fasta</span> <span class="op">&lt;-</span> <span class="fu"><a href="annotation_to_fasta.html">annotation_to_fasta</a></span><span class="op">(</span><span class="va">annotation</span>, <span class="va">genome_fa</span>, <span class="va">outdir</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="va">fastq</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'extdata'</span>, <span class="st">'fastq'</span>, <span class="st">'demultiplexed.fq.gz'</span>, package <span class="op">=</span> <span class="st">'FLAMES'</span><span class="op">)</span></span></span>
 <span class="r-in"><span>    <span class="fu">minimap2_realign</span><span class="op">(</span></span></span>
-<span class="r-in"><span>        config <span class="op">=</span> <span class="fu">jsonlite</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/jsonlite/man/fromJSON.html" class="external-link">fromJSON</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'extdata/SIRV_config_default.json'</span>, package <span class="op">=</span> <span class="st">'FLAMES'</span><span class="op">)</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>        fq_in <span class="op">=</span> <span class="va">fastq1</span>,</span></span>
+<span class="r-in"><span>        config <span class="op">=</span> <span class="fu">jsonlite</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/jsonlite/man/fromJSON.html" class="external-link">fromJSON</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'extdata/config_sclr_nanopore_3end.json'</span>, package <span class="op">=</span> <span class="st">'FLAMES'</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>        fq_in <span class="op">=</span> <span class="va">fastq</span>,</span></span>
 <span class="r-in"><span>        outdir <span class="op">=</span> <span class="va">outdir</span></span></span>
 <span class="r-in"><span>    <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Import genomic features from the file as a GRanges object ... </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> OK</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Prepare the 'metadata' data frame ... </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> OK</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Make the TxDb object ... </span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The "phase" metadata column contains non-NA values for features of type</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span>   stop_codon. This information was ignored.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> OK</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 01:57:37 PM Wed Sep 25 2024 minimap2_realign</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Sorting by position</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                         total mapped primary</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/RtmpGLwhhp/file3c852f90b0c6/realign2transcript.bam    31     31      10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                         secondary</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/RtmpGLwhhp/file3c852f90b0c6/realign2transcript.bam        21</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -122,7 +143,7 @@ FLAMES will try to detect cores if this parameter is not provided.</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.9000.</p>
 </div>
 
     </footer></div>

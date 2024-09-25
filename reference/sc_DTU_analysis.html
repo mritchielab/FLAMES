@@ -15,7 +15,7 @@ output folder of sc_long_pipeline."><meta property="og:image" content="https://m
 
     <a class="navbar-brand me-2" href="../index.html">FLAMES</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -114,18 +114,153 @@ Adjusted P-values were calculated by Benjamini–Hochberg correction.</p>
 <span class="r-in"><span><span class="fu">R.utils</span><span class="fu">::</span><span class="fu"><a href="https://henrikbengtsson.github.io/R.utils/reference/compressFile.html" class="external-link">gunzip</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/bc_allow.tsv.gz"</span>, package <span class="op">=</span> <span class="st">"FLAMES"</span><span class="op">)</span>, destname <span class="op">=</span> <span class="va">bc_allow</span>, remove <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">R.utils</span><span class="fu">::</span><span class="fu"><a href="https://henrikbengtsson.github.io/R.utils/reference/compressFile.html" class="external-link">gunzip</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/rps24.fa.gz"</span>, package <span class="op">=</span> <span class="st">"FLAMES"</span><span class="op">)</span>, destname <span class="op">=</span> <span class="va">genome_fa</span>, remove <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/any.html" class="external-link">any</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="fu"><a href="sys_which.html">sys_which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"minimap2"</span>, <span class="st">"k8"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/any.html" class="external-link">any</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="fu"><a href="find_bin.html">find_bin</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"minimap2"</span>, <span class="st">"k8"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="va">sce</span> <span class="op">&lt;-</span> <span class="fu">FLAMES</span><span class="fu">::</span><span class="fu"><a href="sc_long_pipeline.html">sc_long_pipeline</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>    genome_fa <span class="op">=</span> <span class="va">genome_fa</span>,</span></span>
 <span class="r-in"><span>    fastq <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/fastq"</span>, package <span class="op">=</span> <span class="st">"FLAMES"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>    annotation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/rps24.gtf.gz"</span>, package <span class="op">=</span> <span class="st">"FLAMES"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>    outdir <span class="op">=</span> <span class="va">outdir</span>,</span></span>
-<span class="r-in"><span>    barcodes_file <span class="op">=</span> <span class="va">bc_allow</span></span></span>
+<span class="r-in"><span>    barcodes_file <span class="op">=</span> <span class="va">bc_allow</span>,</span></span>
+<span class="r-in"><span>    config_file <span class="op">=</span> <span class="fu"><a href="create_config.html">create_config</a></span><span class="op">(</span><span class="va">outdir</span>, oarfish_quantification<span class="op">=</span><span class="cn">FALSE</span>, do_gene_quantification<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="va">group_anno</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>barcode_seq <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">sce</span><span class="op">)</span>, groups <span class="op">=</span> <span class="fu">SingleCellExperiment</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/dge.html" class="external-link">counts</a></span><span class="op">(</span><span class="va">sce</span><span class="op">)</span><span class="op">[</span><span class="st">"ENSMUST00000169826.2"</span>, <span class="op">]</span> <span class="op">&gt;</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">group_anno</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">"cluster_annotation.csv"</span><span class="op">)</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="fu">sc_DTU_analysis</span><span class="op">(</span><span class="va">sce</span>, min_count <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/RtmpGLwhhp/file3c854b3a05e0/config_file_15493.json </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Configured to use 8 cores, detected 4 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 01:58:05 PM Wed Sep 25 2024 Start running</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 01:58:05 PM Wed Sep 25 2024 Demultiplexing using flexiplex...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Matching cell barcodes...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> FLEXIPLEX 0.96.2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting max barcode edit distance to 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting max flanking sequence edit distance to 8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting read IDs to be  replaced</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting number of threads to 8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Search pattern: </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> primer: CTACACGACGCTCTTCCGATCT</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> BC: NNNNNNNNNNNNNNNN</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> UMI: NNNNNNNNNNNN</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> polyT: TTTTTTTTT</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpGLwhhp/file3c854b3a05e0/bc_allow.tsv</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of known barcodes: 143</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads processed: 10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads where a barcode was found: 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads where more than one barcode was found: 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> All done!</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> FLEXIPLEX 0.96.2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting max barcode edit distance to 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting max flanking sequence edit distance to 8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting read IDs to be  replaced</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting number of threads to 8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Search pattern: </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> primer: CTACACGACGCTCTTCCGATCT</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> BC: NNNNNNNNNNNNNNNN</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> UMI: NNNNNNNNNNNN</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> polyT: TTTTTTTTT</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpGLwhhp/file3c854b3a05e0/bc_allow.tsv</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of known barcodes: 143</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads processed: 393</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads where a barcode was found: 368</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads where more than one barcode was found: 4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> All done!</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Skipping TSO trimming...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 01:58:05 PM Wed Sep 25 2024 Demultiplex done</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Running FLAMES pipeline...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> #### Input parameters:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> {</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   "pipeline_parameters": {</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "seed": [2022],</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "threads": [8],</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "do_barcode_demultiplex": [true],</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "do_gene_quantification": [false],</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "do_genome_alignment": [true],</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "do_isoform_identification": [true],</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "bambu_isoform_identification": [false],</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "multithread_isoform_identification": [false],</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "do_read_realignment": [true],</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "do_transcript_quantification": [true],</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "oarfish_quantification": [false]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   },</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   "barcode_parameters": {</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "max_bc_editdistance": [2],</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "max_flank_editdistance": [8],</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "pattern": {</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       "primer": ["CTACACGACGCTCTTCCGATCT"],</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       "BC": ["NNNNNNNNNNNNNNNN"],</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       "UMI": ["NNNNNNNNNNNN"],</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       "polyT": ["TTTTTTTTT"]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     },</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "TSO_seq": ["CCCATGTACTCTGCGTTGATACCACTGCTT"],</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "TSO_prime": [3],</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "full_length_only": [false]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   },</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   "isoform_parameters": {</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "generate_raw_isoform": [false],</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "max_dist": [10],</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "max_ts_dist": [100],</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "max_splice_match_dist": [10],</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "min_fl_exon_len": [40],</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "max_site_per_splice": [3],</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "min_sup_cnt": [5],</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "min_cnt_pct": [0.001],</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "min_sup_pct": [0.2],</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "bambu_trust_reference": [true],</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "strand_specific": [0],</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "remove_incomp_reads": [4],</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "downsample_ratio": [1]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   },</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   "alignment_parameters": {</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "use_junctions": [true],</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "no_flank": [false]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   },</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   "realign_parameters": {</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "use_annotation": [true]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   },</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   "transcript_counting": {</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "min_tr_coverage": [0.4],</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "min_read_coverage": [0.4]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   }</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> } </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> gene annotation: /__w/_temp/Library/FLAMES/extdata/rps24.gtf.gz </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> genome fasta: /tmp/RtmpGLwhhp/file3c854b3a05e0/rps24.fa </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> input fastq: /tmp/RtmpGLwhhp/file3c854b3a05e0/matched_reads.fastq </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> output directory: /tmp/RtmpGLwhhp/file3c854b3a05e0 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> minimap2 path: </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> k8 path: </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> #### Aligning reads to genome using minimap2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 01:58:05 PM Wed Sep 25 2024 minimap2_align</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> #### Skip gene quantification and UMI deduplication</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 01:58:05 PM Wed Sep 25 2024 Start isoform identificaiton</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 01:58:05 PM Wed Sep 25 2024 find_isoform</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 01:58:05 PM Wed Sep 25 2024 Isoform identificaiton done</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> #### Realigning deduplicated reads to transcript using minimap2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 01:58:05 PM Wed Sep 25 2024 minimap2_realign</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Sorting by position</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> #### Generating transcript count matrix</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 01:58:05 PM Wed Sep 25 2024 quantify transcripts </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Found realignment file(s): 	realign2transcript.bam</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Loading isoform_FSM_annotation.csv ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Selecting transcript_ids with full splice match ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Summing transcripts with same FSM ... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Creating FSM_count.csv.gz ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/RtmpGLwhhp/file3c854b3a05e0/FSM_count.csv.gz saved.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 	 6 FSM_match(s) found.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Loading cluster_annotation.csv ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Adding cluster information to SCE object ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Filtering for genes with at least 2 detected isforms ...      6 FSM_match(s) left.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Keeping only the top 4 expressed FSM_matches for each gene ...      4 FSM_match(s) left.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Aggregating counts by cluster labels ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Filtering isoforms ... 4  transcript_id(s) remaining.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Performing Chi-square tests ...</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Chi-squared approximation(s) may be incorrect</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Results saved to  /tmp/RtmpGLwhhp/file3c854b3a05e0/sc_DTU_analysis.csv </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                      gene_id  X_value df                          DTU_tr</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> X-squared ENSMUSG00000025290 15.14398  3 ENSMUSG00000025290.17_19_5159_1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           DTU_group     p_value       adj_p</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> X-squared     FALSE 0.001697652 0.001697652</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -137,7 +272,7 @@ Adjusted P-values were calculated by Benjamini–Hochberg correction.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.9000.</p>
 </div>
 
     </footer></div>
