@@ -1,6 +1,8 @@
-import pysam
-import sys
 import os
+import sys
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+import pysam
 import gzip
 import numpy as np
 import pandas as pd
@@ -9,7 +11,6 @@ import re
 from collections import Counter
 import fast_edit_distance
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor, as_completed
-import multiprocessing as mp
 import matplotlib.pyplot as plt
 import bisect
 from collections import namedtuple

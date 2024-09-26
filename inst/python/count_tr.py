@@ -2,13 +2,15 @@
 
 import os
 import sys
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+# https://github.com/rstudio/reticulate/issues/1677
+
 import gzip
 import numpy as np
 # import editdistance
 import fast_edit_distance 
 from itertools import groupby
 from collections import Counter, defaultdict
-import multiprocessing as mp
 import concurrent.futures
 import pysam as ps
 from datetime import datetime
