@@ -168,6 +168,7 @@ def flames_read_id_parser(read_id, methods = 'flexiplex'):
         return bc, umi, read_id, strand
     #
     if methods == 'blaze':
+        read_id = read_id.split("\t")[0]
         bc, umi, *_, strand = re.split("_|#", read_id)
         return bc, umi, read_id, strand
     else:
@@ -287,7 +288,7 @@ def quantify_gene_single_process(in_gtf_df, in_bam, demulti_methods, cluster_3pr
                     read_gene_assign_df.umi_corrected.astype(str) + \
                     read_gene_assign_df.cluster.astype(str)
     
-    return gene_count_mat, dedup_read_lst, umi_lst, read_gene_assign_df
+    return gene_count_mat, dedup_read_lst, umi_lst
 
 def _map_pos_grouping(mappos, min_dist=50):
     """
