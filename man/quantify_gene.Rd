@@ -24,7 +24,7 @@ quantify_gene(
 
 \item{pipeline}{The pipeline type as a character string, either \code{sc_single_sample} (single-cell, single-sample),}
 
-\item{samples}{A vector of sample names, default to the file names of input fastq files, 
+\item{samples}{A vector of sample names, default to the file names of input fastq files,
 or folder names if \code{fastqs} is a vector of folders.
 \code{bulk} (bulk, single or multi-sample), or \code{sc_multi_sample} (single-cell, multiple samples)}
 }
@@ -35,18 +35,18 @@ The count matrix will be saved in the output folder as \code{transcript_count.cs
 Calculate the per gene UMI count matrix by parsing the genome alignment file.
 }
 \details{
-After the genome alignment step (\code{do_genome_align}), the alignment file will be parsed to 
-generate the per gene UMI count matrix. For each gene in the annotation file, the number of 
-reads whose mapped ranges overlap with the gene's genome coordinates will be assigned to the 
-gene. For reads can be assigned to multiple gene, the read will be assigned to the gene with 
-the highest number of overlapping nucleotides. If the read can be assigned to multiple genes 
+After the genome alignment step (\code{do_genome_align}), the alignment file will be parsed to
+generate the per gene UMI count matrix. For each gene in the annotation file, the number of
+reads whose mapped ranges overlap with the gene's genome coordinates will be assigned to the
+gene. For reads can be assigned to multiple gene, the read will be assigned to the gene with
+the highest number of overlapping nucleotides. If the read can be assigned to multiple genes
 with the same number of overlapping nucleotides, the read will be not be assigned.
 
 After the read-to-gene assignment, the per gene UMI count matrix will be generated.
 Specifically, for each gene, the reads with similar mapping coordinates of transcript
-termination sites (TTS, i.e. the end of the the read with a polyT or polyA) will be grouped 
+termination sites (TTS, i.e. the end of the the read with a polyT or polyA) will be grouped
 together. UMIs of reads in the same group will be collapsed to generate the UMI counts for each
-gene. 
+gene.
 
 Finally, a new fastq file with deduplicated reads by keeping the longest read in each UMI.
 }

@@ -7,19 +7,19 @@
 #' Chi-square based differential transcription usage analysis. This variant is meant for single cell data.
 #' Takes the \code{SingleCellExperiment} object from \code{sc_long_pipeline} as input.
 #' Alternatively, the path to the output folder could be provided instead of the SCE object.
-#' A cluster annotation file \code{cluster_annotation.csv} is required, please provide this file under the
-#' output folder of \code{sc_long_pipeline}.
 #'
 #'
 #' @details
 #' This function will search for genes that have at least two isoforms, each with more than \code{min_count} UMI counts.
 #' For each gene, the per cell transcript counts were merged by group to generate pseudo bulk samples.
-#' Grouping is specified by the \code{cluster_annotation.csv} file.
+#' Grouping is specified by the \code{colLabels} of the SCE object.
 #' The top 2 highly expressed transcripts for each group were selected and a UMI count matrix where
 #' the rows are selected transcripts and columns are groups was used as input to a chi-square test of independence (chisq.test).
 #' Adjusted P-values were calculated by Benjamini–Hochberg correction.
 #'
-#' @param sce The \code{SingleCellExperiment} object from \code{sc_long_pipeline}, an additional \code{cluster_annotation.csv}
+#' @param sce The \code{SingleCellExperiment} object from \code{sc_long_pipeline},
+#' with the following metadata:
+
 #' file is required under the output folder of the SCE object.
 #'
 #' @param min_count The minimum UMI count threshold for filtering isoforms.
@@ -63,10 +63,10 @@
 #'   annotation = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),
 #'   outdir = outdir,
 #'   barcodes_file = bc_allow,
-#'   config_file = create_config(outdir, oarfish_quantification=FALSE, do_gene_quantification=FALSE)
+#'   config_file = create_config(outdir, oarfish_quantification=FALSE)
 #' )
 #' group_anno <- data.frame(barcode_seq = colnames(sce), groups = SingleCellExperiment::counts(sce)["ENSMUST00000169826.2", ] > 1)
-#' write.csv(group_anno, file.path(outdir, "cluster_annotation.csv"), row.names = FALSE)
+#' SingleCellExperiment::colLabels(sce) <- group_anno$groups
 #' sc_DTU_analysis(sce, min_count = 1)
 sc_DTU_analysis <- function(sce, min_count = 15) {
 
@@ -77,8 +77,7 @@ sc_DTU_analysis <- function(sce, min_count = 15) {
   if (!file.exists(file.path(sce@metadata$OutputFiles$outdir, "isoform_FSM_annotation.csv"))) {
     stop("Missing isoform_FSM_annotation.csv")
   }
-  stopifnot(!is.null(colLabels(sce)) || 
-              file.exists(file.path(sce@metadata$OutputFiles$outdir, "cluster_annotation.csv")))
+  stopifnot("Cluster label (colLabels(sce)) not found" = !is.null(colLabels(sce)))
 
   outdir <- sce@metadata$OutputFiles$outdir
   cat("Loading isoform_FSM_annotation.csv ...\n")
@@ -115,19 +114,8 @@ sc_DTU_analysis <- function(sce, min_count = 15) {
   rowData(tr_sce) <- rowData(sce)[match(mer_tmp$FSM_match, rowData(sce)$FSM_match),]
 
   # Remove version number from gene_id
-  rowData(tr_sce)$gene_id <- gsub("\\..*", "", rowData(tr_sce)$gene_id)
-
-  if (is.null(colLabels(sce))) {
-    cat("Loading cluster_annotation.csv ...\n")
-    cluster_barcode_anno <- read.csv(file.path(outdir, "cluster_annotation.csv"), stringsAsFactors = FALSE)
-    comm_cells <- na.omit(match(colnames(tr_sce), cluster_barcode_anno$barcode_seq))
-    cluster_barcode_anno <- cluster_barcode_anno[comm_cells,]
-    
-    cat("Adding cluster information to SCE object ...\n")
-    colLabels(tr_sce) <- cluster_barcode_anno$group
-  } else {
-    colLabels(tr_sce) <- colLabels(sce)
-  }
+  # rowData(tr_sce)$gene_id <- gsub("\\..*", "", rowData(tr_sce)$gene_id)
+  colLabels(tr_sce) <- colLabels(sce)
 
   cat("Filtering for genes with at least 2 detected isforms ...")
   tr_sce_multi <- tr_sce[rowData(tr_sce)$gene_id %in% names(table(rowData(tr_sce)$gene_id)[table(rowData(tr_sce)$gene_id) > 1]), ]

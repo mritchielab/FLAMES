@@ -7,7 +7,8 @@
 sc_DTU_analysis(sce, min_count = 15)
 }
 \arguments{
-\item{sce}{The \code{SingleCellExperiment} object from \code{sc_long_pipeline}, an additional \code{cluster_annotation.csv}
+\item{sce}{The \code{SingleCellExperiment} object from \code{sc_long_pipeline},
+with the following metadata:
 file is required under the output folder of the SCE object.}
 
 \item{min_count}{The minimum UMI count threshold for filtering isoforms.}
@@ -30,13 +31,11 @@ output folder.
 Chi-square based differential transcription usage analysis. This variant is meant for single cell data.
 Takes the \code{SingleCellExperiment} object from \code{sc_long_pipeline} as input.
 Alternatively, the path to the output folder could be provided instead of the SCE object.
-A cluster annotation file \code{cluster_annotation.csv} is required, please provide this file under the
-output folder of \code{sc_long_pipeline}.
 }
 \details{
 This function will search for genes that have at least two isoforms, each with more than \code{min_count} UMI counts.
 For each gene, the per cell transcript counts were merged by group to generate pseudo bulk samples.
-Grouping is specified by the \code{cluster_annotation.csv} file.
+Grouping is specified by the \code{colLabels} of the SCE object.
 The top 2 highly expressed transcripts for each group were selected and a UMI count matrix where
 the rows are selected transcripts and columns are groups was used as input to a chi-square test of independence (chisq.test).
 Adjusted P-values were calculated by Benjamini–Hochberg correction.
@@ -55,9 +54,9 @@ sce <- FLAMES::sc_long_pipeline(
   annotation = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),
   outdir = outdir,
   barcodes_file = bc_allow,
-  config_file = create_config(outdir, oarfish_quantification=FALSE, do_gene_quantification=FALSE)
+  config_file = create_config(outdir, oarfish_quantification=FALSE)
 )
 group_anno <- data.frame(barcode_seq = colnames(sce), groups = SingleCellExperiment::counts(sce)["ENSMUST00000169826.2", ] > 1)
-write.csv(group_anno, file.path(outdir, "cluster_annotation.csv"), row.names = FALSE)
+SingleCellExperiment::colLabels(sce) <- group_anno$groups
 sc_DTU_analysis(sce, min_count = 1)
 }

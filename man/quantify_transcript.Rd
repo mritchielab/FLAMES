@@ -44,11 +44,11 @@ config <- jsonlite::fromJSON(create_config(outdir, bambu_isoform_identification 
 file.copy(annotation, file.path(outdir, "isoform_annotated.gtf"))
 \dontrun{
 if (!any(is.na(find_bin(c("minimap2", "k8"))))) {
-    minimap2_realign(
-        config = config, outdir = outdir,
-        fq_in = fastq1
-    )
-    quantify_transcript_flames(annotation, outdir, config, pipeline = "bulk")
+  minimap2_realign(
+    config = config, outdir = outdir,
+    fq_in = fastq1
+  )
+  quantify_transcript_flames(annotation, outdir, config, pipeline = "bulk")
 }
 }
 }
