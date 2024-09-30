@@ -65,7 +65,10 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2 = NA,
     samtools <- find_bin("samtools")
   }
 
-  minimap2_args <- c("-ax", "splice", "-y", "-t", threads, "-k14", "--secondary=no",
+  has_tags <- grepl("\t", readLines(fq_in, n = 1))
+  tags <- switch(has_tags, "-y")
+
+  minimap2_args <- c("-ax", "splice", tags, "-t", threads, "-k14", "--secondary=no",
     "--seed", config$pipeline_parameters$seed)
   if (config$alignment_parameters$no_flank) {
     minimap2_args <- base::append(minimap2_args, "--splice-flank=no")
@@ -172,7 +175,9 @@ minimap2_realign <- function(config, fq_in, outdir, minimap2, samtools = NULL, p
   }
 
   if (missing("minimap2_args") || !is.character(minimap2_args)) {
-    minimap2_args <- c("-ax", "map-ont", "-y", "-p", "0.9", "--end-bonus", "10", "-N",
+    has_tags <- grepl("\t", readLines(fq_in, n = 1))
+    tags <- switch(has_tags, "-y")
+    minimap2_args <- c("-ax", "map-ont", tags, "-p", "0.9", "--end-bonus", "10", "-N",
       "3", "-t", threads, "--seed", config$pipeline_parameters$seed)
   }
 
