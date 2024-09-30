@@ -27,16 +27,13 @@ R.utils::gunzip(filename = system.file("extdata/bc_allow.tsv.gz", package = "FLA
 R.utils::gunzip(filename = system.file("extdata/rps24.fa.gz", package = "FLAMES"), destname = genome_fa, remove = FALSE)
 annotation <- system.file("extdata/rps24.gtf.gz", package = "FLAMES")
 
-if (!any(is.na(find_bin(c("minimap2", "k8"))))) {
-  sce <- FLAMES::sc_long_pipeline(
-    genome_fa = genome_fa,
-    fastq = system.file("extdata/fastq", package = "FLAMES"),
-    annotation = annotation,
-    outdir = outdir,
-    barcodes_file = bc_allow,
-    config_file = create_config(outdir, oarfish_quantification=FALSE,
-      do_gene_quantification=FALSE)
-  )
-  sce_2 <- create_sce_from_dir(outdir, annotation)
-}
+sce <- FLAMES::sc_long_pipeline(
+  genome_fa = genome_fa,
+  fastq = system.file("extdata/fastq", package = "FLAMES"),
+  annotation = annotation,
+  outdir = outdir,
+  barcodes_file = bc_allow,
+  config_file = create_config(outdir, oarfish_quantification=FALSE)
+)
+sce_2 <- create_sce_from_dir(outdir, annotation)
 }

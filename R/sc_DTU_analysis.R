@@ -57,19 +57,17 @@
 #' R.utils::gunzip(filename = system.file("extdata/bc_allow.tsv.gz", package = "FLAMES"), destname = bc_allow, remove = FALSE)
 #' R.utils::gunzip(filename = system.file("extdata/rps24.fa.gz", package = "FLAMES"), destname = genome_fa, remove = FALSE)
 #'
-#' if (!any(is.na(find_bin(c("minimap2", "k8"))))) {
-#'   sce <- FLAMES::sc_long_pipeline(
-#'     genome_fa = genome_fa,
-#'     fastq = system.file("extdata/fastq", package = "FLAMES"),
-#'     annotation = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),
-#'     outdir = outdir,
-#'     barcodes_file = bc_allow,
-#'     config_file = create_config(outdir, oarfish_quantification=FALSE, do_gene_quantification=FALSE)
-#'   )
-#'   group_anno <- data.frame(barcode_seq = colnames(sce), groups = SingleCellExperiment::counts(sce)["ENSMUST00000169826.2", ] > 1)
-#'   write.csv(group_anno, file.path(outdir, "cluster_annotation.csv"), row.names = FALSE)
-#'   sc_DTU_analysis(sce, min_count = 1)
-#' }
+#' sce <- FLAMES::sc_long_pipeline(
+#'   genome_fa = genome_fa,
+#'   fastq = system.file("extdata/fastq", package = "FLAMES"),
+#'   annotation = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),
+#'   outdir = outdir,
+#'   barcodes_file = bc_allow,
+#'   config_file = create_config(outdir, oarfish_quantification=FALSE, do_gene_quantification=FALSE)
+#' )
+#' group_anno <- data.frame(barcode_seq = colnames(sce), groups = SingleCellExperiment::counts(sce)["ENSMUST00000169826.2", ] > 1)
+#' write.csv(group_anno, file.path(outdir, "cluster_annotation.csv"), row.names = FALSE)
+#' sc_DTU_analysis(sce, min_count = 1)
 sc_DTU_analysis <- function(sce, min_count = 15) {
 
   # sce object from sc_long_pipeline
