@@ -425,7 +425,7 @@ def _subset_reads_from_fastq_chunk(read_chunk, read_id_set):
     """
     out_lst = []
     for i in range(0, len(read_chunk), 4):
-        read_id = read_chunk[i].strip()[1:]
+        read_id = read_chunk[i].strip()[1:].split('\t')[0]
         if read_id in read_id_set:
             out_lst.extend(read_chunk[i:i+4])
     return out_lst
