@@ -29,9 +29,11 @@ find_barcode(
 
 \item{max_flank_editdistance}{max edit distances for the flanking sequences (primer and polyT)}
 
-\item{reads_out}{path of output FASTQ file}
+\item{reads_out}{path of output FASTQ file; if multiple samples are processed,
+the file name will be appended with the FASTQ file name}
 
-\item{stats_out}{path of output stats file}
+\item{stats_out}{path of output stats file; if multiple samples are processed,
+the file name will be appended with the FASTQ file name}
 
 \item{threads}{number of threads to be used}
 
@@ -45,7 +47,9 @@ find_barcode(
 are to be discarded}
 }
 \value{
-invisible()
+a list containing: \code{reads_tb} (tibble of read demultiplexed information) and
+\code{input}, \code{output}, \code{read1_with_adapter} from cutadapt report
+(if TSO trimming is performed)
 }
 \description{
 demultiplex reads with flexiplex
@@ -54,11 +58,28 @@ demultiplex reads with flexiplex
 outdir <- tempfile()
 dir.create(outdir)
 bc_allow <- file.path(outdir, "bc_allow.tsv")
-R.utils::gunzip(filename = system.file("extdata/bc_allow.tsv.gz", package = "FLAMES"), destname = bc_allow, remove = FALSE)
+R.utils::gunzip(
+  filename = system.file("extdata", "bc_allow.tsv.gz", package = "FLAMES"),
+  destname = bc_allow, remove = FALSE
+)
+# single sample
 find_barcode(
-  fastq = system.file("extdata/fastq", package = "FLAMES"),
+  fastq = system.file("extdata", "fastq", "musc_rps24.fastq.gz", package = "FLAMES"),
   stats_out = file.path(outdir, "bc_stat"),
-  reads_out = file.path(outdir, "demultiplexed.fq.gz"),
+  reads_out = file.path(outdir, "demultiplexed.fq"),
   barcodes_file = bc_allow
+)
+# multi-sample
+fastq_dir <- tempfile()
+dir.create(fastq_dir)
+file.copy(system.file("extdata", "fastq", "musc_rps24.fastq.gz", package = "FLAMES"),
+  file.path(fastq_dir, "musc_rps24.fastq.gz"))
+sampled_lines <- readLines(file.path(fastq_dir, "musc_rps24.fastq.gz"), n = 400)
+writeLines(sampled_lines, file.path(fastq_dir, "copy.fastq"))
+result <- find_barcode(
+  fastq = fastq_dir,
+  stats_out = file.path(outdir, "bc_stat"),
+  reads_out = file.path(outdir, "demultiplexed.fq"),
+  barcodes_file = bc_allow, TSO_seq = "CCCATGTACTCTGCGTTGATACCACTGCTT"
 )
 }

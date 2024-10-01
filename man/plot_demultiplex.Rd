@@ -4,16 +4,19 @@
 \alias{plot_demultiplex}
 \title{Plot Cell Barcode demultiplex statistics}
 \usage{
-plot_demultiplex(outdir, stats_file)
+plot_demultiplex(find_barcode_result)
 }
 \arguments{
-\item{outdir}{folder containing the \code{matched_barcode_stat} file, or
-\code{matched_barcode_stat.SAMPLE} files. Ignored if \code{stats_file} is provided.}
-
-\item{stats_file}{\code{matched_barcode_stat} file(s) from which the statistics to be plotted.}
+\item{find_barcode_result}{output from \code{\link{find_barcode}}}
 }
 \value{
-a \code{ggplot} object of the barcode plot
+a list of ggplot objects:
+\itemize{
+\item knee_plot: knee plot of UMI counts before TSO trimming
+\item flank_editdistance_plot: flanking sequence (adaptor) edit-distance plot
+\item barcode_editdistance_plot: barcode edit-distance plot
+\item cutadapt_plot: if TSO trimming is performed, number of reads kept by cutadapt
+}
 }
 \description{
 produce a barplot of cell barcode demultiplex statistics
@@ -21,13 +24,22 @@ produce a barplot of cell barcode demultiplex statistics
 \examples{
 outdir <- tempfile()
 dir.create(outdir)
+fastq_dir <- tempfile()
+dir.create(fastq_dir)
+file.copy(system.file("extdata", "fastq", "musc_rps24.fastq.gz", package = "FLAMES"),
+  file.path(fastq_dir, "musc_rps24.fastq.gz"))
+sampled_lines <- readLines(file.path(fastq_dir, "musc_rps24.fastq.gz"), n = 400)
+writeLines(sampled_lines, file.path(fastq_dir, "copy.fastq"))
 bc_allow <- file.path(outdir, "bc_allow.tsv")
-R.utils::gunzip(filename = system.file("extdata/bc_allow.tsv.gz", package = "FLAMES"), destname = bc_allow, remove = FALSE)
-find_barcode(
-  fastq = system.file("extdata/fastq", package = "FLAMES"),
-  stats_out = file.path(outdir, "bc_stat"),
-  reads_out = file.path(outdir, "demultiplexed.fq.gz"),
-  barcodes_file = bc_allow
+R.utils::gunzip(
+  filename = system.file("extdata", "bc_allow.tsv.gz", package = "FLAMES"),
+  destname = bc_allow, remove = FALSE
 )
-plot_demultiplex(stats_file = file.path(outdir, "bc_stat"))
+find_barcode(
+  fastq = fastq_dir,
+  stats_out = file.path(outdir, "bc_stat"),
+  reads_out = file.path(outdir, "demultiplexed.fq"),
+  barcodes_file = bc_allow, TSO_seq = "CCCATGTACTCTGCGTTGATACCACTGCTT"
+) |>
+  plot_demultiplex()
 }

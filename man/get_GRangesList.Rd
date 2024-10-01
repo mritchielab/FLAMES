@@ -24,20 +24,19 @@ genome_fa <- bfc[[names(BiocFileCache::bfcadd(bfc, "genome.fa", paste(file_url, 
 annotation <- bfc[[names(BiocFileCache::bfcadd(bfc, "annot.gtf", paste(file_url, "SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf", sep = "/")))]]
 outdir <- tempfile()
 dir.create(outdir)
-if (!any(is.na(find_bin(c("minimap2", "k8"))))) {
-    config <- jsonlite::fromJSON(system.file("extdata/config_sclr_nanopore_3end.json", package = "FLAMES"))
-    minimap2_align(
-        config = config,
-        fa_file = genome_fa,
-        fq_in = fastq1,
-        annot = annotation,
-        outdir = outdir
-    )
-    find_isoform(
-        annotation = annotation, genome_fa = genome_fa,
-        genome_bam = file.path(outdir, "align2genome.bam"),
-        outdir = outdir, config = config
-    )
-    grlist <- get_GRangesList(file = file.path(outdir, "isoform_annotated.gff3"))
-}
+config <- jsonlite::fromJSON(
+  system.file("extdata", "config_sclr_nanopore_3end.json", package = "FLAMES"))
+minimap2_align(
+  config = config,
+  fa_file = genome_fa,
+  fq_in = fastq1,
+  annot = annotation,
+  outdir = outdir
+)
+find_isoform(
+  annotation = annotation, genome_fa = genome_fa,
+  genome_bam = file.path(outdir, "align2genome.bam"),
+  outdir = outdir, config = config
+)
+grlist <- get_GRangesList(file = file.path(outdir, "isoform_annotated.gff3"))
 }

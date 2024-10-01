@@ -17,7 +17,7 @@ cutadapt <- function(args) {
     output <- subprocess$check_output(paste(c("cutadapt", x), collapse=" "), shell=TRUE)
     output_str <- builtin$str(output, encoding="utf-8")
     builtin$print(output_str)
-
+    return(output_str)
   }, x = args)
 }
 

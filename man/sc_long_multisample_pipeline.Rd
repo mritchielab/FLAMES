@@ -95,21 +95,29 @@ strand information being based on reference annotation.}
 }
 }
 \examples{
-reads <- ShortRead::readFastq(system.file("extdata/fastq/musc_rps24.fastq.gz", package = "FLAMES"))
+reads <- ShortRead::readFastq(
+  system.file("extdata","fastq", "musc_rps24.fastq.gz", package = "FLAMES")
+)
 outdir <- tempfile()
 dir.create(outdir)
 dir.create(file.path(outdir, "fastq"))
 bc_allow <- file.path(outdir, "bc_allow.tsv")
 genome_fa <- file.path(outdir, "rps24.fa")
-R.utils::gunzip(filename = system.file("extdata/bc_allow.tsv.gz", package = "FLAMES"), destname = bc_allow, remove = FALSE)
-R.utils::gunzip(filename = system.file("extdata/rps24.fa.gz", package = "FLAMES"), destname = genome_fa, remove = FALSE)
+R.utils::gunzip(
+  filename = system.file("extdata", "bc_allow.tsv.gz", package = "FLAMES"),
+  destname = bc_allow, remove = FALSE
+)
+R.utils::gunzip(
+  filename = system.file("extdata", "rps24.fa.gz", package = "FLAMES"),
+  destname = genome_fa, remove = FALSE
+)
 ShortRead::writeFastq(sample(reads, size = 500, replace = TRUE), file.path(outdir, "fastq/sample1.fq.gz"), mode = "w", full = FALSE)
 ShortRead::writeFastq(sample(reads, size = 500, replace = TRUE), file.path(outdir, "fastq/sample2.fq.gz"), mode = "w", full = FALSE)
 ShortRead::writeFastq(sample(reads, size = 500, replace = TRUE), file.path(outdir, "fastq/sample3.fq.gz"), mode = "w", full = FALSE)
 
 if (!any(is.na(find_bin(c("minimap2", "k8"))))) {
   sce_list <- FLAMES::sc_long_multisample_pipeline(
-    annotation = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),
+    annotation = system.file("extdata", "rps24.gtf.gz", package = "FLAMES"),
     fastqs = file.path(outdir, "fastq", list.files(file.path(outdir, "fastq"))),
     outdir = outdir,
     genome_fa = genome_fa,

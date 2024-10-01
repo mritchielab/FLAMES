@@ -52,95 +52,94 @@
 #' @importFrom stats setNames
 #' @export
 create_config <- function(outdir, type = "sc_3end", ...) {
-    if (type == "sc_3end") {
-        config <- jsonlite::fromJSON(system.file("extdata/config_sclr_nanopore_3end.json", package = "FLAMES"))
-    } else if (type == "SIRV") {
-        config <- jsonlite::fromJSON(system.file("extdata/config_sclr_nanopore_3end.json", package = "FLAMES"))
-        config$alignment_parameters$no_flank <- TRUE
-    } else {
-        stop("Unrecognised config type ", type)
-    }
-    updates <- list(...)
-
-    if (length(updates) > 0) {
-        if (any(is.null(names(updates))) || "" %in% names(updates)) {
-            stop("Parameters must be named")
-        }
-        config <- within(config, rm(comment))
-        for (i_param in names(updates)) {
-            i_part <- names(config)[as.logical(lapply(lapply(config, names), function(part) {
-                i_param %in% part
-            }))]
-            config <- modifyList(config, setNames(list(updates[i_param]), i_part))
-        }
-    }
-
-    # write created config file.
-    config_file_path <- file.path(outdir, paste0("config_file_", Sys.getpid(), ".json"))
-    cat(
-        "Writing configuration parameters to: ",
-        config_file_path,
-        "\n"
+  if (type == "sc_3end") {
+    config <- jsonlite::fromJSON(
+      system.file("extdata", "config_sclr_nanopore_3end.json", package = "FLAMES")
     )
-    write(jsonlite::toJSON(config, pretty = TRUE), config_file_path)
+  } else if (type == "SIRV") {
+    config <- jsonlite::fromJSON(
+      system.file("extdata", "config_sclr_nanopore_3end.json", package = "FLAMES")
+    )
+    config$alignment_parameters$no_flank <- TRUE
+  } else {
+    stop("Unrecognised config type ", type)
+  }
+  updates <- list(...)
 
-    return(config_file_path)
+  if (length(updates) > 0) {
+    if (any(is.null(names(updates))) || "" %in% names(updates)) {
+      stop("Parameters must be named")
+    }
+    config <- within(config, rm(comment))
+    for (i_param in names(updates)) {
+      i_part <- names(config)[as.logical(lapply(lapply(config, names), function(part) {
+        i_param %in% part
+      }))]
+      config <- modifyList(config, setNames(list(updates[i_param]), i_part))
+    }
+  }
+
+  # write created config file.
+  config_file_path <- file.path(outdir, paste0("config_file_", Sys.getpid(), ".json"))
+  cat(
+    "Writing configuration parameters to: ",
+    config_file_path,
+    "\n"
+  )
+  write(jsonlite::toJSON(config, pretty = TRUE), config_file_path)
+
+  return(config_file_path)
 }
 
 #' @importFrom Matrix tail
 #' @importFrom stringr str_split
 #' @importFrom jsonlite fromJSON
-check_arguments <-
-    function(annotation,
-             fastq,
-             genome_bam,
-             outdir,
-             genome_fa,
-             config_file) {
-        if (!dir.exists(outdir)) {
-            cat("Output directory does not exists: one is being created\n")
-            dir.create(outdir)
-            print(outdir)
-        }
+check_arguments <- function(annotation, fastq, genome_bam,
+    outdir, genome_fa, config_file) {
+  if (!dir.exists(outdir)) {
+    cat("Output directory does not exists: one is being created\n")
+    dir.create(outdir)
+    print(outdir)
+  }
 
-        if (is.null(config_file)) {
-            cat("No config file provided, creating a default config in", outdir, "\n")
-            config_file <- create_config(outdir)
-        }
+  if (is.null(config_file)) {
+    cat("No config file provided, creating a default config in", outdir, "\n")
+    config_file <- create_config(outdir)
+  }
 
-        # argument verificiation
-        config <- jsonlite::fromJSON(config_file)
+  # argument verificiation
+  config <- jsonlite::fromJSON(config_file)
 
-        if (config$isoform_parameters$downsample_ratio > 1 || config$isoform_parameters$downsample_ratio <= 0) {
-            stop("downsample_ratio should be between 0 and 1")
-        }
-        if (!is.null(fastq) &&
-            any(!file.exists(fastq))) {
-            stop(paste0("Make sure ", fastq, " exists."))
-        }
-        if (!file.exists(annotation)) {
-            stop(paste0("Make sure ", annotation, " exists."))
-        }
-        if (!file.exists(genome_fa)) {
-            stop(paste0("Make sure ", genome_fa, " exists."))
-        }
+  if (config$isoform_parameters$downsample_ratio > 1 || config$isoform_parameters$downsample_ratio <= 0) {
+    stop("downsample_ratio should be between 0 and 1")
+  }
+  if (!is.null(fastq) &&
+    any(!file.exists(fastq))) {
+    stop(paste0("Make sure ", fastq, " exists."))
+  }
+  if (!file.exists(annotation)) {
+    stop(paste0("Make sure ", annotation, " exists."))
+  }
+  if (!file.exists(genome_fa)) {
+    stop(paste0("Make sure ", genome_fa, " exists."))
+  }
 
-        if (!is.null(genome_bam)) {
-            if (any(!file.exists(genome_bam))) {
-                stop("Make sure genome_bam exists")
-            }
-        }
-
-        if (config$pipeline_parameters$bambu_isoform_identification) {
-            if (!(stringr::str_ends(annotation, ".gtf") | stringr::str_ends(annotation, ".gtf.gz"))) {
-                stop("Bambu requires GTF format for annotation file.\n")
-            }
-        }
-        
-        n_cores <- parallel::detectCores()
-        if (!is.na(n_cores) && config$pipeline_parameters$threads > n_cores) {
-                cat("Configured to use", config$pipeline_parameters$threads, "cores, detected", n_cores, "\n")
-        }
-
-        return(list(config = config))
+  if (!is.null(genome_bam)) {
+    if (any(!file.exists(genome_bam))) {
+      stop("Make sure genome_bam exists")
     }
+  }
+
+  if (config$pipeline_parameters$bambu_isoform_identification) {
+    if (!(stringr::str_ends(annotation, ".gtf") | stringr::str_ends(annotation, ".gtf.gz"))) {
+      stop("Bambu requires GTF format for annotation file.\n")
+    }
+  }
+
+  n_cores <- parallel::detectCores()
+  if (!is.na(n_cores) && config$pipeline_parameters$threads > n_cores) {
+    cat("Configured to use", config$pipeline_parameters$threads, "cores, detected", n_cores, "\n")
+  }
+
+  return(list(config = config))
+}

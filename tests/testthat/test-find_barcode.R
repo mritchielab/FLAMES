@@ -8,7 +8,7 @@ test_that("barcode_output_file_identical", {
 
   find_barcode(
     max_bc_editdistance = 2, max_flank_editdistance = 8,
-    fastq = system.file("extdata/fastq", package = "FLAMES"),
+    fastq = system.file("extdata", "fastq", "musc_rps24.fastq.gz", package = "FLAMES"),
     barcodes_file = bc_allow,
     reads_out = file.path(outdir, "out.fq"),
     stats_out = file.path(outdir, "stats.tsv"),

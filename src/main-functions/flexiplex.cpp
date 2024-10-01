@@ -577,13 +577,14 @@ int flexiplex_cpp(Rcpp::String reads_in, Rcpp::String barcodes_file,
 
   if (known_barcodes.size() > 0) {
     if (file_exists(stats_out.get_cstring())) {
-      out_stat_file.open(stats_out, std::ios_base::app);
-    } else {
-      out_stat_file.open(stats_out);
-      out_stat_file
-          << "Read\tCellBarcode\tFlankEditDist\tBarcodeEditDist\tUMI\tTooShort"
-          << "\n";
+      Rcpp::Rcout << "Overwriting existing stats file: "
+        << stats_out.get_cstring()
+        << "\n";
     }
+    out_stat_file.open(stats_out, std::ios_base::trunc);
+    out_stat_file
+        << "Read\tCellBarcode\tFlankEditDist\tBarcodeEditDist\tUMI\tTooShort"
+        << "\n";
   }
   Rcpp::Rcout << "Searching for barcodes..."
               << "\n";

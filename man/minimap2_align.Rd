@@ -55,15 +55,15 @@ genome_fa <- bfc[[names(BiocFileCache::bfcadd(bfc, 'genome.fa', paste(file_url, 
 annotation <- bfc[[names(BiocFileCache::bfcadd(bfc, 'annot.gtf', paste(file_url, 'SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf', sep = '/')))]]
 outdir <- tempfile()
 dir.create(outdir)
-if (!any(is.na(find_bin(c("minimap2", "k8"))))) {
-    minimap2_align(
-        config = jsonlite::fromJSON(system.file('extdata/config_sclr_nanopore_3end.json', package = 'FLAMES')),
-        fa_file = genome_fa,
-        fq_in = fastq1,
-        annot = annotation,
-        outdir = outdir
-    )
-}
+minimap2_align(
+  config = jsonlite::fromJSON(
+    system.file("extdata", "config_sclr_nanopore_3end.json", package = 'FLAMES')
+  ),
+  fa_file = genome_fa,
+  fq_in = fastq1,
+  annot = annotation,
+  outdir = outdir
+)
 }
 \seealso{
 [minimap2_realign()]

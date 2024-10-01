@@ -16,8 +16,8 @@ character, the path to the command or \code{NA}
 \description{
 This function is a wrapper for \code{base::Sys.which} to find the path
 to a command. It also searches within the \code{FLAMES} basilisk conda
-environment. This function also replaces "" with \code{NA} in the 
-output of \code{base::Sys.which} to make it easier to check if the 
+environment. This function also replaces "" with \code{NA} in the
+output of \code{base::Sys.which} to make it easier to check if the
 binary is found.
 }
 \examples{

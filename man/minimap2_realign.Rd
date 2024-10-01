@@ -45,17 +45,17 @@ Uses minimap2 to re-align reads to transcriptome
 \examples{
 outdir <- tempfile()
 dir.create(outdir)
-if (!any(is.na(find_bin(c("minimap2", "k8"))))) {
-    annotation <- system.file('extdata', 'rps24.gtf.gz', package = 'FLAMES')
-    genome_fa <- system.file('extdata', 'rps24.fa.gz', package = 'FLAMES')
-    fasta <- annotation_to_fasta(annotation, genome_fa, outdir)
-    fastq <- system.file('extdata', 'fastq', 'demultiplexed.fq.gz', package = 'FLAMES')
-    minimap2_realign(
-        config = jsonlite::fromJSON(system.file('extdata/config_sclr_nanopore_3end.json', package = 'FLAMES')),
-        fq_in = fastq,
-        outdir = outdir
-    )
-}
+annotation <- system.file('extdata', 'rps24.gtf.gz', package = 'FLAMES')
+genome_fa <- system.file('extdata', 'rps24.fa.gz', package = 'FLAMES')
+fasta <- annotation_to_fasta(annotation, genome_fa, outdir)
+fastq <- system.file('extdata', 'fastq', 'demultiplexed.fq.gz', package = 'FLAMES')
+minimap2_realign(
+  config = jsonlite::fromJSON(
+    system.file("extdata", "config_sclr_nanopore_3end.json", package = 'FLAMES')
+  ),
+  fq_in = fastq,
+  outdir = outdir
+)
 }
 \seealso{
 [minimap2_align()]

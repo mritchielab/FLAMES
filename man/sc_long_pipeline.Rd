@@ -105,14 +105,19 @@ outdir <- tempfile()
 dir.create(outdir)
 bc_allow <- file.path(outdir, "bc_allow.tsv")
 genome_fa <- file.path(outdir, "rps24.fa")
-R.utils::gunzip(filename = system.file("extdata/bc_allow.tsv.gz", package = "FLAMES"), destname = bc_allow, remove = FALSE)
-R.utils::gunzip(filename = system.file("extdata/rps24.fa.gz", package = "FLAMES"), destname = genome_fa, remove = FALSE)
-
+R.utils::gunzip(
+  filename = system.file("extdata", "bc_allow.tsv.gz", package = "FLAMES"),
+  destname = bc_allow, remove = FALSE
+)
+R.utils::gunzip(
+  filename = system.file("extdata", "rps24.fa.gz", package = "FLAMES"),
+  destname = genome_fa, remove = FALSE
+)
 if (!any(is.na(find_bin(c("minimap2", "k8"))))) {
   sce <- FLAMES::sc_long_pipeline(
     genome_fa = genome_fa,
-    fastq = system.file("extdata/fastq", package = "FLAMES"),
-    annotation = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),
+    fastq = system.file("extdata", "fastq", "musc_rps24.fastq.gz", package = "FLAMES"),
+    annotation = system.file("extdata", "rps24.gtf.gz", package = "FLAMES"),
     outdir = outdir,
     barcodes_file = bc_allow
   )

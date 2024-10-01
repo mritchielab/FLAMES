@@ -30,38 +30,38 @@
 #' annotation <- bfc[[names(BiocFileCache::bfcadd(bfc, 'annot.gtf', paste(file_url, 'SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf', sep = '/')))]]
 #' outdir <- tempfile()
 #' dir.create(outdir)
-#' if (!any(is.na(find_bin(c("minimap2", "k8"))))) {
-#'     minimap2_align(
-#'         config = jsonlite::fromJSON(system.file('extdata/config_sclr_nanopore_3end.json', package = 'FLAMES')),
-#'         fa_file = genome_fa,
-#'         fq_in = fastq1,
-#'         annot = annotation,
-#'         outdir = outdir
-#'     )
-#' }
+#' minimap2_align(
+#'   config = jsonlite::fromJSON(
+#'     system.file("extdata", "config_sclr_nanopore_3end.json", package = 'FLAMES')
+#'   ),
+#'   fa_file = genome_fa,
+#'   fq_in = fastq1,
+#'   annot = annotation,
+#'   outdir = outdir
+#' )
 minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2 = NA, k8 = NA, samtools = NA,
-  prefix = NULL, threads = 1) {
+    prefix = NULL, threads = 1) {
   cat(format(Sys.time(), "%X %a %b %d %Y"), "minimap2_align\n")
 
   if (!is.null(prefix)) {
     prefix <- paste0(prefix, "_")
   }
 
-  if (missing("minimap2") || is.null(minimap2) || is.na(minimap2) || minimap2 =="") {
+  if (missing("minimap2") || is.null(minimap2) || is.na(minimap2) || minimap2 == "") {
     minimap2 <- find_bin("minimap2")
     if (is.na(minimap2)) {
       stop("minimap2 not found, please make sure it is installed and provide its path as the minimap2 argument")
     }
   }
 
-  if (missing("k8") || is.null(k8) || is.na(k8) || k8 =="") {
+  if (missing("k8") || is.null(k8) || is.na(k8) || k8 == "") {
     k8 <- find_bin("k8")
     if (is.na(k8)) {
       stop("k8 not found, please make sure it is installed and provide its path as the k8 argument")
     }
   }
 
-  if (missing("samtools") || is.null(samtools) || is.na(samtools) || samtools =="") {
+  if (missing("samtools") || is.null(samtools) || is.na(samtools) || samtools == "") {
     samtools <- find_bin("samtools")
   }
 
@@ -144,33 +144,33 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2 = NA,
 #' @examples
 #' outdir <- tempfile()
 #' dir.create(outdir)
-#' if (!any(is.na(find_bin(c("minimap2", "k8"))))) {
-#'     annotation <- system.file('extdata', 'rps24.gtf.gz', package = 'FLAMES')
-#'     genome_fa <- system.file('extdata', 'rps24.fa.gz', package = 'FLAMES')
-#'     fasta <- annotation_to_fasta(annotation, genome_fa, outdir)
-#'     fastq <- system.file('extdata', 'fastq', 'demultiplexed.fq.gz', package = 'FLAMES')
-#'     minimap2_realign(
-#'         config = jsonlite::fromJSON(system.file('extdata/config_sclr_nanopore_3end.json', package = 'FLAMES')),
-#'         fq_in = fastq,
-#'         outdir = outdir
-#'     )
-#' }
+#' annotation <- system.file('extdata', 'rps24.gtf.gz', package = 'FLAMES')
+#' genome_fa <- system.file('extdata', 'rps24.fa.gz', package = 'FLAMES')
+#' fasta <- annotation_to_fasta(annotation, genome_fa, outdir)
+#' fastq <- system.file('extdata', 'fastq', 'demultiplexed.fq.gz', package = 'FLAMES')
+#' minimap2_realign(
+#'   config = jsonlite::fromJSON(
+#'     system.file("extdata", "config_sclr_nanopore_3end.json", package = 'FLAMES')
+#'   ),
+#'   fq_in = fastq,
+#'   outdir = outdir
+#' )
 minimap2_realign <- function(config, fq_in, outdir, minimap2, samtools = NULL, prefix = NULL,
-  minimap2_args, sort_by, threads = 1) {
+    minimap2_args, sort_by, threads = 1) {
   cat(format(Sys.time(), "%X %a %b %d %Y"), "minimap2_realign\n")
 
   if (!is.null(prefix)) {
     prefix <- paste0(prefix, "_")
   }
 
-  if (missing("minimap2") || is.null(minimap2) || is.na(minimap2) || minimap2 =="") {
+  if (missing("minimap2") || is.null(minimap2) || is.na(minimap2) || minimap2 == "") {
     minimap2 <- find_bin("minimap2")
     if (is.na(minimap2)) {
       stop("minimap2 not found, please make sure it is installed and provide its path as the minimap2 argument")
     }
   }
 
-  if (missing("samtools") || is.null(samtools) || is.na(samtools) || samtools =="") {
+  if (missing("samtools") || is.null(samtools) || is.na(samtools) || samtools == "") {
     samtools <- find_bin("samtools")
   }
 
@@ -194,16 +194,16 @@ minimap2_realign <- function(config, fq_in, outdir, minimap2, samtools = NULL, p
   if (missing(sort_by)) {
     cat("Sorting by position\n")
     sort_status <- base::system2(
-      command = samtools, 
+      command = samtools,
       args = c("sort",
         file.path(outdir, paste0(prefix, "tmp_align.bam")), "-o",
         file.path(outdir, paste0(prefix, "realign2transcript.bam"))
       )
     )
     index_status <- base::system2(
-      command = samtools, 
-      args = c("index", 
-        file.path(outdir,paste0(prefix, "realign2transcript.bam"))
+      command = samtools,
+      args = c("index",
+        file.path(outdir, paste0(prefix, "realign2transcript.bam"))
       )
     )
   } else if (is.character(sort_by)) {
@@ -243,8 +243,8 @@ minimap2_realign <- function(config, fq_in, outdir, minimap2, samtools = NULL, p
 #' @description
 #' This function is a wrapper for \code{base::Sys.which} to find the path
 #' to a command. It also searches within the \code{FLAMES} basilisk conda
-#' environment. This function also replaces "" with \code{NA} in the 
-#' output of \code{base::Sys.which} to make it easier to check if the 
+#' environment. This function also replaces "" with \code{NA} in the
+#' output of \code{base::Sys.which} to make it easier to check if the
 #' binary is found.
 #' @param command character, the command to search for
 #' @return character, the path to the command or \code{NA}
@@ -304,7 +304,7 @@ plot_flagstat <- function(flagstat) {
     ggplot(aes(x = "", y = value, label = value, fill = name)) + geom_bar(stat = "identity") +
     coord_polar("y") + ggtitle("Alignment summary") + geom_text(position = position_stack(vjust = 0.5)) +
     labs(x = NULL, y = NULL) + theme_bw() + theme(panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), panel.background = element_blank(), axis.line = element_blank(),
-    axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.text.y = element_blank(),
-    axis.ticks.y = element_blank())
+      panel.grid.minor = element_blank(), panel.background = element_blank(), axis.line = element_blank(),
+      axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.text.y = element_blank(),
+      axis.ticks.y = element_blank())
 }

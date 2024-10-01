@@ -54,16 +54,22 @@
 #' dir.create(outdir)
 #' bc_allow <- file.path(outdir, "bc_allow.tsv")
 #' genome_fa <- file.path(outdir, "rps24.fa")
-#' R.utils::gunzip(filename = system.file("extdata/bc_allow.tsv.gz", package = "FLAMES"), destname = bc_allow, remove = FALSE)
-#' R.utils::gunzip(filename = system.file("extdata/rps24.fa.gz", package = "FLAMES"), destname = genome_fa, remove = FALSE)
+#' R.utils::gunzip(
+#'   filename = system.file("extdata", "bc_allow.tsv.gz", package = "FLAMES"),
+#'   destname = bc_allow, remove = FALSE
+#' )
+#' R.utils::gunzip(
+#'   filename = system.file("extdata", "rps24.fa.gz", package = "FLAMES"),
+#'   destname = genome_fa, remove = FALSE
+#' )
 #'
 #' sce <- FLAMES::sc_long_pipeline(
 #'   genome_fa = genome_fa,
-#'   fastq = system.file("extdata/fastq", package = "FLAMES"),
-#'   annotation = system.file("extdata/rps24.gtf.gz", package = "FLAMES"),
+#'   fastq = system.file("extdata", "fastq", "musc_rps24.fastq.gz", package = "FLAMES"),
+#'   annotation = system.file("extdata", "rps24.gtf.gz", package = "FLAMES"),
 #'   outdir = outdir,
 #'   barcodes_file = bc_allow,
-#'   config_file = create_config(outdir, oarfish_quantification=FALSE)
+#'   config_file = create_config(outdir, oarfish_quantification = FALSE)
 #' )
 #' group_anno <- data.frame(barcode_seq = colnames(sce), groups = SingleCellExperiment::counts(sce)["ENSMUST00000169826.2", ] > 1)
 #' SingleCellExperiment::colLabels(sce) <- group_anno$groups
@@ -82,14 +88,14 @@ sc_DTU_analysis <- function(sce, min_count = 15) {
   outdir <- sce@metadata$OutputFiles$outdir
   cat("Loading isoform_FSM_annotation.csv ...\n")
   isoform_FSM_annotation <- read.csv(file.path(outdir, "isoform_FSM_annotation.csv"), stringsAsFactors = FALSE)
-  
+
   cat("Selecting transcript_ids with full splice match ...\n")
-  sce <- sce[rownames(sce) %in% isoform_FSM_annotation$transcript_id,]
-  rowData(sce)$FSM_match <- 
+  sce <- sce[rownames(sce) %in% isoform_FSM_annotation$transcript_id, ]
+  rowData(sce)$FSM_match <-
     isoform_FSM_annotation[
-      match(rownames(sce),isoform_FSM_annotation$transcript_id),
+      match(rownames(sce), isoform_FSM_annotation$transcript_id),
       "FSM_match"
-      ]
+    ]
 
   cat("Summing transcripts with same FSM ... \n")
   # mer_tmp: cell_bcs as cols, FSM_match as rows.
@@ -111,7 +117,7 @@ sc_DTU_analysis <- function(sce, min_count = 15) {
 
   tr_sce <- SingleCellExperiment(assays = list(counts = as.matrix(mer_tmp[, -1])))
   rownames(tr_sce) <- mer_tmp$FSM_match
-  rowData(tr_sce) <- rowData(sce)[match(mer_tmp$FSM_match, rowData(sce)$FSM_match),]
+  rowData(tr_sce) <- rowData(sce)[match(mer_tmp$FSM_match, rowData(sce)$FSM_match), ]
 
   # Remove version number from gene_id
   # rowData(tr_sce)$gene_id <- gsub("\\..*", "", rowData(tr_sce)$gene_id)
@@ -131,7 +137,7 @@ sc_DTU_analysis <- function(sce, min_count = 15) {
 
   # Apply the top_n filtering to the sce object
   tr_sce_multi <- tr_sce_multi[rowData(tr_sce_multi)$transcript_id %in% top_4s$transcript_id, ]
-  
+
   cat("Aggregating counts by cluster labels ...\n")
   tr_sce_multi$barcode_seq <- colnames(tr_sce_multi)
   counts_group <- counts(tr_sce_multi) %>%
@@ -139,7 +145,7 @@ sc_DTU_analysis <- function(sce, min_count = 15) {
     mutate(tr_id = rownames(.)) %>%
     gather(cell_id, cnt, -"tr_id") %>% # long format: tr_id, cell_id, cnt
     left_join(as.data.frame(colData(tr_sce_multi)[, c("barcode_seq", "label")]),
-              by = c("cell_id" = "barcode_seq")) %>%
+      by = c("cell_id" = "barcode_seq")) %>%
     group_by(tr_id, label) %>%
     summarise(cnt = sum(cnt)) %>%
     pivot_wider(id_cols = tr_id, names_from = label, values_from = cnt) %>%
@@ -154,17 +160,17 @@ sc_DTU_analysis <- function(sce, min_count = 15) {
     group_max <- counts_group %>%
       group_by(gene_id) %>%
       summarise_at(x, max) %>%
-      filter_at(x, all_vars(. > min_count)) 
-    
+      filter_at(x, all_vars(. > min_count))
+
     # select the top 2 isoforms expressed by group x for each gene
-    filtered_tr_ids <- counts_group %>% 
+    filtered_tr_ids <- counts_group %>%
       filter_at("gene_id", all_vars(. %in% group_max$gene_id)) %>%
       group_by(gene_id) %>%
       top_n(n = 2, wt = x) %>%
       dplyr::pull("tr_id")
     return(filtered_tr_ids)
   }
-  
+
   all_grp <- levels(factor(colLabels(tr_sce_multi)))
   sel_tr <- Reduce(union, lapply(all_grp, filter_tr))
   counts_group <- counts_group[counts_group$tr_id %in% sel_tr, ]
@@ -183,7 +189,7 @@ sc_DTU_analysis <- function(sce, min_count = 15) {
   pb_max <- length(unique(counts_group$gene_id))
   if (pb_max > 10) {
     pb <- txtProgressBar(min = 1, max = length(unique(counts_group$gene_id)),
-                        initial = 1, style=3)
+      initial = 1, style = 3)
     pbi <- 0
   }
   for (gene in unique(counts_group$gene_id)) {
@@ -194,10 +200,10 @@ sc_DTU_analysis <- function(sce, min_count = 15) {
     mtx <- counts_group_gene %>%
       ungroup() %>%
       select(all_of(all_grp)) %>%
-      select_if(function(col_x){max(col_x) > min_count}) %>%
+      select_if(function(col_x) {max(col_x) > min_count}) %>%
       as.matrix()
     rownames(mtx) <- counts_group_gene$tr_id
-    
+
     if (!is.null(dim(mtx))) {
       if (ncol(mtx) > 1 && nrow(mtx) > 1) {
         fit <- suppressWarnings(chisq.test(mtx))
@@ -223,7 +229,7 @@ sc_DTU_analysis <- function(sce, min_count = 15) {
     }
     if (exists("pb")) {
       pbi <- pbi + 1
-      setTxtProgressBar(pb,pbi)
+      setTxtProgressBar(pb, pbi)
     }
   }
   if (exists("pb")) {
