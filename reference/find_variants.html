@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">FLAMES</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -123,39 +123,42 @@ the trailing number to match the chromosome names in the bam file, for example w
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">outdir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">outdir</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">genome_fa</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/rps24.fa.gz"</span>, package <span class="op">=</span> <span class="st">"FLAMES"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/any.html" class="external-link">any</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="fu"><a href="find_bin.html">find_bin</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"minimap2"</span>, <span class="st">"k8"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="minimap2_align.html">minimap2_align</a></span><span class="op">(</span> <span class="co"># align to genome</span></span></span>
-<span class="r-in"><span>    config <span class="op">=</span> <span class="fu">jsonlite</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/jsonlite/man/fromJSON.html" class="external-link">fromJSON</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/config_sclr_nanopore_3end.json"</span>, package <span class="op">=</span> <span class="st">"FLAMES"</span><span class="op">)</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    fa_file <span class="op">=</span> <span class="va">genome_fa</span>,</span></span>
-<span class="r-in"><span>    fq_in <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"fastq"</span>, <span class="st">"demultiplexed.fq.gz"</span>, package <span class="op">=</span> <span class="st">"FLAMES"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    annot <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/rps24.gtf.gz"</span>, package <span class="op">=</span> <span class="st">"FLAMES"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    outdir <span class="op">=</span> <span class="va">outdir</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">variants</span> <span class="op">&lt;-</span> <span class="fu">find_variants</span><span class="op">(</span></span></span>
-<span class="r-in"><span>    bam_path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">"align2genome.bam"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    reference <span class="op">=</span> <span class="va">genome_fa</span>,</span></span>
-<span class="r-in"><span>    annotation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/rps24.gtf.gz"</span>, package <span class="op">=</span> <span class="st">"FLAMES"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    min_nucleotide_depth <span class="op">=</span> <span class="fl">4</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">variants</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 05:56:09 AM Mon Sep 30 2024 minimap2_align</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 05:56:09 Reading reference ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 05:56:09 Reading annotation ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 05:56:09 Adding unannotated gaps ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 05:56:09 Got 1 bam file, parallelizing over each region ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 05:56:11 Merging results ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 05:56:11 Calculating homopolymer percentages ...</span>
+<span class="r-in"><span><span class="va">genome_fa</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"rps24.fa.gz"</span>, package <span class="op">=</span> <span class="st">"FLAMES"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="minimap2_align.html">minimap2_align</a></span><span class="op">(</span> <span class="co"># align to genome</span></span></span>
+<span class="r-in"><span>  config <span class="op">=</span> <span class="fu">jsonlite</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/jsonlite/man/fromJSON.html" class="external-link">fromJSON</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"config_sclr_nanopore_3end.json"</span>, package <span class="op">=</span> <span class="st">"FLAMES"</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  fa_file <span class="op">=</span> <span class="va">genome_fa</span>,</span></span>
+<span class="r-in"><span>  fq_in <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"fastq"</span>, <span class="st">"demultiplexed.fq.gz"</span>, package <span class="op">=</span> <span class="st">"FLAMES"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  annot <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"rps24.gtf.gz"</span>, package <span class="op">=</span> <span class="st">"FLAMES"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  outdir <span class="op">=</span> <span class="va">outdir</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:17:50 AM Tue Oct 01 2024 minimap2_align</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                   total mapped primary</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/RtmpfMeYnz/file20b8405f6c0b/align2genome.bam    10     10      10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                   secondary</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/RtmpfMeYnz/file20b8405f6c0b/align2genome.bam         0</span>
+<span class="r-in"><span><span class="va">variants</span> <span class="op">&lt;-</span> <span class="fu">find_variants</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  bam_path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">"align2genome.bam"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  reference <span class="op">=</span> <span class="va">genome_fa</span>,</span></span>
+<span class="r-in"><span>  annotation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"rps24.gtf.gz"</span>, package <span class="op">=</span> <span class="st">"FLAMES"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  min_nucleotide_depth <span class="op">=</span> <span class="fl">4</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 10:17:50 Reading reference ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 10:17:50 Reading annotation ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 10:17:50 Adding unannotated gaps ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 10:17:50 Got 1 bam file, parallelizing over each region ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 10:17:51 Merging results ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 10:17:51 Calculating homopolymer percentages ...</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">variants</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6 × 10</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   seqnames   pos nucleotide count   sum  freq ref   bam_path              region</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> chr14     <span style="text-decoration: underline;">1</span>084 G              4     9 0.444 A     /tmp/Rtmphcds2N/file… Rps24 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> chr14     <span style="text-decoration: underline;">1</span>085 C              4    10 0.4   T     /tmp/Rtmphcds2N/file… Rps24 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> chr14     <span style="text-decoration: underline;">1</span>217 A              4    10 0.4   G     /tmp/Rtmphcds2N/file… Rps24 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> chr14     <span style="text-decoration: underline;">1</span>384 -              4    10 0.4   A     /tmp/Rtmphcds2N/file… Rps24 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> chr14     <span style="text-decoration: underline;">2</span>724 +              4     9 0.444 G     /tmp/Rtmphcds2N/file… Rps24 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> chr14     <span style="text-decoration: underline;">2</span>789 -              5    10 0.5   A     /tmp/Rtmphcds2N/file… Rps24 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> chr14     <span style="text-decoration: underline;">1</span>084 G              4     9 0.444 A     /tmp/RtmpfMeYnz/file… Rps24 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> chr14     <span style="text-decoration: underline;">1</span>085 C              4    10 0.4   T     /tmp/RtmpfMeYnz/file… Rps24 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> chr14     <span style="text-decoration: underline;">1</span>217 A              4    10 0.4   G     /tmp/RtmpfMeYnz/file… Rps24 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> chr14     <span style="text-decoration: underline;">1</span>384 -              4    10 0.4   A     /tmp/RtmpfMeYnz/file… Rps24 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> chr14     <span style="text-decoration: underline;">2</span>724 +              4     9 0.444 G     /tmp/RtmpfMeYnz/file… Rps24 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> chr14     <span style="text-decoration: underline;">2</span>789 -              5    10 0.5   A     /tmp/RtmpfMeYnz/file… Rps24 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 1 more variable: homopolymer_pct &lt;dbl&gt;</span></span>
 </code></pre></div>
     </div>

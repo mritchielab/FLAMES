@@ -9,7 +9,7 @@ perticular isoform"><meta property="og:image" content="https://mritchielab.githu
 
     <a class="navbar-brand me-2" href="../index.html">FLAMES</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -90,15 +90,7 @@ should be weighted within length bins.</p></dd>
 <span class="r-in"><span><span class="va">annotation</span> <span class="op">&lt;-</span> <span class="va">bfc</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu">BiocFileCache</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocFileCache/man/BiocFileCache-class.html" class="external-link">bfcadd</a></span><span class="op">(</span><span class="va">bfc</span>, <span class="st">'annot.gtf'</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">file_url</span>, <span class="st">'SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf'</span>, sep <span class="op">=</span> <span class="st">'/'</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="va">outdir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">outdir</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/any.html" class="external-link">any</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="fu"><a href="find_bin.html">find_bin</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"minimap2"</span>, <span class="st">"k8"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>    <span class="va">fasta</span> <span class="op">&lt;-</span> <span class="fu"><a href="annotation_to_fasta.html">annotation_to_fasta</a></span><span class="op">(</span><span class="va">annotation</span>, <span class="va">genome_fa</span>, <span class="va">outdir</span><span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="minimap2_realign.html">minimap2_realign</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>        config <span class="op">=</span> <span class="fu">jsonlite</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/jsonlite/man/fromJSON.html" class="external-link">fromJSON</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'extdata/config_sclr_nanopore_3end.json'</span>, package <span class="op">=</span> <span class="st">'FLAMES'</span><span class="op">)</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>        fq_in <span class="op">=</span> <span class="va">fastq1</span>,</span></span>
-<span class="r-in"><span>        outdir <span class="op">=</span> <span class="va">outdir</span></span></span>
-<span class="r-in"><span>    <span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu">plot_coverage</span><span class="op">(</span>bam <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">'realign2transcript.bam'</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span><span class="va">fasta</span> <span class="op">&lt;-</span> <span class="fu"><a href="annotation_to_fasta.html">annotation_to_fasta</a></span><span class="op">(</span><span class="va">annotation</span>, <span class="va">genome_fa</span>, <span class="va">outdir</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Import genomic features from the file as a GRanges object ... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> OK</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Prepare the 'metadata' data frame ... </span>
@@ -107,8 +99,19 @@ should be weighted within length bins.</p></dd>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The "phase" metadata column contains non-NA values for features of type</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span>   exon. This information was ignored.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> OK</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 05:56:22 AM Mon Sep 30 2024 minimap2_realign</span>
+<span class="r-in"><span><span class="fu"><a href="minimap2_realign.html">minimap2_realign</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  config <span class="op">=</span> <span class="fu">jsonlite</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/jsonlite/man/fromJSON.html" class="external-link">fromJSON</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"config_sclr_nanopore_3end.json"</span>, package <span class="op">=</span> <span class="st">"FLAMES"</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  fq_in <span class="op">=</span> <span class="va">fastq1</span>,</span></span>
+<span class="r-in"><span>  outdir <span class="op">=</span> <span class="va">outdir</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:18:02 AM Tue Oct 01 2024 minimap2_realign</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Sorting by position</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                         total mapped primary</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/RtmpfMeYnz/file20b85c4dade7/realign2transcript.bam  4554   3764    2500</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                         secondary</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/RtmpfMeYnz/file20b85c4dade7/realign2transcript.bam      2051</span>
+<span class="r-in"><span><span class="fu">plot_coverage</span><span class="op">(</span>bam <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">'realign2transcript.bam'</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plot_coverage-1.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
