@@ -62,7 +62,7 @@
 
 
 <dl><dt id="arg-fastq">fastq<a class="anchor" aria-label="anchor" href="#arg-fastq"></a></dt>
-<dd><p>input FASTQ file path</p></dd>
+<dd><p>character vector of paths to FASTQ files or folders</p></dd>
 
 
 <dt id="arg-barcodes-file">barcodes_file<a class="anchor" aria-label="anchor" href="#arg-barcodes-file"></a></dt>
@@ -78,13 +78,14 @@
 
 
 <dt id="arg-reads-out">reads_out<a class="anchor" aria-label="anchor" href="#arg-reads-out"></a></dt>
-<dd><p>path of output FASTQ file; if multiple samples are processed,
-the file name will be appended with the FASTQ file name</p></dd>
+<dd><p>path to output FASTQ file; if multiple samples are processed,
+the sample name will be appended to this argument, e.g. provide <code>path/out.fq</code> for single
+sample, and <code>path/prefix</code> for multiple samples.</p></dd>
 
 
 <dt id="arg-stats-out">stats_out<a class="anchor" aria-label="anchor" href="#arg-stats-out"></a></dt>
-<dd><p>path of output stats file; if multiple samples are processed,
-the file name will be appended with the FASTQ file name</p></dd>
+<dd><p>path of output stats file; similar to <code>reads_out</code>, e.g. provide
+<code>path/stats.tsv</code> for single sample, and <code>path/prefix</code> for multiple samples.</p></dd>
 
 
 <dt id="arg-threads">threads<a class="anchor" aria-label="anchor" href="#arg-threads"></a></dt>
@@ -114,6 +115,14 @@ are to be discarded</p></dd>
 <code>input</code>, <code>output</code>, <code>read1_with_adapter</code> from cutadapt report
 (if TSO trimming is performed)</p>
     </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>This function demultiplexes reads by searching for flanking sequences (adaptors)
+around the barcode sequence, and then matching against allowed barcodes. For single
+sample, either provide a single FASTQ file or a folder containing FASTQ files. For
+multiple samples, provide a vector of paths (either to FASTQ files or folders containing
+FASTQ files). Gzipped file input are supported but the output will be uncompressed.</p>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
@@ -141,8 +150,9 @@ are to be discarded</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> BC: NNNNNNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> UMI: NNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> polyT: TTTTTTTTT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpfMeYnz/file20b860a98457/bc_allow.tsv</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpJoN9Z2/file1d6e6c414b29/bc_allow.tsv</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of known barcodes: 143</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads processed: 393</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads where a barcode was found: 368</span>
@@ -154,16 +164,16 @@ are to be discarded</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 372 × 8</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Read  CellBarcode FlankEditDist BarcodeEditDist UMI   TooShort Outfile Sample</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> 5040… CGGGTCAGTA…             1               0 CCGG… FALSE    /tmp/R… bc_st…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> d54e… CGGACTGAGT…             1               0 GGGA… FALSE    /tmp/R… bc_st…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> 94bf… CTGTGCTTCC…             1               2 TTCT… FALSE    /tmp/R… bc_st…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> d644… GTCGTAATCC…             7               0 GGTA… FALSE    /tmp/R… bc_st…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> 055d… TTTATGCAGA…             1               0 ATTC… FALSE    /tmp/R… bc_st…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> 66cb… GTAACTGAGA…             2               0 TGAG… FALSE    /tmp/R… bc_st…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> e427… CGAACATGTC…             2               0 ATAC… FALSE    /tmp/R… bc_st…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> 5f74… ACCGTAACAA…             3               1 CCTC… FALSE    /tmp/R… bc_st…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> f164… GACTAACTCC…             3               1 GTTC… FALSE    /tmp/R… bc_st…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> c7ae… CATCGAACAG…             2               1 TTAA… FALSE    /tmp/R… bc_st…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> 5040… CGGGTCAGTA…             1               0 CCGG… FALSE    /tmp/R… musc_…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> d54e… CGGACTGAGT…             1               0 GGGA… FALSE    /tmp/R… musc_…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> 94bf… CTGTGCTTCC…             1               2 TTCT… FALSE    /tmp/R… musc_…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> d644… GTCGTAATCC…             7               0 GGTA… FALSE    /tmp/R… musc_…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> 055d… TTTATGCAGA…             1               0 ATTC… FALSE    /tmp/R… musc_…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> 66cb… GTAACTGAGA…             2               0 TGAG… FALSE    /tmp/R… musc_…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> e427… CGAACATGTC…             2               0 ATAC… FALSE    /tmp/R… musc_…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> 5f74… ACCGTAACAA…             3               1 CCTC… FALSE    /tmp/R… musc_…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> f164… GACTAACTCC…             3               1 GTTC… FALSE    /tmp/R… musc_…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> c7ae… CATCGAACAG…             2               1 TTAA… FALSE    /tmp/R… musc_…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 362 more rows</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -176,7 +186,8 @@ are to be discarded</p></dd>
 <span class="r-in"><span><span class="va">sampled_lines</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readLines.html" class="external-link">readLines</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">fastq_dir</span>, <span class="st">"musc_rps24.fastq.gz"</span><span class="op">)</span>, n <span class="op">=</span> <span class="fl">400</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/writeLines.html" class="external-link">writeLines</a></span><span class="op">(</span><span class="va">sampled_lines</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">fastq_dir</span>, <span class="st">"copy.fastq"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">find_barcode</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  fastq <span class="op">=</span> <span class="va">fastq_dir</span>,</span></span>
+<span class="r-in"><span>  <span class="co"># you can mix folders and files. each path will be considered as a sample</span></span></span>
+<span class="r-in"><span>  fastq <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">fastq_dir</span>, <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"fastq"</span>, <span class="st">"musc_rps24.fastq.gz"</span>, package <span class="op">=</span> <span class="st">"FLAMES"</span><span class="op">)</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  stats_out <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">"bc_stat"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  reads_out <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">"demultiplexed.fq"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  barcodes_file <span class="op">=</span> <span class="va">bc_allow</span>, TSO_seq <span class="op">=</span> <span class="st">"CCCATGTACTCTGCGTTGATACCACTGCTT"</span></span></span>
@@ -191,13 +202,15 @@ are to be discarded</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> BC: NNNNNNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> UMI: NNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> polyT: TTTTTTTTT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpfMeYnz/file20b860a98457/bc_allow.tsv</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpJoN9Z2/file1d6e6c414b29/bc_allow.tsv</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of known barcodes: 143</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Overwriting existing stats file: /tmp/RtmpfMeYnz/file20b860a98457/bc_stat</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/RtmpJoN9Z2/file1d6e13d53c2f/copy.fastq</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads processed: 100</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads where a barcode was found: 92</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads where more than one barcode was found: 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/RtmpJoN9Z2/file1d6e13d53c2f/musc_rps24.fastq.gz</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads processed: 493</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads where a barcode was found: 460</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads where more than one barcode was found: 5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> All done!</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> FLEXIPLEX 0.96.2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Setting max barcode edit distance to 2</span>
@@ -209,9 +222,9 @@ are to be discarded</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> BC: NNNNNNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> UMI: NNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> polyT: TTTTTTTTT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpfMeYnz/file20b860a98457/bc_allow.tsv</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpJoN9Z2/file1d6e6c414b29/bc_allow.tsv</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of known barcodes: 143</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Overwriting existing stats file: /tmp/RtmpfMeYnz/file20b860a98457/bc_stat</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads processed: 393</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads where a barcode was found: 368</span>
