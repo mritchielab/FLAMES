@@ -62,7 +62,8 @@
 
 
 <dl><dt id="arg-fastq">fastq<a class="anchor" aria-label="anchor" href="#arg-fastq"></a></dt>
-<dd><p>character vector of paths to FASTQ files or folders</p></dd>
+<dd><p>character vector of paths to FASTQ files or folders, if
+named, the names will be used as sample names, otherwise the file names will be used</p></dd>
 
 
 <dt id="arg-barcodes-file">barcodes_file<a class="anchor" aria-label="anchor" href="#arg-barcodes-file"></a></dt>
@@ -150,7 +151,7 @@ FASTQ files). Gzipped file input are supported but the output will be uncompress
 <span class="r-out co"><span class="r-pr">#&gt;</span> BC: NNNNNNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> UMI: NNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> polyT: TTTTTTTTT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpJoN9Z2/file1d6e6c414b29/bc_allow.tsv</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/Rtmp5AmGGm/file1de1236bbf82/bc_allow.tsv</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of known barcodes: 143</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
@@ -159,8 +160,8 @@ FASTQ files). Gzipped file input are supported but the output will be uncompress
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads where more than one barcode was found: 4</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> All done!</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Skipping TSO trimming...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $demultiplexed.fq</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $demultiplexed.fq$reads_tb</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $musc_rps24</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $musc_rps24$reads_tb</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 372 × 8</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Read  CellBarcode FlankEditDist BarcodeEditDist UMI   TooShort Outfile Sample</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> </span>
@@ -202,11 +203,11 @@ FASTQ files). Gzipped file input are supported but the output will be uncompress
 <span class="r-out co"><span class="r-pr">#&gt;</span> BC: NNNNNNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> UMI: NNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> polyT: TTTTTTTTT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpJoN9Z2/file1d6e6c414b29/bc_allow.tsv</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/Rtmp5AmGGm/file1de1236bbf82/bc_allow.tsv</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of known barcodes: 143</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/RtmpJoN9Z2/file1d6e13d53c2f/copy.fastq</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/Rtmp5AmGGm/file1de176289238/copy.fastq</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/RtmpJoN9Z2/file1d6e13d53c2f/musc_rps24.fastq.gz</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/Rtmp5AmGGm/file1de176289238/musc_rps24.fastq.gz</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads processed: 493</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads where a barcode was found: 460</span>
@@ -222,7 +223,7 @@ FASTQ files). Gzipped file input are supported but the output will be uncompress
 <span class="r-out co"><span class="r-pr">#&gt;</span> BC: NNNNNNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> UMI: NNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> polyT: TTTTTTTTT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpJoN9Z2/file1d6e6c414b29/bc_allow.tsv</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/Rtmp5AmGGm/file1de1236bbf82/bc_allow.tsv</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of known barcodes: 143</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
