@@ -183,7 +183,7 @@ EdlibAlignConfig edlibConf = {flank_max_editd, EDLIB_MODE_HW, EDLIB_TASK_PATH,
   if (result.status != EDLIB_STATUS_OK || result.numLocations == 0) {
     edlibFreeAlignResult(result);
     return (barcode); // no match found - return
-  }                   // fill in info about found primer and polyT location
+  } // fill in info about found primer and polyT location
   barcode.flank_editd = result.editDistance;
   barcode.flank_start = result.startLocations[0];
   barcode.flank_end = seq.find_first_not_of('T', result.endLocations[0]);
@@ -197,7 +197,7 @@ EdlibAlignConfig edlibConf = {flank_max_editd, EDLIB_MODE_HW, EDLIB_TASK_PATH,
   std::vector<long unsigned int> subpattern_ends;
   subpattern_ends.resize(subpattern_lengths.size());
   std::partial_sum(subpattern_lengths.begin(), subpattern_lengths.end(),
-                      subpattern_ends.begin());
+                   subpattern_ends.begin());
 
   std::vector<int> read_to_subpatterns;
   read_to_subpatterns.reserve(subpattern_ends.size() + 1);
@@ -405,8 +405,9 @@ void print_read(const std::string &read_id, const std::string &read,
     ss << (b + 1) << "of" << vec_bc.size();
     const std::string &barcode = vec_bc[b].barcode;
     // also add the proper FASTQ way: \tCB:Z:barcode\tUB:Z:umi
-    std::string new_read_id =
-        barcode + "_" + vec_bc[b].umi + "#" + read_id + ss.str() + "\tCB:Z:" + barcode + "\tUB:Z:" + vec_bc[b].umi;
+    std::string new_read_id = barcode + "_" + vec_bc[b].umi + "#" + read_id +
+                              ss.str() + "\tCB:Z:" + barcode +
+                              "\tUB:Z:" + vec_bc[b].umi;
 
     // work out the start and end base in case multiple barcodes
     if (vec_bc.at(b).flank_end == std::string::npos) {
@@ -470,7 +471,7 @@ bool file_exists(const std::string &filename) {
 //' @param reads_in Input FASTQ or FASTA file
 //' @param barcodes_file barcode allow-list file
 //' @param bc_as_readid bool, whether to add the demultiplexed barcode to the
-//' read ID field 
+//' read ID field
 //' @param max_bc_editdistance max edit distance for barcode '
 //' @param max_flank_editdistance max edit distance for the flanking sequences '
 //' @param pattern StringVector defining the barcode structure, see [find_barcode]
@@ -481,11 +482,11 @@ bool file_exists(const std::string &filename) {
 //' @return integer return value. 0 represents normal return.
 //' @export
 // [[Rcpp::export]]
-int flexiplex_cpp(Rcpp::String reads_in, Rcpp::String barcodes_file,
-              bool bc_as_readid, int max_bc_editdistance,
-              int max_flank_editdistance, Rcpp::StringVector pattern,
-              Rcpp::String reads_out, Rcpp::String stats_out,
-              Rcpp::String bc_out, int n_threads) {
+int flexiplex_cpp(Rcpp::StringVector reads_in, Rcpp::String barcodes_file,
+                  bool bc_as_readid, int max_bc_editdistance,
+                  int max_flank_editdistance, Rcpp::StringVector pattern,
+                  Rcpp::String reads_out, Rcpp::String stats_out,
+                  Rcpp::String bc_out, int n_threads) {
   std::ios_base::sync_with_stdio(false);
 
   bool remove_barcodes = true;
@@ -510,8 +511,7 @@ int flexiplex_cpp(Rcpp::String reads_in, Rcpp::String barcodes_file,
   Rcpp::Rcout << "Setting max flanking sequence edit distance to "
               << max_flank_editdistance << "\n";
   Rcpp::Rcout << "Setting read IDs to be " << (remove_barcodes ? "" : "not")
-              << " replaced"
-              << "\n";
+              << " replaced" << "\n";
   Rcpp::Rcout << "Setting number of threads to " << n_threads << "\n";
 
   Rcpp::Rcout << "Search pattern: \n";
@@ -547,26 +547,7 @@ int flexiplex_cpp(Rcpp::String reads_in, Rcpp::String barcodes_file,
                 << "\n";
   }
 
-  gzFile gz_reads_in = gzopen(reads_in.get_cstring(), "r");
-  kseq_t *kseq;
-  int kseq_len;
-  bool is_fastq = false;
-  if (!gz_reads_in) {
-    Rcpp::stop("Unable to open reads_in file");
-  } else {
-    kseq = kseq_init(gz_reads_in);
-    kseq_len = kseq_read(kseq);
-    if (!(kseq_len > 0)) {
-      Rcpp::stop("Unknown read format");
-    } else {
-      is_fastq = (bool)kseq->qual.s;
-    }
-  }
-  gzrewind(gz_reads_in);
-  kseq = kseq_init(gz_reads_in);
-
   std::ofstream outstream(reads_out, std::ios_base::app);
-
   /********* FIND BARCODE IN READS ********/
   std::string sequence;
   int bc_count = 0;
@@ -574,115 +555,137 @@ int flexiplex_cpp(Rcpp::String reads_in, Rcpp::String barcodes_file,
   int multi_bc_count = 0;
 
   std::ofstream out_stat_file;
-
   if (known_barcodes.size() > 0) {
     if (file_exists(stats_out.get_cstring())) {
       Rcpp::Rcout << "Overwriting existing stats file: "
-        << stats_out.get_cstring()
-        << "\n";
+                  << stats_out.get_cstring() << "\n";
     }
     out_stat_file.open(stats_out, std::ios_base::trunc);
     out_stat_file
         << "Read\tCellBarcode\tFlankEditDist\tBarcodeEditDist\tUMI\tTooShort"
         << "\n";
   }
-  Rcpp::Rcout << "Searching for barcodes..."
-              << "\n";
   std::unordered_map<std::string, int> barcode_counts;
 
-  while (kseq_len > 0) {
-    const int buffer_size = 2000; // number of reads to pass to one thread.
-    std::vector<std::vector<SearchResult>> sr_v(n_threads);
-    for (int i = 0; i < n_threads; i++)
-      sr_v[i] = std::vector<SearchResult>(buffer_size);
-    std::vector<std::thread> threads(n_threads);
-    for (int t = 0; t < n_threads;
-         t++) { // get n_threads*buffer number or reads..
-      for (int b = 0; b < buffer_size; b++) {
-        kseq_len = kseq_read(kseq);
-        if (kseq_len <= 0) {
-          sr_v[t].resize(b);
-          for (int t2 = t + 1; t2 < n_threads; t2++) {
-            sr_v[t2].resize(0);
-          }
-          if (b > 0) {
-            threads[t] =
-                std::thread(search_read, ref(sr_v[t]), ref(known_barcodes),
-                            max_flank_editdistance, max_bc_editdistance,
-                            ref(search_pattern));
-          }
-          goto print_result; // advance the line
-        }
-        SearchResult &sr = sr_v[t][b];
-        sr.line = kseq->seq.s;
-        sr.read_id = kseq->name.s;
-
-        if (is_fastq) { // fastq (account for multi-lines per read)
-          sr.qual_scores = kseq->qual.s;
-        }
-
-        r_count++; // progress counter
-        if (r_count % 100000 == 0)
-          Rcpp::Rcout << r_count / ((double)1000000)
-                      << " million reads processed.."
-                      << "\n";
+  // loop over all files
+  for (int i = 0; i < reads_in.size(); i++) {
+    Rcpp::Rcout << "Processing file: " << std::string(reads_in(i)) << "\n";
+    gzFile gz_reads_in = gzopen(reads_in(i), "r");
+    kseq_t *kseq;
+    int kseq_len;
+    bool is_fastq = false;
+    if (!gz_reads_in) {
+      Rcpp::stop("Unable to open %s", std::string(reads_in(i)));
+    } else {
+      kseq = kseq_init(gz_reads_in);
+      kseq_len = kseq_read(kseq);
+      if (!(kseq_len > 0)) {
+        Rcpp::stop("Unknown read format");
+      } else {
+        is_fastq = (bool)kseq->qual.s;
       }
-      // send reads to the thread
-      threads[t] = std::thread(search_read, ref(sr_v[t]), ref(known_barcodes),
-                               max_flank_editdistance, max_bc_editdistance,
-                               ref(search_pattern));
     }
-  print_result:
+    gzrewind(gz_reads_in);
+    kseq = kseq_init(gz_reads_in);
 
-    for (int t = 0; t < sr_v.size();
-         t++) { // loop over the threads and print out ther results
-      if (sr_v[t].size() > 0)
-        threads[t].join(); // wait for the threads to finish before printing
+    Rcpp::Rcout << "Searching for barcodes..." << "\n";
 
-      for (int r = 0; r < sr_v[t].size(); r++) { // loop over the reads
+    while (kseq_len > 0) {
+      const int buffer_size = 2000; // number of reads to pass to one thread.
+      std::vector<std::vector<SearchResult>> sr_v(n_threads);
+      for (int i = 0; i < n_threads; i++)
+        sr_v[i] = std::vector<SearchResult>(buffer_size);
+      std::vector<std::thread> threads(n_threads);
+      for (int t = 0; t < n_threads;
+           t++) { // get n_threads*buffer number or reads..
+        for (int b = 0; b < buffer_size; b++) {
+          kseq_len = kseq_read(kseq);
+          if (kseq_len <= 0) {
+            sr_v[t].resize(b);
+            for (int t2 = t + 1; t2 < n_threads; t2++) {
+              sr_v[t2].resize(0);
+            }
+            if (b > 0) {
+              threads[t] =
+                  std::thread(search_read, ref(sr_v[t]), ref(known_barcodes),
+                              max_flank_editdistance, max_bc_editdistance,
+                              ref(search_pattern));
+            }
+            goto print_result; // advance the line
+          }
+          SearchResult &sr = sr_v[t][b];
+          sr.line = kseq->seq.s;
+          sr.read_id = kseq->name.s;
 
-        for (int b = 0; b < sr_v[t][r].vec_bc_for.size(); b++)
-          barcode_counts[sr_v[t][r].vec_bc_for.at(b).barcode]++;
-        for (int b = 0; b < sr_v[t][r].vec_bc_rev.size(); b++)
-          barcode_counts[sr_v[t][r].vec_bc_rev.at(b).barcode]++;
+          if (is_fastq) { // fastq (account for multi-lines per read)
+            sr.qual_scores = kseq->qual.s;
+          }
 
-        if ((sr_v[t][r].vec_bc_for.size() + sr_v[t][r].vec_bc_rev.size()) > 0)
-          bc_count++;
-        if ((sr_v[t][r].vec_bc_for.size() + sr_v[t][r].vec_bc_rev.size()) > 1) {
-          multi_bc_count++;
+          r_count++; // progress counter
+          if (r_count % 100000 == 0)
+            Rcpp::Rcout << r_count / ((double)1000000)
+                        << " million reads processed.." << "\n";
         }
+        // send reads to the thread
+        threads[t] = std::thread(search_read, ref(sr_v[t]), ref(known_barcodes),
+                                 max_flank_editdistance, max_bc_editdistance,
+                                 ref(search_pattern));
+      }
+    print_result:
 
-        if (known_barcodes.size() !=
-            0) { // if we are just looking for all possible barcodes don't
-                 // output reads etc.
+      for (int t = 0; t < sr_v.size();
+           t++) { // loop over the threads and print out ther results
+        if (sr_v[t].size() > 0)
+          threads[t].join(); // wait for the threads to finish before printing
 
-          print_stats(sr_v[t][r].read_id, sr_v[t][r].vec_bc_for, out_stat_file);
-          print_stats(sr_v[t][r].read_id, sr_v[t][r].vec_bc_rev, out_stat_file);
+        for (int r = 0; r < sr_v[t].size(); r++) { // loop over the reads
 
-          print_read(sr_v[t][r].read_id + "_+", sr_v[t][r].line,
-                     sr_v[t][r].qual_scores, sr_v[t][r].vec_bc_for, outstream,
-                     found_barcodes, remove_barcodes);
-          reverse(sr_v[t][r].qual_scores.begin(), sr_v[t][r].qual_scores.end());
-          if (remove_barcodes || sr_v[t][r].vec_bc_for.size() ==
-                                     0) // case we just want to print read once
-                                        // if multiple bc found.
-            print_read(sr_v[t][r].read_id + "_-", sr_v[t][r].rev_line,
-                       sr_v[t][r].qual_scores, sr_v[t][r].vec_bc_rev, outstream,
+          for (int b = 0; b < sr_v[t][r].vec_bc_for.size(); b++)
+            barcode_counts[sr_v[t][r].vec_bc_for.at(b).barcode]++;
+          for (int b = 0; b < sr_v[t][r].vec_bc_rev.size(); b++)
+            barcode_counts[sr_v[t][r].vec_bc_rev.at(b).barcode]++;
+
+          if ((sr_v[t][r].vec_bc_for.size() + sr_v[t][r].vec_bc_rev.size()) > 0)
+            bc_count++;
+          if ((sr_v[t][r].vec_bc_for.size() + sr_v[t][r].vec_bc_rev.size()) >
+              1) {
+            multi_bc_count++;
+          }
+
+          if (known_barcodes.size() !=
+              0) { // if we are just looking for all possible barcodes don't
+                   // output reads etc.
+
+            print_stats(sr_v[t][r].read_id, sr_v[t][r].vec_bc_for,
+                        out_stat_file);
+            print_stats(sr_v[t][r].read_id, sr_v[t][r].vec_bc_rev,
+                        out_stat_file);
+
+            print_read(sr_v[t][r].read_id + "_+", sr_v[t][r].line,
+                       sr_v[t][r].qual_scores, sr_v[t][r].vec_bc_for, outstream,
                        found_barcodes, remove_barcodes);
+            reverse(sr_v[t][r].qual_scores.begin(),
+                    sr_v[t][r].qual_scores.end());
+            if (remove_barcodes || sr_v[t][r].vec_bc_for.size() ==
+                                       0) // case we just want to print read
+                                          // once if multiple bc found.
+              print_read(sr_v[t][r].read_id + "_-", sr_v[t][r].rev_line,
+                         sr_v[t][r].qual_scores, sr_v[t][r].vec_bc_rev,
+                         outstream, found_barcodes, remove_barcodes);
+          }
         }
       }
     }
+    kseq_destroy(kseq);
+    gzclose(gz_reads_in);
   }
-  kseq_destroy(kseq);
-  gzclose(gz_reads_in);
 
   Rcpp::Rcout << "Number of reads processed: " << r_count << "\n";
   Rcpp::Rcout << "Number of reads where a barcode was found: " << bc_count
               << "\n";
   Rcpp::Rcout << "Number of reads where more than one barcode was found: "
               << multi_bc_count << "\n";
-  Rcpp::Rcout << "All done!"
-              << "\n";
+  Rcpp::Rcout << "All done!" << "\n";
 
   if (known_barcodes.size() > 0) {
     out_stat_file.close();
@@ -710,8 +713,7 @@ int flexiplex_cpp(Rcpp::String reads_in, Rcpp::String barcodes_file,
   }
   out_bc_file.close();
 
-  Rcpp::Rcout << "Reads\tBarcodes"
-              << "\n";
+  Rcpp::Rcout << "Reads\tBarcodes" << "\n";
   for (int i = hist.size() - 1; i >= 0; i--)
     Rcpp::Rcout << i + 1 << "\t" << hist[i] << "\n";
 

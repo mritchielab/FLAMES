@@ -20,18 +20,15 @@ sc_long_multisample_pipeline(
 \arguments{
 \item{annotation}{The file path to the annotation file in GFF3 format}
 
-\item{fastqs}{The input fastq files for multiple samples. It can be provided in different way: 1) a single path to
-the folder containing fastq files, each fastq file will be treated as a sample; or 2) a vector of
-paths to each fastq file, each fastq file will be treated as a sample; or 3) a vector of paths to
-folders containing fastq files, each folder will be treated as a sample.}
+\item{fastqs}{The input fastq files for multiple samples. Should be a single path to
+the folder containing fastq files, each fastq file will be treated as a sample}
 
 \item{outdir}{The path to directory to store all output files.}
 
 \item{genome_fa}{The file path to genome fasta file.}
 
-\item{sample_names}{A vector of sample names,
-Default to the file names of input fastq files, or folder names if \code{fastqs} is
-a vector of folders.}
+\item{sample_names}{A vector of sample names. Default to the file names of input
+fastq files, or folder names if \code{fastqs} is a vector of folders.}
 
 \item{minimap2}{Path to minimap2, if it is not in PATH. Only required if either or both of
 \code{do_genome_align} and \code{do_read_realign} are \code{TRUE}.}

@@ -28,17 +28,14 @@
 #' of up to 2 by default. Most of the parameters, such as the minimal distance to splice site and minimal percentage of transcript coverage
 #' can be modified by the JSON configuration file (\code{config_file}).
 #'
-#' @param fastqs The input fastq files for multiple samples. It can be provided in different way: 1) a single path to
-#'               the folder containing fastq files, each fastq file will be treated as a sample; or 2) a vector of
-#'               paths to each fastq file, each fastq file will be treated as a sample; or 3) a vector of paths to
-#'               folders containing fastq files, each folder will be treated as a sample.
-#' @param sample_names A vector of sample names,
-#'                     Default to the file names of input fastq files, or folder names if \code{fastqs} is
-#'                     a vector of folders.
+#' @param fastqs The input fastq files for multiple samples. Should be a single path to
+#' the folder containing fastq files, each fastq file will be treated as a sample
+#' @param sample_names A vector of sample names. Default to the file names of input
+#' fastq files, or folder names if \code{fastqs} is a vector of folders.
 #' @param expect_cell_numbers A vector of roughly expected numbers of cells in each sample E.g., the targeted number of cells.
-#'                           Required if using BLAZE for demultiplexing, specifically, when the \code{do_barcode_demultiplex}
-#'                           are \code{TRUE} in the the JSON configuration file and \code{barcodes_file} is not specified.
-#'                           Default is \code{NULL}.
+#' Required if using BLAZE for demultiplexing, specifically, when the \code{do_barcode_demultiplex}
+#' are \code{TRUE} in the the JSON configuration file and \code{barcodes_file} is not specified.
+#' Default is \code{NULL}.
 #' @inheritParams sc_long_pipeline
 #' @return a list of \code{SingleCellExperiment} objects if "do_transcript_quantification" set to true.
 #' Otherwise nothing will be returned.

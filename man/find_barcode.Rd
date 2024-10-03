@@ -21,7 +21,7 @@ find_barcode(
 )
 }
 \arguments{
-\item{fastq}{input FASTQ file path}
+\item{fastq}{character vector of paths to FASTQ files or folders}
 
 \item{barcodes_file}{path to file containing barcode allow-list, with one barcode in each line}
 
@@ -29,11 +29,12 @@ find_barcode(
 
 \item{max_flank_editdistance}{max edit distances for the flanking sequences (primer and polyT)}
 
-\item{reads_out}{path of output FASTQ file; if multiple samples are processed,
-the file name will be appended with the FASTQ file name}
+\item{reads_out}{path to output FASTQ file; if multiple samples are processed,
+the sample name will be appended to this argument, e.g. provide \code{path/out.fq} for single
+sample, and \code{path/prefix} for multiple samples.}
 
-\item{stats_out}{path of output stats file; if multiple samples are processed,
-the file name will be appended with the FASTQ file name}
+\item{stats_out}{path of output stats file; similar to \code{reads_out}, e.g. provide
+\code{path/stats.tsv} for single sample, and \code{path/prefix} for multiple samples.}
 
 \item{threads}{number of threads to be used}
 
@@ -53,6 +54,13 @@ a list containing: \code{reads_tb} (tibble of read demultiplexed information) an
 }
 \description{
 demultiplex reads with flexiplex
+}
+\details{
+This function demultiplexes reads by searching for flanking sequences (adaptors)
+around the barcode sequence, and then matching against allowed barcodes. For single
+sample, either provide a single FASTQ file or a folder containing FASTQ files. For
+multiple samples, provide a vector of paths (either to FASTQ files or folders containing
+FASTQ files). Gzipped file input are supported but the output will be uncompressed.
 }
 \examples{
 outdir <- tempfile()
@@ -77,7 +85,8 @@ file.copy(system.file("extdata", "fastq", "musc_rps24.fastq.gz", package = "FLAM
 sampled_lines <- readLines(file.path(fastq_dir, "musc_rps24.fastq.gz"), n = 400)
 writeLines(sampled_lines, file.path(fastq_dir, "copy.fastq"))
 result <- find_barcode(
-  fastq = fastq_dir,
+  # you can mix folders and files. each path will be considered as a sample
+  fastq = c(fastq_dir, system.file("extdata", "fastq", "musc_rps24.fastq.gz", package = "FLAMES")),
   stats_out = file.path(outdir, "bc_stat"),
   reads_out = file.path(outdir, "demultiplexed.fq"),
   barcodes_file = bc_allow, TSO_seq = "CCCATGTACTCTGCGTTGATACCACTGCTT"

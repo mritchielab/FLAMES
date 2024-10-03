@@ -1,23 +1,33 @@
 #' Match Cell Barcodes
 #'
 #' @description demultiplex reads with flexiplex
+#' @details
+#' This function demultiplexes reads by searching for flanking sequences (adaptors)
+#' around the barcode sequence, and then matching against allowed barcodes. For single
+#' sample, either provide a single FASTQ file or a folder containing FASTQ files. For
+#' multiple samples, provide a vector of paths (either to FASTQ files or folders containing
+#' FASTQ files). Gzipped file input are supported but the output will be uncompressed.
 #'
 #' @importFrom readr read_delim col_character col_integer col_logical
 #' @importFrom dplyr bind_rows
-#' @param fastq input FASTQ file path
+#' @param fastq character vector of paths to FASTQ files or folders
 #' @param barcodes_file path to file containing barcode allow-list, with one barcode in each line
 #' @param max_bc_editdistance max edit distances for the barcode sequence
 #' @param max_flank_editdistance max edit distances for the flanking sequences (primer and polyT)
-#' @param reads_out path of output FASTQ file; if multiple samples are processed,
-#' the file name will be appended with the FASTQ file name
-#' @param stats_out path of output stats file; if multiple samples are processed,
-#' the file name will be appended with the FASTQ file name
+#' @param reads_out path to output FASTQ file; if multiple samples are processed,
+#' the sample name will be appended to this argument, e.g. provide \code{path/out.fq} for single
+#' sample, and \code{path/prefix} for multiple samples.
+#' @param stats_out path of output stats file; similar to \code{reads_out}, e.g. provide
+#' \code{path/stats.tsv} for single sample, and \code{path/prefix} for multiple samples.
 #' @param threads number of threads to be used
 #' @param full_length_only boolean, when TSO sequence is provided, whether reads without TSO
 #' are to be discarded
 #' @param pattern named character vector defining the barcode pattern
 #' @param TSO_seq TSO sequence to be trimmed
 #' @param TSO_prime either 3 (when \code{TSO_seq} is on 3' the end) or 5 (on 5' end)
+#' @return a list containing: \code{reads_tb} (tibble of read demultiplexed information) and
+#'  \code{input}, \code{output}, \code{read1_with_adapter} from cutadapt report
+#'  (if TSO trimming is performed)
 #' @examples
 #' outdir <- tempfile()
 #' dir.create(outdir)
@@ -41,14 +51,12 @@
 #' sampled_lines <- readLines(file.path(fastq_dir, "musc_rps24.fastq.gz"), n = 400)
 #' writeLines(sampled_lines, file.path(fastq_dir, "copy.fastq"))
 #' result <- find_barcode(
-#'   fastq = fastq_dir,
+#'   # you can mix folders and files. each path will be considered as a sample
+#'   fastq = c(fastq_dir, system.file("extdata", "fastq", "musc_rps24.fastq.gz", package = "FLAMES")),
 #'   stats_out = file.path(outdir, "bc_stat"),
 #'   reads_out = file.path(outdir, "demultiplexed.fq"),
 #'   barcodes_file = bc_allow, TSO_seq = "CCCATGTACTCTGCGTTGATACCACTGCTT"
 #' )
-#' @return a list containing: \code{reads_tb} (tibble of read demultiplexed information) and
-#'  \code{input}, \code{output}, \code{read1_with_adapter} from cutadapt report
-#'  (if TSO trimming is performed)
 #' @md
 #' @export
 find_barcode <- function(
@@ -71,10 +79,15 @@ find_barcode <- function(
     "TooShort" = readr::col_logical()
   )
 
-  if (file_test("-f", fastq)) {
+  if (length(fastq) == 1) {
     # Single sample
+    if (file_test("-d", fastq)) {
+      reads_in <- list.files(fastq, "\\.(fastq)|(fq)|(fasta)|(fa)$", full.names = TRUE)
+    } else {
+      reads_in <- fastq
+    }
     flexiplex(
-      reads_in = fastq, barcodes_file = barcodes_file, bc_as_readid = TRUE,
+      reads_in = reads_in , barcodes_file = barcodes_file, bc_as_readid = TRUE,
       max_bc_editdistance = max_bc_editdistance, max_flank_editdistance = max_flank_editdistance,
       pattern = pattern, reads_out = reads_out, stats_out = stats_out, n_threads = threads,
       bc_out = tempfile()
@@ -82,20 +95,23 @@ find_barcode <- function(
     stats_tb <- readr::read_delim(stats_out, col_types = stats_col_types)
     # for compatibility with multi-sample and TSO trimming
     stats_tb$Outfile <- reads_out
-    stats_tb$Sample <- basename(stats_out)
-  } else if (file_test("-d", fastq)) {
+    stats_tb$Sample <- basename(fastq)
+  } else if (length(fastq) > 1) {
     # Multi-sample / files
-    stats_list <- sapply(list.files(fastq, "\\.(fastq)|(fq)|(fasta)|(fa)$", full.names = TRUE), function(x) {
+    stats_list <- sapply(fastq, function(x) {
       stats_out_i <- paste0(stats_out, "_", gsub("\\.gz$", "", basename(x)))
       stats_out_i <- gsub("(\\.fastq$)|(\\.fq$)", "", stats_out_i)
       reads_out_i <- paste0(reads_out, "_", gsub("\\.gz$", "", basename(x)))
+      if (file_test("-d", x)) {
+        x <- list.files(x, "\\.(fastq)|(fq)|(fasta)|(fa)$", full.names = TRUE)
+      }
       flexiplex(
         reads_in = x, barcodes_file = barcodes_file, bc_as_readid = TRUE,
         max_bc_editdistance = max_bc_editdistance, max_flank_editdistance = max_flank_editdistance,
-        pattern = pattern, reads_out = reads_out_i, stats_out = stats_out,
+        pattern = pattern, reads_out = reads_out_i, stats_out = stats_out_i,
         n_threads = threads, bc_out = tempfile()
       )
-      stats_i <- readr::read_delim(stats_out, col_types = stats_col_types)
+      stats_i <- readr::read_delim(stats_out_i, col_types = stats_col_types)
       stats_i$Outfile <- reads_out_i
       return(stats_i)
     }, simplify = FALSE)

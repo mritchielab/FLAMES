@@ -25,7 +25,7 @@ quantify_transcript(
 \code{bulk} (bulk, single or multi-sample), or \code{sc_multi_sample} (single-cell, multiple samples)}
 }
 \value{
-The count matrix will be saved in the output folder as \code{transcript_count.csv.gz}.
+A \code{SingleCellExperiment} object for single-cell pipeline, a list of \code{SingleCellExperiment} objects for multi-sample pipeline, or a \code{SummarizedExperiment} object for bulk pipeline.
 }
 \description{
 Calculate the transcript count matrix by parsing the re-alignment file.

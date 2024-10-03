@@ -118,7 +118,7 @@ quantify_gene <- function(annotation, outdir, infq, n_process, pipeline = "sc_si
 #' @param pipeline The pipeline type as a character string, either \code{sc_single_sample} (single-cell, single-sample),
 #' @param samples A vector of sample names, required for \code{sc_multi_sample} pipeline.
 #' \code{bulk} (bulk, single or multi-sample), or \code{sc_multi_sample} (single-cell, multiple samples)
-#' @return The count matrix will be saved in the output folder as \code{transcript_count.csv.gz}.
+#' @return A \code{SingleCellExperiment} object for single-cell pipeline, a list of \code{SingleCellExperiment} objects for multi-sample pipeline, or a \code{SummarizedExperiment} object for bulk pipeline.
 #' @importFrom basilisk basiliskRun
 #' @importFrom reticulate import_from_path dict
 #' @examples
@@ -301,7 +301,7 @@ quantify_transcript_oarfish <- function(outdir, config, pipeline = "sc_single_sa
 #' @param pipeline The pipeline type as a character string, either \code{sc_single_sample} (single-cell, single-sample),
 #' @param ... Supply sample names as character vector (e.g. \code{samples = c("name1", "name2", ...)}) for muti-sample or bulk pipeline.
 #' \code{bulk} (bulk, single or multi-sample), or \code{sc_multi_sample} (single-cell, multiple samples)
-#' @return The count matrix will be saved in the output folder as \code{transcript_count.csv.gz}.
+#' @return A \code{SingleCellExperiment} object for single-cell pipeline, a list of \code{SingleCellExperiment} objects for multi-sample pipeline, or a \code{SummarizedExperiment} object for bulk pipeline.
 #' @examples
 #' temp_path <- tempfile()
 #' bfc <- BiocFileCache::BiocFileCache(temp_path, ask = FALSE)

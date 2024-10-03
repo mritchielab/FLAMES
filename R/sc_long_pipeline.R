@@ -123,6 +123,25 @@ sc_long_pipeline <- function(
   cat(format(Sys.time(), "%X %a %b %d %Y"), "Start running\n")
   config <- checked_args$config
 
+  metadata <- list(
+    "inputs" = list(
+      "config_file" = config_file,
+      "annotation" = annotation,
+      "fastq" = fastq,
+      "outdir" = outdir,
+      "genome_fa" = genome_fa,
+      # optional arguments
+      "barcodes_file" = barcodes_file,
+      "expect_cell_number" = expect_cell_number,
+      "minimap2" = minimap2,
+      "k8" = k8,
+      "genome_bam" = genome_bam
+    ),
+    "results" = list()
+  )
+  metadata$inputs <- metadata$inputs[!sapply(metadata$inputs, is.null)]
+
+
   infq <- NULL
   if (config$pipeline_parameters$do_barcode_demultiplex) {
     if (file.exists(file.path(outdir, "matched_reads.fastq"))) {
@@ -160,21 +179,24 @@ sc_long_pipeline <- function(
       cat("Matching cell barcodes...\n")
       infq <- file.path(outdir, "matched_reads.fastq")
       bc_stat <- file.path(outdir, "matched_barcode_stat")
-      find_barcode(
-        fastq = fastq,
-        barcodes_file = barcodes_file,
-        stats_out = bc_stat,
-        reads_out = infq,
-        pattern = setNames(
-          as.character(config$barcode_parameters$pattern),
-          names(config$barcode_parameters$pattern)
-        ),
-        TSO_seq = config$barcode_parameters$TSO,
-        TSO_prime = config$barcode_parameters$TSO_prime,
-        max_bc_editdistance = config$barcode_parameters$max_bc_editdistance,
-        max_flank_editdistance = config$barcode_parameters$max_flank_editdistance,
-        full_length_only = config$barcode_parameters$full_length_only,
-        threads = config$pipeline_parameters$threads
+      metadata$results <- c(metadata$results,
+        list("find_barcode" = find_barcode(
+          fastq = fastq,
+          barcodes_file = barcodes_file,
+          stats_out = bc_stat,
+          reads_out = infq,
+          pattern = setNames(
+            as.character(config$barcode_parameters$pattern),
+            names(config$barcode_parameters$pattern)
+          ),
+          TSO_seq = config$barcode_parameters$TSO,
+          TSO_prime = config$barcode_parameters$TSO_prime,
+          max_bc_editdistance = config$barcode_parameters$max_bc_editdistance,
+          max_flank_editdistance = config$barcode_parameters$max_flank_editdistance,
+          full_length_only = config$barcode_parameters$full_length_only,
+          threads = config$pipeline_parameters$threads
+        )
+        )
       )
     }
     cat(format(Sys.time(), "%X %a %b %d %Y"), "Demultiplex done\n")
@@ -213,16 +235,12 @@ sc_long_pipeline <- function(
   # if (!using_bam && config$pipeline_parameters$do_genome_alignment) {
   if (config$pipeline_parameters$do_genome_alignment) {
     cat("#### Aligning reads to genome using minimap2\n")
-    minimap2_align(
-      config,
-      genome_fa,
-      infq,
-      annotation,
-      outdir,
-      minimap2,
-      k8,
-      prefix = NULL,
-      threads = config$pipeline_parameters$threads
+    metadata$results <- c(metadata$results,
+      list("minimap2_align" = minimap2_align(config, genome_fa, infq,
+        annotation, outdir, minimap2, k8, prefix = NULL,
+        threads = config$pipeline_parameters$threads
+      )
+      )
     )
   } else {
     cat("#### Skip aligning reads to genome\n")
@@ -271,15 +289,19 @@ sc_long_pipeline <- function(
     # minimap2_realign looks for the transcript_assembly.fa file in the outdir
     # https://combine-lab.github.io/oarfish/
     if (config$pipeline_parameters$oarfish_quantification) {
-      minimap2_realign(config, infq_realign, outdir, minimap2,
-        prefix = NULL,
-        threads = config$pipeline_parameters$threads,
-        minimap2_args = "--eqx -N 100 -ax map-ont -y", sort_by = "CB"
+      metadata$results <- c(metadata$results,
+        list("minimap2_realign" =
+          minimap2_realign(config, infq_realign, outdir, minimap2,
+            prefix = NULL, threads = config$pipeline_parameters$threads,
+            minimap2_args = "--eqx -N 100 -ax map-ont -y", sort_by = "CB")
+        )
       )
     } else {
-      minimap2_realign(config, infq_realign, outdir, minimap2,
-        prefix = NULL,
-        threads = config$pipeline_parameters$threads
+      metadata$results <- c(metadata$results,
+        list("minimap2_realign" =
+          minimap2_realign(config, infq_realign, outdir, minimap2,
+            prefix = NULL, threads = config$pipeline_parameters$threads)
+        )
       )
     }
   } else {
@@ -289,13 +311,16 @@ sc_long_pipeline <- function(
   # transcript quantification
   if (config$pipeline_parameters$do_transcript_quantification) {
     cat("#### Generating transcript count matrix\n")
-    return(quantify_transcript(
+    sce <- quantify_transcript(
       annotation = annotation,
       outdir = outdir,
       pipeline = "sc_single_sample",
       config = config
-    ))
+    )
+    sce@metadata <- c(sce@metadata, metadata)
+    return(sce)
   }
+  return(metadata)
 }
 
 #' @importFrom utils read.csv

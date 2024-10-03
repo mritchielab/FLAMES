@@ -52,7 +52,7 @@ find_isoform_multithread
 //' @return integer return value. 0 represents normal return.
 //' @export
 // [[Rcpp::export]]
-int flexiplex(Rcpp::String reads_in, Rcpp::String barcodes_file,
+int flexiplex(Rcpp::StringVector reads_in, Rcpp::String barcodes_file,
               bool bc_as_readid, int max_bc_editdistance,
               int max_flank_editdistance, Rcpp::StringVector pattern,
               Rcpp::String reads_out, Rcpp::String stats_out,
