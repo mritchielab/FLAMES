@@ -80,8 +80,8 @@ test_that("multiple fastq files as one sample", {
   )
 
   expect_identical(
-    dplyr::select(x$out.fq$reads_tb, -Outfile, -Sample),
-    dplyr::select(y$out.fq$reads_tb, -Outfile, -Sample)
+    dplyr::select(x$musc_rps24$reads_tb, -Outfile, -Sample),
+    dplyr::select(y[[1]]$reads_tb, -Outfile, -Sample)
   )
   expect_identical(
     read.delim(file.path(outdirx, "stats.tsv")),
@@ -130,7 +130,10 @@ test_that("multiple samples, either file or folder as input", {
 
   y <- find_barcode(
     max_bc_editdistance = 2, max_flank_editdistance = 8,
-    fastq = c(fastq_dir, system.file("extdata", "fastq", "musc_rps24.fastq.gz", package = "FLAMES")),
+    fastq = c(
+      'sampleA' = fastq_dir,
+      'sampleB' = system.file("extdata", "fastq", "musc_rps24.fastq.gz", package = "FLAMES")
+    ),
     barcodes_file = bc_allow,
     reads_out = file.path(outdiry, "out"),
     stats_out = file.path(outdiry, "stats.tsv"),
@@ -143,8 +146,8 @@ test_that("multiple samples, either file or folder as input", {
   )
 
   expect_identical(
-    dplyr::select(y[[1]]$reads_tb, -Outfile, -Sample),
-    dplyr::select(y[[2]]$reads_tb, -Outfile, -Sample)
+    dplyr::select(y$sampleA$reads_tb, -Outfile, -Sample),
+    dplyr::select(y$sampleB$reads_tb, -Outfile, -Sample)
   )
   expect_identical(
     dplyr::select(y[[1]]$reads_tb, -Outfile, -Sample),

@@ -9,7 +9,6 @@ sc_long_multisample_pipeline(
   fastqs,
   outdir,
   genome_fa,
-  sample_names = NULL,
   minimap2 = NULL,
   k8 = NULL,
   barcodes_file = NULL,
@@ -20,15 +19,13 @@ sc_long_multisample_pipeline(
 \arguments{
 \item{annotation}{The file path to the annotation file in GFF3 format}
 
-\item{fastqs}{The input fastq files for multiple samples. Should be a single path to
-the folder containing fastq files, each fastq file will be treated as a sample}
+\item{fastqs}{The input fastq files for multiple samples. Should be a named
+vector of file paths (eithr to FASTQ files or directories containing FASTQ files).
+The names of the vector will be used as the sample names.}
 
 \item{outdir}{The path to directory to store all output files.}
 
 \item{genome_fa}{The file path to genome fasta file.}
-
-\item{sample_names}{A vector of sample names. Default to the file names of input
-fastq files, or folder names if \code{fastqs} is a vector of folders.}
 
 \item{minimap2}{Path to minimap2, if it is not in PATH. Only required if either or both of
 \code{do_genome_align} and \code{do_read_realign} are \code{TRUE}.}
@@ -47,8 +44,11 @@ Default is \code{NULL}.}
 all configuration parameters}
 }
 \value{
-a list of \code{SingleCellExperiment} objects if "do_transcript_quantification" set to true.
-Otherwise nothing will be returned.
+If "do_transcript_quantification" set to true, a list with two elements:
+\describe{
+\item{metadata}{ A list of metadata from the pipeline run.}
+\item{sces}{ A list of SingleCellExperiment objects, one for each sample.}
+}
 }
 \description{
 Semi-supervised isoform detection and annotation for long read data.
@@ -93,7 +93,7 @@ strand information being based on reference annotation.}
 }
 \examples{
 reads <- ShortRead::readFastq(
-  system.file("extdata","fastq", "musc_rps24.fastq.gz", package = "FLAMES")
+  system.file("extdata", "fastq", "musc_rps24.fastq.gz", package = "FLAMES")
 )
 outdir <- tempfile()
 dir.create(outdir)
@@ -108,19 +108,25 @@ R.utils::gunzip(
   filename = system.file("extdata", "rps24.fa.gz", package = "FLAMES"),
   destname = genome_fa, remove = FALSE
 )
-ShortRead::writeFastq(sample(reads, size = 500, replace = TRUE), file.path(outdir, "fastq/sample1.fq.gz"), mode = "w", full = FALSE)
-ShortRead::writeFastq(sample(reads, size = 500, replace = TRUE), file.path(outdir, "fastq/sample2.fq.gz"), mode = "w", full = FALSE)
-ShortRead::writeFastq(sample(reads, size = 500, replace = TRUE), file.path(outdir, "fastq/sample3.fq.gz"), mode = "w", full = FALSE)
+ShortRead::writeFastq(reads[1:100],
+  file.path(outdir, "fastq/sample1.fq.gz"), mode = "w", full = FALSE)
+reads <- reads[-(1:100)]
+ShortRead::writeFastq(reads[1:100],
+  file.path(outdir, "fastq/sample2.fq.gz"), mode = "w", full = FALSE)
+reads <- reads[-(1:100)]
+ShortRead::writeFastq(reads,
+  file.path(outdir, "fastq/sample3.fq.gz"), mode = "w", full = FALSE)
 
-if (!any(is.na(find_bin(c("minimap2", "k8"))))) {
-  sce_list <- FLAMES::sc_long_multisample_pipeline(
-    annotation = system.file("extdata", "rps24.gtf.gz", package = "FLAMES"),
-    fastqs = file.path(outdir, "fastq", list.files(file.path(outdir, "fastq"))),
-    outdir = outdir,
-    genome_fa = genome_fa,
-    barcodes_file = rep(bc_allow, 3)
-  )
-}
+sce_list <- FLAMES::sc_long_multisample_pipeline(
+  annotation = system.file("extdata", "rps24.gtf.gz", package = "FLAMES"),
+  fastqs = c("sampleA" = file.path(outdir, "fastq"),
+    "sample1" = file.path(outdir, "fastq", "sample1.fq.gz"),
+    "sample2" = file.path(outdir, "fastq", "sample2.fq.gz"),
+    "sample3" = file.path(outdir, "fastq", "sample3.fq.gz")),
+  outdir = outdir,
+  genome_fa = genome_fa,
+  barcodes_file = rep(bc_allow, 4)
+)
 
 }
 \seealso{

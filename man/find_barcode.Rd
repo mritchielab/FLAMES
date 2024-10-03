@@ -21,7 +21,8 @@ find_barcode(
 )
 }
 \arguments{
-\item{fastq}{character vector of paths to FASTQ files or folders}
+\item{fastq}{character vector of paths to FASTQ files or folders, if
+named, the names will be used as sample names, otherwise the file names will be used}
 
 \item{barcodes_file}{path to file containing barcode allow-list, with one barcode in each line}
 

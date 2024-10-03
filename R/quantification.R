@@ -323,12 +323,21 @@ quantify_transcript_oarfish <- function(outdir, config, pipeline = "sc_single_sa
 #'   quantify_transcript_flames(annotation, outdir, config, pipeline = "bulk")
 #' }
 #' }
+#' @importFrom BiocGenerics cbind ncol
+#' @importFrom SummarizedExperiment colData
 #' @export
 quantify_transcript <- function(annotation, outdir, config, pipeline = "sc_single_sample", ...) {
   if (config$pipeline_parameters$oarfish_quantification) {
-    return(quantify_transcript_oarfish(outdir, config, pipeline, ...))
+    res <- quantify_transcript_oarfish(outdir, config, pipeline, ...)
   } else {
-    return(quantify_transcript_flames(annotation, outdir, config, pipeline, ...))
+    res <- quantify_transcript_flames(annotation, outdir, config, pipeline, ...)
+  }
+  if (is.list(res)) {
+    # sce <- do.call(BiocGenerics::cbind, res)
+    # colData(sce)$sample <- unlist(mapply(function(x, n) rep(x, n), names(res), sapply(res, ncol)))
+    return(res)
+  } else {
+    return(res)
   }
 }
 

@@ -10,7 +10,8 @@
 #'
 #' @importFrom readr read_delim col_character col_integer col_logical
 #' @importFrom dplyr bind_rows
-#' @param fastq character vector of paths to FASTQ files or folders
+#' @param fastq character vector of paths to FASTQ files or folders, if
+#' named, the names will be used as sample names, otherwise the file names will be used
 #' @param barcodes_file path to file containing barcode allow-list, with one barcode in each line
 #' @param max_bc_editdistance max edit distances for the barcode sequence
 #' @param max_flank_editdistance max edit distances for the flanking sequences (primer and polyT)
@@ -95,29 +96,49 @@ find_barcode <- function(
     stats_tb <- readr::read_delim(stats_out, col_types = stats_col_types)
     # for compatibility with multi-sample and TSO trimming
     stats_tb$Outfile <- reads_out
-    stats_tb$Sample <- basename(fastq)
+    if (!is.null(names(fastq))) {
+      stats_tb$Sample <- names(fastq)
+    } else {
+      stats_tb$Sample <- gsub("\\.(fastq|fq)(\\.gz)?$", "", basename(fastq))
+    }
   } else if (length(fastq) > 1) {
     # Multi-sample / files
-    stats_list <- sapply(fastq, function(x) {
-      stats_out_i <- paste0(stats_out, "_", gsub("\\.gz$", "", basename(x)))
-      stats_out_i <- gsub("(\\.fastq$)|(\\.fq$)", "", stats_out_i)
-      reads_out_i <- paste0(reads_out, "_", gsub("\\.gz$", "", basename(x)))
-      if (file_test("-d", x)) {
-        x <- list.files(x, "\\.(fastq)|(fq)|(fasta)|(fa)$", full.names = TRUE)
+    if (is.null(names(fastq))) {
+      names(fastq) <- gsub("\\.(fastq|fq)(\\.gz)?$", "", basename(fastq))
+      # ensure unique names
+      names(fastq) <- make.names(names(fastq), unique = TRUE)
+    }
+
+    # backward compatible with single string
+    if (!length(stats_out) == length(fastq)) {
+      stats_out <- paste0(stats_out[[1]], "_", names(fastq), ".tsv")
+    }
+    if (!length(reads_out) == length(fastq)) {
+      reads_out <- paste0(reads_out[[1]], "_", names(fastq), ".fastq")
+    }
+    if (!length(barcodes_file) == length(fastq)) {
+      barcodes_file <- rep(barcodes_file[[1]], length(fastq))
+    }
+    names(stats_out) <- names(fastq)
+    names(reads_out) <- names(fastq)
+    names(barcodes_file) <- names(fastq)
+
+    stats_list <- sapply(names(fastq), function(sample) {
+      reads_in <- fastq[[sample]]
+      if (file_test("-d", reads_in)) {
+        reads_in <- list.files(reads_in, "\\.(fastq|fq)(\\.gz)?$", full.names = TRUE)
       }
       flexiplex(
-        reads_in = x, barcodes_file = barcodes_file, bc_as_readid = TRUE,
+        reads_in = reads_in, barcodes_file = barcodes_file[sample], bc_as_readid = TRUE,
         max_bc_editdistance = max_bc_editdistance, max_flank_editdistance = max_flank_editdistance,
-        pattern = pattern, reads_out = reads_out_i, stats_out = stats_out_i,
+        pattern = pattern, reads_out = reads_out[sample], stats_out = stats_out[sample],
         n_threads = threads, bc_out = tempfile()
       )
-      stats_i <- readr::read_delim(stats_out_i, col_types = stats_col_types)
-      stats_i$Outfile <- reads_out_i
+      stats_i <- readr::read_delim(stats_out[sample], col_types = stats_col_types)
+      stats_i$Outfile <- reads_out[sample]
       return(stats_i)
     }, simplify = FALSE)
-    names(stats_list) <- basename(names(stats_list))
-    names(stats_list) <- gsub("\\.(gz)$", "", names(stats_list))
-    names(stats_list) <- gsub("(\\.fastq$)|(\\.fq$)", "", names(stats_list))
+    names(stats_list) <- names(fastq)
     stats_tb <- dplyr::bind_rows(stats_list, .id = "Sample") |>
       dplyr::mutate(Sample = factor(Sample), Outfile = factor(Outfile))
   } else {
@@ -126,20 +147,27 @@ find_barcode <- function(
 
   # Cutadapt TSO trimming
   reports <- list()
+  out_fastqs <- dplyr::select(stats_tb, Sample, Outfile) |>
+    mutate( # factor breaks file related functions
+      Outfile = as.character(Outfile),
+      Sample = as.character(Sample)
+    ) |>
+    dplyr::distinct() |>
+    tibble::deframe()  # use first column as names
   if (is.character(TSO_seq) && nchar(TSO_seq) > 0 && TSO_prime %in% c(3, 5)) {
     # move the original reads to untrimmed_reads
     # run cutadapt and output to reads_out
     # move the untrimmed reads to noTSO_reads if full_length_only
-    for (reads_out_i in unique(stats_tb$Outfile)) {
+    for (i in seq_along(out_fastqs)) {
       untrimmed_reads <- file.path(
-        dirname(reads_out_i),
-        paste0("untrimmed_", basename(reads_out_i))
+        dirname(out_fastqs[i]),
+        paste0("untrimmed_", basename(out_fastqs[i]))
       )
       noTSO_reads <- file.path(
-        dirname(reads_out_i),
-        paste0("noTSO_", basename(reads_out_i))
+        dirname(out_fastqs[i]),
+        paste0("noTSO_", basename(out_fastqs[i]))
       )
-      stopifnot(file.rename(reads_out_i, untrimmed_reads))
+      stopifnot(file.rename(out_fastqs[i], untrimmed_reads))
       tmp_json_file <- tempfile(fileext = ".json")
       # cutadapt -a 'TSO' -o reads_out --untrimmed-output noTSO_out in_fq(untrimmed.fq)
       cutadapt(
@@ -147,7 +175,7 @@ find_barcode <- function(
           ifelse(TSO_prime == 3, "-a", "-g"),
           TSO_seq,
           "-o",
-          reads_out_i,
+          out_fastqs[i],
           untrimmed_reads,
           "--json", tmp_json_file,
           if (full_length_only) {
@@ -158,21 +186,17 @@ find_barcode <- function(
       # parse cutadapt json report
       report <- jsonlite::fromJSON(tmp_json_file)$read_counts
       report <- report[c('read1_with_adapter', 'input', 'output')]
-      report$reads_tb <- stats_tb[stats_tb$Outfile == reads_out_i, ]
-      reports[[reads_out_i]] <- report
+      report$reads_tb <- stats_tb[stats_tb$Outfile == out_fastqs[i], ]
+      reports[[names(out_fastqs)[i]]] <- report
       unlink(tmp_json_file)
     }
   } else {
     cat("Skipping TSO trimming...\n")
     # keep the same output format
-    for (reads_out_i in unique(stats_tb$Outfile)) {
-      reports[[reads_out_i]] <- list(reads_tb = stats_tb[stats_tb$Outfile == reads_out_i, ])
+    for (i in seq_along(out_fastqs)) {
+      reports[[names(out_fastqs[i])]] <- 
+        list(reads_tb = stats_tb[stats_tb$Outfile == out_fastqs[i], ])
     }
-  }
-  if (length(reports) == 1) {
-    names(reports) <- basename(names(reports))
-  } else {
-    names(reports) <- gsub(paste0("^", reads_out, "_?"), "", names(reports))
   }
   return(reports)
 }
