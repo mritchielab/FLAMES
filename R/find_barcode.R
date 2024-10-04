@@ -109,19 +109,17 @@ find_barcode <- function(
       names(fastq) <- make.names(names(fastq), unique = TRUE)
     }
 
-    # backward compatible with single string
-    if (!length(stats_out) == length(fastq)) {
-      stats_out <- paste0(stats_out[[1]], "_", names(fastq), ".tsv")
+    # backward compatible with single value
+    if (!is.list(pattern)) {
+      pattern <- rep(list(pattern), length(fastq))
     }
-    if (!length(reads_out) == length(fastq)) {
-      reads_out <- paste0(reads_out[[1]], "_", names(fastq), ".fastq")
-    }
-    if (!length(barcodes_file) == length(fastq)) {
-      barcodes_file <- rep(barcodes_file[[1]], length(fastq))
-    }
-    names(stats_out) <- names(fastq)
-    names(reads_out) <- names(fastq)
-    names(barcodes_file) <- names(fastq)
+    stats_out <- default_values(stats_out, paste0(stats_out[[1]], "_", names(fastq), ".tsv"))
+    reads_out <- default_values(reads_out, paste0(reads_out[[1]], "_", names(fastq), ".fastq"))
+    barcodes_file <- default_values(barcodes_file, rep(barcodes_file[[1]], length(fastq)))
+    stats_out <- default_names(stats_out, names(fastq))
+    reads_out <- default_names(reads_out, names(fastq))
+    barcodes_file <- default_names(barcodes_file, names(fastq))
+    pattern <- default_names(pattern, names(fastq))
 
     stats_list <- sapply(names(fastq), function(sample) {
       reads_in <- fastq[[sample]]
@@ -131,7 +129,7 @@ find_barcode <- function(
       flexiplex(
         reads_in = reads_in, barcodes_file = barcodes_file[sample], bc_as_readid = TRUE,
         max_bc_editdistance = max_bc_editdistance, max_flank_editdistance = max_flank_editdistance,
-        pattern = pattern, reads_out = reads_out[sample], stats_out = stats_out[sample],
+        pattern = pattern[[sample]], reads_out = reads_out[sample], stats_out = stats_out[sample],
         n_threads = threads, bc_out = tempfile()
       )
       stats_i <- readr::read_delim(stats_out[sample], col_types = stats_col_types)
@@ -338,4 +336,17 @@ plot_demultiplex <- function(find_barcode_result) {
     barcode_editdistance_plot = barcode_editdistance_plot,
     cutadapt_plot = switch(has_cutadapt, cutadapt_plot, NULL)
   ))
+}
+
+default_names <- function(x, name) {
+  if (is.null(names(x))) {
+    names(x) <- name
+  }
+  return(x)
+}
+default_values <- function(x, value) {
+  if (length(x) != length(value)) {
+    x <- value
+  }
+  return(x)
 }
