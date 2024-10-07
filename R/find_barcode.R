@@ -87,19 +87,21 @@ find_barcode <- function(
     } else {
       reads_in <- fastq
     }
-    flexiplex(
-      reads_in = reads_in , barcodes_file = barcodes_file, bc_as_readid = TRUE,
+    read_counts <- list(flexiplex(
+      reads_in = reads_in, barcodes_file = barcodes_file, bc_as_readid = TRUE,
       max_bc_editdistance = max_bc_editdistance, max_flank_editdistance = max_flank_editdistance,
       pattern = pattern, reads_out = reads_out, stats_out = stats_out, n_threads = threads,
       bc_out = tempfile()
-    )
+    ))
     stats_tb <- readr::read_delim(stats_out, col_types = stats_col_types)
     # for compatibility with multi-sample and TSO trimming
     stats_tb$Outfile <- reads_out
     if (!is.null(names(fastq))) {
       stats_tb$Sample <- names(fastq)
+      names(read_counts) <- names(fastq)
     } else {
       stats_tb$Sample <- gsub("\\.(fastq|fq)(\\.gz)?$", "", basename(fastq))
+      names(read_counts) <- gsub("\\.(fastq|fq)(\\.gz)?$", "", basename(fastq))
     }
   } else if (length(fastq) > 1) {
     # Multi-sample / files
@@ -120,13 +122,14 @@ find_barcode <- function(
     reads_out <- default_names(reads_out, names(fastq))
     barcodes_file <- default_names(barcodes_file, names(fastq))
     pattern <- default_names(pattern, names(fastq))
+    read_counts <- list()
 
-    stats_list <- sapply(names(fastq), function(sample) {
+    res_list <- sapply(names(fastq), function(sample) {
       reads_in <- fastq[[sample]]
       if (file_test("-d", reads_in)) {
         reads_in <- list.files(reads_in, "\\.(fastq|fq)(\\.gz)?$", full.names = TRUE)
       }
-      flexiplex(
+      read_counts <- flexiplex(
         reads_in = reads_in, barcodes_file = barcodes_file[sample], bc_as_readid = TRUE,
         max_bc_editdistance = max_bc_editdistance, max_flank_editdistance = max_flank_editdistance,
         pattern = pattern[[sample]], reads_out = reads_out[sample], stats_out = stats_out[sample],
@@ -134,11 +137,12 @@ find_barcode <- function(
       )
       stats_i <- readr::read_delim(stats_out[sample], col_types = stats_col_types)
       stats_i$Outfile <- reads_out[sample]
-      return(stats_i)
+      return(list(read_counts = read_counts, stats_tb = stats_i))
     }, simplify = FALSE)
-    names(stats_list) <- names(fastq)
-    stats_tb <- dplyr::bind_rows(stats_list, .id = "Sample") |>
+    stats_tb <- sapply(res_list, function(x) x$stats_tb, simplify = FALSE) |>
+      dplyr::bind_rows(.id = "Sample") |>
       dplyr::mutate(Sample = factor(Sample), Outfile = factor(Outfile))
+    read_counts <- sapply(res_list, function(x) x$read_counts, simplify = FALSE)
   } else {
     stop("The specified path does not exist: ", fastq)
   }
@@ -146,12 +150,12 @@ find_barcode <- function(
   # Cutadapt TSO trimming
   reports <- list()
   out_fastqs <- dplyr::select(stats_tb, Sample, Outfile) |>
-    mutate( # factor breaks file related functions
+    dplyr::mutate( # factor breaks file related functions
       Outfile = as.character(Outfile),
       Sample = as.character(Sample)
     ) |>
     dplyr::distinct() |>
-    tibble::deframe()  # use first column as names
+    tibble::deframe() # use first column as names
   if (is.character(TSO_seq) && nchar(TSO_seq) > 0 && TSO_prime %in% c(3, 5)) {
     # move the original reads to untrimmed_reads
     # run cutadapt and output to reads_out
@@ -182,9 +186,12 @@ find_barcode <- function(
         )
       )
       # parse cutadapt json report
-      report <- jsonlite::fromJSON(tmp_json_file)$read_counts
-      report <- report[c('read1_with_adapter', 'input', 'output')]
+      cutadapt_stats <- jsonlite::fromJSON(tmp_json_file)$read_counts
+      cutadapt_stats <- cutadapt_stats[c('read1_with_adapter', 'input', 'output')]
+      cutadapt_stats <- unlist(cutadapt_stats)
+      report <- list("cutadapt" = cutadapt_stats)
       report$reads_tb <- stats_tb[stats_tb$Outfile == out_fastqs[i], ]
+      report$read_counts <- read_counts[[names(out_fastqs)[i]]]
       reports[[names(out_fastqs)[i]]] <- report
       unlink(tmp_json_file)
     }
@@ -192,8 +199,10 @@ find_barcode <- function(
     cat("Skipping TSO trimming...\n")
     # keep the same output format
     for (i in seq_along(out_fastqs)) {
-      reports[[names(out_fastqs[i])]] <- 
-        list(reads_tb = stats_tb[stats_tb$Outfile == out_fastqs[i], ])
+      reports[[names(out_fastqs[i])]] <- list(
+        reads_tb = stats_tb[stats_tb$Outfile == out_fastqs[i], ],
+        read_counts = read_counts[[names(out_fastqs[i])]]
+      )
     }
   }
   return(reports)
@@ -214,7 +223,7 @@ convert_cellranger_bc <- function(bc_allow, bc_from, bc_to) {
 #' @description produce a barplot of cell barcode demultiplex statistics
 #'
 #' @importFrom dplyr bind_rows group_by summarise ungroup count n_distinct
-#' @importFrom ggplot2 ggplot aes geom_line scale_y_log10 ylab xlab ggtitle theme
+#' @importFrom ggplot2 ggplot aes geom_line scale_y_log10 ylab xlab ggtitle theme theme_minimal
 #' @param find_barcode_result output from \code{\link{find_barcode}}
 #' @examples
 #' outdir <- tempfile()
@@ -239,6 +248,7 @@ convert_cellranger_bc <- function(bc_allow, bc_from, bc_to) {
 #'   plot_demultiplex()
 #' @return a list of ggplot objects:
 #' \itemize{
+#' \item reads_count_plot: stacked barplot of: demultiplexed reads
 #' \item knee_plot: knee plot of UMI counts before TSO trimming
 #' \item flank_editdistance_plot: flanking sequence (adaptor) edit-distance plot
 #' \item barcode_editdistance_plot: barcode edit-distance plot
@@ -259,8 +269,11 @@ plot_demultiplex <- function(find_barcode_result) {
     dplyr::ungroup() |>
     dplyr::count(UMI_count, Sample) |>
     ggplot2::ggplot(ggplot2::aes(x = UMI_count, y = n, col = Sample)) +
-    ggplot2::geom_line() +
+    # ggplot2::geom_line() +
+    ggplot2::geom_point(size = 0.5, alpha = 0.5) +
+    ggplot2::geom_smooth(span = 0.3, se = FALSE, method = 'loess') +
     ggplot2::scale_y_log10() +
+    ggplot2::theme_minimal() +
     ggplot2::ylab("number of cells") +
     ggplot2::xlab("UMI count (before TSO trimming)")
   # remove color legend if only one sample
@@ -278,6 +291,7 @@ plot_demultiplex <- function(find_barcode_result) {
     ggplot2::ggplot(ggplot2::aes(x = FlankEditDist, y = n_reads, col = Sample)) +
     ggplot2::geom_line() +
     ggplot2::scale_y_log10() +
+    ggplot2::theme_minimal() +
     ggplot2::ylab("number of reads") +
     ggplot2::xlab("Flanking sequence (adaptor) editdistance")
   if (length(find_barcode_result) == 1) {
@@ -295,6 +309,7 @@ plot_demultiplex <- function(find_barcode_result) {
     ggplot2::ggplot(ggplot2::aes(x = BarcodeEditDist, fill = Sample)) +
     ggplot2::geom_bar(stat = "count", position = "dodge") +
     ggplot2::scale_y_log10() +
+    ggplot2::theme_minimal() +
     ggplot2::ylab("number of reads") +
     ggplot2::xlab("Barcode editdistance")
   if (length(find_barcode_result) == 1) {
@@ -302,28 +317,45 @@ plot_demultiplex <- function(find_barcode_result) {
       ggplot2::theme(legend.position = "none")
   }
 
+  # read counts
+  read_counts_plot <-
+    sapply(find_barcode_result, function(x) x$read_counts, simplify = FALSE) |>
+      dplyr::bind_rows(.id = "Sample") |>
+      dplyr::mutate(`undemultiplexted reads` =
+        `total reads` - `reads with barcode` - `reads with multiple barcodes`) |>
+      dplyr::select(-`total reads`) |>
+      tidyr::pivot_longer(
+        !Sample,
+        names_to = "Type", values_to = "Reads"
+      ) |> # make stacked barplot, each sample is a bar
+      dplyr::mutate(Type = factor(Type, levels = c(
+        "undemultiplexted reads",
+        "reads with multiple barcodes",
+        "reads with barcode"
+      ))) |>
+      ggplot2::ggplot(ggplot2::aes(x = Sample, y = Reads, fill = Type)) +
+      ggplot2::geom_col(position = "stack") +
+      ggplot2::scale_fill_manual(values = c(
+        "undemultiplexted reads" = "#B3B3B3",
+        "reads with barcode" = "#8DA0CB",
+        "reads with multiple barcodes" = "#FC8D62")) +
+      ggplot2::theme_minimal() +
+      ggplot2::ylab("number of reads") +
+      ggplot2::xlab("Sample") +
+      ggplot2::ggtitle("Read counts")
+
   # Cutadapt report
-  has_cutadapt <- sapply(find_barcode_result, function(x) {
-    all(
-      "input" %in% names(x),
-      "output" %in% names(x),
-      "read1_with_adapter" %in% names(x)
-    )
-  }) |> all()
-  if (has_cutadapt) {
-    tb <- sapply(find_barcode_result, function(x) {
-      c(x$input, x$output, x$read1_with_adapter)
-    })
-    colnames(tb) <- basename(colnames(tb))
-    rownames(tb) <- c("input", "output", "read1_with_adapter")
-    tb <- as_tibble(t(tb), rownames = "Sample")
-    cutadapt_plot <- tb |>
+  if (all(sapply(find_barcode_result, function(x) "cutadapt" %in% names(x)))) {
+    cutadapt_plot <- 
+      sapply(find_barcode_result, function(x) x$cutadapt, simplify = FALSE) |>
+      dplyr::bind_rows(.id = "Sample") |>
       tidyr::pivot_longer(
         cols = c(input, output, read1_with_adapter),
         names_to = "Type", values_to = "Count"
       ) |>
       ggplot2::ggplot(ggplot2::aes(x = Sample, y = Count, fill = Type)) +
       ggplot2::geom_col(position = "dodge") +
+      ggplot2::theme_minimal() +
       ggplot2::ylab("number of reads") +
       ggplot2::xlab("Sample") +
       ggplot2::ggtitle("Cutadapt results")
@@ -331,10 +363,11 @@ plot_demultiplex <- function(find_barcode_result) {
   }
 
   return(list(
+    reads_count_plot = read_counts_plot,
     knee_plot = knee_plot,
     flank_editdistance_plot = flank_editdistance_plot,
     barcode_editdistance_plot = barcode_editdistance_plot,
-    cutadapt_plot = switch(has_cutadapt, cutadapt_plot, NULL)
+    cutadapt_plot = switch(exists("cutadapt_plot"), cutadapt_plot, NULL)
   ))
 }
 

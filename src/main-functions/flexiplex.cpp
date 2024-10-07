@@ -482,7 +482,7 @@ bool file_exists(const std::string &filename) {
 //' @return integer return value. 0 represents normal return.
 //' @export
 // [[Rcpp::export]]
-int flexiplex_cpp(Rcpp::StringVector reads_in, Rcpp::String barcodes_file,
+Rcpp::IntegerVector flexiplex_cpp(Rcpp::StringVector reads_in, Rcpp::String barcodes_file,
                   bool bc_as_readid, int max_bc_editdistance,
                   int max_flank_editdistance, Rcpp::StringVector pattern,
                   Rcpp::String reads_out, Rcpp::String stats_out,
@@ -687,13 +687,19 @@ int flexiplex_cpp(Rcpp::StringVector reads_in, Rcpp::String barcodes_file,
               << multi_bc_count << "\n";
   Rcpp::Rcout << "All done!" << "\n";
 
+  Rcpp::IntegerVector read_counts = Rcpp::IntegerVector::create(
+    Rcpp::Named("total reads", r_count),
+    Rcpp::Named("reads with barcode", bc_count),
+    Rcpp::Named("reads with multiple barcodes", multi_bc_count)
+  );
+
   if (known_barcodes.size() > 0) {
     out_stat_file.close();
-    return (0);
+    return read_counts;
   }
 
   if (barcode_counts.size() == 0)
-    return (0);
+    return read_counts;
 
   typedef std::pair<std::string, int> pair;
   std::vector<pair> bc_vec;
@@ -717,5 +723,5 @@ int flexiplex_cpp(Rcpp::StringVector reads_in, Rcpp::String barcodes_file,
   for (int i = hist.size() - 1; i >= 0; i--)
     Rcpp::Rcout << i + 1 << "\t" << hist[i] << "\n";
 
-  return (0);
+  return read_counts;
 }

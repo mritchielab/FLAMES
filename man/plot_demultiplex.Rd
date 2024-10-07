@@ -12,6 +12,7 @@ plot_demultiplex(find_barcode_result)
 \value{
 a list of ggplot objects:
 \itemize{
+\item reads_count_plot: stacked barplot of: demultiplexed reads
 \item knee_plot: knee plot of UMI counts before TSO trimming
 \item flank_editdistance_plot: flanking sequence (adaptor) edit-distance plot
 \item barcode_editdistance_plot: barcode edit-distance plot
