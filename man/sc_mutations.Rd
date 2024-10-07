@@ -41,7 +41,7 @@ outdir <- tempfile()
 dir.create(outdir)
 genome_fa <- file.path(outdir, "rps24.fa")
 R.utils::gunzip(filename = system.file("extdata/rps24.fa.gz", package = "FLAMES"), destname = genome_fa, remove = FALSE)
-download.file("https://raw.githubusercontent.com/mritchielab/FLAMES/devel/tests/testthat/demultiplexed.fq",
+download.file("https://raw.githubusercontent.com/mritchielab/FLAMES/refs/heads/RELEASE_3_19/tests/testthat/demultiplexed.fq",
   destfile = file.path(outdir, "demultipelxed.fq")
 ) # can't be bothered to run demultiplexing again
 if (!any(is.na(sys_which(c("minimap2", "k8"))))) {
