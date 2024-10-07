@@ -75,6 +75,8 @@ struct SearchResult {
   std::string rev_line;
   std::vector<Barcode> vec_bc_for;
   std::vector<Barcode> vec_bc_rev;
+  int count;
+  bool chimeric;
 };
 
 // Code for fast edit distance calculation for short sequences modified from
@@ -133,6 +135,71 @@ unsigned int edit_distance(const std::string &s1, const std::string &s2,
   return best; // return edit distance
 }
 
+// extract UMI from the read after barcode matching
+std::string get_umi(const std::string &seq,
+                    const std::vector<std::pair<std::string, std::string>> &search_pattern,
+                    const std::vector<int> &read_to_subpatterns,
+                    const int umi_index, const int bc_index,
+                    const bool sliding_window_match, // if true, use left_bound and endDistance
+                    const int left_bound,
+                    const int endDistance
+                    ) {
+
+  int umi_start, umi_length;
+  std::string umi_pad = "";
+  umi_length = search_pattern[umi_index].second.length();
+
+  if (umi_index == -1) {
+    return ""; // protocol does not have UMI
+  
+  } else if (umi_index == bc_index + 1) {
+    // UMI right after BC
+    if (sliding_window_match) {
+      umi_start = left_bound + endDistance;
+    } else {
+      umi_start = read_to_subpatterns[bc_index] + search_pattern[bc_index].second.length();
+    }
+    if (seq.length() < umi_start + umi_length) {
+      // read not long enough, pad N to the end
+      umi_length = seq.length() - umi_start;
+      umi_pad = std::string(search_pattern[umi_index].second.length() - umi_length, 'N');
+    }
+    return seq.substr(umi_start, umi_length) + umi_pad;
+
+  } else if (umi_index == bc_index - 1) {
+    // UMI right before BC
+    int bc_start = sliding_window_match ? left_bound + endDistance : read_to_subpatterns[bc_index];
+    // umi should start umi_offset bases before BC
+    int umi_offset = search_pattern[bc_index].second.length() + search_pattern[umi_index].second.length();
+    if (bc_start < umi_offset) {
+      // not enough bases before BC
+      umi_pad = std::string(umi_offset - bc_start, 'N');
+      umi_start = 0;
+      umi_length -= umi_offset - bc_start;
+    } else {
+      umi_start = bc_start - umi_offset;
+    }
+    return umi_pad + seq.substr(umi_start, umi_length);
+
+  } else {
+    // UMI not next to BC, no idea which side was truncated
+    if (read_to_subpatterns.size() > umi_index + 1) {
+      // UMI is not the last subpattern
+      // use the start of the next subpattern as the end of UMI
+      umi_start = read_to_subpatterns[umi_index];
+      umi_length = std::min(read_to_subpatterns[umi_index + 1] - umi_start, umi_length);
+      umi_pad = std::string(search_pattern[umi_index].second.length() - umi_length, 'N');
+      return seq.substr(umi_start, umi_length) + umi_pad;
+    } else {
+      // UMI is the last subpattern
+      umi_start = read_to_subpatterns[umi_index];
+      umi_length = std::min((int) seq.length() - umi_start, umi_length);
+      umi_pad = std::string(search_pattern[umi_index].second.length() - umi_length, 'N');
+      return seq.substr(umi_start, umi_length) + umi_pad;
+    }
+  }
+}
+
 // Given a string 'seq' search for substring with primer and polyT sequence
 // followed by a targeted search in the region for barcode Seaquence seearch is
 // performed using edlib
@@ -187,6 +254,8 @@ EdlibAlignConfig edlibConf = {flank_max_editd, EDLIB_MODE_HW, EDLIB_TASK_PATH,
   barcode.flank_editd = result.editDistance;
   barcode.flank_start = result.startLocations[0];
   barcode.flank_end = seq.find_first_not_of('T', result.endLocations[0]);
+  // TRIM
+  // barcode.flank_end = result.endLocations[0];
 
   // Extract sub-patterns from aligment directly
   std::vector<long unsigned int> subpattern_lengths;
@@ -263,23 +332,21 @@ EdlibAlignConfig edlibConf = {flank_max_editd, EDLIB_MODE_HW, EDLIB_TASK_PATH,
     barcode.barcode = exact_bc;
     barcode.editd = 0;
     barcode.unambiguous = true;
-    if (umi_index == -1) {
-      barcode.umi = "";
-    } else {
-      barcode.umi = seq.substr(read_to_subpatterns[umi_index],
-                               search_pattern[umi_index].second.length());
-    }
-    return (barcode);
+    barcode.umi = get_umi(seq, search_pattern, read_to_subpatterns, umi_index, bc_index, false, 0, 0);
+    return(barcode);
   }
 
   // otherwise widen our search space and the look for matches with errors
-  std::string barcode_seq =
-      seq.substr(read_to_subpatterns[bc_index] - OFFSET,
-                 search_pattern[bc_index].second.length() + 2 * OFFSET);
+  int left_bound = std::max(
+    read_to_subpatterns[bc_index] - OFFSET, // widen the search by using an OFFSET
+    0                                       // set a maximum starting character index of 0
+  );
+  int max_length = search_pattern[bc_index].second.length() + 2 * OFFSET;
+
+  std::string barcode_seq = seq.substr(left_bound, max_length);
 
   // iterate over all the known barcodes, checking each sequentially
-  unsigned int editDistance;
-  unsigned int endDistance;
+  unsigned int editDistance, endDistance;
   for (const auto &known_bc : known_barcodes) {
     editDistance =
         edit_distance(barcode_seq, known_bc, endDistance, barcode_max_editd);
@@ -290,35 +357,11 @@ EdlibAlignConfig edlibConf = {flank_max_editd, EDLIB_MODE_HW, EDLIB_TASK_PATH,
       barcode.unambiguous = true;
       barcode.editd = editDistance;
       barcode.barcode = known_bc;
-      if (umi_index == -1) {
-        barcode.umi = "";
-      } else if (umi_index == bc_index + 1) {
-        // read_to_subpatterns[bc_index] - OFFSET: start of barcode_seq
-        //                                       + endDistance: end of barcode
-        //                                                    i.e. start of UMI
-        barcode.umi =
-            seq.substr(read_to_subpatterns[bc_index] - OFFSET + endDistance,
-                       search_pattern[umi_index]
-                           .second.length()); // assumes no error in UMI seq.
-      } else if (umi_index == bc_index - 1) {
-        // Use the start of BC according to edit_distance(barcode_seq, ...) and
-        // go backwords read_to_subpatterns[bc_index] - OFFSET + endDistance -
-        // search_pattern[bc_index].second.length():
-        //   start of BC
-        barcode.umi =
-            seq.substr(read_to_subpatterns[bc_index] - OFFSET + endDistance -
-                           search_pattern[bc_index].second.length() -
-                           search_pattern[umi_index].second.length(),
-                       search_pattern[umi_index].second.length());
-      } else {
-        // BC and UMI not next to eachother, grab UMI according to aligment
-        barcode.umi =
-            seq.substr(read_to_subpatterns[umi_index],
-                       search_pattern[umi_index]
-                           .second.length()); // assumes no error in UMI seq.
-      }
-      if (editDistance == 0) { // if perfect match is found we're done.
-        return (barcode);
+      barcode.umi = get_umi(seq, search_pattern, read_to_subpatterns, umi_index, bc_index, true, left_bound, endDistance);
+      
+      //if perfect match is found we're done.
+      if (editDistance == 0) {
+      	return(barcode);
       }
     }
   }
@@ -347,6 +390,7 @@ std::vector<Barcode> big_barcode_search(
   if (!return_vec.empty()) {
     std::string masked_sequence = sequence;
     for (const auto &barcode : return_vec) {
+      // trimming polyT might return npos
       int flank_length;
       if (barcode.flank_end == std::string::npos) {
         flank_length = masked_sequence.length() - 1 - barcode.flank_start;
@@ -396,13 +440,16 @@ void print_read(const std::string &read_id, const std::string &read,
                 const std::string &qual, const std::vector<Barcode> &vec_bc,
                 std::ofstream &outstream,
                 std::unordered_set<std::string> &found_barcodes,
-                bool trim_barcodes) {
+                bool trim_barcodes, bool chimeric) {
   // loop over the barcodes found... usually will just be one
   for (int b = 0; b < vec_bc.size(); b++) {
 
     // format the new read id. Using FLAMES format.
     std::ostringstream ss;
     ss << (b + 1) << "of" << vec_bc.size();
+    if (chimeric) {
+      ss << "_" << "C";
+    }
     const std::string &barcode = vec_bc[b].barcode;
     // also add the proper FASTQ way: \tCB:Z:barcode\tUB:Z:umi
     std::string new_read_id = barcode + "_" + vec_bc[b].umi + "#" + read_id +
@@ -443,16 +490,36 @@ void search_read(
     const std::vector<std::pair<std::string, std::string>> &search_pattern) {
 
   for (auto &read : reads) {
-    // forward search
-    read.vec_bc_for =
-        big_barcode_search(read.line, known_barcodes, flank_edit_distance,
-                           edit_distance, search_pattern);
+    //forward search
+    auto forward_reads = big_barcode_search(
+      read.line,
+			known_barcodes,
+			flank_edit_distance,
+      edit_distance,
+      search_pattern
+    );
 
-    // Check the reverse compliment of the read
+    // get reverse complement
     read.rev_line = reverse_compliment(read.line);
-    read.vec_bc_rev =
-        big_barcode_search(read.rev_line, known_barcodes, flank_edit_distance,
-                           edit_distance, search_pattern);
+
+    //Check the reverse compliment of the read
+    auto reverse_reads = big_barcode_search(
+        read.rev_line,
+					   known_barcodes,
+					   flank_edit_distance,
+					   edit_distance,
+             search_pattern
+    );
+
+    read.vec_bc_for = forward_reads;
+    read.vec_bc_rev = reverse_reads;
+
+    read.count = forward_reads.size() + reverse_reads.size();
+
+    // a chimeric read occurs when there are barcodes detected in both the forward
+    // and reverse strands.
+    read.chimeric = forward_reads.size() && reverse_reads.size();
+
   }
 }
 
@@ -645,12 +712,10 @@ Rcpp::IntegerVector flexiplex_cpp(Rcpp::StringVector reads_in, Rcpp::String barc
           for (int b = 0; b < sr_v[t][r].vec_bc_rev.size(); b++)
             barcode_counts[sr_v[t][r].vec_bc_rev.at(b).barcode]++;
 
-          if ((sr_v[t][r].vec_bc_for.size() + sr_v[t][r].vec_bc_rev.size()) > 0)
+          if (sr_v[t][r].count > 0)
             bc_count++;
-          if ((sr_v[t][r].vec_bc_for.size() + sr_v[t][r].vec_bc_rev.size()) >
-              1) {
+          if (sr_v[t][r].count > 1) 
             multi_bc_count++;
-          }
 
           if (known_barcodes.size() !=
               0) { // if we are just looking for all possible barcodes don't
@@ -663,7 +728,7 @@ Rcpp::IntegerVector flexiplex_cpp(Rcpp::StringVector reads_in, Rcpp::String barc
 
             print_read(sr_v[t][r].read_id + "_+", sr_v[t][r].line,
                        sr_v[t][r].qual_scores, sr_v[t][r].vec_bc_for, outstream,
-                       found_barcodes, remove_barcodes);
+                       found_barcodes, remove_barcodes, sr_v[t][r].chimeric);
             reverse(sr_v[t][r].qual_scores.begin(),
                     sr_v[t][r].qual_scores.end());
             if (remove_barcodes || sr_v[t][r].vec_bc_for.size() ==
@@ -671,7 +736,7 @@ Rcpp::IntegerVector flexiplex_cpp(Rcpp::StringVector reads_in, Rcpp::String barc
                                           // once if multiple bc found.
               print_read(sr_v[t][r].read_id + "_-", sr_v[t][r].rev_line,
                          sr_v[t][r].qual_scores, sr_v[t][r].vec_bc_rev,
-                         outstream, found_barcodes, remove_barcodes);
+                         outstream, found_barcodes, remove_barcodes, sr_v[t][r].chimeric);
           }
         }
       }
