@@ -321,24 +321,25 @@ plot_demultiplex <- function(find_barcode_result) {
   read_counts_plot <-
     sapply(find_barcode_result, function(x) x$read_counts, simplify = FALSE) |>
       dplyr::bind_rows(.id = "Sample") |>
-      dplyr::mutate(`undemultiplexted reads` =
-        `total reads` - `reads with barcode` - `reads with multiple barcodes`) |>
-      dplyr::select(-`total reads`) |>
+      dplyr::mutate(`undemultiplexted reads` = `total reads` - `demultiplexed reads`,
+        `multi-matching reads` = `demultiplexed reads` - `single match reads`,
+      ) |>
+      dplyr::select(Sample, `undemultiplexted reads`, `multi-matching reads`, `single match reads`) |>
       tidyr::pivot_longer(
         !Sample,
         names_to = "Type", values_to = "Reads"
       ) |> # make stacked barplot, each sample is a bar
       dplyr::mutate(Type = factor(Type, levels = c(
         "undemultiplexted reads",
-        "reads with multiple barcodes",
-        "reads with barcode"
+        "multi-matching reads",
+        "single match reads"
       ))) |>
       ggplot2::ggplot(ggplot2::aes(x = Sample, y = Reads, fill = Type)) +
       ggplot2::geom_col(position = "stack") +
       ggplot2::scale_fill_manual(values = c(
         "undemultiplexted reads" = "#B3B3B3",
-        "reads with barcode" = "#8DA0CB",
-        "reads with multiple barcodes" = "#FC8D62")) +
+        "single match reads" = "#8DA0CB",
+        "multi-matching reads" = "#FC8D62")) +
       ggplot2::theme_minimal() +
       ggplot2::ylab("number of reads") +
       ggplot2::xlab("Sample") +

@@ -75,7 +75,8 @@ struct SearchResult {
   std::string rev_line;
   std::vector<Barcode> vec_bc_for;
   std::vector<Barcode> vec_bc_rev;
-  int count;
+  int n_match;
+  int n_bc;
   bool chimeric;
 };
 
@@ -491,7 +492,7 @@ void search_read(
 
   for (auto &read : reads) {
     //forward search
-    auto forward_reads = big_barcode_search(
+    std::vector<Barcode> forward_reads = big_barcode_search(
       read.line,
 			known_barcodes,
 			flank_edit_distance,
@@ -503,7 +504,7 @@ void search_read(
     read.rev_line = reverse_compliment(read.line);
 
     //Check the reverse compliment of the read
-    auto reverse_reads = big_barcode_search(
+    std::vector<Barcode> reverse_reads = big_barcode_search(
         read.rev_line,
 					   known_barcodes,
 					   flank_edit_distance,
@@ -514,7 +515,19 @@ void search_read(
     read.vec_bc_for = forward_reads;
     read.vec_bc_rev = reverse_reads;
 
-    read.count = forward_reads.size() + reverse_reads.size();
+    read.n_match = forward_reads.size() + reverse_reads.size();
+
+    // count unique barcodes from both strands
+    std::vector<std::string> all_barcodes;
+    for (const auto &match : forward_reads) {
+      all_barcodes.push_back(match.barcode);
+    }
+    for (const auto &match : reverse_reads) {
+      all_barcodes.push_back(match.barcode);
+    }
+    std::sort(all_barcodes.begin(), all_barcodes.end());
+    auto unique_end = std::unique(all_barcodes.begin(), all_barcodes.end());
+    read.n_bc = std::distance(all_barcodes.begin(), unique_end);
 
     // a chimeric read occurs when there are barcodes detected in both the forward
     // and reverse strands.
@@ -617,9 +630,15 @@ Rcpp::IntegerVector flexiplex_cpp(Rcpp::StringVector reads_in, Rcpp::String barc
   std::ofstream outstream(reads_out, std::ios_base::app);
   /********* FIND BARCODE IN READS ********/
   std::string sequence;
-  int bc_count = 0;
-  int r_count = 0;
-  int multi_bc_count = 0;
+  int r_count = 0; // reads processed
+  int r_demultiplexed_count = 0; // reads with >=1 barcode match (same or different barcodes)
+  
+  int single_match_count = 0; // reads with exactly 1 match (not chimeric)
+  int single_bc_count = 0; // reads with multiple matches of the same barcode (not chimeric)
+  int multi_bc_count = 0; // reads with multiple barcode matches (not chimeric)
+  
+  int chimeric_single_count = 0; // chimeric reads, only one barcode
+  int cherimic_multi_count = 0; // chimeric reads, multiple barcodes
 
   std::ofstream out_stat_file;
   if (known_barcodes.size() > 0) {
@@ -712,10 +731,25 @@ Rcpp::IntegerVector flexiplex_cpp(Rcpp::StringVector reads_in, Rcpp::String barc
           for (int b = 0; b < sr_v[t][r].vec_bc_rev.size(); b++)
             barcode_counts[sr_v[t][r].vec_bc_rev.at(b).barcode]++;
 
-          if (sr_v[t][r].count > 0)
-            bc_count++;
-          if (sr_v[t][r].count > 1) 
-            multi_bc_count++;
+          if (sr_v[t][r].n_match > 0) {
+            r_demultiplexed_count++;
+            if (sr_v[t][r].n_match == 1) {
+              single_match_count++;
+              // > 1 matches
+            } else if (!sr_v[t][r].chimeric) { // not chimeric
+              if (sr_v[t][r].n_bc == 1) {
+                single_bc_count++;
+              } else {
+                multi_bc_count++;
+              }
+            } else { // chimeric
+              if (sr_v[t][r].n_bc == 1) {
+                chimeric_single_count++;
+              } else {
+                cherimic_multi_count++;
+              }
+            }
+          }
 
           if (known_barcodes.size() !=
               0) { // if we are just looking for all possible barcodes don't
@@ -746,16 +780,23 @@ Rcpp::IntegerVector flexiplex_cpp(Rcpp::StringVector reads_in, Rcpp::String barc
   }
 
   Rcpp::Rcout << "Number of reads processed: " << r_count << "\n";
-  Rcpp::Rcout << "Number of reads where a barcode was found: " << bc_count
-              << "\n";
-  Rcpp::Rcout << "Number of reads where more than one barcode was found: "
-              << multi_bc_count << "\n";
+  Rcpp::Rcout << "Number of reads where at least one barcode was found: "
+              << r_demultiplexed_count << "\n";
+  Rcpp::Rcout << "Number of reads with exactly one barcode match: "
+              << single_match_count << "\n";
+  Rcpp::Rcout << "Number of chimera reads: "
+              << chimeric_single_count + cherimic_multi_count << "\n";
+
   Rcpp::Rcout << "All done!" << "\n";
 
   Rcpp::IntegerVector read_counts = Rcpp::IntegerVector::create(
     Rcpp::Named("total reads", r_count),
-    Rcpp::Named("reads with barcode", bc_count),
-    Rcpp::Named("reads with multiple barcodes", multi_bc_count)
+    Rcpp::Named("demultiplexed reads", r_demultiplexed_count),
+    Rcpp::Named("single match reads", single_match_count),
+    Rcpp::Named("single strand single barcode multi-matching reads", single_bc_count),
+    Rcpp::Named("single strand multiple barcode reads", multi_bc_count),
+    Rcpp::Named("both strands single barcode reads", chimeric_single_count),
+    Rcpp::Named("both strands multiple barcode reads", cherimic_multi_count)
   );
 
   if (known_barcodes.size() > 0) {
