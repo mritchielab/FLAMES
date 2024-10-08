@@ -151,13 +151,14 @@ FASTQ files). Gzipped file input are supported but the output will be uncompress
 <span class="r-out co"><span class="r-pr">#&gt;</span> BC: NNNNNNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> UMI: NNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> polyT: TTTTTTTTT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpiWOPbd/file20b21741d21c/bc_allow.tsv</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpPaoHHK/file1e8c4ec43455/bc_allow.tsv</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of known barcodes: 143</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads processed: 393</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads where a barcode was found: 368</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads where more than one barcode was found: 4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads where at least one barcode was found: 368</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads with exactly one barcode match: 364</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of chimera reads: 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> All done!</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Skipping TSO trimming...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $musc_rps24</span>
@@ -178,10 +179,20 @@ FASTQ files). Gzipped file input are supported but the output will be uncompress
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 362 more rows</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $musc_rps24$read_counts</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                  total reads           reads with barcode </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                          393                          368 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> reads with multiple barcodes </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                            4 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                       total reads </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                               393 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                               demultiplexed reads </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                               368 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                single match reads </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                               364 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> single strand single barcode multi-matching reads </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                 0 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              single strand multiple barcode reads </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                 3 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                 both strands single barcode reads </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                 0 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>               both strands multiple barcode reads </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                 1 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="co"># multi-sample</span></span></span>
@@ -209,15 +220,16 @@ FASTQ files). Gzipped file input are supported but the output will be uncompress
 <span class="r-out co"><span class="r-pr">#&gt;</span> BC: NNNNNNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> UMI: NNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> polyT: TTTTTTTTT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpiWOPbd/file20b21741d21c/bc_allow.tsv</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpPaoHHK/file1e8c4ec43455/bc_allow.tsv</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of known barcodes: 143</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/RtmpiWOPbd/file20b240c4772c/copy.fastq</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/RtmpPaoHHK/file1e8c13ae31ac/copy.fastq</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/RtmpiWOPbd/file20b240c4772c/musc_rps24.fastq.gz</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/RtmpPaoHHK/file1e8c13ae31ac/musc_rps24.fastq.gz</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads processed: 493</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads where a barcode was found: 460</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads where more than one barcode was found: 5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads where at least one barcode was found: 460</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads with exactly one barcode match: 455</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of chimera reads: 2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> All done!</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> FLEXIPLEX 0.96.2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Setting max barcode edit distance to 2</span>
@@ -229,13 +241,14 @@ FASTQ files). Gzipped file input are supported but the output will be uncompress
 <span class="r-out co"><span class="r-pr">#&gt;</span> BC: NNNNNNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> UMI: NNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> polyT: TTTTTTTTT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpiWOPbd/file20b21741d21c/bc_allow.tsv</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpPaoHHK/file1e8c4ec43455/bc_allow.tsv</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of known barcodes: 143</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads processed: 393</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads where a barcode was found: 368</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads where more than one barcode was found: 4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads where at least one barcode was found: 368</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads with exactly one barcode match: 364</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of chimera reads: 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> All done!</span>
 </code></pre></div>
     </div>
