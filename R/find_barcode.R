@@ -290,7 +290,6 @@ plot_demultiplex <- function(find_barcode_result) {
     dplyr::ungroup() |>
     ggplot2::ggplot(ggplot2::aes(x = FlankEditDist, y = n_reads, col = Sample)) +
     ggplot2::geom_line() +
-    ggplot2::scale_y_log10() +
     ggplot2::theme_minimal() +
     ggplot2::ylab("number of reads") +
     ggplot2::xlab("Flanking sequence (adaptor) editdistance")
@@ -308,7 +307,6 @@ plot_demultiplex <- function(find_barcode_result) {
     dplyr::ungroup() |>
     ggplot2::ggplot(ggplot2::aes(x = BarcodeEditDist, fill = Sample)) +
     ggplot2::geom_bar(stat = "count", position = "dodge") +
-    ggplot2::scale_y_log10() +
     ggplot2::theme_minimal() +
     ggplot2::ylab("number of reads") +
     ggplot2::xlab("Barcode editdistance")
