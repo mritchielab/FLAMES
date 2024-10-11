@@ -194,6 +194,7 @@ sc_long_pipeline <- function(
           full_length_only = config$barcode_parameters$full_length_only,
           max_bc_editdistance = config$barcode_parameters$max_bc_editdistance,
           max_flank_editdistance = config$barcode_parameters$max_flank_editdistance,
+          strand = config$barcode_parameters$strand,
           threads = config$pipeline_parameters$threads
         )
         )

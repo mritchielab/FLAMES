@@ -48,6 +48,7 @@ find_isoform_multithread
 //' @param reads_out output file for demultiplexed reads
 //' @param stats_out output file for demultiplexed stats
 //' @param n_threads number of threads to be used during demultiplexing
+//' @param reverseCompliment bool, whether to reverse complement the reads after demultiplexing
 //' @param bc_out WIP
 //' @return integer return value. 0 represents normal return.
 //' @export
@@ -56,11 +57,11 @@ Rcpp::IntegerVector flexiplex(Rcpp::StringVector reads_in, Rcpp::String barcodes
               bool bc_as_readid, int max_bc_editdistance,
               int max_flank_editdistance, Rcpp::StringVector pattern,
               Rcpp::String reads_out, Rcpp::String stats_out,
-              Rcpp::String bc_out, int n_threads) {
+              Rcpp::String bc_out, bool reverseCompliment, int n_threads) {
 
     return flexiplex_cpp(
         reads_in, barcodes_file, bc_as_readid, max_bc_editdistance,
-        max_flank_editdistance, pattern, reads_out, stats_out, bc_out, n_threads);
+        max_flank_editdistance, pattern, reads_out, stats_out, bc_out, reverseCompliment, n_threads);
 }
 
 #include "main-functions/pileup_readid.h"

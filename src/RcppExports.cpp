@@ -28,8 +28,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // flexiplex
-Rcpp::IntegerVector flexiplex(Rcpp::StringVector reads_in, Rcpp::String barcodes_file, bool bc_as_readid, int max_bc_editdistance, int max_flank_editdistance, Rcpp::StringVector pattern, Rcpp::String reads_out, Rcpp::String stats_out, Rcpp::String bc_out, int n_threads);
-RcppExport SEXP _FLAMES_flexiplex(SEXP reads_inSEXP, SEXP barcodes_fileSEXP, SEXP bc_as_readidSEXP, SEXP max_bc_editdistanceSEXP, SEXP max_flank_editdistanceSEXP, SEXP patternSEXP, SEXP reads_outSEXP, SEXP stats_outSEXP, SEXP bc_outSEXP, SEXP n_threadsSEXP) {
+Rcpp::IntegerVector flexiplex(Rcpp::StringVector reads_in, Rcpp::String barcodes_file, bool bc_as_readid, int max_bc_editdistance, int max_flank_editdistance, Rcpp::StringVector pattern, Rcpp::String reads_out, Rcpp::String stats_out, Rcpp::String bc_out, bool reverseCompliment, int n_threads);
+RcppExport SEXP _FLAMES_flexiplex(SEXP reads_inSEXP, SEXP barcodes_fileSEXP, SEXP bc_as_readidSEXP, SEXP max_bc_editdistanceSEXP, SEXP max_flank_editdistanceSEXP, SEXP patternSEXP, SEXP reads_outSEXP, SEXP stats_outSEXP, SEXP bc_outSEXP, SEXP reverseComplimentSEXP, SEXP n_threadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -42,8 +42,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::String >::type reads_out(reads_outSEXP);
     Rcpp::traits::input_parameter< Rcpp::String >::type stats_out(stats_outSEXP);
     Rcpp::traits::input_parameter< Rcpp::String >::type bc_out(bc_outSEXP);
+    Rcpp::traits::input_parameter< bool >::type reverseCompliment(reverseComplimentSEXP);
     Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(flexiplex(reads_in, barcodes_file, bc_as_readid, max_bc_editdistance, max_flank_editdistance, pattern, reads_out, stats_out, bc_out, n_threads));
+    rcpp_result_gen = Rcpp::wrap(flexiplex(reads_in, barcodes_file, bc_as_readid, max_bc_editdistance, max_flank_editdistance, pattern, reads_out, stats_out, bc_out, reverseCompliment, n_threads));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -66,7 +67,7 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_FLAMES_find_isoform_multithread", (DL_FUNC) &_FLAMES_find_isoform_multithread, 8},
-    {"_FLAMES_flexiplex", (DL_FUNC) &_FLAMES_flexiplex, 10},
+    {"_FLAMES_flexiplex", (DL_FUNC) &_FLAMES_flexiplex, 11},
     {"_FLAMES_variant_count_matrix", (DL_FUNC) &_FLAMES_variant_count_matrix, 6},
     {NULL, NULL, 0}
 };

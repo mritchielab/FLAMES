@@ -24,6 +24,8 @@
 #' @param full_length_only boolean, when TSO sequence is provided, whether reads without TSO
 #' are to be discarded
 #' @param pattern named character vector defining the barcode pattern
+#' @param strand strand of the barcode pattern, either '+' or '-' (read will be reverse complemented
+#' after barcode matching if '-')
 #' @param TSO_seq TSO sequence to be trimmed
 #' @param TSO_prime either 3 (when \code{TSO_seq} is on 3' the end) or 5 (on 5' end)
 #' @return a list containing: \code{reads_tb} (tibble of read demultiplexed information) and
@@ -67,8 +69,9 @@ find_barcode <- function(
       BC = paste0(rep("N", 16), collapse = ""),
       UMI = paste0(rep("N", 12), collapse = ""),
       polyT = paste0(rep("T", 9), collapse = "")
-    ), TSO_seq = "", TSO_prime = 3, full_length_only = FALSE) {
+    ), TSO_seq = "", TSO_prime = 3, strand = '+', full_length_only = FALSE) {
 
+  reverseCompliment <- strand != '+'
   # stats file columns
   # readr's guessing will fail if the file is empty (no reads)
   stats_col_types <- list(
@@ -90,8 +93,8 @@ find_barcode <- function(
     read_counts <- list(flexiplex(
       reads_in = reads_in, barcodes_file = barcodes_file, bc_as_readid = TRUE,
       max_bc_editdistance = max_bc_editdistance, max_flank_editdistance = max_flank_editdistance,
-      pattern = pattern, reads_out = reads_out, stats_out = stats_out, n_threads = threads,
-      bc_out = tempfile()
+      pattern = pattern, reads_out = reads_out, stats_out = stats_out, reverseCompliment = reverseCompliment,
+      n_threads = threads, bc_out = tempfile()
     ))
     stats_tb <- readr::read_delim(stats_out, col_types = stats_col_types)
     # for compatibility with multi-sample and TSO trimming
@@ -133,7 +136,7 @@ find_barcode <- function(
         reads_in = reads_in, barcodes_file = barcodes_file[sample], bc_as_readid = TRUE,
         max_bc_editdistance = max_bc_editdistance, max_flank_editdistance = max_flank_editdistance,
         pattern = pattern[[sample]], reads_out = reads_out[sample], stats_out = stats_out[sample],
-        n_threads = threads, bc_out = tempfile()
+        reverseCompliment = reverseCompliment, n_threads = threads, bc_out = tempfile()
       )
       stats_i <- readr::read_delim(stats_out[sample], col_types = stats_col_types)
       stats_i$Outfile <- reads_out[sample]
@@ -268,14 +271,15 @@ plot_demultiplex <- function(find_barcode_result) {
     ) |>
     dplyr::ungroup() |>
     dplyr::count(UMI_count, Sample) |>
-    ggplot2::ggplot(ggplot2::aes(x = UMI_count, y = n, col = Sample)) +
+    ggplot2::ggplot(ggplot2::aes(x = n, y = UMI_count, col = Sample)) +
     # ggplot2::geom_line() +
     ggplot2::geom_point(size = 0.5, alpha = 0.5) +
     ggplot2::geom_smooth(span = 0.3, se = FALSE, method = 'loess') +
+    ggplot2::scale_x_log10() +
     ggplot2::scale_y_log10() +
     ggplot2::theme_minimal() +
-    ggplot2::ylab("number of cells") +
-    ggplot2::xlab("UMI count (before TSO trimming)")
+    ggplot2::xlab("Barcodes") +
+    ggplot2::ylab("UMI counts (before TSO trimming)")
   # remove color legend if only one sample
   if (length(find_barcode_result) == 1) {
     knee_plot <- knee_plot + ggplot2::theme(legend.position = "none")

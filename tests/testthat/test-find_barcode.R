@@ -18,7 +18,7 @@ test_that("barcode_output_file_identical", {
       BC = paste0(rep("N", 16), collapse = ""),
       UMI = paste0(rep("N", 12), collapse = ""),
       polyT = paste0(rep("T", 9), collapse = "")
-    ), TSO_seq = "", TSO_prime = 3, full_length_only = FALSE
+    ), TSO_seq = "", TSO_prime = 3, full_length_only = FALSE, strand = "+"
   )
 
   expect_identical(
@@ -162,3 +162,44 @@ test_that("multiple samples, either file or folder as input", {
     readLines(as.character(x[[1]]$reads_tb$Outfile[1]))
   )
 })
+test_that("reverse complement with strand = '-'", {
+  outdir <- tempfile()
+  dir.create(outdir)
+  bc_allow <- file.path(outdir, "bc_allow.tsv")
+  R.utils::gunzip(
+    filename = system.file("extdata/bc_allow.tsv.gz", package = "FLAMES"),
+    destname = bc_allow, remove = FALSE, overwrite = TRUE
+  )
+
+  find_barcode(
+    max_bc_editdistance = 2, max_flank_editdistance = 8,
+    fastq = system.file("extdata", "fastq", "musc_rps24.fastq.gz", package = "FLAMES"),
+    barcodes_file = bc_allow,
+    reads_out = file.path(outdir, "out.fq"),
+    stats_out = file.path(outdir, "stats.tsv"),
+    threads = 1, pattern = c(
+      primer = "CTACACGACGCTCTTCCGATCT",
+      BC = paste0(rep("N", 16), collapse = ""),
+      UMI = paste0(rep("N", 12), collapse = ""),
+      polyT = paste0(rep("T", 9), collapse = "")
+    ), TSO_seq = "", TSO_prime = 3, full_length_only = FALSE, strand = "-"
+  )
+
+  expect_identical(
+    read.delim(test_path("bc_stat")),
+    read.delim(file.path(outdir, "stats.tsv"))[, -1]
+  )
+
+  y <- readLines(
+    system.file('extdata', 'fastq', 'demultiplexed.fq.gz', package = 'FLAMES')
+  )[seq(2, 40, by = 4)] |>
+    Biostrings::DNAStringSet() |>
+    Biostrings::reverseComplement() |>
+    as.character()
+
+  expect_identical(
+    readLines(file.path(outdir, "out.fq"), n = 40)[seq(2, 40, by = 4)],
+    y
+  )
+})
+

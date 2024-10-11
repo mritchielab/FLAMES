@@ -14,6 +14,7 @@ flexiplex(
   reads_out,
   stats_out,
   bc_out,
+  reverseCompliment,
   n_threads
 )
 }
@@ -36,6 +37,8 @@ read ID field}
 \item{stats_out}{output file for demultiplexed stats}
 
 \item{bc_out}{WIP}
+
+\item{reverseCompliment}{bool, whether to reverse complement the reads after demultiplexing}
 
 \item{n_threads}{number of threads to be used during demultiplexing}
 }

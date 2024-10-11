@@ -20,11 +20,12 @@ find_isoform_multithread <- function(gff3, genome_bam, isoform_gff3, tss_tes_sta
 #' @param reads_out output file for demultiplexed reads
 #' @param stats_out output file for demultiplexed stats
 #' @param n_threads number of threads to be used during demultiplexing
+#' @param reverseCompliment bool, whether to reverse complement the reads after demultiplexing
 #' @param bc_out WIP
 #' @return integer return value. 0 represents normal return.
 #' @export
-flexiplex <- function(reads_in, barcodes_file, bc_as_readid, max_bc_editdistance, max_flank_editdistance, pattern, reads_out, stats_out, bc_out, n_threads) {
-    .Call(`_FLAMES_flexiplex`, reads_in, barcodes_file, bc_as_readid, max_bc_editdistance, max_flank_editdistance, pattern, reads_out, stats_out, bc_out, n_threads)
+flexiplex <- function(reads_in, barcodes_file, bc_as_readid, max_bc_editdistance, max_flank_editdistance, pattern, reads_out, stats_out, bc_out, reverseCompliment, n_threads) {
+    .Call(`_FLAMES_flexiplex`, reads_in, barcodes_file, bc_as_readid, max_bc_editdistance, max_flank_editdistance, pattern, reads_out, stats_out, bc_out, reverseCompliment, n_threads)
 }
 
 variant_count_matrix <- function(bam_path, seqname, pos, indel, barcodes, verbose) {

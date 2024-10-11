@@ -8,6 +8,6 @@ Rcpp::IntegerVector flexiplex_cpp(Rcpp::StringVector reads_in, Rcpp::String barc
     bool bc_as_readid, int max_bc_editdistance,
     int max_flank_editdistance, Rcpp::StringVector pattern,
     Rcpp::String reads_out, Rcpp::String stats_out,
-    Rcpp::String bc_out, int n_threads);
+    Rcpp::String bc_out, bool reverseComplement, int n_threads);
 
 #endif // FLEXIPLEX_H

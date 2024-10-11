@@ -424,15 +424,22 @@ void print_stats(const std::string &read_id, const std::vector<Barcode> &vec_bc,
 }
 
 void print_line(const std::string &id, const std::string &read,
-                const std::string &quals, std::ostream &out_stream) {
+                const std::string &quals, bool reverseCompliment, std::ostream &out_stream) {
 
   const char delimiter = quals.empty() ? '>' : '@';
 
   // output to the new read file
-  out_stream << delimiter << id << '\n' << read << '\n';
-
-  if (!quals.empty()) {
-    out_stream << '+' << id << '\n' << quals << '\n';
+  if (reverseCompliment) {
+    out_stream << delimiter << id << '\n' << reverse_compliment(read) << '\n';
+    if (!quals.empty()) {
+      // reverse the order of the quality scores
+      out_stream << '+' << id << '\n' << std::string(quals.rbegin(), quals.rend()) << '\n';
+    }
+  } else {
+    out_stream << delimiter << id << '\n' << read << '\n';
+    if (!quals.empty()) {
+      out_stream << '+' << id << '\n' << quals << '\n';
+    }
   }
 }
 
@@ -441,7 +448,7 @@ void print_read(const std::string &read_id, const std::string &read,
                 const std::string &qual, const std::vector<Barcode> &vec_bc,
                 std::ofstream &outstream,
                 std::unordered_set<std::string> &found_barcodes,
-                bool trim_barcodes, bool chimeric) {
+                bool trim_barcodes, bool chimeric, bool reverseCompliment) {
   // loop over the barcodes found... usually will just be one
   for (int b = 0; b < vec_bc.size(); b++) {
 
@@ -479,7 +486,7 @@ void print_read(const std::string &read_id, const std::string &read,
       b = vec_bc.size(); // force loop to exit after this iteration
     }
 
-    print_line(new_read_id, read_new, qual_new, outstream);
+    print_line(new_read_id, read_new, qual_new, reverseCompliment, outstream);
   }
 }
 
@@ -558,6 +565,7 @@ bool file_exists(const std::string &filename) {
 //' @param reads_out output file for demultiplexed reads
 //' @param stats_out output file for demultiplexed stats
 //' @param n_threads number of threads to be used during demultiplexing
+//' @param reverseCompliment bool, whether to reverse complement the reads after demultiplexing
 //' @param bc_out WIP
 //' @return integer return value. 0 represents normal return.
 //' @export
@@ -566,7 +574,7 @@ Rcpp::IntegerVector flexiplex_cpp(Rcpp::StringVector reads_in, Rcpp::String barc
                   bool bc_as_readid, int max_bc_editdistance,
                   int max_flank_editdistance, Rcpp::StringVector pattern,
                   Rcpp::String reads_out, Rcpp::String stats_out,
-                  Rcpp::String bc_out, int n_threads) {
+                  Rcpp::String bc_out, bool reverseCompliment, int n_threads) {
   std::ios_base::sync_with_stdio(false);
 
   bool remove_barcodes = true;
@@ -762,7 +770,7 @@ Rcpp::IntegerVector flexiplex_cpp(Rcpp::StringVector reads_in, Rcpp::String barc
 
             print_read(sr_v[t][r].read_id + "_+", sr_v[t][r].line,
                        sr_v[t][r].qual_scores, sr_v[t][r].vec_bc_for, outstream,
-                       found_barcodes, remove_barcodes, sr_v[t][r].chimeric);
+                       found_barcodes, remove_barcodes, sr_v[t][r].chimeric, reverseCompliment);
             reverse(sr_v[t][r].qual_scores.begin(),
                     sr_v[t][r].qual_scores.end());
             if (remove_barcodes || sr_v[t][r].vec_bc_for.size() ==
@@ -770,7 +778,7 @@ Rcpp::IntegerVector flexiplex_cpp(Rcpp::StringVector reads_in, Rcpp::String barc
                                           // once if multiple bc found.
               print_read(sr_v[t][r].read_id + "_-", sr_v[t][r].rev_line,
                          sr_v[t][r].qual_scores, sr_v[t][r].vec_bc_rev,
-                         outstream, found_barcodes, remove_barcodes, sr_v[t][r].chimeric);
+                         outstream, found_barcodes, remove_barcodes, sr_v[t][r].chimeric, reverseCompliment);
           }
         }
       }

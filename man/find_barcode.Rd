@@ -17,6 +17,7 @@ find_barcode(
     = "")),
   TSO_seq = "",
   TSO_prime = 3,
+  strand = "+",
   full_length_only = FALSE
 )
 }
@@ -44,6 +45,9 @@ sample, and \code{path/prefix} for multiple samples.}
 \item{TSO_seq}{TSO sequence to be trimmed}
 
 \item{TSO_prime}{either 3 (when \code{TSO_seq} is on 3' the end) or 5 (on 5' end)}
+
+\item{strand}{strand of the barcode pattern, either '+' or '-' (read will be reverse complemented
+after barcode matching if '-')}
 
 \item{full_length_only}{boolean, when TSO sequence is provided, whether reads without TSO
 are to be discarded}
