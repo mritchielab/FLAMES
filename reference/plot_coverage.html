@@ -46,8 +46,12 @@ perticular isoform</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">plot_coverage</span><span class="op">(</span></span>
 <span>  <span class="va">bam</span>,</span>
 <span>  isoform <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  quantiles <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.2375</span>, <span class="fl">0.475</span>, <span class="fl">0.7125</span>, <span class="fl">0.95</span>, <span class="fl">1</span><span class="op">)</span>,</span>
 <span>  length_bins <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">5</span>, <span class="fl">10</span>, <span class="cn">Inf</span><span class="op">)</span>,</span>
-<span>  weight_fn <span class="op">=</span> <span class="st">"read_counts"</span></span>
+<span>  weight_fn <span class="op">=</span> <span class="st">"read_counts"</span>,</span>
+<span>  <span class="va">annotation</span>,</span>
+<span>  coding_only <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  remove_utr <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -66,6 +70,12 @@ corresponding isoforms, or provide NULL to plot average coverages for each
 length bin</p></dd>
 
 
+<dt id="arg-quantiles">quantiles<a class="anchor" aria-label="anchor" href="#arg-quantiles"></a></dt>
+<dd><p>numeric vector to specify the quantiles to bin the transcripts lengths
+by if length_bins is missing. The length bins will be determined such that the read
+counts are distributed acording to the quantiles.</p></dd>
+
+
 <dt id="arg-length-bins-">length_bins, <a class="anchor" aria-label="anchor" href="#arg-length-bins-"></a></dt>
 <dd><p>numeric vector to specify the sizes to bin the isoforms by</p></dd>
 
@@ -73,6 +83,18 @@ length bin</p></dd>
 <dt id="arg-weight-fn">weight_fn<a class="anchor" aria-label="anchor" href="#arg-weight-fn"></a></dt>
 <dd><p>"read_counts" or "sigmoid", determins how the transcripts
 should be weighted within length bins.</p></dd>
+
+
+<dt id="arg-annotation">annotation<a class="anchor" aria-label="anchor" href="#arg-annotation"></a></dt>
+<dd><p>path to the GTF annotation file, or the parsed txdb object</p></dd>
+
+
+<dt id="arg-coding-only">coding_only<a class="anchor" aria-label="anchor" href="#arg-coding-only"></a></dt>
+<dd><p>logical, if TRUE, only plot the coverage for coding transcripts</p></dd>
+
+
+<dt id="arg-remove-utr">remove_utr<a class="anchor" aria-label="anchor" href="#arg-remove-utr"></a></dt>
+<dd><p>logical, if TRUE, trim the UTRs from the transcripts</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -105,13 +127,14 @@ should be weighted within length bins.</p></dd>
 <span class="r-in"><span>  fq_in <span class="op">=</span> <span class="va">fastq1</span>,</span></span>
 <span class="r-in"><span>  outdir <span class="op">=</span> <span class="va">outdir</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 03:34:06 AM Tue Oct 08 2024 minimap2_realign</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12:10:45 AM Mon Oct 14 2024 minimap2_realign</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Sorting by position</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                         total mapped primary</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/RtmpbqkQvO/file1e9b38d26668/realign2transcript.bam  4554   3764    2500</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                         secondary</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/RtmpbqkQvO/file1e9b38d26668/realign2transcript.bam      2051</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                        total mapped primary</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/RtmpHOQCB5/file20df275b6ea/realign2transcript.bam  4554   3764    2500</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                        secondary</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/RtmpHOQCB5/file20df275b6ea/realign2transcript.bam      2051</span>
 <span class="r-in"><span><span class="fu">plot_coverage</span><span class="op">(</span>bam <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">'realign2transcript.bam'</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Using quantiles to bin transcripts.</span>
 <span class="r-plt img"><img src="plot_coverage-1.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
