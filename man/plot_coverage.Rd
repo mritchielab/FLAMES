@@ -5,38 +5,38 @@
 \title{plot read coverages}
 \usage{
 plot_coverage(
-  bam,
-  isoform = NULL,
+  x,
   quantiles = c(0, 0.2375, 0.475, 0.7125, 0.95, 1),
   length_bins = c(0, 1, 2, 5, 10, Inf),
-  weight_fn = "read_counts",
-  annotation,
-  coding_only = FALSE,
-  remove_utr = FALSE
+  weight_fn = weight_transcripts,
+  filter_fn,
+  detailed = FALSE
 )
 }
 \arguments{
-\item{bam, }{path to the BAM file (aligning reads to the transcriptome), or
-the (GenomicAlignments::readGAlignments) parsed GAlignments object}
-
-\item{isoform}{string vector, provide isoform names to plot the coverage for the
-corresponding isoforms, or provide NULL to plot average coverages for each
-length bin}
+\item{x, }{path to the BAM file (aligning reads to the transcriptome), or
+the (GenomicAlignments::readGAlignments) parsed GAlignments object, or the
+tibble returned by \code{\link{get_coverage}}, or the filtered tibble returned
+by \code{\link{filter_coverage}}.}
 
 \item{quantiles}{numeric vector to specify the quantiles to bin the transcripts lengths
 by if length_bins is missing. The length bins will be determined such that the read
 counts are distributed acording to the quantiles.}
 
-\item{length_bins, }{numeric vector to specify the sizes to bin the isoforms by}
+\item{length_bins, }{numeric vector to specify the sizes to bin the transcripts by}
 
-\item{weight_fn}{"read_counts" or "sigmoid", determins how the transcripts
-should be weighted within length bins.}
+\item{weight_fn}{function to calculate the weights for the transcripts. The function
+should take a numeric vector of read counts and return a numeric vector of weights.
+The default function is \code{\link{weight_transcripts}}, you can change its default
+parameters by passing an anonymous function like \code{function(x) weight_transcripts(x, type = 'equal')}.}
 
-\item{annotation}{path to the GTF annotation file, or the parsed txdb object}
+\item{filter_fn}{Optional filter function to filter the transcripts before plotting.
+See the \code{filter_fn} parameter in \code{\link{filter_coverage}} for more details.
+Providing a filter fucntion here is the same as providing it in \code{\link{filter_coverage}}
+and then passing the result to this function.}
 
-\item{coding_only}{logical, if TRUE, only plot the coverage for coding transcripts}
-
-\item{remove_utr}{logical, if TRUE, trim the UTRs from the transcripts}
+\item{detailed}{logical, if \code{TRUE}, also plot the top 10 transcripts with the highest
+read counts for each length bin.}
 }
 \value{
 a ggplot2 object of the coverage plot(s)
@@ -46,6 +46,7 @@ Plot the average read coverages for each length bin or a
 perticular isoform
 }
 \examples{
+# Create a BAM file with minimap2_realign
 temp_path <- tempfile()
 bfc <- BiocFileCache::BiocFileCache(temp_path, ask = FALSE)
 file_url <- 'https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data'
@@ -61,5 +62,15 @@ minimap2_realign(
   fq_in = fastq1,
   outdir = outdir
 )
-plot_coverage(bam = file.path(outdir, 'realign2transcript.bam'))
+# Plot the coverages directly from the BAM file
+plot_coverage(file.path(outdir, 'realign2transcript.bam'))
+
+# Get the coverage information first
+coverage <- get_coverage(file.path(outdir, 'realign2transcript.bam')) |>
+  dplyr::filter(read_counts > 2) |> # Filter out transcripts with read counts < 3
+  filter_coverage(filter_fn = convolution_filter) # Filter out transcripts with sharp drops / rises
+# Plot the filtered coverages
+plot_coverage(coverage, detailed = TRUE)
+# filtering function can also be passed directly to plot_coverage
+plot_coverage(file.path(outdir, 'realign2transcript.bam'), filter_fn = convolution_filter)
 }

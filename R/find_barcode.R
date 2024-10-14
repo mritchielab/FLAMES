@@ -309,11 +309,10 @@ plot_demultiplex <- function(find_barcode_result) {
     dplyr::bind_rows() |>
     dplyr::group_by(BarcodeEditDist, Sample) |>
     dplyr::ungroup() |>
-    ggplot2::ggplot(ggplot2::aes(x = BarcodeEditDist, fill = Sample)) +
+    ggplot2::ggplot(ggplot2::aes(x = Sample, fill = BarcodeEditDist)) +
     ggplot2::geom_bar(stat = "count", position = "dodge") +
     ggplot2::theme_minimal() +
-    ggplot2::ylab("number of reads") +
-    ggplot2::xlab("Barcode editdistance")
+    ggplot2::ylab("number of reads")
   if (length(find_barcode_result) == 1) {
     barcode_editdistance_plot <- barcode_editdistance_plot +
       ggplot2::theme(legend.position = "none")

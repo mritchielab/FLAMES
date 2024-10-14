@@ -43,9 +43,16 @@ reference:
   - title: Visualization
     contents:
       - plot_coverage
+      - plot_demultiplex
       - plot_isoform_heatmap
       - plot_isoform_reduced_dim
       - plot_isoforms
+  - title: Alignment coverages
+    contents:
+      - get_coverage
+      - filter_coverage
+      - convolution_filter
+      - weight_transcripts
   - title: Analysis of FLT-seq sub-samlped data
     contents:
       - combine_sce
@@ -60,7 +67,6 @@ reference:
       - get_GRangesList
       - demultiplex_sockeye
       - parse_gff_tree
-      - plot_demultiplex
       - scmixology_lib10
       - scmixology_lib10_transcripts
       - scmixology_lib90
