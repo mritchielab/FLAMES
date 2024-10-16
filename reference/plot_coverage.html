@@ -44,14 +44,12 @@ perticular isoform</p>
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">plot_coverage</span><span class="op">(</span></span>
-<span>  <span class="va">bam</span>,</span>
-<span>  isoform <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">x</span>,</span>
 <span>  quantiles <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.2375</span>, <span class="fl">0.475</span>, <span class="fl">0.7125</span>, <span class="fl">0.95</span>, <span class="fl">1</span><span class="op">)</span>,</span>
 <span>  length_bins <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">5</span>, <span class="fl">10</span>, <span class="cn">Inf</span><span class="op">)</span>,</span>
-<span>  weight_fn <span class="op">=</span> <span class="st">"read_counts"</span>,</span>
-<span>  <span class="va">annotation</span>,</span>
-<span>  coding_only <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  remove_utr <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  weight_fn <span class="op">=</span> <span class="va">weight_transcripts</span>,</span>
+<span>  <span class="va">filter_fn</span>,</span>
+<span>  detailed <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -59,15 +57,11 @@ perticular isoform</p>
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-bam-">bam, <a class="anchor" aria-label="anchor" href="#arg-bam-"></a></dt>
+<dl><dt id="arg-x-">x, <a class="anchor" aria-label="anchor" href="#arg-x-"></a></dt>
 <dd><p>path to the BAM file (aligning reads to the transcriptome), or
-the (GenomicAlignments::readGAlignments) parsed GAlignments object</p></dd>
-
-
-<dt id="arg-isoform">isoform<a class="anchor" aria-label="anchor" href="#arg-isoform"></a></dt>
-<dd><p>string vector, provide isoform names to plot the coverage for the
-corresponding isoforms, or provide NULL to plot average coverages for each
-length bin</p></dd>
+the (GenomicAlignments::readGAlignments) parsed GAlignments object, or the
+tibble returned by <code><a href="get_coverage.html">get_coverage</a></code>, or the filtered tibble returned
+by <code><a href="filter_coverage.html">filter_coverage</a></code>.</p></dd>
 
 
 <dt id="arg-quantiles">quantiles<a class="anchor" aria-label="anchor" href="#arg-quantiles"></a></dt>
@@ -77,24 +71,26 @@ counts are distributed acording to the quantiles.</p></dd>
 
 
 <dt id="arg-length-bins-">length_bins, <a class="anchor" aria-label="anchor" href="#arg-length-bins-"></a></dt>
-<dd><p>numeric vector to specify the sizes to bin the isoforms by</p></dd>
+<dd><p>numeric vector to specify the sizes to bin the transcripts by</p></dd>
 
 
 <dt id="arg-weight-fn">weight_fn<a class="anchor" aria-label="anchor" href="#arg-weight-fn"></a></dt>
-<dd><p>"read_counts" or "sigmoid", determins how the transcripts
-should be weighted within length bins.</p></dd>
+<dd><p>function to calculate the weights for the transcripts. The function
+should take a numeric vector of read counts and return a numeric vector of weights.
+The default function is <code><a href="weight_transcripts.html">weight_transcripts</a></code>, you can change its default
+parameters by passing an anonymous function like <code>function(x) weight_transcripts(x, type = 'equal')</code>.</p></dd>
 
 
-<dt id="arg-annotation">annotation<a class="anchor" aria-label="anchor" href="#arg-annotation"></a></dt>
-<dd><p>path to the GTF annotation file, or the parsed txdb object</p></dd>
+<dt id="arg-filter-fn">filter_fn<a class="anchor" aria-label="anchor" href="#arg-filter-fn"></a></dt>
+<dd><p>Optional filter function to filter the transcripts before plotting.
+See the <code>filter_fn</code> parameter in <code><a href="filter_coverage.html">filter_coverage</a></code> for more details.
+Providing a filter fucntion here is the same as providing it in <code><a href="filter_coverage.html">filter_coverage</a></code>
+and then passing the result to this function.</p></dd>
 
 
-<dt id="arg-coding-only">coding_only<a class="anchor" aria-label="anchor" href="#arg-coding-only"></a></dt>
-<dd><p>logical, if TRUE, only plot the coverage for coding transcripts</p></dd>
-
-
-<dt id="arg-remove-utr">remove_utr<a class="anchor" aria-label="anchor" href="#arg-remove-utr"></a></dt>
-<dd><p>logical, if TRUE, trim the UTRs from the transcripts</p></dd>
+<dt id="arg-detailed">detailed<a class="anchor" aria-label="anchor" href="#arg-detailed"></a></dt>
+<dd><p>logical, if <code>TRUE</code>, also plot the top 10 transcripts with the highest
+read counts for each length bin.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -104,7 +100,8 @@ should be weighted within length bins.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">temp_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Create a BAM file with minimap2_realign</span></span></span>
+<span class="r-in"><span><span class="va">temp_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">bfc</span> <span class="op">&lt;-</span> <span class="fu">BiocFileCache</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocFileCache/man/BiocFileCache-class.html" class="external-link">BiocFileCache</a></span><span class="op">(</span><span class="va">temp_path</span>, ask <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">file_url</span> <span class="op">&lt;-</span> <span class="st">'https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data'</span></span></span>
 <span class="r-in"><span><span class="va">fastq1</span> <span class="op">&lt;-</span> <span class="va">bfc</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu">BiocFileCache</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocFileCache/man/BiocFileCache-class.html" class="external-link">bfcadd</a></span><span class="op">(</span><span class="va">bfc</span>, <span class="st">'Fastq1'</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">file_url</span>, <span class="st">'fastq/sample1.fastq.gz'</span>, sep <span class="op">=</span> <span class="st">'/'</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">]</span></span></span>
@@ -127,15 +124,45 @@ should be weighted within length bins.</p></dd>
 <span class="r-in"><span>  fq_in <span class="op">=</span> <span class="va">fastq1</span>,</span></span>
 <span class="r-in"><span>  outdir <span class="op">=</span> <span class="va">outdir</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12:10:45 AM Mon Oct 14 2024 minimap2_realign</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 03:15:49 AM Wed Oct 16 2024 minimap2_realign</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Sorting by position</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                        total mapped primary</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/RtmpHOQCB5/file20df275b6ea/realign2transcript.bam  4554   3764    2500</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                        secondary</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/RtmpHOQCB5/file20df275b6ea/realign2transcript.bam      2051</span>
-<span class="r-in"><span><span class="fu">plot_coverage</span><span class="op">(</span>bam <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">'realign2transcript.bam'</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                         total mapped primary</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/Rtmprnnob2/file1e2a268e1070/realign2transcript.bam  4554   3764    2500</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                         secondary</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/Rtmprnnob2/file1e2a268e1070/realign2transcript.bam      2051</span>
+<span class="r-in"><span><span class="co"># Plot the coverages directly from the BAM file</span></span></span>
+<span class="r-in"><span><span class="fu">plot_coverage</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">'realign2transcript.bam'</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using quantiles to bin transcripts.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The number of transcripts is less than the inflection index, returning equal weights for the current bin.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The number of transcripts is less than the inflection index, returning equal weights for the current bin.</span>
 <span class="r-plt img"><img src="plot_coverage-1.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Get the coverage information first</span></span></span>
+<span class="r-in"><span><span class="va">coverage</span> <span class="op">&lt;-</span> <span class="fu"><a href="get_coverage.html">get_coverage</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">'realign2transcript.bam'</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">read_counts</span> <span class="op">&gt;</span> <span class="fl">2</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="co"># Filter out transcripts with read counts &lt; 3</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="filter_coverage.html">filter_coverage</a></span><span class="op">(</span>filter_fn <span class="op">=</span> <span class="va">convolution_filter</span><span class="op">)</span> <span class="co"># Filter out transcripts with sharp drops / rises</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 45 transcripts found in the BAM file.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 17(37.78%) transcripts failed the filter.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Failed transcripts account for 212 reads, out of 1193(17.77%) reads in total.</span>
+<span class="r-in"><span><span class="co"># Plot the filtered coverages</span></span></span>
+<span class="r-in"><span><span class="fu">plot_coverage</span><span class="op">(</span><span class="va">coverage</span>, detailed <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Using quantiles to bin transcripts.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The number of transcripts is less than the inflection index, returning equal weights for the current bin.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The number of transcripts is less than the inflection index, returning equal weights for the current bin.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The number of transcripts is less than the inflection index, returning equal weights for the current bin.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The number of transcripts is less than the inflection index, returning equal weights for the current bin.</span>
+<span class="r-plt img"><img src="plot_coverage-2.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="co"># filtering function can also be passed directly to plot_coverage</span></span></span>
+<span class="r-in"><span><span class="fu">plot_coverage</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">'realign2transcript.bam'</span><span class="op">)</span>, filter_fn <span class="op">=</span> <span class="va">convolution_filter</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 52 transcripts found in the BAM file.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 19(36.54%) transcripts failed the filter.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Failed transcripts account for 215 reads, out of 1203(17.87%) reads in total.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Using quantiles to bin transcripts.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The number of transcripts is less than the inflection index, returning equal weights for the current bin.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The number of transcripts is less than the inflection index, returning equal weights for the current bin.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The number of transcripts is less than the inflection index, returning equal weights for the current bin.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The number of transcripts is less than the inflection index, returning equal weights for the current bin.</span>
+<span class="r-plt img"><img src="plot_coverage-3.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

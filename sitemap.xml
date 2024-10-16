@@ -12,18 +12,21 @@
 <url><loc>https://mritchielab.github.io/FLAMES/reference/blaze.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/bulk_long_pipeline.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/combine_sce.html</loc></url>
+<url><loc>https://mritchielab.github.io/FLAMES/reference/convolution_filter.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/create_config.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/create_sce_from_dir.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/create_se_from_dir.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/cutadapt.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/demultiplex_sockeye.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/filter_annotation.html</loc></url>
+<url><loc>https://mritchielab.github.io/FLAMES/reference/filter_coverage.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/find_barcode.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/find_bin.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/find_isoform.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/find_variants.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/flexiplex.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/get_GRangesList.html</loc></url>
+<url><loc>https://mritchielab.github.io/FLAMES/reference/get_coverage.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/index.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/minimap2_align.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/minimap2_realign.html</loc></url>
@@ -44,5 +47,6 @@
 <url><loc>https://mritchielab.github.io/FLAMES/reference/scmixology_lib10.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/scmixology_lib10_transcripts.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/scmixology_lib90.html</loc></url>
+<url><loc>https://mritchielab.github.io/FLAMES/reference/weight_transcripts.html</loc></url>
 </urlset>
 
