@@ -225,8 +225,8 @@ convert_cellranger_bc <- function(bc_allow, bc_from, bc_to) {
 #'
 #' @description produce a barplot of cell barcode demultiplex statistics
 #'
-#' @importFrom dplyr bind_rows group_by summarise ungroup count n_distinct
-#' @importFrom ggplot2 ggplot aes geom_line scale_y_log10 ylab xlab ggtitle theme theme_minimal
+#' @importFrom dplyr bind_rows group_by summarise n_distinct ungroup arrange desc mutate row_number n
+#' @importFrom ggplot2 ggplot aes geom_smooth geom_point scale_x_log10 scale_y_log10 theme_minimal ylab xlab ggtitle theme 
 #' @param find_barcode_result output from \code{\link{find_barcode}}
 #' @examples
 #' outdir <- tempfile()
@@ -270,15 +270,17 @@ plot_demultiplex <- function(find_barcode_result) {
       UMI_count = dplyr::n_distinct(UMI)
     ) |>
     dplyr::ungroup() |>
-    dplyr::count(UMI_count, Sample) |>
-    ggplot2::ggplot(ggplot2::aes(x = n, y = UMI_count, col = Sample)) +
-    # ggplot2::geom_line() +
-    ggplot2::geom_point(size = 0.5, alpha = 0.5) +
-    ggplot2::geom_smooth(span = 0.3, se = FALSE, method = 'loess') +
-    ggplot2::scale_x_log10() +
+    dplyr::group_by(Sample) |>
+    dplyr::arrange(dplyr::desc(UMI_count)) |>
+    dplyr::mutate(barcode_rank = dplyr::row_number()) |>
+    dplyr::ungroup() |>
+    ggplot2::ggplot(ggplot2::aes(x = barcode_rank, y = UMI_count, col = Sample)) +
+    ggplot2::geom_smooth(span = 0.1, se = FALSE, method = 'loess', alpha = 0.5, linewidth = 0.5) +
+    ggplot2::geom_point(size = 0.5) +
     ggplot2::scale_y_log10() +
+    ggplot2::scale_x_log10() +
     ggplot2::theme_minimal() +
-    ggplot2::xlab("Barcodes") +
+    ggplot2::xlab("Barcode rank") +
     ggplot2::ylab("UMI counts (before TSO trimming)")
   # remove color legend if only one sample
   if (length(find_barcode_result) == 1) {
