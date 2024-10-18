@@ -9,7 +9,7 @@ coverage values."><meta property="og:image" content="https://mritchielab.github.
 
     <a class="navbar-brand me-2" href="../index.html">FLAMES</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.99.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -95,21 +95,21 @@ pass the filter</p>
 <span class="r-in"><span>  fq_in <span class="op">=</span> <span class="va">fastq1</span>,</span></span>
 <span class="r-in"><span>  outdir <span class="op">=</span> <span class="va">outdir</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 03:56:02 AM Thu Oct 17 2024 minimap2_realign</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 06:50:59 AM Fri Oct 18 2024 minimap2_realign</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Sorting by position</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                                         total mapped primary</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/Rtmpsdk3vz/file20fb127419fe/realign2transcript.bam  4554   3764    2500</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/RtmpZD0DsH/file213078b0f48b/realign2transcript.bam  4554   3764    2500</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                                         secondary</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/Rtmpsdk3vz/file20fb127419fe/realign2transcript.bam      2051</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/RtmpZD0DsH/file213078b0f48b/realign2transcript.bam      2051</span>
 <span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="get_coverage.html">get_coverage</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">'realign2transcript.bam'</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 52</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 26</span>
 <span class="r-in"><span><span class="fu">filter_coverage</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 52 transcripts found in the BAM file.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 19(36.54%) transcripts failed the filter.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Failed transcripts account for 215 reads, out of 1203(17.87%) reads in total.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 33</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 26 transcripts found in the BAM file.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 3(11.54%) transcripts failed the filter.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Failed transcripts account for 140 reads, out of 1095(12.79%) reads in total.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 23</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">FLAMES</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.99.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -105,11 +105,9 @@ the number of bam files * number of positions.</p></dd>
 <span class="r-in"><span>  annot <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"rps24.gtf.gz"</span>, package <span class="op">=</span> <span class="st">"FLAMES"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  outdir <span class="op">=</span> <span class="va">outdir</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 03:57:04 AM Thu Oct 17 2024 minimap2_align</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                   total mapped primary</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/Rtmpsdk3vz/file20fb7532c47b/align2genome.bam    10     10      10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                   secondary</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/Rtmpsdk3vz/file20fb7532c47b/align2genome.bam         0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 06:52:01 AM Fri Oct 18 2024 minimap2_align</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                  total mapped primary secondary</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/RtmpZD0DsH/file21307231ca7/align2genome.bam    10     10      10         0</span>
 <span class="r-in"><span><span class="va">snps_tb</span> <span class="op">&lt;-</span> <span class="fu">sc_mutations</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  bam_path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">"align2genome.bam"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  seqnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"chr14"</span>, <span class="st">"chr14"</span><span class="op">)</span>,</span></span>
@@ -119,8 +117,8 @@ the number of bam files * number of positions.</p></dd>
 <span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"bc_allow.tsv.gz"</span>, package <span class="op">=</span> <span class="st">"FLAMES"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>    header <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">$</span><span class="va">V1</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 03:57:04 Got 1 bam file, parallelizing over each position ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 03:57:04 Merging results ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:52:01 Got 1 bam file, parallelizing over each position ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:52:01 Merging results ...</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">snps_tb</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6 × 7</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   allele barcode          allele_count cell_total_reads   pct   pos seqname</span>

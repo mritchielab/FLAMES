@@ -9,7 +9,7 @@ perticular isoform"><meta property="og:image" content="https://mritchielab.githu
 
     <a class="navbar-brand me-2" href="../index.html">FLAMES</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.99.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -124,15 +124,18 @@ read counts for each length bin.</p></dd>
 <span class="r-in"><span>  fq_in <span class="op">=</span> <span class="va">fastq1</span>,</span></span>
 <span class="r-in"><span>  outdir <span class="op">=</span> <span class="va">outdir</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 03:56:24 AM Thu Oct 17 2024 minimap2_realign</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 06:51:21 AM Fri Oct 18 2024 minimap2_realign</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Sorting by position</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                                         total mapped primary</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/Rtmpsdk3vz/file20fb43015280/realign2transcript.bam  4554   3764    2500</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/RtmpZD0DsH/file21307109a81d/realign2transcript.bam  4554   3764    2500</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                                         secondary</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/Rtmpsdk3vz/file20fb43015280/realign2transcript.bam      2051</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/RtmpZD0DsH/file21307109a81d/realign2transcript.bam      2051</span>
 <span class="r-in"><span><span class="co"># Plot the coverages directly from the BAM file</span></span></span>
 <span class="r-in"><span><span class="fu">plot_coverage</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">'realign2transcript.bam'</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using quantiles to bin transcripts.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The number of transcripts is less than the inflection index, returning equal weights for the current bin.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The number of transcripts is less than the inflection index, returning equal weights for the current bin.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The number of transcripts is less than the inflection index, returning equal weights for the current bin.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> The number of transcripts is less than the inflection index, returning equal weights for the current bin.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> The number of transcripts is less than the inflection index, returning equal weights for the current bin.</span>
 <span class="r-plt img"><img src="plot_coverage-1.png" alt="" width="700" height="433"></span>
@@ -141,9 +144,9 @@ read counts for each length bin.</p></dd>
 <span class="r-in"><span><span class="va">coverage</span> <span class="op">&lt;-</span> <span class="fu"><a href="get_coverage.html">get_coverage</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">'realign2transcript.bam'</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">read_counts</span> <span class="op">&gt;</span> <span class="fl">2</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="co"># Filter out transcripts with read counts &lt; 3</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="filter_coverage.html">filter_coverage</a></span><span class="op">(</span>filter_fn <span class="op">=</span> <span class="va">convolution_filter</span><span class="op">)</span> <span class="co"># Filter out transcripts with sharp drops / rises</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 45 transcripts found in the BAM file.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 17(37.78%) transcripts failed the filter.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Failed transcripts account for 212 reads, out of 1193(17.77%) reads in total.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 26 transcripts found in the BAM file.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 3(11.54%) transcripts failed the filter.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Failed transcripts account for 140 reads, out of 1095(12.79%) reads in total.</span>
 <span class="r-in"><span><span class="co"># Plot the filtered coverages</span></span></span>
 <span class="r-in"><span><span class="fu">plot_coverage</span><span class="op">(</span><span class="va">coverage</span>, detailed <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using quantiles to bin transcripts.</span>
@@ -151,13 +154,15 @@ read counts for each length bin.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> The number of transcripts is less than the inflection index, returning equal weights for the current bin.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> The number of transcripts is less than the inflection index, returning equal weights for the current bin.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> The number of transcripts is less than the inflection index, returning equal weights for the current bin.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The number of transcripts is less than the inflection index, returning equal weights for the current bin.</span>
 <span class="r-plt img"><img src="plot_coverage-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="co"># filtering function can also be passed directly to plot_coverage</span></span></span>
 <span class="r-in"><span><span class="fu">plot_coverage</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">'realign2transcript.bam'</span><span class="op">)</span>, filter_fn <span class="op">=</span> <span class="va">convolution_filter</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 52 transcripts found in the BAM file.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 19(36.54%) transcripts failed the filter.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Failed transcripts account for 215 reads, out of 1203(17.87%) reads in total.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 26 transcripts found in the BAM file.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 3(11.54%) transcripts failed the filter.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Failed transcripts account for 140 reads, out of 1095(12.79%) reads in total.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using quantiles to bin transcripts.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The number of transcripts is less than the inflection index, returning equal weights for the current bin.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> The number of transcripts is less than the inflection index, returning equal weights for the current bin.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> The number of transcripts is less than the inflection index, returning equal weights for the current bin.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> The number of transcripts is less than the inflection index, returning equal weights for the current bin.</span>

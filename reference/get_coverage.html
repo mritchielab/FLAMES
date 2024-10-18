@@ -17,7 +17,7 @@ is desired."><meta property="og:image" content="https://mritchielab.github.io/FL
 
     <a class="navbar-brand me-2" href="../index.html">FLAMES</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.99.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -55,7 +55,7 @@ is desired.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_coverage</span><span class="op">(</span><span class="va">bam</span>, remove_UTR <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">annotation</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_coverage</span><span class="op">(</span><span class="va">bam</span>, min_counts <span class="op">=</span> <span class="fl">10</span>, remove_UTR <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">annotation</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -64,6 +64,10 @@ is desired.</p>
 
 <dl><dt id="arg-bam">bam<a class="anchor" aria-label="anchor" href="#arg-bam"></a></dt>
 <dd><p>path to the BAM file, or a parsed GAlignments object</p></dd>
+
+
+<dt id="arg-min-counts">min_counts<a class="anchor" aria-label="anchor" href="#arg-min-counts"></a></dt>
+<dd><p>numeric, the minimum number of alignments required for a transcript to be included</p></dd>
 
 
 <dt id="arg-remove-utr">remove_UTR<a class="anchor" aria-label="anchor" href="#arg-remove-utr"></a></dt>
@@ -108,23 +112,23 @@ is desired.</p>
 <span class="r-in"><span>  fq_in <span class="op">=</span> <span class="va">fastq1</span>,</span></span>
 <span class="r-in"><span>  outdir <span class="op">=</span> <span class="va">outdir</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 03:56:17 AM Thu Oct 17 2024 minimap2_realign</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 06:51:14 AM Fri Oct 18 2024 minimap2_realign</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Sorting by position</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                                         total mapped primary</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/Rtmpsdk3vz/file20fb44210ab9/realign2transcript.bam  4554   3764    2500</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/RtmpZD0DsH/file21304509da85/realign2transcript.bam  4554   3764    2500</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                                         secondary</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/Rtmpsdk3vz/file20fb44210ab9/realign2transcript.bam      2051</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/RtmpZD0DsH/file21304509da85/realign2transcript.bam      2051</span>
 <span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">get_coverage</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">'realign2transcript.bam'</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6 × 103</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   transcript coverage_1 coverage_2 coverage_3 coverage_4 coverage_5 coverage_6</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> SIRV108         0          0          0.2        0.2        0.4        0.6  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> SIRV101         0          0.3        0.6        0.6        0.7        0.8  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> SIRV106         0          0          0.174      0.348      0.435      0.478</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> SIRV103         0          0.143      0.571      0.786      0.786      0.786</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> SIRV102         0.286      0.571      0.571      0.714      0.714      0.714</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> SIRV105         0          0          0.625      0.844      0.906      1    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> SIRV101             0      0.3        0.6        0.6        0.7        0.8  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> SIRV106             0      0          0.174      0.348      0.435      0.478</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> SIRV103             0      0.143      0.571      0.786      0.786      0.786</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> SIRV105             0      0          0.625      0.844      0.906      1    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> SIRV107             0      0          0.340      0.415      0.436      0.574</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> SIRV201             0      0.182      0.455      0.455      0.455      0.455</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 96 more variables: coverage_7 &lt;dbl&gt;, coverage_8 &lt;dbl&gt;, coverage_9 &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   coverage_10 &lt;dbl&gt;, coverage_11 &lt;dbl&gt;, coverage_12 &lt;dbl&gt;, coverage_13 &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   coverage_14 &lt;dbl&gt;, coverage_15 &lt;dbl&gt;, coverage_16 &lt;dbl&gt;, coverage_17 &lt;dbl&gt;,</span></span>
