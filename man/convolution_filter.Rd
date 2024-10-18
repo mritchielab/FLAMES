@@ -22,7 +22,14 @@ both ends before convolution.}
 logical, \code{TRUE} if the transcript passes the filter, \code{FALSE} otherwise
 }
 \description{
-
+Filter out transcripts with sharp drops / rises in coverage,
+to be used in \code{filter_coverage} to remove transcripts with potential
+misalignments / internal priming etc. Filtering is done by convolving the
+coverage with a kernal of 1s and -1s (e.g. \code{c(1, 1, -1, -1)}, where
+the width of the 1s and -1s are determined by the \code{width} parameter),
+and check if the maximum absolute value of the convolution is below a
+threshold. If the convolution is below the threshold, \code{TRUE} is returned,
+otherwise \code{FALSE}.
 }
 \examples{
 # A >30\% drop in coverage will fail the filter with threshold = 0.3

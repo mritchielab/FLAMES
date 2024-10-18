@@ -4,10 +4,12 @@
 \alias{get_coverage}
 \title{Get read coverages from BAM file}
 \usage{
-get_coverage(bam, remove_UTR = FALSE, annotation)
+get_coverage(bam, min_counts = 10, remove_UTR = FALSE, annotation)
 }
 \arguments{
 \item{bam}{path to the BAM file, or a parsed GAlignments object}
+
+\item{min_counts}{numeric, the minimum number of alignments required for a transcript to be included}
 
 \item{remove_UTR}{logical, if \code{TRUE}, remove the UTRs from the coverage}
 

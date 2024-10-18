@@ -125,7 +125,7 @@ weight_transcripts <- function(counts, type = 'sigmoid', min_counts = 1000,
 #' @description Filter out transcripts with sharp drops / rises in coverage,
 #' to be used in \code{filter_coverage} to remove transcripts with potential
 #' misalignments / internal priming etc. Filtering is done by convolving the
-#' coverage with a kernal of 1s and -1s (e.g. \code{c(1, 1, -1, -1), where
+#' coverage with a kernal of 1s and -1s (e.g. \code{c(1, 1, -1, -1)}, where
 #' the width of the 1s and -1s are determined by the \code{width} parameter),
 #' and check if the maximum absolute value of the convolution is below a
 #' threshold. If the convolution is below the threshold, \code{TRUE} is returned,
@@ -165,9 +165,12 @@ convolution_filter <- function(x, threshold = 0.15, width = 2, trim = 0.05) {
 #' is desired.
 #'
 #' @importFrom GenomicAlignments readGAlignments seqnames
+#' @importFrom BiocGenerics `%in%`
 #' @importFrom Rsamtools scanBamFlag ScanBamParam
 #' @importFrom dplyr filter
+#' @importFrom GenomicRanges granges coverage
 #' @param bam path to the BAM file, or a parsed GAlignments object
+#' @param min_counts numeric, the minimum number of alignments required for a transcript to be included
 #' @param remove_UTR logical, if \code{TRUE}, remove the UTRs from the coverage
 #' @param annotation (Required if \code{remove_UTR = TRUE}) path to the GTF annotation file
 #' @return a tibble of the transcript information and coverages, with the following columns:
@@ -198,7 +201,7 @@ convolution_filter <- function(x, threshold = 0.15, width = 2, trim = 0.05) {
 #' head(x)
 #' @md
 #' @export
-get_coverage <- function(bam, remove_UTR = FALSE, annotation) {
+get_coverage <- function(bam, min_counts = 10, remove_UTR = FALSE, annotation) {
 
   if (!is(bam, "GAlignments")) {
     bam <- GenomicAlignments::readGAlignments(bam,
@@ -213,8 +216,14 @@ get_coverage <- function(bam, remove_UTR = FALSE, annotation) {
     GenomicAlignments::seqnames() |>
     table() |>
     as.data.frame() |>
-    dplyr::filter(Freq > 0)
-  coverage_rlel <- get_coverage_RleList(bam)
+    dplyr::filter(Freq >= min_counts)
+  bam <- bam[GenomicAlignments::seqnames(bam) %in% read_counts_df$Var1]
+
+  coverage_rlel <- bam |>
+    GenomicRanges::granges() |>
+    GenomicRanges::coverage()
+  coverage_rlel <- coverage_rlel[read_counts_df$Var1]
+
   if (remove_UTR) {
     coverage_rlel <- remove_UTR_coverage(coverage_rlel, annotation)
   }
@@ -423,29 +432,6 @@ plot_coverage <- function(x, quantiles = c(0, 0.2375, 0.475, 0.7125, 0.95, 1),
   } else {
     return(p)
   }
-}
-
-#' @importFrom GenomicAlignments seqnames
-#' @importFrom tibble as_tibble
-#' @importFrom dplyr rename filter pull
-#' @importFrom GenomicRanges granges coverage
-get_coverage_RleList <- function(bam, isoform = NULL) {
-  if (!is.null(isoform)) {
-    bam <- bam[GenomicAlignments::seqnames(bam) %in% isoform]
-  }
-
-  transcript_names <- table(GenomicAlignments::seqnames(bam)) |>
-    as.data.frame() |>
-    dplyr::rename(transcript = Var1, read_counts = Freq) |>
-    tibble::as_tibble() |>
-    dplyr::filter(read_counts > 0) |>
-    dplyr::pull(transcript)
-
-  cover <- bam |>
-    GenomicRanges::granges() |>
-    GenomicRanges::coverage()
-  cover <- cover[transcript_names]
-  return(cover)
 }
 
 #' @importFrom tibble as_tibble
