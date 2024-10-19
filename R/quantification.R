@@ -250,11 +250,26 @@ run_oarfish <- function(realign_bam, outdir, threads = 1, sample, oarfish_bin, s
 #' @importFrom MatrixGenerics rowSums
 #' @importFrom Matrix readMM
 #' @importFrom SingleCellExperiment SingleCellExperiment
-parse_oarfish_sc_output <- function(oarfish_out) {
+#' @importFrom SummarizedExperiment rowRanges rowRanges<-
+parse_oarfish_sc_output <- function(oarfish_out, annotation, outdir) {
   mtx <- t(Matrix::readMM(paste0(oarfish_out, ".count.mtx")))
   rownames(mtx) <- read.delim(paste0(oarfish_out, ".features.txt"), header = F)$V1
+  colnames(mtx) <- read.delim(paste0(oarfish_out, ".barcodes.txt"), header = F)$V1
   # mtx <- mtx[MatrixGenerics::rowSums(mtx) > 0, ]
   sce <- SingleCellExperiment::SingleCellExperiment(assays = list(counts = mtx))
+
+  annotation_grl <- get_GRangesList(annotation)
+  if (file.exists(file.path(outdir, "isoform_annotated.gff3"))) {
+    isoform_grl <- get_GRangesList(file.path(outdir, "isoform_annotated.gff3"))
+    annotation_grl <- c(annotation_grl, 
+      isoform_grl[!names(isoform_grl) %in% names(annotation_grl)]
+    )
+  }
+  annotation_grl <- annotation_grl[names(annotation_grl) %in% rownames(sce)]
+  SummarizedExperiment::rowRanges(sce)[names(annotation_grl)] <- annotation_grl
+  rowData(sce)$transcript_id <- rownames(sce)
+
+  return(sce)
 }
 
 #' @importFrom SummarizedExperiment SummarizedExperiment
@@ -267,18 +282,19 @@ parse_oarfish_bulk_output <- function(oarfish_outs, sample_names) {
   SummarizedExperiment::SummarizedExperiment(assays = list(counts = mtx))
 }
 
-quantify_transcript_oarfish <- function(outdir, config, pipeline = "sc_single_sample", samples) {
+quantify_transcript_oarfish <- function(annotation, outdir, config,
+  pipeline = "sc_single_sample", samples) {
   realign_bam <- list.files(outdir)[grepl("_?realign2transcript\\.bam$", list.files(outdir))]
   if (pipeline == "sc_single_sample") {
     oarfish_out <- run_oarfish(realign_bam, outdir, threads = config$pipeline_parameters$threads)
-    return(parse_oarfish_sc_output(oarfish_out))
+    return(parse_oarfish_sc_output(oarfish_out, annotation, outdir))
   } else if (pipeline == "sc_multi_sample") {
     sce_list <- as.list(1:length(samples))
     names(sce_list) <- samples
     for (i in 1:length(samples)) {
       realign_bam <- list.files(outdir)[grepl(paste0(samples[i], "_realign2transcript\\.bam$"), list.files(outdir))]
       oarfish_out <- run_oarfish(realign_bam, outdir, threads = config$pipeline_parameters$threads, sample = samples[i])
-      sce_list[[i]] <- parse_oarfish_sc_output(oarfish_out)
+      sce_list[[i]] <- parse_oarfish_sc_output(oarfish_out, annotation, outdir)
     }
     return(sce_list)
   } else if (pipeline == "bulk") {
@@ -328,7 +344,7 @@ quantify_transcript_oarfish <- function(outdir, config, pipeline = "sc_single_sa
 #' @export
 quantify_transcript <- function(annotation, outdir, config, pipeline = "sc_single_sample", ...) {
   if (config$pipeline_parameters$oarfish_quantification) {
-    res <- quantify_transcript_oarfish(outdir, config, pipeline, ...)
+    res <- quantify_transcript_oarfish(annotation, outdir, config, pipeline, ...)
   } else {
     res <- quantify_transcript_flames(annotation, outdir, config, pipeline, ...)
   }

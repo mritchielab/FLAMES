@@ -59,6 +59,7 @@ Imports:
     SingleCellExperiment,
     SummarizedExperiment,
     scater,
+    scatterpie,
     S4Vectors,
     scuttle,
     stats,
