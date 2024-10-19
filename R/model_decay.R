@@ -131,6 +131,7 @@ weight_transcripts <- function(counts, type = 'sigmoid', min_counts = 1000,
 #' threshold. If the convolution is below the threshold, \code{TRUE} is returned,
 #' otherwise \code{FALSE}.
 #'
+#' @importFrom stats convolve
 #' @param x numeric vector of coverage values
 #' @param threshold numeric, the threshold for the maximum absolute value of the
 #' convolution
@@ -151,7 +152,7 @@ convolution_filter <- function(x, threshold = 0.15, width = 2, trim = 0.05) {
   threshold <- threshold * width
   trimmed <- x[round(length(x) * trim):round(length(x) * (1 - trim))]
   kernal <- c(rep(1, width), rep(-1, width))
-  conv <- convolve(trimmed, kernal, type = "filter")
+  conv <- stats::convolve(trimmed, kernal, type = "filter")
   return(max(abs(conv)) < threshold)
 }
 
