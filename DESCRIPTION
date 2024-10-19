@@ -58,6 +58,7 @@ Imports:
     RColorBrewer,
     SingleCellExperiment,
     SummarizedExperiment,
+    SpatialExperiment,
     scater,
     scatterpie,
     S4Vectors,
