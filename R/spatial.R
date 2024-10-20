@@ -2,9 +2,9 @@
 #'
 #' @description This function creates a SpatialExperiment object from a SingleCellExperiment object and a spatial barcode file.
 #' @param sce The SingleCellExperiment object obtained from running the \code{\link{sc_long_pipeline}} function.
-#' @param spatial_barcode_file The path to the spatial barcode file, e.g. \code{'spaceranger-2.1.1/lib/python/cellranger/barcodes/visium-v2_coordinates.txt"}.
+#' @param spatial_barcode_file The path to the spatial barcode file, e.g. \code{"spaceranger-2.1.1/lib/python/cellranger/barcodes/visium-v2_coordinates.txt"}.
 #' @param mannual_align_json The path to the mannual alignment json file.
-#' @param image 'DataFrame' containing the image data. See \code(\link{SpatialExperiment::readImgData}) and \code(\link{SpatialExperiment::SpatialExperiment}).
+#' @param image 'DataFrame' containing the image data. See \code{?SpatialExperiment::readImgData} and \code{?SpatialExperiment::SpatialExperiment}.
 #' @return A SpatialExperiment object.
 #' @importFrom readr read_table
 #' @importFrom jsonlite fromJSON

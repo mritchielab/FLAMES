@@ -9,11 +9,11 @@ create_spe(sce, spatial_barcode_file, mannual_align_json, image)
 \arguments{
 \item{sce}{The SingleCellExperiment object obtained from running the \code{\link{sc_long_pipeline}} function.}
 
-\item{spatial_barcode_file}{The path to the spatial barcode file, e.g. \code{'spaceranger-2.1.1/lib/python/cellranger/barcodes/visium-v2_coordinates.txt"}.}
+\item{spatial_barcode_file}{The path to the spatial barcode file, e.g. \code{"spaceranger-2.1.1/lib/python/cellranger/barcodes/visium-v2_coordinates.txt"}.}
 
 \item{mannual_align_json}{The path to the mannual alignment json file.}
 
-\item{image}{'DataFrame' containing the image data. See \code(\link{SpatialExperiment::readImgData}) and \code(\link{SpatialExperiment::SpatialExperiment}).}
+\item{image}{'DataFrame' containing the image data. See \code{?SpatialExperiment::readImgData} and \code{?SpatialExperiment::SpatialExperiment}.}
 }
 \value{
 A SpatialExperiment object.
