@@ -46,7 +46,8 @@
 <span>  <span class="va">infq</span>,</span>
 <span>  <span class="va">n_process</span>,</span>
 <span>  pipeline <span class="op">=</span> <span class="st">"sc_single_sample"</span>,</span>
-<span>  samples <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  samples <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  random_seed <span class="op">=</span> <span class="fl">2024</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -79,6 +80,10 @@
 or folder names if <code>fastqs</code> is a vector of folders.
 <code>bulk</code> (bulk, single or multi-sample), or <code>sc_multi_sample</code> (single-cell, multiple samples)</p></dd>
 
+
+<dt id="arg-random-seed">random_seed<a class="anchor" aria-label="anchor" href="#arg-random-seed"></a></dt>
+<dd><p>The random seed for reproducibility.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -87,11 +92,13 @@ or folder names if <code>fastqs</code> is a vector of folders.
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>After the genome alignment step (<code>do_genome_align</code>), the alignment file will be parsed to
-generate the per gene UMI count matrix. For each gene in the annotation file, the number of
-reads whose mapped ranges overlap with the gene's genome coordinates will be assigned to the
-gene. For reads can be assigned to multiple gene, the read will be assigned to the gene with
-the highest number of overlapping nucleotides. If the read can be assigned to multiple genes
-with the same number of overlapping nucleotides, the read will be not be assigned.</p>
+generate the per gene UMI count matrix. For each gene in the annotation file, the number of reads
+overlapping with the gene’s genomic coordinates will be assigned to that gene. If a read overlaps
+multiple genes, it will be assigned to the gene with the highest number of overlapping nucleotides.
+If exon coordinates are included in the provided annotation, the decision will first consider the
+number of nucleotides aligned to the exons of each gene. In cases of a tie, the overlap with introns
+will be used as a tiebreaker. If there is still a tie after considering both exons and introns,
+a random gene will be selected from the tied candidates.</p>
 <p>After the read-to-gene assignment, the per gene UMI count matrix will be generated.
 Specifically, for each gene, the reads with similar mapping coordinates of transcript
 termination sites (TTS, i.e. the end of the the read with a polyT or polyA) will be grouped
