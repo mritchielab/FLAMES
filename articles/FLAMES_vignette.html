@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">FLAMES</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -199,7 +199,7 @@ already been demultiplexed.</p>
 <span><span class="co">#&gt; Registered S3 method overwritten by 'GGally':</span></span>
 <span><span class="co">#&gt;   method from   </span></span>
 <span><span class="co">#&gt;   +.gg   ggplot2</span></span>
-<span><span class="co">#&gt; Writing configuration parameters to:  /tmp/Rtmpp4mibI/file2a5c1e8a8839/config_file_10844.json</span></span></code></pre></div>
+<span><span class="co">#&gt; Writing configuration parameters to:  /tmp/RtmpjLdVP1/filed63c4587ffc3/config_file_54844.json</span></span></code></pre></div>
 <p>The optional argument <code>config_file</code> can be given to both
 <code><a href="../reference/bulk_long_pipeline.html">bulk_long_pipeline()</a></code> and <code><a href="../reference/sc_long_pipeline.html">sc_long_pipeline()</a></code> in
 order to customise the execution of the pipelines. It is expected to be
@@ -243,7 +243,7 @@ sequentially:</p>
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mritchielab.github.io/FLAMES">FLAMES</a></span><span class="op">)</span></span>
 <span><span class="co"># do not run if minimap2 cannot be found</span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/any.html" class="external-link">any</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="fu"><a href="../reference/find_bin.html">find_bin</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"minimap2"</span>, <span class="st">"k8"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">config</span> <span class="op">&lt;-</span> <span class="fu">jsonlite</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/jsonlite/man/fromJSON.html" class="external-link">fromJSON</a></span><span class="op">(</span><span class="va">config_file</span><span class="op">)</span></span>
+<span>  <span class="va">config</span> <span class="op">&lt;-</span> <span class="fu">jsonlite</span><span class="fu">::</span><span class="fu"><a href="https://jeroen.r-universe.dev/jsonlite/reference/fromJSON.html" class="external-link">fromJSON</a></span><span class="op">(</span><span class="va">config_file</span><span class="op">)</span></span>
 <span>  <span class="co"># find_barcode(...)</span></span>
 <span>  <span class="va">genome_bam</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="fu"><a href="../reference/minimap2_align.html">minimap2_align</a></span><span class="op">(</span></span>
 <span>    config <span class="op">=</span> <span class="va">config</span>, fa_file <span class="op">=</span> <span class="va">genome_fa</span>, fq_in <span class="op">=</span> <span class="va">fastq</span>, annot <span class="op">=</span> <span class="va">annot</span>,</span>
@@ -423,7 +423,7 @@ output files.</p>
 <span><span class="va">outdir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">outdir</span><span class="op">)</span></span>
 <span><span class="va">config_file</span> <span class="op">&lt;-</span> <span class="fu">FLAMES</span><span class="fu">::</span><span class="fu"><a href="../reference/create_config.html">create_config</a></span><span class="op">(</span><span class="va">outdir</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Writing configuration parameters to:  /tmp/Rtmpp4mibI/file2a5c97a6a2a/config_file_10844.json</span></span></code></pre></div>
+<span><span class="co">#&gt; Writing configuration parameters to:  /tmp/RtmpjLdVP1/filed63c6701d189/config_file_54844.json</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="flames-execution-1">FLAMES execution<a class="anchor" aria-label="anchor" href="#flames-execution-1"></a>
@@ -514,7 +514,7 @@ Please make sure to cite when using these tools.</p>
 <div class="section level2">
 <h2 id="session-info">Session Info<a class="anchor" aria-label="anchor" href="#session-info"></a>
 </h2>
-<pre><code><span><span class="co">#&gt; R Under development (unstable) (2024-12-15 r87442)</span></span>
+<pre><code><span><span class="co">#&gt; R Under development (unstable) (2025-01-01 r87507)</span></span>
 <span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu</span></span>
 <span><span class="co">#&gt; Running under: Ubuntu 24.04.1 LTS</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -543,11 +543,11 @@ Please make sure to cite when using these tools.</p>
 <span><span class="co">#&gt;  [5] GenomeInfoDb_1.43.2         IRanges_2.41.2             </span></span>
 <span><span class="co">#&gt;  [7] S4Vectors_0.45.2            BiocGenerics_0.53.3        </span></span>
 <span><span class="co">#&gt;  [9] generics_0.1.3              MatrixGenerics_1.19.0      </span></span>
-<span><span class="co">#&gt; [11] matrixStats_1.4.1           FLAMES_2.1.3               </span></span>
+<span><span class="co">#&gt; [11] matrixStats_1.4.1           FLAMES_2.1.4               </span></span>
 <span><span class="co">#&gt; [13] BiocStyle_2.35.0           </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
-<span><span class="co">#&gt;   [1] fs_1.6.5                  ProtGenerics_1.39.0      </span></span>
+<span><span class="co">#&gt;   [1] fs_1.6.5                  ProtGenerics_1.39.1      </span></span>
 <span><span class="co">#&gt;   [3] bitops_1.0-9              httr_1.4.7               </span></span>
 <span><span class="co">#&gt;   [5] RColorBrewer_1.1-3        doParallel_1.0.17        </span></span>
 <span><span class="co">#&gt;   [7] tools_4.5.0               backports_1.5.0          </span></span>
@@ -576,7 +576,7 @@ Please make sure to cite when using these tools.</p>
 <span><span class="co">#&gt;  [53] BiocFileCache_2.15.0      grid_4.5.0               </span></span>
 <span><span class="co">#&gt;  [55] blob_1.2.4                dqrng_0.4.1              </span></span>
 <span><span class="co">#&gt;  [57] crayon_1.5.3              dir.expiry_1.15.0        </span></span>
-<span><span class="co">#&gt;  [59] lattice_0.22-6            beachmat_2.23.5          </span></span>
+<span><span class="co">#&gt;  [59] lattice_0.22-6            beachmat_2.23.6          </span></span>
 <span><span class="co">#&gt;  [61] cowplot_1.1.3             GenomicFeatures_1.59.1   </span></span>
 <span><span class="co">#&gt;  [63] KEGGREST_1.47.0           magick_2.8.5             </span></span>
 <span><span class="co">#&gt;  [65] metapod_1.15.0            pillar_1.10.0            </span></span>
@@ -587,17 +587,17 @@ Please make sure to cite when using these tools.</p>
 <span><span class="co">#&gt;  [75] data.table_1.16.4         vctrs_0.6.5              </span></span>
 <span><span class="co">#&gt;  [77] png_0.1-8                 gtable_0.3.6             </span></span>
 <span><span class="co">#&gt;  [79] cachem_1.1.0              xfun_0.49                </span></span>
-<span><span class="co">#&gt;  [81] S4Arrays_1.7.1            DropletUtils_1.27.1      </span></span>
+<span><span class="co">#&gt;  [81] S4Arrays_1.7.1            DropletUtils_1.27.2      </span></span>
 <span><span class="co">#&gt;  [83] iterators_1.0.14          bluster_1.17.0           </span></span>
 <span><span class="co">#&gt;  [85] statmod_1.5.0             bit64_4.5.2              </span></span>
 <span><span class="co">#&gt;  [87] progress_1.2.3            filelock_1.0.3           </span></span>
 <span><span class="co">#&gt;  [89] bslib_0.8.0               irlba_2.3.5.1            </span></span>
 <span><span class="co">#&gt;  [91] vipor_0.4.7               rpart_4.1.23             </span></span>
 <span><span class="co">#&gt;  [93] colorspace_2.1-1          DBI_1.2.3                </span></span>
-<span><span class="co">#&gt;  [95] Hmisc_5.2-1               nnet_7.3-19              </span></span>
+<span><span class="co">#&gt;  [95] Hmisc_5.2-1               nnet_7.3-20              </span></span>
 <span><span class="co">#&gt;  [97] tidyselect_1.2.1          bit_4.5.0.1              </span></span>
 <span><span class="co">#&gt;  [99] compiler_4.5.0            curl_6.0.1               </span></span>
-<span><span class="co">#&gt; [101] httr2_1.0.7               graph_1.85.0             </span></span>
+<span><span class="co">#&gt; [101] httr2_1.0.7               graph_1.85.1             </span></span>
 <span><span class="co">#&gt; [103] htmlTable_2.4.3           BiocNeighbors_2.1.2      </span></span>
 <span><span class="co">#&gt; [105] basilisk.utils_1.19.0     xml2_1.3.6               </span></span>
 <span><span class="co">#&gt; [107] desc_1.4.3                DelayedArray_0.33.3      </span></span>
@@ -606,7 +606,7 @@ Please make sure to cite when using these tools.</p>
 <span><span class="co">#&gt; [113] RBGL_1.83.0               rappdirs_0.3.3           </span></span>
 <span><span class="co">#&gt; [115] stringr_1.5.1             SpatialExperiment_1.17.0 </span></span>
 <span><span class="co">#&gt; [117] digest_0.6.37             rmarkdown_2.29           </span></span>
-<span><span class="co">#&gt; [119] basilisk_1.19.0           XVector_0.47.0           </span></span>
+<span><span class="co">#&gt; [119] basilisk_1.19.0           XVector_0.47.1           </span></span>
 <span><span class="co">#&gt; [121] htmltools_0.5.8.1         pkgconfig_2.0.3          </span></span>
 <span><span class="co">#&gt; [123] base64enc_0.1-3           sparseMatrixStats_1.19.0 </span></span>
 <span><span class="co">#&gt; [125] dbplyr_2.5.0              fastmap_1.2.0            </span></span>
@@ -622,14 +622,14 @@ Please make sure to cite when using these tools.</p>
 <span><span class="co">#&gt; [145] Rhdf5lib_1.29.0           munsell_0.5.1            </span></span>
 <span><span class="co">#&gt; [147] Rcpp_1.0.13-1             viridis_0.6.5            </span></span>
 <span><span class="co">#&gt; [149] reticulate_1.40.0         stringi_1.8.4            </span></span>
-<span><span class="co">#&gt; [151] zlibbioc_1.53.0           MASS_7.3-61              </span></span>
+<span><span class="co">#&gt; [151] zlibbioc_1.53.0           MASS_7.3-64              </span></span>
 <span><span class="co">#&gt; [153] plyr_1.8.9                ggstats_0.7.0            </span></span>
 <span><span class="co">#&gt; [155] parallel_4.5.0            listenv_0.9.1            </span></span>
 <span><span class="co">#&gt; [157] ggrepel_0.9.6             Biostrings_2.75.3        </span></span>
 <span><span class="co">#&gt; [159] hms_1.1.3                 circlize_0.4.16          </span></span>
 <span><span class="co">#&gt; [161] locfit_1.5-9.10           igraph_2.1.2             </span></span>
 <span><span class="co">#&gt; [163] reshape2_1.4.4            biomaRt_2.63.0           </span></span>
-<span><span class="co">#&gt; [165] ScaledMatrix_1.15.0       XML_3.99-0.17            </span></span>
+<span><span class="co">#&gt; [165] ScaledMatrix_1.15.0       XML_3.99-0.18            </span></span>
 <span><span class="co">#&gt; [167] evaluate_1.0.1            biovizBase_1.55.0        </span></span>
 <span><span class="co">#&gt; [169] scran_1.35.0              BiocManager_1.30.25      </span></span>
 <span><span class="co">#&gt; [171] tzdb_0.4.0                foreach_1.5.2            </span></span>

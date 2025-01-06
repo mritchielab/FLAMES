@@ -9,7 +9,7 @@ Uses options '-ax splice -t 12 -k14 –secondary=no fa_file fq_in'"><meta proper
 
     <a class="navbar-brand me-2" href="../index.html">FLAMES</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -122,7 +122,7 @@ FLAMES will try to detect cores if this parameter is not provided.</p></dd>
 <span class="r-in"><span><span class="va">outdir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">outdir</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">minimap2_align</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  config <span class="op">=</span> <span class="fu">jsonlite</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/jsonlite/man/fromJSON.html" class="external-link">fromJSON</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  config <span class="op">=</span> <span class="fu">jsonlite</span><span class="fu">::</span><span class="fu"><a href="https://jeroen.r-universe.dev/jsonlite/reference/fromJSON.html" class="external-link">fromJSON</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"config_sclr_nanopore_3end.json"</span>, package <span class="op">=</span> <span class="st">'FLAMES'</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span>,</span></span>
 <span class="r-in"><span>  fa_file <span class="op">=</span> <span class="va">genome_fa</span>,</span></span>
@@ -130,9 +130,11 @@ FLAMES will try to detect cores if this parameter is not provided.</p></dd>
 <span class="r-in"><span>  annot <span class="op">=</span> <span class="va">annotation</span>,</span></span>
 <span class="r-in"><span>  outdir <span class="op">=</span> <span class="va">outdir</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 03:14:33 AM Thu Dec 19 2024 minimap2_align</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                  total mapped primary secondary</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/Rtmp1kIsG5/file2192bd2a608/align2genome.bam  2503   1772    2500         0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 06:54:32 AM Mon Jan 06 2025 minimap2_align</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                   total mapped primary</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/RtmpqmWKMU/filecd67146425b4/align2genome.bam  2503   1772    2500</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                   secondary</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/RtmpqmWKMU/filecd67146425b4/align2genome.bam         0</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

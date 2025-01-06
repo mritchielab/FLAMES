@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">FLAMES</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,7 +66,7 @@
 <span class="r-in"><span><span class="va">annotation</span> <span class="op">&lt;-</span> <span class="va">bfc</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu">BiocFileCache</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocFileCache/man/BiocFileCache-class.html" class="external-link">bfcadd</a></span><span class="op">(</span><span class="va">bfc</span>, <span class="st">"annot.gtf"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">file_url</span>, <span class="st">"SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf"</span>, sep <span class="op">=</span> <span class="st">"/"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="va">outdir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">outdir</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">config</span> <span class="op">&lt;-</span> <span class="fu">jsonlite</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/jsonlite/man/fromJSON.html" class="external-link">fromJSON</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span><span class="va">config</span> <span class="op">&lt;-</span> <span class="fu">jsonlite</span><span class="fu">::</span><span class="fu"><a href="https://jeroen.r-universe.dev/jsonlite/reference/fromJSON.html" class="external-link">fromJSON</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"config_sclr_nanopore_3end.json"</span>, package <span class="op">=</span> <span class="st">"FLAMES"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="minimap2_align.html">minimap2_align</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  config <span class="op">=</span> <span class="va">config</span>,</span></span>
@@ -75,18 +75,18 @@
 <span class="r-in"><span>  annot <span class="op">=</span> <span class="va">annotation</span>,</span></span>
 <span class="r-in"><span>  outdir <span class="op">=</span> <span class="va">outdir</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 03:14:26 AM Thu Dec 19 2024 minimap2_align</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 06:54:26 AM Mon Jan 06 2025 minimap2_align</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                                   total mapped primary</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/Rtmp1kIsG5/file2192309ae58d/align2genome.bam  2503   1772    2500</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/RtmpqmWKMU/filecd676cc783dc/align2genome.bam  2503   1772    2500</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                                   secondary</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/Rtmp1kIsG5/file2192309ae58d/align2genome.bam         0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/RtmpqmWKMU/filecd676cc783dc/align2genome.bam         0</span>
 <span class="r-in"><span><span class="fu"><a href="find_isoform.html">find_isoform</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  annotation <span class="op">=</span> <span class="va">annotation</span>, genome_fa <span class="op">=</span> <span class="va">genome_fa</span>,</span></span>
 <span class="r-in"><span>  genome_bam <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">"align2genome.bam"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  outdir <span class="op">=</span> <span class="va">outdir</span>, config <span class="op">=</span> <span class="va">config</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 03:14:29 AM Thu Dec 19 2024 find_isoform</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/Rtmp1kIsG5/file2192309ae58d/transcript_assembly.fa.fai"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 06:54:29 AM Mon Jan 06 2025 find_isoform</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/RtmpqmWKMU/filecd676cc783dc/transcript_assembly.fa.fai"</span>
 <span class="r-in"><span><span class="va">grlist</span> <span class="op">&lt;-</span> <span class="fu">get_GRangesList</span><span class="op">(</span>file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">"isoform_annotated.gff3"</span><span class="op">)</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>
