@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">FLAMES</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,7 +40,13 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">create_spe</span><span class="op">(</span><span class="va">sce</span>, <span class="va">spatial_barcode_file</span>, <span class="va">mannual_align_json</span>, <span class="va">image</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">create_spe</span><span class="op">(</span></span>
+<span>  <span class="va">sce</span>,</span>
+<span>  <span class="va">spatial_barcode_file</span>,</span>
+<span>  <span class="va">mannual_align_json</span>,</span>
+<span>  <span class="va">image</span>,</span>
+<span>  <span class="va">tissue_positions_file</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -61,6 +67,10 @@
 
 <dt id="arg-image">image<a class="anchor" aria-label="anchor" href="#arg-image"></a></dt>
 <dd><p>'DataFrame' containing the image data. See <code><a href="https://rdrr.io/pkg/SpatialExperiment/man/readImgData.html" class="external-link">?SpatialExperiment::readImgData</a></code> and <code><a href="https://rdrr.io/pkg/SpatialExperiment/man/SpatialExperiment.html" class="external-link">?SpatialExperiment::SpatialExperiment</a></code>.</p></dd>
+
+
+<dt id="arg-tissue-positions-file">tissue_positions_file<a class="anchor" aria-label="anchor" href="#arg-tissue-positions-file"></a></dt>
+<dd><p>The path to Visium positions file, e.g. <code>"spaceranger-2.1.1/lib/python/cellranger/barcodes/visium-v2_tissue_positions_list.csv"</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
