@@ -89,12 +89,12 @@ E.g. <code>c("region" = "gene_name")</code> to match the `region` column in the 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A list of numeric vector of positions of each mutation within the gene body. When <code>type = "relative"</code>,
+    <p>A numeric vector of positions of each mutation within the gene body. When <code>type = "relative"</code>,
 the positions are normalized to the gene length, ranging from 0 (start of the gene) to 1 (end of the gene).
 When <code>type = "TSS"</code> / <code>type = "TES"</code>, the distances from the transcription start
-/ end site. If <code>bin = FALSE</code>, a list of numeric vectors of relative positions of each mutation within
-the gene body. If <code>bin = TRUE</code>, a numeric vector of length 100 of the number of mutations in each bin.
-The postions are split into lists by the <code>by</code> column (e.g. gene name) in the mutations.</p>
+/ end site. If <code>bin = TRUE</code>, and <code>type = "relative"</code>, the relative positions are binned into 100
+bins along the gene body, and the output is a matrix with the number of mutations in each bin, the
+rows are named by the <code>by</code> column (e.g. gene name).</p>
     </div>
 
     <div class="section level2">
@@ -104,12 +104,12 @@ The postions are split into lists by the <code>by</code> column (e.g. gene name)
 <span class="r-in"><span>  pos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1084</span>, <span class="fl">1085</span>, <span class="fl">1217</span>, <span class="fl">1384</span>, <span class="fl">2724</span>, <span class="fl">2789</span>, <span class="fl">5083</span>, <span class="fl">5147</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"Rps24"</span>, <span class="fl">8</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">positions</span> <span class="op">&lt;-</span> </span></span>
+<span class="r-in"><span><span class="va">positions</span> <span class="op">&lt;-</span></span></span>
 <span class="r-in"><span> <span class="fu">mutation_positions</span><span class="op">(</span></span></span>
 <span class="r-in"><span>   mutations <span class="op">=</span> <span class="va">variants</span>,</span></span>
 <span class="r-in"><span>   annotation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"rps24.gtf.gz"</span>, package <span class="op">=</span> <span class="st">"FLAMES"</span><span class="op">)</span></span></span>
 <span class="r-in"><span> <span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 06:53:32 Reading annotation ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 07:26:26 Reading annotation ...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |======================================================================| 100%</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
