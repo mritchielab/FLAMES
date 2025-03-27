@@ -83,14 +83,23 @@
 </h2>
 <p>Function references can be found <a href="https://mritchielab.github.io/FLAMES/reference/index.html">here</a>.</p>
 <p><a href="https://github.com/ChangqingW/IgniteRNAseq" class="external-link">IgniteRNAseq</a> is a workflow package and its rendered vignette can be found <a href="https://changqingw.github.io/IgniteRNAseq/articles/FLAMESWorkflow.html" class="external-link">here</a>.</p>
+<p>A Long read single cell analysis tutorial using both single-sample and multi-sample modes is available <a href="https://sefi196.github.io/FLAMESv2_LR_sc_tutorial/" class="external-link">here</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="common-issues">Common issues<a class="anchor" aria-label="anchor" href="#common-issues"></a>
 </h2>
 <ul>
-<li>basilisk / reticulate errors<br>
-If you encounter errors from Python code execution, you could try adding <code>basilisk::setBasiliskFork(FALSE)</code> before running the FLAMES.</li>
+<li><p><strong>basilisk / reticulate errors</strong><br>
+If you encounter errors from Python code execution, you could try adding <code>basilisk::setBasiliskFork(FALSE)</code> before running FLAMES.</p></li>
+<li><p><strong>Isoform identification with bambu</strong> If you encounter errors during isoform identification using Bambu, you can try troubleshooting by setting the ’‘’bambu_verbose’’’ parameter to TRUE. We have found the following steps helpful in resolving issues:</p></li>
 </ul>
+<ol style="list-style-type: decimal">
+<li><p>Remove supplementary alignments from the genome BAM file.</p></li>
+<li><p>Divide the BAM file into smaller sections for easier processing.</p></li>
+<li><p>Remove unnecessary contigs from the genome.fa file.</p></li>
+<li><p>Use the HongYhong_fix branch of Bambu, which is better equipped for handling large files. You can install this version in R with the following command:</p></li>
+</ol>
+<pre><code><span><span class="fu">install_github</span><span class="op">(</span><span class="st">"GoekeLab/bambu"</span>, ref<span class="op">=</span><span class="st">"HongYhong_fix"</span><span class="op">)</span></span></code></pre>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
