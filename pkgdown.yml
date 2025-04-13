@@ -3,7 +3,7 @@ pkgdown: 2.1.1.9000
 pkgdown_sha: 66477c0dbb4f4925ec872cf64d5eaa316cc70bac
 articles:
   FLAMES_vignette: FLAMES_vignette.html
-last_built: 2025-04-10T08:04Z
+last_built: 2025-04-13T14:53Z
 urls:
   reference: https://mritchielab.github.io/FLAMES/reference
   article: https://mritchielab.github.io/FLAMES/articles
