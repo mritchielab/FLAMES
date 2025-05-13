@@ -774,11 +774,11 @@ def quantification(annotation, outdir, pipeline,
                   infq=None,  sample_names=None, random_seed=2024, **kwargs):
     if pipeline == "sc_single_sample":
         if not infq:
-            infq = os.path.join(outdir, "matched_reads.fastq")
+            infq = os.path.join(outdir, "matched_reads.fastq.gz")
         in_bam = os.path.join(outdir, "align2genome.bam")
         out_csv = os.path.join(outdir, "gene_count.csv")
         out_fig = os.path.join(outdir, "saturation_curve.png") if saturation_curve else None
-        out_fastq = os.path.join(outdir, "matched_reads_dedup.fastq")
+        out_fastq = os.path.join(outdir, "matched_reads_dedup.fastq.gz")
 
         dedup_read_lst, umi_lst = \
                         quantify_gene(in_bam, annotation, n_process, 
@@ -807,8 +807,8 @@ def quantification(annotation, outdir, pipeline,
         for idx, sample in enumerate(sample_names):
             sample_bam = os.path.join(outdir, sample + "_align2genome.bam")
             sys.stderr.write("parsing " + sample_bam + "...\n")
-            in_fastq = infq[idx] if infq is not None else os.path.join(outdir,sample+ "_"+ "matched_reads.fastq")
-            out_fastq = os.path.join(outdir,sample+ "_"+ "matched_reads_dedup.fastq")
+            in_fastq = infq[idx] if infq is not None else os.path.join(outdir,sample+ "_"+ "matched_reads.fastq.gz")
+            out_fastq = os.path.join(outdir,sample+ "_"+ "matched_reads_dedup.fastq.gz")
             out_csv = os.path.join(outdir, sample+ "_"+"gene_count.csv")
             out_fig = os.path.join(outdir, sample+ "_"+"saturation_curve.png") if saturation_curve else None
             #out_read_lst = os.path.join(outdir, sample+ "_"+"deduplicated_read_id.txt")

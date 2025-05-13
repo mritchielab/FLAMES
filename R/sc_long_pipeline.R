@@ -144,9 +144,9 @@ sc_long_pipeline <- function(
 
   infq <- NULL
   if (config$pipeline_parameters$do_barcode_demultiplex) {
-    if (file.exists(file.path(outdir, "matched_reads.fastq"))) {
+    if (file.exists(file.path(outdir, "matched_reads.fastq.gz"))) {
       stop(paste0(
-        "The demultiplexing output file matched_reads.fastq already exists in the output directory.",
+        "The demultiplexing output file matched_reads.fastq.gz already exists in the output directory.",
         " If you want to run the demultiplexing step again, please remove the file first,  ",
         "otherwise please set `do_barcode_demultiplex = false` in the JSON configuration file."
       ))
@@ -160,13 +160,13 @@ sc_long_pipeline <- function(
       }
       blaze(expect_cell_number, fastq,
         "output-prefix" = paste0(outdir, "/"),
-        "output-fastq" = "matched_reads.fastq",
+        "output-fastq" = "matched_reads.fastq.gz",
         "threads" = config$pipeline_parameters$threads,
         "max-edit-distance" = config$barcode_parameters$max_bc_editdistance,
         "overwrite" = TRUE
       )
 
-      infq <- file.path(outdir, "matched_reads.fastq")
+      infq <- file.path(outdir, "matched_reads.fastq.gz")
     } else {
       # run flexiplex
       cat(format(Sys.time(), "%X %a %b %d %Y"), "Demultiplexing using flexiplex...\n")
@@ -177,14 +177,14 @@ sc_long_pipeline <- function(
         )
       }
       cat("Matching cell barcodes...\n")
-      infq <- file.path(outdir, "matched_reads.fastq")
+      infq_uncompressed <- file.path(outdir, "matched_reads.fastq")
       bc_stat <- file.path(outdir, "matched_barcode_stat")
       metadata$results <- c(metadata$results,
         list("find_barcode" = find_barcode(
           fastq = fastq,
           barcodes_file = barcodes_file,
           stats_out = bc_stat,
-          reads_out = infq,
+          reads_out = infq_uncompressed,
           pattern = setNames(
             as.character(config$barcode_parameters$pattern),
             names(config$barcode_parameters$pattern)
@@ -200,6 +200,8 @@ sc_long_pipeline <- function(
         )
         )
       )
+      infq <- file.path(outdir, "matched_reads.fastq.gz")
+      gzip(filename = infq_uncompressed, destname = infq)
     }
     cat(format(Sys.time(), "%X %a %b %d %Y"), "Demultiplex done\n")
   } else {
@@ -290,7 +292,7 @@ sc_long_pipeline <- function(
   if (config$pipeline_parameters$do_read_realignment) {
     cat("#### Realigning deduplicated reads to transcript using minimap2\n")
     if (config$pipeline_parameters$do_gene_quantification) {
-      infq_realign <- file.path(outdir, "matched_reads_dedup.fastq")
+      infq_realign <- file.path(outdir, "matched_reads_dedup.fastq.gz")
     } else {
       infq_realign <- infq
     }

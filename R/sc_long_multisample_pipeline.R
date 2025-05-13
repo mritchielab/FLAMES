@@ -157,7 +157,7 @@ sc_long_multisample_pipeline <- function(annotation, fastqs, outdir, genome_fa,
   # check input length of input fastqs, barcodes_file
   if (config$pipeline_parameters$do_barcode_demultiplex && is.null(barcodes_file)) {
     # check if the output exist
-    infqs <- file.path(outdir, paste(names(fastqs), "matched_reads.fastq", sep = "_"))
+    infqs <- file.path(outdir, paste(names(fastqs), "matched_reads.fastq.gz", sep = "_"))
     if (any(file.exists(infqs))) {
       stop(paste0(
         "Error: Found existing demultiplexed fastq files in the output directory.",
@@ -178,14 +178,14 @@ sc_long_multisample_pipeline <- function(annotation, fastqs, outdir, genome_fa,
     for (i in 1:length(fastqs)) {
       blaze(expect_cell_numbers[i], fastqs[i],
         "output-prefix" = file.path(outdir, paste0(names(fastqs)[i], "_")),
-        "output-fastq" = "matched_reads.fastq",
+        "output-fastq" = "matched_reads.fastq.gz",
         "threads" = config$pipeline_parameters$threads,
         "max-edit-distance" = config$barcode_parameters$max_bc_editdistance,
         "overwrite" = TRUE
       )
     }
   } else if (config$pipeline_parameters$do_barcode_demultiplex && length(barcodes_file) >= 1) {
-    infqs <- file.path(outdir, paste(names(fastqs), "matched_reads.fastq", sep = "_"))
+    infqs <- file.path(outdir, paste(names(fastqs), "matched_reads.fastq.gz", sep = "_"))
     if (any(file.exists(infqs))) {
       stop(paste0(
         "Error: Found existing demultiplexed fastq files in the output directory.",
@@ -204,11 +204,11 @@ sc_long_multisample_pipeline <- function(annotation, fastqs, outdir, genome_fa,
       stop(length(barcodes_file), " barcode allow-lists provided while there are ", length(fastqs),
         "fastq file. Please either provide one allow-list per sample, or one allow-list for all samples.")
     }
-    infqs <- file.path(outdir, paste(names(fastqs), "matched_reads.fastq", sep = "_"))
     bc_stats <- file.path(outdir, paste(names(fastqs), "matched_barcode_stat", sep = "_"))
+    infqs_uncompressed <- gsub("\\.gz$", "", infqs)
     metadata$results[["find_barcode"]] <-
       find_barcode(fastq = fastqs, barcodes_file = barcodes_file, stats_out = bc_stats,
-        reads_out = infqs,
+        reads_out = infqs_uncompressed,
         pattern = setNames(
           as.character(config$barcode_parameters$pattern),
           names(config$barcode_parameters$pattern)
@@ -222,6 +222,10 @@ sc_long_multisample_pipeline <- function(annotation, fastqs, outdir, genome_fa,
         strand = config$barcode_parameters$strand,
         threads = config$pipeline_parameters$threads
       )
+
+    for (i in 1:length(infqs_uncompressed)) {
+      gzip(filename = infqs_uncompressed[i], destname = infqs[i])
+    }
   } else {
     infqs <- fastqs
   } # requesting to not match barcodes implies `fastq` has already been run through the
@@ -312,7 +316,7 @@ if (config$pipeline_parameters$do_read_realignment) {
   # Set file paths for realignment
   if (config$pipeline_parameters$do_gene_quantification) {
     cat("#### Realigning deduplicated reads to transcript using minimap2\n")
-    infqs_realign <- file.path(outdir, paste(names(fastqs), "matched_reads_dedup.fastq", sep = "_"))
+    infqs_realign <- file.path(outdir, paste(names(fastqs), "matched_reads_dedup.fastq.gz", sep = "_"))
   } else {
     infqs_realign <- fastqs # if no gene quantification, use the original fastqs
   }

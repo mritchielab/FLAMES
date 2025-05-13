@@ -65,7 +65,11 @@ minimap2_align <- function(config, fa_file, fq_in, annot, outdir, minimap2 = NA,
     samtools <- find_bin("samtools")
   }
 
-  has_tags <- grepl("\t", readLines(fq_in, n = 1))
+  if (endsWith(fq_in, ".gz")) {
+    has_tags <- grepl("\t", readLines(gzfile(fq_in), n = 1))
+  } else {
+    has_tags <- grepl("\t", readLines(fq_in, n = 1))
+  }
   tags <- switch(has_tags, "-y")
 
   minimap2_args <- c("-ax", "splice", tags, "-t", threads, "-k14", "--secondary=no",
@@ -177,7 +181,11 @@ minimap2_realign <- function(config, fq_in, outdir, minimap2, samtools = NULL, p
   }
 
   if (missing("minimap2_args") || !is.character(minimap2_args)) {
-    has_tags <- grepl("\t", readLines(fq_in, n = 1))
+    if (endsWith(fq_in, ".gz")) {
+      has_tags <- grepl("\t", readLines(gzfile(fq_in), n = 1))
+    } else {
+      has_tags <- grepl("\t", readLines(fq_in, n = 1))
+    }
     tags <- switch(has_tags, "-y")
     minimap2_args <- c("-ax", "map-ont", tags, "-p", "0.9", "--end-bonus", "10", "-N",
       "3", "-t", threads, "--seed", config$pipeline_parameters$seed)
