@@ -76,49 +76,62 @@ the number of bam files * number of positions.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">outdir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">outdir</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">genome_fa</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">"rps24.fa"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">R.utils</span><span class="fu">::</span><span class="fu"><a href="https://henrikbengtsson.github.io/R.utils/reference/compressFile.html" class="external-link">gunzip</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  filename <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"rps24.fa.gz"</span>, package <span class="op">=</span> <span class="st">"FLAMES"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  destname <span class="op">=</span> <span class="va">genome_fa</span>, remove <span class="op">=</span> <span class="cn">FALSE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="minimap2_align.html">minimap2_align</a></span><span class="op">(</span> <span class="co"># align to genome</span></span></span>
-<span class="r-in"><span>  config <span class="op">=</span> <span class="fu">jsonlite</span><span class="fu">::</span><span class="fu"><a href="https://jeroen.r-universe.dev/jsonlite/reference/fromJSON.html" class="external-link">fromJSON</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"config_sclr_nanopore_3end.json"</span>, package <span class="op">=</span> <span class="st">"FLAMES"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span>,</span></span>
-<span class="r-in"><span>  fa_file <span class="op">=</span> <span class="va">genome_fa</span>,</span></span>
-<span class="r-in"><span>  fq_in <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"fastq"</span>, <span class="st">"demultiplexed.fq.gz"</span>, package <span class="op">=</span> <span class="st">"FLAMES"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  annot <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"rps24.gtf.gz"</span>, package <span class="op">=</span> <span class="st">"FLAMES"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  outdir <span class="op">=</span> <span class="va">outdir</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 04:17:29 AM Thu Apr 17 2025 minimap2_align</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Sorting BAM files with 1 threads...</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">ppl</span> <span class="op">&lt;-</span> <span class="fu"><a href="example_pipeline.html">example_pipeline</a></span><span class="op">(</span><span class="st">"SingleCellPipeline"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/Rtmp7MvBFG/file9af3521c2508/config_file_39667.json </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Configured steps: </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	barcode_demultiplex: TRUE</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	genome_alignment: TRUE</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	gene_quantification: TRUE</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	isoform_identification: TRUE</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	read_realignment: TRUE</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	transcript_quantification: TRUE</span>
+<span class="r-in"><span><span class="va">ppl</span> <span class="op">&lt;-</span> <span class="fu"><a href="run_step.html">run_step</a></span><span class="op">(</span><span class="va">ppl</span>, <span class="st">"barcode_demultiplex"</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running step: barcode_demultiplex</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> FLEXIPLEX 0.96.2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting max barcode edit distance to 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting max flanking sequence edit distance to 8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting read IDs to be  replaced</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting number of threads to 8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Search pattern: </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> primer: CTACACGACGCTCTTCCGATCT</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> BC: NNNNNNNNNNNNNNNN</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> UMI: NNNNNNNNNNNN</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> polyT: TTTTTTTTT</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/Rtmp7MvBFG/file9af3521c2508/bc_allow.tsv</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of known barcodes: 143</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads processed: 393</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads where at least one barcode was found: 368</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads with exactly one barcode match: 364</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of chimera reads: 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> All done!</span>
+<span class="r-in"><span><span class="va">ppl</span> <span class="op">&lt;-</span> <span class="fu"><a href="run_step.html">run_step</a></span><span class="op">(</span><span class="va">ppl</span>, <span class="st">"genome_alignment"</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running step: genome_alignment</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample /tmp/Rtmp7MvBFG/file9af3521c2508/matched_reads.fastq -&gt; /tmp/Rtmp7MvBFG/file9af3521c2508/align2genome.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Your fastq file appears to have tags, but you did not provide the -y option to minimap2 to include the tags in the output.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Sorting BAM files by genome coordinates with 8 threads...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Indexing bam files</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                   total mapped primary</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/RtmpltU9Yg/file92d2563dd7a7/align2genome.bam    10     10      10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                   secondary</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/RtmpltU9Yg/file92d2563dd7a7/align2genome.bam         0</span>
 <span class="r-in"><span><span class="va">snps_tb</span> <span class="op">&lt;-</span> <span class="fu">sc_mutations</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  bam_path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">"align2genome.bam"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  bam_path <span class="op">=</span> <span class="va">ppl</span><span class="op">@</span><span class="va">genome_bam</span>,</span></span>
 <span class="r-in"><span>  seqnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"chr14"</span>, <span class="st">"chr14"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  positions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1260</span>, <span class="fl">2714</span><span class="op">)</span>, <span class="co"># positions of interest</span></span></span>
 <span class="r-in"><span>  indel <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 04:17:29 Got 1 bam file, parallelizing over each position ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 09:03:23 Got 1 bam file, parallelizing over each position ...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |===================================                                   |  50%  |                                                                              |======================================================================| 100%</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 04:17:30 Merging results ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 09:03:24 Merging results ...</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">snps_tb</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6 × 7</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   allele barcode          allele_count cell_total_reads   pct   pos seqname</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> A      ACCGTAACAAGCGTAG            0                1     0  <span style="text-decoration: underline;">1</span>260 chr14  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> A      CATCGAACAGATGGGT            1                1     1  <span style="text-decoration: underline;">1</span>260 chr14  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> A      CGAACATGTCTGCCAG            1                1     1  <span style="text-decoration: underline;">1</span>260 chr14  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> A      CGGACTGAGTTGAGTA            0                1     0  <span style="text-decoration: underline;">1</span>260 chr14  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> A      CGGGTCAGTAGTAGTA            1                1     1  <span style="text-decoration: underline;">1</span>260 chr14  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> A      CTGTGCTTCCGATATG            0                1     0  <span style="text-decoration: underline;">1</span>260 chr14  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> A      AACCATGAGTCGTTTG            0                2 0      <span style="text-decoration: underline;">1</span>260 chr14  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> A      AACTCTTGTCACCTAA            0                1 0      <span style="text-decoration: underline;">1</span>260 chr14  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> A      AACTTTCCACAGACTT            0                1 0      <span style="text-decoration: underline;">1</span>260 chr14  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> A      AAGCCGCGTGTGAATA            0                4 0      <span style="text-decoration: underline;">1</span>260 chr14  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> A      AAGGAGCGTGCTGTAT            1                3 0.333  <span style="text-decoration: underline;">1</span>260 chr14  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> A      AATCGGTTCAGGTTCA            0                1 0      <span style="text-decoration: underline;">1</span>260 chr14  </span>
 <span class="r-in"><span><span class="va">snps_tb</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">pos</span> <span class="op">==</span> <span class="fl">1260</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">allele</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
@@ -126,11 +139,11 @@ the number of bam files * number of positions.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 5 × 2</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   allele count</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> -          1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> A          3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> C          0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> G          6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> T          0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> -         56</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> A        103</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> C          4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> G        169</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> T          6</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -142,7 +155,7 @@ the number of bam files * number of positions.</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.9000.</p>
 </div>
 
     </footer></div>

@@ -62,22 +62,86 @@
 
       <dl><dt>
 
-          <code><a href="sc_long_pipeline.html">sc_long_pipeline()</a></code>
+          <code><a href="BulkPipeline.html">BulkPipeline()</a></code>
+
+        </dt>
+        <dd>Pipeline for bulk long read RNA-seq data processing</dd>
+      </dl><dl><dt>
+
+          <code><a href="SingleCellPipeline.html">SingleCellPipeline()</a></code>
 
         </dt>
         <dd>Pipeline for Single Cell Data</dd>
       </dl><dl><dt>
 
-          <code><a href="sc_long_multisample_pipeline.html">sc_long_multisample_pipeline()</a></code>
+          <code><a href="MultiSampleSCPipeline.html">MultiSampleSCPipeline()</a></code>
 
         </dt>
-        <dd>Pipeline for Multi-sample Single Cell Data</dd>
+        <dd>Pipeline for multi-sample long-read scRNA-seq data</dd>
       </dl><dl><dt>
 
-          <code><a href="bulk_long_pipeline.html">bulk_long_pipeline()</a></code>
+          <code><a href="example_pipeline.html">example_pipeline()</a></code>
 
         </dt>
-        <dd>Pipeline for Bulk Data</dd>
+        <dd>Example pipelins</dd>
+      </dl></div><div class="section level2">
+      <h2 id="pipeline-execution">Pipeline execution<a class="anchor" aria-label="anchor" href="#pipeline-execution"></a></h2>
+
+
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="run_FLAMES.html">run_FLAMES()</a></code>
+
+        </dt>
+        <dd>Execute a FLAMES pipeline</dd>
+      </dl><dl><dt>
+
+          <code><a href="resume_FLAMES.html">resume_FLAMES()</a></code>
+
+        </dt>
+        <dd>Resume a FLAMES pipeline</dd>
+      </dl><dl><dt>
+
+          <code><a href="run_step.html">run_step()</a></code>
+
+        </dt>
+        <dd>Execute a single step of the FLAMES pipeline</dd>
+      </dl></div><div class="section level2">
+      <h2 id="inspecting-pipelines">Inspecting pipelines<a class="anchor" aria-label="anchor" href="#inspecting-pipelines"></a></h2>
+
+
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="steps.html">steps()</a></code>
+
+        </dt>
+        <dd>Steps to perform in the pipeline</dd>
+      </dl><dl><dt>
+
+          <code><a href="steps-set.html">`steps&lt;-`()</a></code>
+
+        </dt>
+        <dd>Set steps to perform in the pipeline</dd>
+      </dl><dl><dt>
+
+          <code><a href="experiment.html">experiment()</a></code>
+
+        </dt>
+        <dd>Get pipeline results</dd>
       </dl></div><div class="section level2">
       <h2 id="barcode-demultiplexing">Barcode demultiplexing<a class="anchor" aria-label="anchor" href="#barcode-demultiplexing"></a></h2>
 
@@ -125,18 +189,6 @@
 
 
       <dl><dt>
-
-          <code><a href="minimap2_align.html">minimap2_align()</a></code>
-
-        </dt>
-        <dd>Minimap2 Align to Genome</dd>
-      </dl><dl><dt>
-
-          <code><a href="minimap2_realign.html">minimap2_realign()</a></code>
-
-        </dt>
-        <dd>Minimap2 re-align reads to transcriptome</dd>
-      </dl><dl><dt>
 
           <code><a href="annotation_to_fasta.html">annotation_to_fasta()</a></code>
 
@@ -434,6 +486,35 @@
 
         </dt>
         <dd>Find path to a binary Wrapper for Sys.which to find path to a binary</dd>
+      </dl></div><div class="section level2">
+      <h2 id="pipelines-deprecated-">Pipelines (deprecated)<a class="anchor" aria-label="anchor" href="#pipelines-deprecated-"></a></h2>
+
+
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="sc_long_pipeline.html">sc_long_pipeline()</a></code>
+
+        </dt>
+        <dd>Pipeline for Single Cell Data (deprecated)</dd>
+      </dl><dl><dt>
+
+          <code><a href="sc_long_multisample_pipeline.html">sc_long_multisample_pipeline()</a></code>
+
+        </dt>
+        <dd>Pipeline for Multi-sample Single Cell Data (deprecated)</dd>
+      </dl><dl><dt>
+
+          <code><a href="bulk_long_pipeline.html">bulk_long_pipeline()</a></code>
+
+        </dt>
+        <dd>Pipeline for bulk long read RNA-seq data processing (deprecated)</dd>
       </dl></div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
@@ -444,7 +525,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.9000.</p>
 </div>
 
     </footer></div>

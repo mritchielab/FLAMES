@@ -40,7 +40,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">create_se_from_dir</span><span class="op">(</span><span class="va">outdir</span>, <span class="va">annotation</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">create_se_from_dir</span><span class="op">(</span><span class="va">outdir</span>, <span class="va">annotation</span>, quantification <span class="op">=</span> <span class="st">"FLAMES"</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -54,6 +54,12 @@
 <dt id="arg-annotation">annotation<a class="anchor" aria-label="anchor" href="#arg-annotation"></a></dt>
 <dd><p>(Optional) the annotation file that was used to produce the output files</p></dd>
 
+
+<dt id="arg-quantification">quantification<a class="anchor" aria-label="anchor" href="#arg-quantification"></a></dt>
+<dd><p>(Optional)  the quantification method used to generate the
+output files (either "FLAMES" or "Oarfish".). If not specified, the function will
+attempt to determine the quantification method.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -62,115 +68,37 @@
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># download the two fastq files, move them to a folder to be merged together</span></span></span>
-<span class="r-in"><span><span class="va">temp_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">bfc</span> <span class="op">&lt;-</span> <span class="fu">BiocFileCache</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocFileCache/man/BiocFileCache-class.html" class="external-link">BiocFileCache</a></span><span class="op">(</span><span class="va">temp_path</span>, ask <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">file_url</span> <span class="op">&lt;-</span></span></span>
-<span class="r-in"><span>  <span class="st">"https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data"</span></span></span>
-<span class="r-in"><span><span class="co"># download the required fastq files, and move them to new folder</span></span></span>
-<span class="r-in"><span><span class="va">fastq1</span> <span class="op">&lt;-</span> <span class="va">bfc</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu">BiocFileCache</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocFileCache/man/BiocFileCache-class.html" class="external-link">bfcadd</a></span><span class="op">(</span><span class="va">bfc</span>, <span class="st">"Fastq1"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">file_url</span>, <span class="st">"fastq/sample1.fastq.gz"</span>, sep <span class="op">=</span> <span class="st">"/"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="va">fastq2</span> <span class="op">&lt;-</span> <span class="va">bfc</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu">BiocFileCache</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocFileCache/man/BiocFileCache-class.html" class="external-link">bfcadd</a></span><span class="op">(</span><span class="va">bfc</span>, <span class="st">"Fastq2"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">file_url</span>, <span class="st">"fastq/sample2.fastq.gz"</span>, sep <span class="op">=</span> <span class="st">"/"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="va">annotation</span> <span class="op">&lt;-</span> <span class="va">bfc</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu">BiocFileCache</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocFileCache/man/BiocFileCache-class.html" class="external-link">bfcadd</a></span><span class="op">(</span><span class="va">bfc</span>, <span class="st">"annot.gtf"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">file_url</span>, <span class="st">"SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf"</span>, sep <span class="op">=</span> <span class="st">"/"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="va">genome_fa</span> <span class="op">&lt;-</span> <span class="va">bfc</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu">BiocFileCache</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocFileCache/man/BiocFileCache-class.html" class="external-link">bfcadd</a></span><span class="op">(</span><span class="va">bfc</span>, <span class="st">"genome.fa"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">file_url</span>, <span class="st">"SIRV_isoforms_multi-fasta_170612a.fasta"</span>, sep <span class="op">=</span> <span class="st">"/"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="va">fastq_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">temp_path</span>, <span class="st">"fastq_dir"</span>, sep <span class="op">=</span> <span class="st">"/"</span><span class="op">)</span> <span class="co"># the downloaded fastq files need to be in a directory to be merged together</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">fastq_dir</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.copy</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">fastq1</span>, <span class="va">fastq2</span><span class="op">)</span>, <span class="va">fastq_dir</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE TRUE</span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">fastq1</span>, <span class="va">fastq2</span><span class="op">)</span><span class="op">)</span> <span class="co"># the original files can be deleted</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">outdir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">outdir</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">se</span> <span class="op">&lt;-</span> <span class="fu"><a href="bulk_long_pipeline.html">bulk_long_pipeline</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  annotation <span class="op">=</span> <span class="va">annotation</span>, fastq <span class="op">=</span> <span class="va">fastq_dir</span>, outdir <span class="op">=</span> <span class="va">outdir</span>, genome_fa <span class="op">=</span> <span class="va">genome_fa</span>,</span></span>
-<span class="r-in"><span>  config_file <span class="op">=</span> <span class="fu"><a href="create_config.html">create_config</a></span><span class="op">(</span><span class="va">outdir</span>, type <span class="op">=</span> <span class="st">"sc_3end"</span>, threads <span class="op">=</span> <span class="fl">1</span>, no_flank <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/RtmpltU9Yg/file92d23e5381e/config_file_37586.json </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> #### Input parameters:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> {</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   "pipeline_parameters": {</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     "seed": [2022],</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     "threads": [1],</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     "do_barcode_demultiplex": [true],</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     "do_gene_quantification": [true],</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     "do_genome_alignment": [true],</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     "do_isoform_identification": [true],</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     "bambu_isoform_identification": [false],</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     "multithread_isoform_identification": [false],</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     "do_read_realignment": [true],</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     "do_transcript_quantification": [true],</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     "oarfish_quantification": [true]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   },</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   "barcode_parameters": {</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     "max_bc_editdistance": [2],</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     "max_flank_editdistance": [8],</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     "pattern": {</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       "primer": ["CTACACGACGCTCTTCCGATCT"],</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       "BC": ["NNNNNNNNNNNNNNNN"],</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       "UMI": ["NNNNNNNNNNNN"],</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       "polyT": ["TTTTTTTTT"]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     },</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     "strand": ["-"],</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     "TSO_seq": ["AAGCAGTGGTATCAACGCAGAGTACATGGG"],</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     "TSO_prime": [5],</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     "cutadapt_minimum_length": [10],</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     "full_length_only": [false]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   },</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   "isoform_parameters": {</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     "generate_raw_isoform": [false],</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     "max_dist": [10],</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     "max_ts_dist": [100],</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     "max_splice_match_dist": [10],</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     "min_fl_exon_len": [40],</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     "max_site_per_splice": [3],</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     "min_sup_cnt": [5],</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     "min_cnt_pct": [0.001],</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     "min_sup_pct": [0.2],</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     "bambu_ndr": [0.5],</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     "bambu_verbose": [false],</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     "bambu_trust_reference": [true],</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     "strand_specific": [0],</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     "remove_incomp_reads": [4],</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     "downsample_ratio": [1]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   },</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   "alignment_parameters": {</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     "use_junctions": [true],</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     "no_flank": [true]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   },</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   "realign_parameters": {</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     "use_annotation": [true]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   },</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   "transcript_counting": {</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     "min_tr_coverage": [0.4],</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     "min_read_coverage": [0.4]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> } </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> gene annotation: /tmp/RtmpltU9Yg/file92d25f8cf060/92d251f6b65f_SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> genome fasta: /tmp/RtmpltU9Yg/file92d25f8cf060/92d26c5bb9d1_SIRV_isoforms_multi-fasta_170612a.fasta </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> input fastq files: /tmp/RtmpltU9Yg/file92d25f8cf060/fastq_dir/92d22e3b4cbb_sample2.fastq.gz</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  /tmp/RtmpltU9Yg/file92d25f8cf060/fastq_dir/92d240920221_sample1.fastq.gz</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> output directory: /tmp/RtmpltU9Yg/file92d23e5381e </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> minimap2 path: </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> k8 path: </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> #### Aligning reads to genome using minimap2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 	Aligning sample  92d22e3b4cbb_sample2 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 04:16:05 AM Thu Apr 17 2025 minimap2_align</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Sorting BAM files with 1 threads...</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">ppl</span> <span class="op">&lt;-</span> <span class="fu"><a href="example_pipeline.html">example_pipeline</a></span><span class="op">(</span><span class="st">"BulkPipeline"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/Rtmp7MvBFG/file9af31ed3a34e/config_file_39667.json </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Configured steps: </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	genome_alignment: TRUE</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	isoform_identification: TRUE</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	read_realignment: TRUE</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	transcript_quantification: TRUE</span>
+<span class="r-in"><span><span class="va">ppl</span> <span class="op">&lt;-</span> <span class="fu"><a href="run_FLAMES.html">run_FLAMES</a></span><span class="op">(</span><span class="va">ppl</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running step: genome_alignment</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample 9af32a44b4a4_sample1 -&gt; /tmp/Rtmp7MvBFG/file9af31ed3a34e/9af32a44b4a4_sample1_align2genome.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Sorting BAM files by genome coordinates with 1 threads...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Indexing bam files</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 	Aligning sample  92d240920221_sample1 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 04:16:08 AM Thu Apr 17 2025 minimap2_align</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Sorting BAM files with 1 threads...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample 9af34fdb0ba7_sample2 -&gt; /tmp/Rtmp7MvBFG/file9af31ed3a34e/9af34fdb0ba7_sample2_align2genome.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Sorting BAM files by genome coordinates with 1 threads...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Indexing bam files</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 04:16:11 AM Thu Apr 17 2025 find_isoform</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> #### Realign to transcript using minimap2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 	Realigning sample  92d22e3b4cbb_sample2 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 04:16:12 AM Thu Apr 17 2025 minimap2_realign</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> file renamed to  92d22e3b4cbb_sample2_realign2transcript.bam </span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot remove file '/tmp/RtmpltU9Yg/file92d23e5381e/92d22e3b4cbb_sample2_tmp_align.bam', reason 'No such file or directory'</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 	Realigning sample  92d240920221_sample1 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 04:16:12 AM Thu Apr 17 2025 minimap2_realign</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> file renamed to  92d240920221_sample1_realign2transcript.bam </span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot remove file '/tmp/RtmpltU9Yg/file92d23e5381e/92d240920221_sample1_tmp_align.bam', reason 'No such file or directory'</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> #### Generating transcript count matrix</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running step: isoform_identification</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Import genomic features from the file as a GRanges object ... </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> OK</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Prepare the 'metadata' data frame ... </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> OK</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Make the TxDb object ... </span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>genome version information is not available for this TxDb object</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> OK</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running step: read_realignment</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample 9af32a44b4a4_sample1 -&gt; /tmp/Rtmp7MvBFG/file9af31ed3a34e/9af32a44b4a4_sample1_realign2transcript.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Skipped sorting BAM files.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample 9af34fdb0ba7_sample2 -&gt; /tmp/Rtmp7MvBFG/file9af31ed3a34e/9af34fdb0ba7_sample2_realign2transcript.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Skipped sorting BAM files.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running step: transcript_quantification</span>
+<span class="r-in"><span><span class="va">se1</span> <span class="op">&lt;-</span> <span class="fu"><a href="experiment.html">experiment</a></span><span class="op">(</span><span class="va">ppl</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">se2</span> <span class="op">&lt;-</span> <span class="fu">create_se_from_dir</span><span class="op">(</span><span class="va">ppl</span><span class="op">@</span><span class="va">outdir</span>, <span class="va">ppl</span><span class="op">@</span><span class="va">annotation</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -182,7 +110,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.9000.</p>
 </div>
 
     </footer></div>

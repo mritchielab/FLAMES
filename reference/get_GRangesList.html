@@ -56,42 +56,6 @@
     <p>A Genomic Ranges List</p>
     </div>
 
-    <div class="section level2">
-    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">temp_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">bfc</span> <span class="op">&lt;-</span> <span class="fu">BiocFileCache</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocFileCache/man/BiocFileCache-class.html" class="external-link">BiocFileCache</a></span><span class="op">(</span><span class="va">temp_path</span>, ask <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">file_url</span> <span class="op">&lt;-</span> <span class="st">"https://raw.githubusercontent.com/OliverVoogd/FLAMESData/master/data"</span></span></span>
-<span class="r-in"><span><span class="va">fastq1</span> <span class="op">&lt;-</span> <span class="va">bfc</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu">BiocFileCache</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocFileCache/man/BiocFileCache-class.html" class="external-link">bfcadd</a></span><span class="op">(</span><span class="va">bfc</span>, <span class="st">"Fastq1"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">file_url</span>, <span class="st">"fastq/sample1.fastq.gz"</span>, sep <span class="op">=</span> <span class="st">"/"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="va">genome_fa</span> <span class="op">&lt;-</span> <span class="va">bfc</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu">BiocFileCache</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocFileCache/man/BiocFileCache-class.html" class="external-link">bfcadd</a></span><span class="op">(</span><span class="va">bfc</span>, <span class="st">"genome.fa"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">file_url</span>, <span class="st">"SIRV_isoforms_multi-fasta_170612a.fasta"</span>, sep <span class="op">=</span> <span class="st">"/"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="va">annotation</span> <span class="op">&lt;-</span> <span class="va">bfc</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu">BiocFileCache</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocFileCache/man/BiocFileCache-class.html" class="external-link">bfcadd</a></span><span class="op">(</span><span class="va">bfc</span>, <span class="st">"annot.gtf"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">file_url</span>, <span class="st">"SIRV_isoforms_multi-fasta-annotation_C_170612a.gtf"</span>, sep <span class="op">=</span> <span class="st">"/"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="va">outdir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">outdir</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">config</span> <span class="op">&lt;-</span> <span class="fu">jsonlite</span><span class="fu">::</span><span class="fu"><a href="https://jeroen.r-universe.dev/jsonlite/reference/fromJSON.html" class="external-link">fromJSON</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"config_sclr_nanopore_3end.json"</span>, package <span class="op">=</span> <span class="st">"FLAMES"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="minimap2_align.html">minimap2_align</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  config <span class="op">=</span> <span class="va">config</span>,</span></span>
-<span class="r-in"><span>  fa_file <span class="op">=</span> <span class="va">genome_fa</span>,</span></span>
-<span class="r-in"><span>  fq_in <span class="op">=</span> <span class="va">fastq1</span>,</span></span>
-<span class="r-in"><span>  annot <span class="op">=</span> <span class="va">annotation</span>,</span></span>
-<span class="r-in"><span>  outdir <span class="op">=</span> <span class="va">outdir</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 04:16:26 AM Thu Apr 17 2025 minimap2_align</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Sorting BAM files with 1 threads...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Indexing bam files</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                   total mapped primary</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/RtmpltU9Yg/file92d22bc269dd/align2genome.bam  2503   1772    2500</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                   secondary</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/RtmpltU9Yg/file92d22bc269dd/align2genome.bam         0</span>
-<span class="r-in"><span><span class="fu"><a href="find_isoform.html">find_isoform</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  annotation <span class="op">=</span> <span class="va">annotation</span>, genome_fa <span class="op">=</span> <span class="va">genome_fa</span>,</span></span>
-<span class="r-in"><span>  genome_bam <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">"align2genome.bam"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  outdir <span class="op">=</span> <span class="va">outdir</span>, config <span class="op">=</span> <span class="va">config</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 04:16:29 AM Thu Apr 17 2025 find_isoform</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/RtmpltU9Yg/file92d22bc269dd/transcript_assembly.fa.fai"</span>
-<span class="r-in"><span><span class="va">grlist</span> <span class="op">&lt;-</span> <span class="fu">get_GRangesList</span><span class="op">(</span>file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">"isoform_annotated.gff3"</span><span class="op">)</span><span class="op">)</span></span></span>
-</code></pre></div>
-    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 
@@ -101,7 +65,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.9000.</p>
 </div>
 
     </footer></div>

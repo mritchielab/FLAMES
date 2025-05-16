@@ -7,7 +7,10 @@
 <url><loc>https://mritchielab.github.io/FLAMES/articles/index.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/authors.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/index.html</loc></url>
+<url><loc>https://mritchielab.github.io/FLAMES/reference/BulkPipeline.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/FLAMES.html</loc></url>
+<url><loc>https://mritchielab.github.io/FLAMES/reference/MultiSampleSCPipeline.html</loc></url>
+<url><loc>https://mritchielab.github.io/FLAMES/reference/SingleCellPipeline.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/addRowRanges.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/add_gene_counts.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/annotation_to_fasta.html</loc></url>
@@ -21,6 +24,8 @@
 <url><loc>https://mritchielab.github.io/FLAMES/reference/create_spe.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/cutadapt.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/demultiplex_sockeye.html</loc></url>
+<url><loc>https://mritchielab.github.io/FLAMES/reference/example_pipeline.html</loc></url>
+<url><loc>https://mritchielab.github.io/FLAMES/reference/experiment.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/fake_stranded_gff.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/filter_annotation.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/filter_coverage.html</loc></url>
@@ -33,7 +38,6 @@
 <url><loc>https://mritchielab.github.io/FLAMES/reference/get_coverage.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/index.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/minimap2_align.html</loc></url>
-<url><loc>https://mritchielab.github.io/FLAMES/reference/minimap2_realign.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/mutation_positions.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/mutation_positions_single.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/plot_coverage.html</loc></url>
@@ -47,6 +51,9 @@
 <url><loc>https://mritchielab.github.io/FLAMES/reference/quantify_gene.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/quantify_transcript.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/quantify_transcript_flames.html</loc></url>
+<url><loc>https://mritchielab.github.io/FLAMES/reference/resume_FLAMES.html</loc></url>
+<url><loc>https://mritchielab.github.io/FLAMES/reference/run_FLAMES.html</loc></url>
+<url><loc>https://mritchielab.github.io/FLAMES/reference/run_step.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/sc_DTU_analysis.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/sc_impute_transcript.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/sc_long_multisample_pipeline.html</loc></url>
@@ -55,6 +62,9 @@
 <url><loc>https://mritchielab.github.io/FLAMES/reference/scmixology_lib10.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/scmixology_lib10_transcripts.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/scmixology_lib90.html</loc></url>
+<url><loc>https://mritchielab.github.io/FLAMES/reference/show-FLAMESPipeline.html</loc></url>
+<url><loc>https://mritchielab.github.io/FLAMES/reference/steps-set.html</loc></url>
+<url><loc>https://mritchielab.github.io/FLAMES/reference/steps.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/weight_transcripts.html</loc></url>
 </urlset>
 
