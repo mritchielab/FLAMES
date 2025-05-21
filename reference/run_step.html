@@ -73,18 +73,26 @@
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">pipeline</span> <span class="op">&lt;-</span> <span class="fu"><a href="example_pipeline.html">example_pipeline</a></span><span class="op">(</span><span class="st">"BulkPipeline"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/Rtmp7MvBFG/file9af36aadaa1e/config_file_39667.json </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/RtmpgpEV0i/file25bf266516d6/config_file_9663.json </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Configured steps: </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	genome_alignment: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	isoform_identification: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	read_realignment: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	transcript_quantification: TRUE</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> samtools not found, will use Rsamtools package instead</span>
 <span class="r-in"><span><span class="va">pipeline</span> <span class="op">&lt;-</span> <span class="fu">run_step</span><span class="op">(</span><span class="va">pipeline</span>, <span class="st">"genome_alignment"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running step: genome_alignment</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample 9af33db7e199_sample2 -&gt; /tmp/Rtmp7MvBFG/file9af36aadaa1e/9af33db7e199_sample2_align2genome.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Creating junction bed file from GFF3 annotation.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample sample1 -&gt; /tmp/RtmpgpEV0i/file25bf266516d6/sample1_align2genome.bam</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sorting BAM files by genome coordinates with 1 threads...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Indexing bam files</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample 9af3567af505_sample1 -&gt; /tmp/Rtmp7MvBFG/file9af36aadaa1e/9af3567af505_sample1_align2genome.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample sample2 -&gt; /tmp/RtmpgpEV0i/file25bf266516d6/sample2_align2genome.bam</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Sorting BAM files by genome coordinates with 1 threads...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Indexing bam files</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample sample3 -&gt; /tmp/RtmpgpEV0i/file25bf266516d6/sample3_align2genome.bam</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sorting BAM files by genome coordinates with 1 threads...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Indexing bam files</span>
 <span class="r-in"><span></span></span>
@@ -99,7 +107,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.9000.</p>
 </div>
 
     </footer></div>

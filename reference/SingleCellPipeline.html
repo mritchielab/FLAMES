@@ -57,7 +57,6 @@ arguments.</p>
 <span>  <span class="va">genome_fa</span>,</span>
 <span>  <span class="va">minimap2</span>,</span>
 <span>  <span class="va">samtools</span>,</span>
-<span>  <span class="va">k8</span>,</span>
 <span>  <span class="va">barcodes_file</span>,</span>
 <span>  <span class="va">expect_cell_number</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -95,11 +94,7 @@ use a copy from bioconda via <code>basilisk</code>.</p></dd>
 
 <dt id="arg-samtools">samtools<a class="anchor" aria-label="anchor" href="#arg-samtools"></a></dt>
 <dd><p>(optional) The path to the samtools binary. If not provided, FLAMES will
-use a copy from bioconda via <code>basilisk</code>.</p></dd>
-
-
-<dt id="arg-k-">k8<a class="anchor" aria-label="anchor" href="#arg-k-"></a></dt>
-<dd><p>(optional) The path to the k8 binary to run paftools.js from minimap2. If not
+use a copy from bioconda via <code>basilisk</code>.
 provided, FLAMES will use a copy from bioconda via <code>basilisk</code>.</p></dd>
 
 
@@ -182,7 +177,7 @@ it can be resumed by calling <code>resume_FLAMES(pipeline)</code></p>
 <span class="r-in"><span>  genome_fa <span class="op">=</span> <span class="va">genome_fa</span>,</span></span>
 <span class="r-in"><span>  barcodes_file <span class="op">=</span> <span class="va">bc_allow</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/Rtmp7MvBFG/file9af350b20578/config_file_39667.json </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/RtmpgpEV0i/file25bf554404c4/config_file_9663.json </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Configured steps: </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	barcode_demultiplex: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	genome_alignment: TRUE</span>
@@ -190,6 +185,7 @@ it can be resumed by calling <code>resume_FLAMES(pipeline)</code></p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	isoform_identification: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	read_realignment: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	transcript_quantification: TRUE</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> samtools not found, will use Rsamtools package instead</span>
 <span class="r-in"><span><span class="va">ppl</span> <span class="op">&lt;-</span> <span class="fu"><a href="run_FLAMES.html">run_FLAMES</a></span><span class="op">(</span><span class="va">ppl</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running step: barcode_demultiplex</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> FLEXIPLEX 0.96.2</span>
@@ -202,7 +198,7 @@ it can be resumed by calling <code>resume_FLAMES(pipeline)</code></p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> BC: NNNNNNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> UMI: NNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> polyT: TTTTTTTTT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/Rtmp7MvBFG/file9af350b20578/bc_allow.tsv</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpgpEV0i/file25bf554404c4/bc_allow.tsv</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of known barcodes: 143</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
@@ -212,12 +208,14 @@ it can be resumed by calling <code>resume_FLAMES(pipeline)</code></p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of chimera reads: 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> All done!</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running step: genome_alignment</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample /tmp/Rtmp7MvBFG/file9af350b20578/matched_reads.fastq -&gt; /tmp/Rtmp7MvBFG/file9af350b20578/align2genome.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Creating junction bed file from GFF3 annotation.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample /tmp/RtmpgpEV0i/file25bf554404c4/matched_reads.fastq -&gt; /tmp/RtmpgpEV0i/file25bf554404c4/align2genome.bam</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Your fastq file appears to have tags, but you did not provide the -y option to minimap2 to include the tags in the output.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sorting BAM files by genome coordinates with 8 threads...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Indexing bam files</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running step: gene_quantification</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 09:01:05 AM Fri May 16 2025 quantify genes </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 03:22:16 AM Wed May 21 2025 quantify genes </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Found genome alignment file(s): 	align2genome.bam</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running step: isoform_identification</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Import genomic features from the file as a GRanges object ... </span>
@@ -230,11 +228,12 @@ it can be resumed by calling <code>resume_FLAMES(pipeline)</code></p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running step: read_realignment</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Checking for fastq file(s) /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	files found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Checking for fastq file(s) /tmp/Rtmp7MvBFG/file9af350b20578/matched_reads.fastq</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Checking for fastq file(s) /tmp/RtmpgpEV0i/file25bf554404c4/matched_reads.fastq</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	files found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Checking for fastq file(s) /tmp/Rtmp7MvBFG/file9af350b20578/matched_reads_dedup.fastq</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Checking for fastq file(s) /tmp/RtmpgpEV0i/file25bf554404c4/matched_reads_dedup.fastq</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	files found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample /tmp/Rtmp7MvBFG/file9af350b20578/matched_reads_dedup.fastq -&gt; /tmp/Rtmp7MvBFG/file9af350b20578/realign2transcript.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample /tmp/RtmpgpEV0i/file25bf554404c4/matched_reads_dedup.fastq -&gt; /tmp/RtmpgpEV0i/file25bf554404c4/realign2transcript.bam</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sorting BAM files by 8 with CB threads...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running step: transcript_quantification</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Import genomic features from the file as a GRanges object ... </span>
@@ -253,11 +252,11 @@ it can be resumed by calling <code>resume_FLAMES(pipeline)</code></p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> OK</span>
 <span class="r-in"><span><span class="fu"><a href="experiment.html">experiment</a></span><span class="op">(</span><span class="va">ppl</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> class: SingleCellExperiment </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> dim: 9 137 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> dim: 10 137 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> metadata(0):</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> assays(1): counts</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rownames(9): ENSMUST00000169826.2 ENSMUSG00000025290.17_19_5159_1 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ENSMUSG00000025290.17_19_5159_7 ENSMUST00000225023.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rownames(10): ENSMUST00000169826.2 ENSMUSG00000025290.17_19_5159_1 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ENSMUSG00000025290.17_19_5159_8 ENSMUST00000225023.1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> rowData names(2): transcript_id gene_id</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> colnames(137): AACTCTTGTCACCTAA AACCATGAGTCGTTTG ... TTGTAGGTCAGTGTTG</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   TTTATGCAGACTAGAT</span>
@@ -277,7 +276,7 @@ it can be resumed by calling <code>resume_FLAMES(pipeline)</code></p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.9000.</p>
 </div>
 
     </footer></div>

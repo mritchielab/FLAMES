@@ -101,12 +101,13 @@ read counts for each length bin.</p></dd>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">ppl</span> <span class="op">&lt;-</span> <span class="fu"><a href="example_pipeline.html">example_pipeline</a></span><span class="op">(</span><span class="st">"BulkPipeline"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/Rtmp7MvBFG/file9af35c72705d/config_file_39667.json </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/RtmpgpEV0i/file25bf1df9f0b0/config_file_9663.json </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Configured steps: </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	genome_alignment: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	isoform_identification: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	read_realignment: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	transcript_quantification: TRUE</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> samtools not found, will use Rsamtools package instead</span>
 <span class="r-in"><span><span class="va">ppl</span><span class="op">@</span><span class="va">steps</span><span class="op">[</span><span class="st">"isoform_identification"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="va">ppl</span> <span class="op">&lt;-</span> <span class="fu"><a href="run_step.html">run_step</a></span><span class="op">(</span><span class="va">ppl</span>, <span class="st">"read_realignment"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running step: read_realignment</span>
@@ -116,21 +117,22 @@ read counts for each length bin.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Prepare the 'metadata' data frame ... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> OK</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Make the TxDb object ... </span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The "phase" metadata column contains non-NA values for features of type exon.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span>   This information was ignored.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The "phase" metadata column contains non-NA values for features of type</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span>   stop_codon. This information was ignored.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>genome version information is not available for this TxDb object</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> OK</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample 9af329f74a82_sample1 -&gt; /tmp/Rtmp7MvBFG/file9af35c72705d/9af329f74a82_sample1_realign2transcript.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample sample1 -&gt; /tmp/RtmpgpEV0i/file25bf1df9f0b0/sample1_realign2transcript.bam</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Skipped sorting BAM files.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample 9af37afc02bb_sample2 -&gt; /tmp/Rtmp7MvBFG/file9af35c72705d/9af37afc02bb_sample2_realign2transcript.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample sample2 -&gt; /tmp/RtmpgpEV0i/file25bf1df9f0b0/sample2_realign2transcript.bam</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Skipped sorting BAM files.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample sample3 -&gt; /tmp/RtmpgpEV0i/file25bf1df9f0b0/sample3_realign2transcript.bam</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Skipped sorting BAM files.</span>
 <span class="r-in"><span><span class="co"># Plot the coverages directly from the BAM file</span></span></span>
 <span class="r-in"><span><span class="fu">plot_coverage</span><span class="op">(</span><span class="va">ppl</span><span class="op">@</span><span class="va">transcriptome_bam</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using quantiles to bin transcripts.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The number of transcripts is less than the inflection index, returning equal weights for the current bin.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The number of transcripts is less than the inflection index, returning equal weights for the current bin.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The number of transcripts is less than the inflection index, returning equal weights for the current bin.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The number of transcripts is less than the inflection index, returning equal weights for the current bin.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> The number of transcripts is less than the inflection index, returning equal weights for the current bin.</span>
 <span class="r-plt img"><img src="plot_coverage-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
@@ -138,28 +140,20 @@ read counts for each length bin.</p></dd>
 <span class="r-in"><span><span class="va">coverage</span> <span class="op">&lt;-</span> <span class="fu"><a href="get_coverage.html">get_coverage</a></span><span class="op">(</span><span class="va">ppl</span><span class="op">@</span><span class="va">transcriptome_bam</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">read_counts</span> <span class="op">&gt;</span> <span class="fl">2</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="co"># Filter out transcripts with read counts &lt; 3</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="filter_coverage.html">filter_coverage</a></span><span class="op">(</span>filter_fn <span class="op">=</span> <span class="va">convolution_filter</span><span class="op">)</span> <span class="co"># Filter out transcripts with sharp drops / rises</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 26 transcripts found in the BAM file.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 4(15.38%) transcripts failed the filter.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Failed transcripts account for 227 reads, out of 1099(20.66%) reads in total.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 1 transcripts found in the BAM file.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 0(0%) transcripts failed the filter.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Failed transcripts account for 0 reads, out of 83(0%) reads in total.</span>
 <span class="r-in"><span><span class="co"># Plot the filtered coverages</span></span></span>
 <span class="r-in"><span><span class="fu">plot_coverage</span><span class="op">(</span><span class="va">coverage</span>, detailed <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using quantiles to bin transcripts.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> The number of transcripts is less than the inflection index, returning equal weights for the current bin.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The number of transcripts is less than the inflection index, returning equal weights for the current bin.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The number of transcripts is less than the inflection index, returning equal weights for the current bin.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The number of transcripts is less than the inflection index, returning equal weights for the current bin.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The number of transcripts is less than the inflection index, returning equal weights for the current bin.</span>
 <span class="r-plt img"><img src="plot_coverage-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="co"># filtering function can also be passed directly to plot_coverage</span></span></span>
 <span class="r-in"><span><span class="fu">plot_coverage</span><span class="op">(</span><span class="va">ppl</span><span class="op">@</span><span class="va">transcriptome_bam</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, filter_fn <span class="op">=</span> <span class="va">convolution_filter</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 26 transcripts found in the BAM file.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 4(15.38%) transcripts failed the filter.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Failed transcripts account for 227 reads, out of 1099(20.66%) reads in total.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 1 transcripts found in the BAM file.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 0(0%) transcripts failed the filter.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Failed transcripts account for 0 reads, out of 83(0%) reads in total.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using quantiles to bin transcripts.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The number of transcripts is less than the inflection index, returning equal weights for the current bin.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The number of transcripts is less than the inflection index, returning equal weights for the current bin.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The number of transcripts is less than the inflection index, returning equal weights for the current bin.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The number of transcripts is less than the inflection index, returning equal weights for the current bin.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> The number of transcripts is less than the inflection index, returning equal weights for the current bin.</span>
 <span class="r-plt img"><img src="plot_coverage-3.png" alt="" width="700" height="433"></span>
 </code></pre></div>
@@ -173,7 +167,7 @@ read counts for each length bin.</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.9000.</p>
 </div>
 
     </footer></div>

@@ -52,7 +52,8 @@ Uses options '-ax splice -t 12 -k14 –secondary=no <code>fa_file</code> <code>f
 <span>  <span class="va">sort_by</span>,</span>
 <span>  <span class="va">minimap2</span>,</span>
 <span>  <span class="va">samtools</span>,</span>
-<span>  threads <span class="op">=</span> <span class="fl">1</span></span>
+<span>  threads <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  <span class="va">tmpdir</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -93,7 +94,11 @@ Uses options '-ax splice -t 12 -k14 –secondary=no <code>fa_file</code> <code>f
 
 
 <dt id="arg-threads">threads<a class="anchor" aria-label="anchor" href="#arg-threads"></a></dt>
-<dd><p>Integer, threads for minimap2 to use, see minimap2 documentation for details,
+<dd><p>Integer, threads for minimap2 to use, see minimap2 documentation for details,</p></dd>
+
+
+<dt id="arg-tmpdir">tmpdir<a class="anchor" aria-label="anchor" href="#arg-tmpdir"></a></dt>
+<dd><p>Temporary directory to use for intermediate files.
 FLAMES will try to detect cores if this parameter is not provided.</p></dd>
 
 </dl></div>
@@ -111,7 +116,7 @@ FLAMES will try to detect cores if this parameter is not provided.</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.9000.</p>
 </div>
 
     </footer></div>

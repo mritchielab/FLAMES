@@ -36,12 +36,14 @@
 <url><loc>https://mritchielab.github.io/FLAMES/reference/flexiplex.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/get_GRangesList.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/get_coverage.html</loc></url>
+<url><loc>https://mritchielab.github.io/FLAMES/reference/gff2bed.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/index.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/minimap2_align.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/mutation_positions.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/mutation_positions_single.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/plot_coverage.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/plot_demultiplex.html</loc></url>
+<url><loc>https://mritchielab.github.io/FLAMES/reference/plot_demultiplex_raw.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/plot_isoform_heatmap.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/plot_isoform_reduced_dim.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/plot_isoforms.html</loc></url>

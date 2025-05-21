@@ -162,7 +162,7 @@ are selected for testing with one of the following methods:</p><dl><dt>trascript
 <span class="r-in"><span>  barcodes_file <span class="op">=</span> <span class="va">bc_allow</span>,</span></span>
 <span class="r-in"><span>  config_file <span class="op">=</span> <span class="fu"><a href="create_config.html">create_config</a></span><span class="op">(</span><span class="va">outdir</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/Rtmp7MvBFG/file9af31e6b5bcf/config_file_39667.json </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/RtmpgpEV0i/file25bf39375faf/config_file_9663.json </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Configured steps: </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	barcode_demultiplex: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	genome_alignment: TRUE</span>
@@ -170,6 +170,7 @@ are selected for testing with one of the following methods:</p><dl><dt>trascript
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	isoform_identification: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	read_realignment: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	transcript_quantification: TRUE</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> samtools not found, will use Rsamtools package instead</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running step: barcode_demultiplex</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> FLEXIPLEX 0.96.2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Setting max barcode edit distance to 2</span>
@@ -181,7 +182,7 @@ are selected for testing with one of the following methods:</p><dl><dt>trascript
 <span class="r-out co"><span class="r-pr">#&gt;</span> BC: NNNNNNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> UMI: NNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> polyT: TTTTTTTTT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/Rtmp7MvBFG/file9af31e6b5bcf/bc_allow.tsv</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpgpEV0i/file25bf39375faf/bc_allow.tsv</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of known barcodes: 143</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
@@ -191,12 +192,14 @@ are selected for testing with one of the following methods:</p><dl><dt>trascript
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of chimera reads: 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> All done!</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running step: genome_alignment</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample /tmp/Rtmp7MvBFG/file9af31e6b5bcf/matched_reads.fastq -&gt; /tmp/Rtmp7MvBFG/file9af31e6b5bcf/align2genome.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Creating junction bed file from GFF3 annotation.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample /tmp/RtmpgpEV0i/file25bf39375faf/matched_reads.fastq -&gt; /tmp/RtmpgpEV0i/file25bf39375faf/align2genome.bam</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Your fastq file appears to have tags, but you did not provide the -y option to minimap2 to include the tags in the output.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sorting BAM files by genome coordinates with 8 threads...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Indexing bam files</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running step: gene_quantification</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 09:03:06 AM Fri May 16 2025 quantify genes </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 03:23:26 AM Wed May 21 2025 quantify genes </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Found genome alignment file(s): 	align2genome.bam</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running step: isoform_identification</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Import genomic features from the file as a GRanges object ... </span>
@@ -209,11 +212,12 @@ are selected for testing with one of the following methods:</p><dl><dt>trascript
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running step: read_realignment</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Checking for fastq file(s) /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	files found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Checking for fastq file(s) /tmp/Rtmp7MvBFG/file9af31e6b5bcf/matched_reads.fastq</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Checking for fastq file(s) /tmp/RtmpgpEV0i/file25bf39375faf/matched_reads.fastq</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	files found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Checking for fastq file(s) /tmp/Rtmp7MvBFG/file9af31e6b5bcf/matched_reads_dedup.fastq</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Checking for fastq file(s) /tmp/RtmpgpEV0i/file25bf39375faf/matched_reads_dedup.fastq</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	files found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample /tmp/Rtmp7MvBFG/file9af31e6b5bcf/matched_reads_dedup.fastq -&gt; /tmp/Rtmp7MvBFG/file9af31e6b5bcf/realign2transcript.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample /tmp/RtmpgpEV0i/file25bf39375faf/matched_reads_dedup.fastq -&gt; /tmp/RtmpgpEV0i/file25bf39375faf/realign2transcript.bam</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sorting BAM files by 8 with CB threads...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running step: transcript_quantification</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Import genomic features from the file as a GRanges object ... </span>
@@ -230,7 +234,7 @@ are selected for testing with one of the following methods:</p><dl><dt>trascript
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Make the TxDb object ... </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>genome version information is not available for this TxDb object</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> OK</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Pipeline saved to /tmp/Rtmp7MvBFG/file9af31e6b5bcf/pipeline.rds</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Pipeline saved to /tmp/RtmpgpEV0i/file25bf39375faf/pipeline.rds</span>
 <span class="r-in"><span><span class="va">group_anno</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>barcode_seq <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">sce</span><span class="op">)</span>, groups <span class="op">=</span> <span class="fu">SingleCellExperiment</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/dge.html" class="external-link">counts</a></span><span class="op">(</span><span class="va">sce</span><span class="op">)</span><span class="op">[</span><span class="st">"ENSMUST00000169826.2"</span>, <span class="op">]</span> <span class="op">&gt;</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">SingleCellExperiment</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/colLabels.html" class="external-link">colLabels</a></span><span class="op">(</span><span class="va">sce</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">group_anno</span><span class="op">$</span><span class="va">groups</span></span></span>
 <span class="r-in"><span><span class="co"># DTU with permutation testing:</span></span></span>
@@ -242,22 +246,22 @@ are selected for testing with one of the following methods:</p><dl><dt>trascript
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 16 × 9</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    transcript   cluster transcript_usage transcript_usage_els…¹ usage_difference</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> ENSMUST0000… FALSE            0.597                  0.736          -<span style="color: #BB0000;">0.139</span>   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> ENSMUST0000… TRUE             0.736                  0.597           0.139   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> ENSMUSG0000… FALSE            0.090<span style="text-decoration: underline;">9</span>                 0.038<span style="text-decoration: underline;">0</span>          0.052<span style="text-decoration: underline;">9</span>  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> ENSMUSG0000… TRUE             0.038<span style="text-decoration: underline;">0</span>                 0.090<span style="text-decoration: underline;">9</span>         -<span style="color: #BB0000;">0.052</span><span style="color: #BB0000; text-decoration: underline;">9</span>  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> ENSMUSG0000… FALSE            0.056<span style="text-decoration: underline;">8</span>                 0.020<span style="text-decoration: underline;">4</span>          0.036<span style="text-decoration: underline;">4</span>  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> ENSMUSG0000… TRUE             0.020<span style="text-decoration: underline;">4</span>                 0.056<span style="text-decoration: underline;">8</span>         -<span style="color: #BB0000;">0.036</span><span style="color: #BB0000; text-decoration: underline;">4</span>  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> ENSMUSG0000… FALSE            0.119                  0.090<span style="text-decoration: underline;">5</span>          0.028<span style="text-decoration: underline;">8</span>  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> ENSMUSG0000… TRUE             0.090<span style="text-decoration: underline;">5</span>                 0.119          -<span style="color: #BB0000;">0.028</span><span style="color: #BB0000; text-decoration: underline;">8</span>  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> ENSMUSG0000… FALSE            0.056<span style="text-decoration: underline;">8</span>                 0.044<span style="text-decoration: underline;">6</span>          0.012<span style="text-decoration: underline;">2</span>  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> ENSMUSG0000… TRUE             0.044<span style="text-decoration: underline;">6</span>                 0.056<span style="text-decoration: underline;">8</span>         -<span style="color: #BB0000;">0.012</span><span style="color: #BB0000; text-decoration: underline;">2</span>  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">11</span> ENSMUSG0000… FALSE            0.011<span style="text-decoration: underline;">4</span>                 0.007<span style="text-decoration: underline;">43</span>         0.003<span style="text-decoration: underline;">93</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">12</span> ENSMUSG0000… FALSE            0.056<span style="text-decoration: underline;">8</span>                 0.052<span style="text-decoration: underline;">0</span>          0.004<span style="text-decoration: underline;">77</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">13</span> ENSMUST0000… FALSE            0.011<span style="text-decoration: underline;">4</span>                 0.011<span style="text-decoration: underline;">1</span>          0.000<span style="text-decoration: underline;">224</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">14</span> ENSMUSG0000… TRUE             0.007<span style="text-decoration: underline;">43</span>                0.011<span style="text-decoration: underline;">4</span>         -<span style="color: #BB0000;">0.003</span><span style="color: #BB0000; text-decoration: underline;">93</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">15</span> ENSMUSG0000… TRUE             0.052<span style="text-decoration: underline;">0</span>                 0.056<span style="text-decoration: underline;">8</span>         -<span style="color: #BB0000;">0.004</span><span style="color: #BB0000; text-decoration: underline;">77</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">16</span> ENSMUST0000… TRUE             0.011<span style="text-decoration: underline;">1</span>                 0.011<span style="text-decoration: underline;">4</span>         -<span style="color: #BB0000;">0.000</span><span style="color: #BB0000; text-decoration: underline;">224</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> ENSMUSG0000… FALSE             0.090<span style="text-decoration: underline;">9</span>                 0.026<span style="text-decoration: underline;">1</span>         0.064<span style="text-decoration: underline;">8</span>  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> ENSMUSG0000… TRUE              0.026<span style="text-decoration: underline;">1</span>                 0.090<span style="text-decoration: underline;">9</span>        -<span style="color: #BB0000;">0.064</span><span style="color: #BB0000; text-decoration: underline;">8</span>  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> ENSMUST0000… FALSE             0.608                  0.755         -<span style="color: #BB0000;">0.147</span>   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> ENSMUST0000… TRUE              0.755                  0.608          0.147   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> ENSMUSG0000… FALSE             0.056<span style="text-decoration: underline;">8</span>                 0.020<span style="text-decoration: underline;">1</span>         0.036<span style="text-decoration: underline;">7</span>  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> ENSMUSG0000… TRUE              0.020<span style="text-decoration: underline;">1</span>                 0.056<span style="text-decoration: underline;">8</span>        -<span style="color: #BB0000;">0.036</span><span style="color: #BB0000; text-decoration: underline;">7</span>  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> ENSMUSG0000… FALSE             0.119                  0.090<span style="text-decoration: underline;">8</span>         0.028<span style="text-decoration: underline;">5</span>  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> ENSMUSG0000… FALSE             0.034<span style="text-decoration: underline;">1</span>                 0.023<span style="text-decoration: underline;">4</span>         0.010<span style="text-decoration: underline;">6</span>  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> ENSMUSG0000… FALSE             0.056<span style="text-decoration: underline;">8</span>                 0.044<span style="text-decoration: underline;">6</span>         0.012<span style="text-decoration: underline;">2</span>  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> ENSMUSG0000… TRUE              0.090<span style="text-decoration: underline;">8</span>                 0.119         -<span style="color: #BB0000;">0.028</span><span style="color: #BB0000; text-decoration: underline;">5</span>  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">11</span> ENSMUSG0000… TRUE              0.023<span style="text-decoration: underline;">4</span>                 0.034<span style="text-decoration: underline;">1</span>        -<span style="color: #BB0000;">0.010</span><span style="color: #BB0000; text-decoration: underline;">6</span>  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">12</span> ENSMUSG0000… TRUE              0.044<span style="text-decoration: underline;">6</span>                 0.056<span style="text-decoration: underline;">8</span>        -<span style="color: #BB0000;">0.012</span><span style="color: #BB0000; text-decoration: underline;">2</span>  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">13</span> ENSMUSG0000… FALSE             0.022<span style="text-decoration: underline;">7</span>                 0.028<span style="text-decoration: underline;">8</span>        -<span style="color: #BB0000;">0.006</span><span style="color: #BB0000; text-decoration: underline;">07</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">14</span> ENSMUSG0000… TRUE              0.028<span style="text-decoration: underline;">8</span>                 0.022<span style="text-decoration: underline;">7</span>         0.006<span style="text-decoration: underline;">07</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">15</span> ENSMUST0000… FALSE             0.011<span style="text-decoration: underline;">4</span>                 0.011<span style="text-decoration: underline;">1</span>         0.000<span style="text-decoration: underline;">224</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">16</span> ENSMUST0000… TRUE              0.011<span style="text-decoration: underline;">1</span>                 0.011<span style="text-decoration: underline;">4</span>        -<span style="color: #BB0000;">0.000</span><span style="color: #BB0000; text-decoration: underline;">224</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ abbreviated name: ¹​transcript_usage_elsewhere</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 4 more variables: p.value &lt;dbl&gt;, permuted_var &lt;dbl&gt;, adj.p.value &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   gene_id &lt;chr&gt;</span></span>
@@ -271,7 +275,7 @@ are selected for testing with one of the following methods:</p><dl><dt>trascript
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 1 × 10</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   gene  X_value    df transcript cluster p.value expected_usage transcript_usage</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> ENSM…    9.37     7 ENSMUSG00… FALSE     0.227         0.051<span style="text-decoration: underline;">1</span>           0.090<span style="text-decoration: underline;">9</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> ENSM…    12.8     7 ENSMUSG00… FALSE    0.076<span style="text-decoration: underline;">7</span>         0.042<span style="text-decoration: underline;">1</span>           0.090<span style="text-decoration: underline;">9</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 2 more variables: usage_difference &lt;dbl&gt;, adj.p.value &lt;dbl&gt;</span></span>
 </code></pre></div>
     </div>
@@ -284,7 +288,7 @@ are selected for testing with one of the following methods:</p><dl><dt>trascript
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.9000.</p>
 </div>
 
     </footer></div>
