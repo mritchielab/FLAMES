@@ -9,7 +9,7 @@ coverage values."><meta property="og:image" content="https://mritchielab.github.
 
     <a class="navbar-brand me-2" href="../index.html">FLAMES</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.3.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -72,7 +72,7 @@ pass the filter</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">ppl</span> <span class="op">&lt;-</span> <span class="fu"><a href="example_pipeline.html">example_pipeline</a></span><span class="op">(</span><span class="st">"BulkPipeline"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/RtmpgpEV0i/file25bf2bb69f0a/config_file_9663.json </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/RtmpmbEc0o/file29455818adbc/config_file_10565.json </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Configured steps: </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	genome_alignment: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	isoform_identification: TRUE</span>
@@ -81,7 +81,7 @@ pass the filter</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> samtools not found, will use Rsamtools package instead</span>
 <span class="r-in"><span><span class="va">ppl</span><span class="op">@</span><span class="va">steps</span><span class="op">[</span><span class="st">"isoform_identification"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="va">ppl</span> <span class="op">&lt;-</span> <span class="fu"><a href="run_step.html">run_step</a></span><span class="op">(</span><span class="va">ppl</span>, <span class="st">"read_realignment"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Running step: read_realignment</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: read_realignment @ Mon May 26 08:39:53 2025 ───────────────────</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using reference annotation for transcriptome assembly.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Import genomic features from the file as a GRanges object ... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> OK</span>
@@ -92,13 +92,13 @@ pass the filter</p>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span>   stop_codon. This information was ignored.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>genome version information is not available for this TxDb object</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> OK</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample sample1 -&gt; /tmp/RtmpgpEV0i/file25bf2bb69f0a/sample1_realign2transcript.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample sample1 -&gt; /tmp/RtmpmbEc0o/file29455818adbc/sample1_realign2transcript.bam</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Skipped sorting BAM files.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample sample2 -&gt; /tmp/RtmpgpEV0i/file25bf2bb69f0a/sample2_realign2transcript.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample sample2 -&gt; /tmp/RtmpmbEc0o/file29455818adbc/sample2_realign2transcript.bam</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Skipped sorting BAM files.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample sample3 -&gt; /tmp/RtmpgpEV0i/file25bf2bb69f0a/sample3_realign2transcript.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample sample3 -&gt; /tmp/RtmpmbEc0o/file29455818adbc/sample3_realign2transcript.bam</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Skipped sorting BAM files.</span>
 <span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="get_coverage.html">get_coverage</a></span><span class="op">(</span><span class="va">ppl</span><span class="op">@</span><span class="va">transcriptome_bam</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
