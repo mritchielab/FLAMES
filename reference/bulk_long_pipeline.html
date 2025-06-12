@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">FLAMES</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.3.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.3.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -122,28 +122,28 @@ provided, FLAMES will use a copy from bioconda via <code>basilisk</code>.</p></d
 <span class="r-in"><span>  config_file <span class="op">=</span> <span class="fu"><a href="create_config.html">create_config</a></span><span class="op">(</span><span class="va">outdir</span>, type <span class="op">=</span> <span class="st">"sc_3end"</span>, threads <span class="op">=</span> <span class="fl">1</span>, no_flank <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> bulk_long_pipeline() is deprecated. Use BulkPipeline() instead.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/RtmpYXqQYu/file9ccf43e906e3/config_file_40143.json </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/RtmpMWOJmh/file28866d40fc5d/config_file_10374.json </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Configured steps: </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	genome_alignment: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	isoform_identification: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	read_realignment: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	transcript_quantification: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> samtools not found, will use Rsamtools package instead</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: genome_alignment @ Fri Jun  6 05:00:09 2025 ───────────────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: genome_alignment @ Thu Jun 12 10:30:24 2025 ───────────────────</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Creating junction bed file from GFF3 annotation.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample sample1 -&gt; /tmp/RtmpYXqQYu/file9ccf43e906e3/sample1_align2genome.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample sample1 -&gt; /tmp/RtmpMWOJmh/file28866d40fc5d/sample1_align2genome.bam</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sorting BAM files by genome coordinates with 1 threads...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Indexing bam files</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample sample2 -&gt; /tmp/RtmpYXqQYu/file9ccf43e906e3/sample2_align2genome.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample sample2 -&gt; /tmp/RtmpMWOJmh/file28866d40fc5d/sample2_align2genome.bam</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sorting BAM files by genome coordinates with 1 threads...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Indexing bam files</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample sample3 -&gt; /tmp/RtmpYXqQYu/file9ccf43e906e3/sample3_align2genome.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample sample3 -&gt; /tmp/RtmpMWOJmh/file28866d40fc5d/sample3_align2genome.bam</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sorting BAM files by genome coordinates with 1 threads...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Indexing bam files</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: isoform_identification @ Fri Jun  6 05:00:10 2025 ─────────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: isoform_identification @ Thu Jun 12 10:30:25 2025 ─────────────</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Import genomic features from the file as a GRanges object ... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> OK</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Prepare the 'metadata' data frame ... </span>
@@ -151,18 +151,18 @@ provided, FLAMES will use a copy from bioconda via <code>basilisk</code>.</p></d
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Make the TxDb object ... </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>genome version information is not available for this TxDb object</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> OK</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: read_realignment @ Fri Jun  6 05:00:10 2025 ───────────────────</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample sample1 -&gt; /tmp/RtmpYXqQYu/file9ccf43e906e3/sample1_realign2transcript.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: read_realignment @ Thu Jun 12 10:30:25 2025 ───────────────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample sample1 -&gt; /tmp/RtmpMWOJmh/file28866d40fc5d/sample1_realign2transcript.bam</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Skipped sorting BAM files.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample sample2 -&gt; /tmp/RtmpYXqQYu/file9ccf43e906e3/sample2_realign2transcript.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample sample2 -&gt; /tmp/RtmpMWOJmh/file28866d40fc5d/sample2_realign2transcript.bam</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Skipped sorting BAM files.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample sample3 -&gt; /tmp/RtmpYXqQYu/file9ccf43e906e3/sample3_realign2transcript.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample sample3 -&gt; /tmp/RtmpMWOJmh/file28866d40fc5d/sample3_realign2transcript.bam</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Skipped sorting BAM files.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: transcript_quantification @ Fri Jun  6 05:00:11 2025 ──────────</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Pipeline saved to /tmp/RtmpYXqQYu/file9ccf43e906e3/pipeline.rds</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: transcript_quantification @ Thu Jun 12 10:30:26 2025 ──────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Pipeline saved to /tmp/RtmpMWOJmh/file28866d40fc5d/pipeline.rds</span>
 <span class="r-in"><span><span class="va">se</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> class: SummarizedExperiment </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> dim: 10 3 </span>

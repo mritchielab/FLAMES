@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">FLAMES</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.3.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.3.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,10 +43,13 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">quantify_gene</span><span class="op">(</span></span>
 <span>  <span class="va">annotation</span>,</span>
 <span>  <span class="va">outdir</span>,</span>
-<span>  <span class="va">infq</span>,</span>
-<span>  <span class="va">n_process</span>,</span>
 <span>  pipeline <span class="op">=</span> <span class="st">"sc_single_sample"</span>,</span>
-<span>  samples <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">infq</span>,</span>
+<span>  <span class="va">in_bam</span>,</span>
+<span>  <span class="va">out_fastq</span>,</span>
+<span>  <span class="va">n_process</span>,</span>
+<span>  saturation_curve <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  sample_names <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  random_seed <span class="op">=</span> <span class="fl">2024</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -63,22 +66,35 @@
 <dd><p>The path to directory to store all output files.</p></dd>
 
 
+<dt id="arg-pipeline">pipeline<a class="anchor" aria-label="anchor" href="#arg-pipeline"></a></dt>
+<dd><p>The pipeline type as a character string, either <code>sc_single_sample</code>
+(single-cell, single-sample), <code>bulk</code> (bulk, single or multi-sample),
+or <code>sc_multi_sample</code> (single-cell, multiple samples)</p></dd>
+
+
 <dt id="arg-infq">infq<a class="anchor" aria-label="anchor" href="#arg-infq"></a></dt>
 <dd><p>The input FASTQ file.</p></dd>
+
+
+<dt id="arg-in-bam">in_bam<a class="anchor" aria-label="anchor" href="#arg-in-bam"></a></dt>
+<dd><p>The input BAM file(s) from the genome alignment step.</p></dd>
+
+
+<dt id="arg-out-fastq">out_fastq<a class="anchor" aria-label="anchor" href="#arg-out-fastq"></a></dt>
+<dd><p>The output FASTQ file(s) to store deduplicated reads.</p></dd>
 
 
 <dt id="arg-n-process">n_process<a class="anchor" aria-label="anchor" href="#arg-n-process"></a></dt>
 <dd><p>The number of processes to use for parallelization.</p></dd>
 
 
-<dt id="arg-pipeline">pipeline<a class="anchor" aria-label="anchor" href="#arg-pipeline"></a></dt>
-<dd><p>The pipeline type as a character string, either <code>sc_single_sample</code> (single-cell, single-sample),</p></dd>
+<dt id="arg-saturation-curve">saturation_curve<a class="anchor" aria-label="anchor" href="#arg-saturation-curve"></a></dt>
+<dd><p>Logical, whether to generate a saturation curve figure.</p></dd>
 
 
-<dt id="arg-samples">samples<a class="anchor" aria-label="anchor" href="#arg-samples"></a></dt>
+<dt id="arg-sample-names">sample_names<a class="anchor" aria-label="anchor" href="#arg-sample-names"></a></dt>
 <dd><p>A vector of sample names, default to the file names of input fastq files,
-or folder names if <code>fastqs</code> is a vector of folders.
-<code>bulk</code> (bulk, single or multi-sample), or <code>sc_multi_sample</code> (single-cell, multiple samples)</p></dd>
+or folder names if <code>fastqs</code> is a vector of folders.</p></dd>
 
 
 <dt id="arg-random-seed">random_seed<a class="anchor" aria-label="anchor" href="#arg-random-seed"></a></dt>

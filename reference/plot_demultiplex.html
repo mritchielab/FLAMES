@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">FLAMES</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.3.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.3.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -67,7 +67,7 @@
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">pipeline</span> <span class="op">&lt;-</span> <span class="fu"><a href="example_pipeline.html">example_pipeline</a></span><span class="op">(</span><span class="st">"MultiSampleSCPipeline"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="run_step.html">run_step</a></span><span class="op">(</span><span class="st">"barcode_demultiplex"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/RtmpYXqQYu/file9ccfc8a8371/config_file_40143.json </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/RtmpMWOJmh/file2886579cb2c8/config_file_10374.json </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Configured steps: </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	barcode_demultiplex: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	genome_alignment: TRUE</span>
@@ -76,7 +76,7 @@
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	read_realignment: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	transcript_quantification: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> samtools not found, will use Rsamtools package instead</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: barcode_demultiplex @ Fri Jun  6 05:00:41 2025 ────────────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: barcode_demultiplex @ Thu Jun 12 10:30:57 2025 ────────────────</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> FLEXIPLEX 0.96.2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Setting max barcode edit distance to 2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Setting max flanking sequence edit distance to 8</span>
@@ -87,13 +87,13 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> BC: NNNNNNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> UMI: NNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> polyT: TTTTTTTTT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpYXqQYu/file9ccfc8a8371/bc_allow.tsv</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpMWOJmh/file2886579cb2c8/bc_allow.tsv</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of known barcodes: 143</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/RtmpYXqQYu/file9ccfc8a8371/fastq/sample1.fq.gz</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/RtmpMWOJmh/file2886579cb2c8/fastq/sample1.fq.gz</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/RtmpYXqQYu/file9ccfc8a8371/fastq/sample2.fq.gz</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/RtmpMWOJmh/file2886579cb2c8/fastq/sample2.fq.gz</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/RtmpYXqQYu/file9ccfc8a8371/fastq/sample3.fq.gz</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/RtmpMWOJmh/file2886579cb2c8/fastq/sample3.fq.gz</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads processed: 393</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads where at least one barcode was found: 368</span>
@@ -110,9 +110,9 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> BC: NNNNNNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> UMI: NNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> polyT: TTTTTTTTT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpYXqQYu/file9ccfc8a8371/bc_allow.tsv</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpMWOJmh/file2886579cb2c8/bc_allow.tsv</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of known barcodes: 143</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/RtmpYXqQYu/file9ccfc8a8371/fastq/sample1.fq.gz</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/RtmpMWOJmh/file2886579cb2c8/fastq/sample1.fq.gz</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads processed: 100</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads where at least one barcode was found: 92</span>
@@ -129,9 +129,9 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> BC: NNNNNNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> UMI: NNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> polyT: TTTTTTTTT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpYXqQYu/file9ccfc8a8371/bc_allow.tsv</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpMWOJmh/file2886579cb2c8/bc_allow.tsv</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of known barcodes: 143</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/RtmpYXqQYu/file9ccfc8a8371/fastq/sample2.fq.gz</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/RtmpMWOJmh/file2886579cb2c8/fastq/sample2.fq.gz</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads processed: 100</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads where at least one barcode was found: 95</span>
@@ -148,9 +148,9 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> BC: NNNNNNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> UMI: NNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> polyT: TTTTTTTTT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpYXqQYu/file9ccfc8a8371/bc_allow.tsv</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpMWOJmh/file2886579cb2c8/bc_allow.tsv</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of known barcodes: 143</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/RtmpYXqQYu/file9ccfc8a8371/fastq/sample3.fq.gz</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/RtmpMWOJmh/file2886579cb2c8/fastq/sample3.fq.gz</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads processed: 193</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads where at least one barcode was found: 181</span>
