@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">FLAMES</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.3.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.3.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -116,7 +116,7 @@ via either <code><a href="../reference/BulkPipeline.html">BulkPipeline()</a></co
 <span>  genome_fa <span class="op">=</span> <span class="va">genome_fa</span>,</span>
 <span>  barcodes_file <span class="op">=</span> <span class="va">bc_allow</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; Writing configuration parameters to:  /tmp/Rtmpwrao5I/file3453fe42e5c/config_file_13395.json</span></span>
+<span><span class="co">#&gt; Writing configuration parameters to:  /tmp/Rtmp3cGsyz/file440e67b5fc5a/config_file_17422.json</span></span>
 <span><span class="co">#&gt; Configured steps: </span></span>
 <span><span class="co">#&gt;  barcode_demultiplex: TRUE</span></span>
 <span><span class="co">#&gt;  genome_alignment: TRUE</span></span>
@@ -126,13 +126,13 @@ via either <code><a href="../reference/BulkPipeline.html">BulkPipeline()</a></co
 <span><span class="co">#&gt;  transcript_quantification: TRUE</span></span>
 <span><span class="co">#&gt; samtools not found, will use Rsamtools package instead</span></span>
 <span><span class="va">pipeline</span></span>
-<span><span class="co">#&gt; → A <span style="font-weight: bold;">FLAMES.SingleCellPipeline</span> outputting to <span style="color: #0000BB;">/tmp/Rtmpwrao5I/file3453fe42e5c</span></span></span>
+<span><span class="co">#&gt; → A <span style="font-weight: bold;">FLAMES.SingleCellPipeline</span> outputting to <span style="color: #0000BB;">/tmp/Rtmp3cGsyz/file440e67b5fc5a</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Inputs</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">fastq</span>: <span style="color: #0000BB;">...ibrary/FLAMES/extdata/fastq/musc_rps24.fastq.gz</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">annotation</span>: <span style="color: #0000BB;">/__w/_temp/Library/FLAMES/extdata/rps24.gtf.gz</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">genome_fa</span>: <span style="color: #0000BB;">/tmp/Rtmpwrao5I/file3453fe42e5c/rps24.fa</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">barcodes_file</span>: <span style="color: #0000BB;">/tmp/Rtmpwrao5I/file3453fe42e5c/bc_allow.tsv</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">genome_fa</span>: <span style="color: #0000BB;">/tmp/Rtmp3cGsyz/file440e67b5fc5a/rps24.fa</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">barcodes_file</span>: <span style="color: #0000BB;">/tmp/Rtmp3cGsyz/file440e67b5fc5a/bc_allow.tsv</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Outputs</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #00BB00;">demultiplexed_fastq</span>: <span style="color: #0000BB;">matched_reads.fastq.gz</span></span></span>
@@ -157,7 +157,7 @@ via either <code><a href="../reference/BulkPipeline.html">BulkPipeline()</a></co
 in the pipeline, returning a updated pipeline object:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pipeline</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_FLAMES.html">run_FLAMES</a></span><span class="op">(</span><span class="va">pipeline</span><span class="op">)</span></span>
-<span><span class="co">#&gt; ── Running step: barcode_demultiplex @ Thu Jun 12 10:32:07 2025 ────────────────</span></span>
+<span><span class="co">#&gt; ── Running step: barcode_demultiplex @ Wed Jun 18 02:50:02 2025 ────────────────</span></span>
 <span><span class="co">#&gt; FLEXIPLEX 0.96.2</span></span>
 <span><span class="co">#&gt; Setting max barcode edit distance to 2</span></span>
 <span><span class="co">#&gt; Setting max flanking sequence edit distance to 8</span></span>
@@ -168,7 +168,7 @@ in the pipeline, returning a updated pipeline object:</p>
 <span><span class="co">#&gt; BC: NNNNNNNNNNNNNNNN</span></span>
 <span><span class="co">#&gt; UMI: NNNNNNNNNNNN</span></span>
 <span><span class="co">#&gt; polyT: TTTTTTTTT</span></span>
-<span><span class="co">#&gt; Setting known barcodes from /tmp/Rtmpwrao5I/file3453fe42e5c/bc_allow.tsv</span></span>
+<span><span class="co">#&gt; Setting known barcodes from /tmp/Rtmp3cGsyz/file440e67b5fc5a/bc_allow.tsv</span></span>
 <span><span class="co">#&gt; Number of known barcodes: 143</span></span>
 <span><span class="co">#&gt; Processing file: /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz</span></span>
 <span><span class="co">#&gt; Searching for barcodes...</span></span>
@@ -177,23 +177,23 @@ in the pipeline, returning a updated pipeline object:</p>
 <span><span class="co">#&gt; Number of reads with exactly one barcode match: 364</span></span>
 <span><span class="co">#&gt; Number of chimera reads: 1</span></span>
 <span><span class="co">#&gt; All done!</span></span>
-<span><span class="co">#&gt; ── Running step: genome_alignment @ Thu Jun 12 10:32:09 2025 ───────────────────</span></span>
+<span><span class="co">#&gt; ── Running step: genome_alignment @ Wed Jun 18 02:50:04 2025 ───────────────────</span></span>
 <span><span class="co">#&gt; Creating junction bed file from GFF3 annotation.</span></span>
-<span><span class="co">#&gt; Aligning sample /tmp/Rtmpwrao5I/file3453fe42e5c/matched_reads.fastq.gz -&gt; /tmp/Rtmpwrao5I/file3453fe42e5c/align2genome.bam</span></span>
+<span><span class="co">#&gt; Aligning sample /tmp/Rtmp3cGsyz/file440e67b5fc5a/matched_reads.fastq.gz -&gt; /tmp/Rtmp3cGsyz/file440e67b5fc5a/align2genome.bam</span></span>
 <span><span class="co">#&gt; Your fastq file appears to have tags, but you did not provide the -y option to minimap2 to include the tags in the output.</span></span>
-<span><span class="co">#&gt; Warning in minimap2_align(fq_in = fastqs[i], fa_file = pipeline@genome_fa, :</span></span>
+<span><span class="co">#&gt; Warning in FLAMES:::minimap2_align(fq_in = fastqs[i], fa_file = genome, :</span></span>
 <span><span class="co">#&gt; samtools not found, using Rsamtools instead, this could be slower and might</span></span>
 <span><span class="co">#&gt; fail for large BAM files.</span></span>
 <span><span class="co">#&gt; Sorting BAM files by genome coordinates with 8 threads...</span></span>
 <span><span class="co">#&gt; Indexing bam files</span></span>
-<span><span class="co">#&gt; ── Running step: gene_quantification @ Thu Jun 12 10:32:09 2025 ────────────────</span></span>
-<span><span class="co">#&gt; 10:32:09 AM Thu Jun 12 2025 quantify genes</span></span>
-<span><span class="co">#&gt; Using BAM(s): <span style="color: #0000BB;">/tmp/Rtmpwrao5I/file3453fe42e5c/align2genome.bam</span></span></span>
+<span><span class="co">#&gt; ── Running step: gene_quantification @ Wed Jun 18 02:50:04 2025 ────────────────</span></span>
+<span><span class="co">#&gt; 02:50:04 AM Wed Jun 18 2025 quantify genes</span></span>
+<span><span class="co">#&gt; Using BAM(s): <span style="color: #0000BB;">/tmp/Rtmp3cGsyz/file440e67b5fc5a/align2genome.bam</span></span></span>
 <span><span class="co">#&gt; Assigning reads to genes...</span></span>
 <span><span class="co">#&gt; Writing the gene count matrix ...</span></span>
 <span><span class="co">#&gt; Plotting the saturation curve ...</span></span>
 <span><span class="co">#&gt; Generating deduplicated fastq file ...</span></span>
-<span><span class="co">#&gt; ── Running step: isoform_identification @ Thu Jun 12 10:32:10 2025 ─────────────</span></span>
+<span><span class="co">#&gt; ── Running step: isoform_identification @ Wed Jun 18 02:50:05 2025 ─────────────</span></span>
 <span><span class="co">#&gt; #### Read gene annotations</span></span>
 <span><span class="co">#&gt;  Removed similar transcripts in gene annotation: Counter()</span></span>
 <span><span class="co">#&gt; #### find isoforms</span></span>
@@ -205,20 +205,20 @@ in the pipeline, returning a updated pipeline object:</p>
 <span><span class="co">#&gt; Warning in .makeTxDb_normarg_chrominfo(chrominfo): genome version information</span></span>
 <span><span class="co">#&gt; is not available for this TxDb object</span></span>
 <span><span class="co">#&gt; OK</span></span>
-<span><span class="co">#&gt; ── Running step: read_realignment @ Thu Jun 12 10:32:11 2025 ───────────────────</span></span>
+<span><span class="co">#&gt; ── Running step: read_realignment @ Wed Jun 18 02:50:06 2025 ───────────────────</span></span>
 <span><span class="co">#&gt; Checking for fastq file(s) /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz</span></span>
 <span><span class="co">#&gt;  files found</span></span>
-<span><span class="co">#&gt; Checking for fastq file(s) /tmp/Rtmpwrao5I/file3453fe42e5c/matched_reads.fastq.gz</span></span>
+<span><span class="co">#&gt; Checking for fastq file(s) /tmp/Rtmp3cGsyz/file440e67b5fc5a/matched_reads.fastq.gz</span></span>
 <span><span class="co">#&gt;  files found</span></span>
-<span><span class="co">#&gt; Checking for fastq file(s) /tmp/Rtmpwrao5I/file3453fe42e5c/matched_reads_dedup.fastq.gz</span></span>
+<span><span class="co">#&gt; Checking for fastq file(s) /tmp/Rtmp3cGsyz/file440e67b5fc5a/matched_reads_dedup.fastq.gz</span></span>
 <span><span class="co">#&gt;  files found</span></span>
-<span><span class="co">#&gt; Realigning sample /tmp/Rtmpwrao5I/file3453fe42e5c/matched_reads_dedup.fastq.gz -&gt; /tmp/Rtmpwrao5I/file3453fe42e5c/realign2transcript.bam</span></span>
+<span><span class="co">#&gt; Realigning sample /tmp/Rtmp3cGsyz/file440e67b5fc5a/matched_reads_dedup.fastq.gz -&gt; /tmp/Rtmp3cGsyz/file440e67b5fc5a/realign2transcript.bam</span></span>
 <span><span class="co">#&gt; Warning in minimap2_align(fq_in = fastqs[i], fa_file =</span></span>
 <span><span class="co">#&gt; pipeline@transcriptome_assembly, : samtools not found, using Rsamtools instead,</span></span>
 <span><span class="co">#&gt; this could be slower and might fail for large BAM files.</span></span>
 <span><span class="co">#&gt; Sorting BAM files by 8 with CB threads...</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Running step: transcript_quantification @ Thu Jun 12 10:32:11 2025 ──────────</span></span>
+<span><span class="co">#&gt; ── Running step: transcript_quantification @ Wed Jun 18 02:50:06 2025 ──────────</span></span>
 <span><span class="co">#&gt; Import genomic features from the file as a GRanges object ... OK</span></span>
 <span><span class="co">#&gt; Prepare the 'metadata' data frame ... OK</span></span>
 <span><span class="co">#&gt; Make the TxDb object ...</span></span>
@@ -232,13 +232,13 @@ in the pipeline, returning a updated pipeline object:</p>
 <span><span class="co">#&gt; is not available for this TxDb object</span></span>
 <span><span class="co">#&gt; OK</span></span>
 <span><span class="va">pipeline</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> A <span style="font-weight: bold;">FLAMES.SingleCellPipeline</span> outputting to <span style="color: #0000BB;">/tmp/Rtmpwrao5I/file3453fe42e5c</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> A <span style="font-weight: bold;">FLAMES.SingleCellPipeline</span> outputting to <span style="color: #0000BB;">/tmp/Rtmp3cGsyz/file440e67b5fc5a</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Inputs </span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">fastq</span>: <span style="color: #0000BB;">...ibrary/FLAMES/extdata/fastq/musc_rps24.fastq.gz</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">annotation</span>: <span style="color: #0000BB;">/__w/_temp/Library/FLAMES/extdata/rps24.gtf.gz</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">genome_fa</span>: <span style="color: #0000BB;">/tmp/Rtmpwrao5I/file3453fe42e5c/rps24.fa</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">barcodes_file</span>: <span style="color: #0000BB;">/tmp/Rtmpwrao5I/file3453fe42e5c/bc_allow.tsv</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">genome_fa</span>: <span style="color: #0000BB;">/tmp/Rtmp3cGsyz/file440e67b5fc5a/rps24.fa</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">barcodes_file</span>: <span style="color: #0000BB;">/tmp/Rtmp3cGsyz/file440e67b5fc5a/bc_allow.tsv</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Outputs </span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">demultiplexed_fastq</span>: <span style="color: #0000BB;">matched_reads.fastq.gz</span> [217.1 KB]</span></span>
@@ -249,12 +249,12 @@ in the pipeline, returning a updated pipeline object:</p>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">transcriptome_bam</span>: <span style="color: #0000BB;">realign2transcript.bam</span> [392.3 KB]</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Pipeline Steps </span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">barcode_demultiplex</span> (completed in 2.02 sec)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">genome_alignment</span> (completed in 0.35 sec)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">gene_quantification</span> (completed in 0.80 sec)</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">barcode_demultiplex</span> (completed in 2.01 sec)</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">genome_alignment</span> (completed in 0.37 sec)</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">gene_quantification</span> (completed in 0.79 sec)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">isoform_identification</span> (completed in 0.90 sec)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">read_realignment</span> (completed in 0.25 sec)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">transcript_quantification</span> (completed in 1.32 sec)</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">transcript_quantification</span> (completed in 1.24 sec)</span></span></code></pre></div>
 <p>If you run into any error, <code><a href="../reference/run_FLAMES.html">run_FLAMES()</a></code> will stop and
 return the pipeline object with the error message. After resolving the
 error, you can run <code>resume_FLAMES(pipeline)</code> to continue the
@@ -274,8 +274,8 @@ the input files:</p>
 <span>  barcodes_file <span class="op">=</span> <span class="va">bc_allow</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Output directory does not exists: one is being created</span></span>
-<span><span class="co">#&gt; [1] "/tmp/Rtmpwrao5I/file345315486677"</span></span>
-<span><span class="co">#&gt; Writing configuration parameters to:  /tmp/Rtmpwrao5I/file3453fe42e5c/config_file_13395.json</span></span>
+<span><span class="co">#&gt; [1] "/tmp/Rtmp3cGsyz/file440e61e24f74"</span></span>
+<span><span class="co">#&gt; Writing configuration parameters to:  /tmp/Rtmp3cGsyz/file440e67b5fc5a/config_file_17422.json</span></span>
 <span><span class="co">#&gt; Configured steps: </span></span>
 <span><span class="co">#&gt;  barcode_demultiplex: TRUE</span></span>
 <span><span class="co">#&gt;  genome_alignment: TRUE</span></span>
@@ -288,7 +288,7 @@ the input files:</p>
 <span><span class="co"># delete the reference genome</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span><span class="va">genome_fa</span><span class="op">)</span></span>
 <span><span class="va">pipeline2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_FLAMES.html">run_FLAMES</a></span><span class="op">(</span><span class="va">pipeline2</span><span class="op">)</span></span>
-<span><span class="co">#&gt; ── Running step: barcode_demultiplex @ Thu Jun 12 10:32:13 2025 ────────────────</span></span>
+<span><span class="co">#&gt; ── Running step: barcode_demultiplex @ Wed Jun 18 02:50:07 2025 ────────────────</span></span>
 <span><span class="co">#&gt; FLEXIPLEX 0.96.2</span></span>
 <span><span class="co">#&gt; Setting max barcode edit distance to 2</span></span>
 <span><span class="co">#&gt; Setting max flanking sequence edit distance to 8</span></span>
@@ -299,7 +299,7 @@ the input files:</p>
 <span><span class="co">#&gt; BC: NNNNNNNNNNNNNNNN</span></span>
 <span><span class="co">#&gt; UMI: NNNNNNNNNNNN</span></span>
 <span><span class="co">#&gt; polyT: TTTTTTTTT</span></span>
-<span><span class="co">#&gt; Setting known barcodes from /tmp/Rtmpwrao5I/file3453fe42e5c/bc_allow.tsv</span></span>
+<span><span class="co">#&gt; Setting known barcodes from /tmp/Rtmp3cGsyz/file440e67b5fc5a/bc_allow.tsv</span></span>
 <span><span class="co">#&gt; Number of known barcodes: 143</span></span>
 <span><span class="co">#&gt; Processing file: /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz</span></span>
 <span><span class="co">#&gt; Searching for barcodes...</span></span>
@@ -308,23 +308,23 @@ the input files:</p>
 <span><span class="co">#&gt; Number of reads with exactly one barcode match: 364</span></span>
 <span><span class="co">#&gt; Number of chimera reads: 1</span></span>
 <span><span class="co">#&gt; All done!</span></span>
-<span><span class="co">#&gt; ── Running step: genome_alignment @ Thu Jun 12 10:32:13 2025 ───────────────────</span></span>
+<span><span class="co">#&gt; ── Running step: genome_alignment @ Wed Jun 18 02:50:08 2025 ───────────────────</span></span>
 <span><span class="co">#&gt; Creating junction bed file from GFF3 annotation.</span></span>
-<span><span class="co">#&gt; Aligning sample /tmp/Rtmpwrao5I/file345315486677/matched_reads.fastq.gz -&gt; /tmp/Rtmpwrao5I/file345315486677/align2genome.bam</span></span>
+<span><span class="co">#&gt; Aligning sample /tmp/Rtmp3cGsyz/file440e61e24f74/matched_reads.fastq.gz -&gt; /tmp/Rtmp3cGsyz/file440e61e24f74/align2genome.bam</span></span>
 <span><span class="co">#&gt; Your fastq file appears to have tags, but you did not provide the -y option to minimap2 to include the tags in the output.</span></span>
-<span><span class="co">#&gt; Warning in minimap2_align(fq_in = fastqs[i], fa_file = pipeline@genome_fa, :</span></span>
+<span><span class="co">#&gt; Warning in FLAMES:::minimap2_align(fq_in = fastqs[i], fa_file = genome, :</span></span>
 <span><span class="co">#&gt; samtools not found, using Rsamtools instead, this could be slower and might</span></span>
 <span><span class="co">#&gt; fail for large BAM files.</span></span>
 <span><span class="co">#&gt; Warning in value[[3L]](cond): Error in step genome_alignment: error running minimap2:</span></span>
 <span><span class="co">#&gt; 1, pipeline stopped.</span></span>
 <span><span class="va">pipeline2</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> A <span style="font-weight: bold;">FLAMES.SingleCellPipeline</span> outputting to <span style="color: #0000BB;">/tmp/Rtmpwrao5I/file345315486677</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> A <span style="font-weight: bold;">FLAMES.SingleCellPipeline</span> outputting to <span style="color: #0000BB;">/tmp/Rtmp3cGsyz/file440e61e24f74</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Inputs</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">fastq</span>: <span style="color: #0000BB;">...ibrary/FLAMES/extdata/fastq/musc_rps24.fastq.gz</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">annotation</span>: <span style="color: #0000BB;">/__w/_temp/Library/FLAMES/extdata/rps24.gtf.gz</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #00BB00;">genome_fa</span>: <span style="color: #0000BB;">/tmp/Rtmpwrao5I/file3453fe42e5c/rps24.fa</span> [missing]</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">barcodes_file</span>: <span style="color: #0000BB;">/tmp/Rtmpwrao5I/file3453fe42e5c/bc_allow.tsv</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #00BB00;">genome_fa</span>: <span style="color: #0000BB;">/tmp/Rtmp3cGsyz/file440e67b5fc5a/rps24.fa</span> [missing]</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">barcodes_file</span>: <span style="color: #0000BB;">/tmp/Rtmp3cGsyz/file440e67b5fc5a/bc_allow.tsv</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Outputs</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">demultiplexed_fastq</span>: <span style="color: #0000BB;">matched_reads.fastq.gz</span> [217.1 KB]</span></span>
@@ -335,7 +335,7 @@ the input files:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Pipeline Steps</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">barcode_demultiplex</span> (completed in 0.18 sec)</span></span>
-<span><span class="co">#&gt; <span style="color: #BB0000;">✖</span> <span style="color: #00BB00;">genome_alignment</span> (failed: Error in minimap2_align(fq_in = fastqs[i], fa_file = pipeline@genome_fa, : error running minimap2:</span></span>
+<span><span class="co">#&gt; <span style="color: #BB0000;">✖</span> <span style="color: #00BB00;">genome_alignment</span> (failed: Error in FLAMES:::minimap2_align(fq_in = fastqs[i], fa_file = genome, : error running minimap2:</span></span>
 <span><span class="co">#&gt; 1</span></span>
 <span><span class="co">#&gt; )</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #00BB00;">gene_quantification</span> (pending)</span></span>
@@ -351,22 +351,22 @@ resume the pipeline:</p>
 <span><span class="op">)</span></span>
 <span><span class="va">pipeline2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/resume_FLAMES.html">resume_FLAMES</a></span><span class="op">(</span><span class="va">pipeline2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Resuming pipeline from step: genome_alignment</span></span>
-<span><span class="co">#&gt; ── Running step: genome_alignment @ Thu Jun 12 10:32:13 2025 ───────────────────</span></span>
-<span><span class="co">#&gt; Aligning sample /tmp/Rtmpwrao5I/file345315486677/matched_reads.fastq.gz -&gt; /tmp/Rtmpwrao5I/file345315486677/align2genome.bam</span></span>
+<span><span class="co">#&gt; ── Running step: genome_alignment @ Wed Jun 18 02:50:08 2025 ───────────────────</span></span>
+<span><span class="co">#&gt; Aligning sample /tmp/Rtmp3cGsyz/file440e61e24f74/matched_reads.fastq.gz -&gt; /tmp/Rtmp3cGsyz/file440e61e24f74/align2genome.bam</span></span>
 <span><span class="co">#&gt; Your fastq file appears to have tags, but you did not provide the -y option to minimap2 to include the tags in the output.</span></span>
-<span><span class="co">#&gt; Warning in minimap2_align(fq_in = fastqs[i], fa_file = pipeline@genome_fa, :</span></span>
+<span><span class="co">#&gt; Warning in FLAMES:::minimap2_align(fq_in = fastqs[i], fa_file = genome, :</span></span>
 <span><span class="co">#&gt; samtools not found, using Rsamtools instead, this could be slower and might</span></span>
 <span><span class="co">#&gt; fail for large BAM files.</span></span>
 <span><span class="co">#&gt; Sorting BAM files by genome coordinates with 8 threads...</span></span>
 <span><span class="co">#&gt; Indexing bam files</span></span>
-<span><span class="co">#&gt; ── Running step: gene_quantification @ Thu Jun 12 10:32:14 2025 ────────────────</span></span>
-<span><span class="co">#&gt; 10:32:14 AM Thu Jun 12 2025 quantify genes</span></span>
-<span><span class="co">#&gt; Using BAM(s): <span style="color: #0000BB;">/tmp/Rtmpwrao5I/file345315486677/align2genome.bam</span></span></span>
+<span><span class="co">#&gt; ── Running step: gene_quantification @ Wed Jun 18 02:50:08 2025 ────────────────</span></span>
+<span><span class="co">#&gt; 02:50:08 AM Wed Jun 18 2025 quantify genes</span></span>
+<span><span class="co">#&gt; Using BAM(s): <span style="color: #0000BB;">/tmp/Rtmp3cGsyz/file440e61e24f74/align2genome.bam</span></span></span>
 <span><span class="co">#&gt; Assigning reads to genes...</span></span>
 <span><span class="co">#&gt; Writing the gene count matrix ...</span></span>
 <span><span class="co">#&gt; Plotting the saturation curve ...</span></span>
 <span><span class="co">#&gt; Generating deduplicated fastq file ...</span></span>
-<span><span class="co">#&gt; ── Running step: isoform_identification @ Thu Jun 12 10:32:14 2025 ─────────────</span></span>
+<span><span class="co">#&gt; ── Running step: isoform_identification @ Wed Jun 18 02:50:08 2025 ─────────────</span></span>
 <span><span class="co">#&gt; #### Read gene annotations</span></span>
 <span><span class="co">#&gt;  Removed similar transcripts in gene annotation: Counter()</span></span>
 <span><span class="co">#&gt; #### find isoforms</span></span>
@@ -378,20 +378,20 @@ resume the pipeline:</p>
 <span><span class="co">#&gt; Warning in .makeTxDb_normarg_chrominfo(chrominfo): genome version information</span></span>
 <span><span class="co">#&gt; is not available for this TxDb object</span></span>
 <span><span class="co">#&gt; OK</span></span>
-<span><span class="co">#&gt; ── Running step: read_realignment @ Thu Jun 12 10:32:14 2025 ───────────────────</span></span>
+<span><span class="co">#&gt; ── Running step: read_realignment @ Wed Jun 18 02:50:09 2025 ───────────────────</span></span>
 <span><span class="co">#&gt; Checking for fastq file(s) /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz</span></span>
 <span><span class="co">#&gt;  files found</span></span>
-<span><span class="co">#&gt; Checking for fastq file(s) /tmp/Rtmpwrao5I/file345315486677/matched_reads.fastq.gz</span></span>
+<span><span class="co">#&gt; Checking for fastq file(s) /tmp/Rtmp3cGsyz/file440e61e24f74/matched_reads.fastq.gz</span></span>
 <span><span class="co">#&gt;  files found</span></span>
-<span><span class="co">#&gt; Checking for fastq file(s) /tmp/Rtmpwrao5I/file345315486677/matched_reads_dedup.fastq.gz</span></span>
+<span><span class="co">#&gt; Checking for fastq file(s) /tmp/Rtmp3cGsyz/file440e61e24f74/matched_reads_dedup.fastq.gz</span></span>
 <span><span class="co">#&gt;  files found</span></span>
-<span><span class="co">#&gt; Realigning sample /tmp/Rtmpwrao5I/file345315486677/matched_reads_dedup.fastq.gz -&gt; /tmp/Rtmpwrao5I/file345315486677/realign2transcript.bam</span></span>
+<span><span class="co">#&gt; Realigning sample /tmp/Rtmp3cGsyz/file440e61e24f74/matched_reads_dedup.fastq.gz -&gt; /tmp/Rtmp3cGsyz/file440e61e24f74/realign2transcript.bam</span></span>
 <span><span class="co">#&gt; Warning in minimap2_align(fq_in = fastqs[i], fa_file =</span></span>
 <span><span class="co">#&gt; pipeline@transcriptome_assembly, : samtools not found, using Rsamtools instead,</span></span>
 <span><span class="co">#&gt; this could be slower and might fail for large BAM files.</span></span>
 <span><span class="co">#&gt; Sorting BAM files by 8 with CB threads...</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Running step: transcript_quantification @ Thu Jun 12 10:32:15 2025 ──────────</span></span>
+<span><span class="co">#&gt; ── Running step: transcript_quantification @ Wed Jun 18 02:50:09 2025 ──────────</span></span>
 <span><span class="co">#&gt; Import genomic features from the file as a GRanges object ... OK</span></span>
 <span><span class="co">#&gt; Prepare the 'metadata' data frame ... OK</span></span>
 <span><span class="co">#&gt; Make the TxDb object ...</span></span>
@@ -405,13 +405,13 @@ resume the pipeline:</p>
 <span><span class="co">#&gt; is not available for this TxDb object</span></span>
 <span><span class="co">#&gt; OK</span></span>
 <span><span class="va">pipeline2</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> A <span style="font-weight: bold;">FLAMES.SingleCellPipeline</span> outputting to <span style="color: #0000BB;">/tmp/Rtmpwrao5I/file345315486677</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> A <span style="font-weight: bold;">FLAMES.SingleCellPipeline</span> outputting to <span style="color: #0000BB;">/tmp/Rtmp3cGsyz/file440e61e24f74</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Inputs </span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">fastq</span>: <span style="color: #0000BB;">...ibrary/FLAMES/extdata/fastq/musc_rps24.fastq.gz</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">annotation</span>: <span style="color: #0000BB;">/__w/_temp/Library/FLAMES/extdata/rps24.gtf.gz</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">genome_fa</span>: <span style="color: #0000BB;">/tmp/Rtmpwrao5I/file3453fe42e5c/rps24.fa</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">barcodes_file</span>: <span style="color: #0000BB;">/tmp/Rtmpwrao5I/file3453fe42e5c/bc_allow.tsv</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">genome_fa</span>: <span style="color: #0000BB;">/tmp/Rtmp3cGsyz/file440e67b5fc5a/rps24.fa</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">barcodes_file</span>: <span style="color: #0000BB;">/tmp/Rtmp3cGsyz/file440e67b5fc5a/bc_allow.tsv</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Outputs </span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">demultiplexed_fastq</span>: <span style="color: #0000BB;">matched_reads.fastq.gz</span> [217.1 KB]</span></span>
@@ -423,11 +423,11 @@ resume the pipeline:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Pipeline Steps </span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">barcode_demultiplex</span> (completed in 0.18 sec)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">genome_alignment</span> (completed in 0.23 sec)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">gene_quantification</span> (completed in 0.34 sec)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">isoform_identification</span> (completed in 0.58 sec)</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">genome_alignment</span> (completed in 0.22 sec)</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">gene_quantification</span> (completed in 0.32 sec)</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">isoform_identification</span> (completed in 0.57 sec)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">read_realignment</span> (completed in 0.24 sec)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">transcript_quantification</span> (completed in 1.12 sec)</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">transcript_quantification</span> (completed in 1.11 sec)</span></span></code></pre></div>
 <p>After completing the pipeline, a <code>SingleCellExperiment</code>
 object is created (or <code>SummarizedExperiment</code> for bulk
 pipeline and list of <code>SingleCellExperiment</code> for multi-sample
@@ -448,6 +448,74 @@ pipeline). You can access the results via
 <span><span class="co">#&gt; reducedDimNames(0):</span></span>
 <span><span class="co">#&gt; mainExpName: NULL</span></span>
 <span><span class="co">#&gt; altExpNames(0):</span></span></code></pre></div>
+<div class="section level4">
+<h4 id="hpc-support">HPC support<a class="anchor" aria-label="anchor" href="#hpc-support"></a>
+</h4>
+<p>Individual steps can be submitted as HPC jobs via <code>crew</code>
+and <code>crew.cluster</code> packages, simply supply a list of crew
+controllers (named by step name) to the <code>controllers</code>
+argument of the pipeline constructors. For example, we could run the
+alignment steps through controllers, while keeping the rest in the main
+R session.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># example_pipeline provides an example pipeline for each of the three types</span></span>
+<span><span class="co"># of pipelines: BulkPipeline, SingleCellPipeline and MultiSampleSCPipeline</span></span>
+<span><span class="va">mspipeline</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/example_pipeline.html">example_pipeline</a></span><span class="op">(</span><span class="st">"MultiSampleSCPipeline"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Writing configuration parameters to:  /tmp/Rtmp3cGsyz/file440e2d297f5d/config_file_17422.json</span></span>
+<span><span class="co">#&gt; Configured steps: </span></span>
+<span><span class="co">#&gt;  barcode_demultiplex: TRUE</span></span>
+<span><span class="co">#&gt;  genome_alignment: TRUE</span></span>
+<span><span class="co">#&gt;  gene_quantification: TRUE</span></span>
+<span><span class="co">#&gt;  isoform_identification: TRUE</span></span>
+<span><span class="co">#&gt;  read_realignment: TRUE</span></span>
+<span><span class="co">#&gt;  transcript_quantification: TRUE</span></span>
+<span><span class="co">#&gt; samtools not found, will use Rsamtools package instead</span></span>
+<span><span class="co"># Providing a single controller will run all steps in it:</span></span>
+<span><span class="fu"><a href="../reference/controllers.html">controllers</a></span><span class="op">(</span><span class="va">mspipeline</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu">crew</span><span class="fu">::</span><span class="fu"><a href="https://wlandau.github.io/crew/reference/crew_controller_local.html" class="external-link">crew_controller_local</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co"># Setting controllers to an empty list will run all steps in the main R session:</span></span>
+<span><span class="fu"><a href="../reference/controllers.html">controllers</a></span><span class="op">(</span><span class="va">mspipeline</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co"># Alternatively, we can run only the alignment steps in the crew controller:</span></span>
+<span><span class="fu"><a href="../reference/controllers.html">controllers</a></span><span class="op">(</span><span class="va">mspipeline</span><span class="op">)</span><span class="op">[[</span><span class="st">"genome_alignment"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu">crew</span><span class="fu">::</span><span class="fu"><a href="https://wlandau.github.io/crew/reference/crew_controller_local.html" class="external-link">crew_controller_local</a></span><span class="op">(</span>workers <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="co"># Or `controllers(mspipeline) &lt;- list(genome_alignment = crew::crew_cluster())`</span></span>
+<span><span class="co"># to remove controllers for all other steps.</span></span>
+<span><span class="co"># Replace `crew_controller_local()` with `crew.cluster::crew_controller_slurm()` or other</span></span>
+<span><span class="co"># crew controllers according to your HPC job scheduler.</span></span></code></pre></div>
+<p><code><a href="../reference/run_FLAMES.html">run_FLAMES()</a></code> will then submit the alignment step to the
+crew controller. By default, <code><a href="../reference/run_step.html">run_step()</a></code> will ignore the
+crew controllers and run the step in the main R session, since it is
+easier to debug. You can use
+<code>run_step(pipeline, step_name, disable_controller = FALSE)</code>
+to prevent this behavior and run the step in crew controllers if
+available.</p>
+<p>You can tailor the resources for each step by specifying different
+arguments to the controllers. The alignment step typically benifits from
+more cores (e.g. 64 cores and 20GB memory), whereas other steps might
+not need as much cores but more memory hungry.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># An example helper function to create a Slurm controller with specific resources</span></span>
+<span><span class="va">create_slurm_controller</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span></span>
+<span>    <span class="va">cpus</span>, <span class="va">memory_gb</span>, <span class="va">workers</span> <span class="op">=</span> <span class="fl">10</span>, <span class="va">seconds_idle</span> <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>    <span class="va">script_lines</span> <span class="op">=</span> <span class="st">"module load R/flexiblas/4.5.0"</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">name</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"slurm_%dc%dg"</span>, <span class="va">cpus</span>, <span class="va">memory_gb</span><span class="op">)</span></span>
+<span>  <span class="fu">crew.cluster</span><span class="fu">::</span><span class="fu">crew_controller_slurm</span><span class="op">(</span></span>
+<span>    name <span class="op">=</span> <span class="va">name</span>,</span>
+<span>    workers <span class="op">=</span> <span class="va">workers</span>,</span>
+<span>    seconds_idle <span class="op">=</span> <span class="va">seconds_idle</span>,</span>
+<span>    retry_tasks <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    options_cluster <span class="op">=</span> <span class="fu">crew.cluster</span><span class="fu">::</span><span class="fu">crew_options_slurm</span><span class="op">(</span></span>
+<span>      script_lines <span class="op">=</span> <span class="va">script_lines</span>,</span>
+<span>      memory_gigabytes_required <span class="op">=</span> <span class="va">memory_gb</span>,</span>
+<span>      cpus_per_task <span class="op">=</span> <span class="va">cpus</span>,</span>
+<span>      log_output <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="st">"logs"</span>, <span class="st">"crew_log_%A.txt"</span><span class="op">)</span>,</span>
+<span>      log_error <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="st">"logs"</span>, <span class="st">"crew_log_%A.txt"</span><span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="fu"><a href="../reference/controllers.html">controllers</a></span><span class="op">(</span><span class="va">mspipeline</span><span class="op">)</span><span class="op">[[</span><span class="st">"genome_alignment"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span></span>
+<span>  <span class="fu">create_slurm_controller</span><span class="op">(</span>cpus <span class="op">=</span> <span class="fl">64</span>, memory_gb <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span></code></pre></div>
+<p>See also the <a href="https://wlandau.github.io/crew.cluster/reference/index.html" class="external-link"><code>crew.cluster</code>
+website</a> for more information on the supported job schedulers.</p>
+</div>
 </div>
 <div class="section level3">
 <h3 id="visualizations">Visualizations<a class="anchor" aria-label="anchor" href="#visualizations"></a>
@@ -460,24 +528,11 @@ provide visiualization functions to plot the metrics. For the first
 demultiplexing step, we can use the <code>plot_demultiplex</code>
 function to see how well many reads are retained after
 demultiplexing:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># example_pipeline provides an example pipeline for each of the three types</span></span>
-<span><span class="co"># of pipelines: BulkPipeline, SingleCellPipeline and MultiSampleSCPipeline</span></span>
-<span><span class="va">mspipeline</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/example_pipeline.html">example_pipeline</a></span><span class="op">(</span><span class="st">"MultiSampleSCPipeline"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Writing configuration parameters to:  /tmp/Rtmpwrao5I/file345355d3dd05/config_file_13395.json</span></span>
-<span><span class="co">#&gt; Configured steps: </span></span>
-<span><span class="co">#&gt;  barcode_demultiplex: TRUE</span></span>
-<span><span class="co">#&gt;  genome_alignment: TRUE</span></span>
-<span><span class="co">#&gt;  gene_quantification: TRUE</span></span>
-<span><span class="co">#&gt;  isoform_identification: TRUE</span></span>
-<span><span class="co">#&gt;  read_realignment: TRUE</span></span>
-<span><span class="co">#&gt;  transcript_quantification: TRUE</span></span>
-<span><span class="co">#&gt; samtools not found, will use Rsamtools package instead</span></span>
-<span></span>
-<span><span class="co"># don't have to run the entire pipeline for this</span></span>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># don't have to run the entire pipeline for this</span></span>
 <span><span class="co"># let's just run the demultiplexing step</span></span>
 <span><span class="va">mspipeline</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_step.html">run_step</a></span><span class="op">(</span><span class="va">mspipeline</span>, <span class="st">"barcode_demultiplex"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; ── Running step: barcode_demultiplex @ Thu Jun 12 10:32:16 2025 ────────────────</span></span>
+<span><span class="co">#&gt; ── Running step: barcode_demultiplex @ Wed Jun 18 02:50:11 2025 ────────────────</span></span>
 <span><span class="co">#&gt; FLEXIPLEX 0.96.2</span></span>
 <span><span class="co">#&gt; Setting max barcode edit distance to 2</span></span>
 <span><span class="co">#&gt; Setting max flanking sequence edit distance to 8</span></span>
@@ -488,13 +543,13 @@ demultiplexing:</p>
 <span><span class="co">#&gt; BC: NNNNNNNNNNNNNNNN</span></span>
 <span><span class="co">#&gt; UMI: NNNNNNNNNNNN</span></span>
 <span><span class="co">#&gt; polyT: TTTTTTTTT</span></span>
-<span><span class="co">#&gt; Setting known barcodes from /tmp/Rtmpwrao5I/file345355d3dd05/bc_allow.tsv</span></span>
+<span><span class="co">#&gt; Setting known barcodes from /tmp/Rtmp3cGsyz/file440e2d297f5d/bc_allow.tsv</span></span>
 <span><span class="co">#&gt; Number of known barcodes: 143</span></span>
-<span><span class="co">#&gt; Processing file: /tmp/Rtmpwrao5I/file345355d3dd05/fastq/sample1.fq.gz</span></span>
+<span><span class="co">#&gt; Processing file: /tmp/Rtmp3cGsyz/file440e2d297f5d/fastq/sample1.fq.gz</span></span>
 <span><span class="co">#&gt; Searching for barcodes...</span></span>
-<span><span class="co">#&gt; Processing file: /tmp/Rtmpwrao5I/file345355d3dd05/fastq/sample2.fq.gz</span></span>
+<span><span class="co">#&gt; Processing file: /tmp/Rtmp3cGsyz/file440e2d297f5d/fastq/sample2.fq.gz</span></span>
 <span><span class="co">#&gt; Searching for barcodes...</span></span>
-<span><span class="co">#&gt; Processing file: /tmp/Rtmpwrao5I/file345355d3dd05/fastq/sample3.fq.gz</span></span>
+<span><span class="co">#&gt; Processing file: /tmp/Rtmp3cGsyz/file440e2d297f5d/fastq/sample3.fq.gz</span></span>
 <span><span class="co">#&gt; Searching for barcodes...</span></span>
 <span><span class="co">#&gt; Number of reads processed: 393</span></span>
 <span><span class="co">#&gt; Number of reads where at least one barcode was found: 368</span></span>
@@ -511,9 +566,9 @@ demultiplexing:</p>
 <span><span class="co">#&gt; BC: NNNNNNNNNNNNNNNN</span></span>
 <span><span class="co">#&gt; UMI: NNNNNNNNNNNN</span></span>
 <span><span class="co">#&gt; polyT: TTTTTTTTT</span></span>
-<span><span class="co">#&gt; Setting known barcodes from /tmp/Rtmpwrao5I/file345355d3dd05/bc_allow.tsv</span></span>
+<span><span class="co">#&gt; Setting known barcodes from /tmp/Rtmp3cGsyz/file440e2d297f5d/bc_allow.tsv</span></span>
 <span><span class="co">#&gt; Number of known barcodes: 143</span></span>
-<span><span class="co">#&gt; Processing file: /tmp/Rtmpwrao5I/file345355d3dd05/fastq/sample1.fq.gz</span></span>
+<span><span class="co">#&gt; Processing file: /tmp/Rtmp3cGsyz/file440e2d297f5d/fastq/sample1.fq.gz</span></span>
 <span><span class="co">#&gt; Searching for barcodes...</span></span>
 <span><span class="co">#&gt; Number of reads processed: 100</span></span>
 <span><span class="co">#&gt; Number of reads where at least one barcode was found: 92</span></span>
@@ -530,9 +585,9 @@ demultiplexing:</p>
 <span><span class="co">#&gt; BC: NNNNNNNNNNNNNNNN</span></span>
 <span><span class="co">#&gt; UMI: NNNNNNNNNNNN</span></span>
 <span><span class="co">#&gt; polyT: TTTTTTTTT</span></span>
-<span><span class="co">#&gt; Setting known barcodes from /tmp/Rtmpwrao5I/file345355d3dd05/bc_allow.tsv</span></span>
+<span><span class="co">#&gt; Setting known barcodes from /tmp/Rtmp3cGsyz/file440e2d297f5d/bc_allow.tsv</span></span>
 <span><span class="co">#&gt; Number of known barcodes: 143</span></span>
-<span><span class="co">#&gt; Processing file: /tmp/Rtmpwrao5I/file345355d3dd05/fastq/sample2.fq.gz</span></span>
+<span><span class="co">#&gt; Processing file: /tmp/Rtmp3cGsyz/file440e2d297f5d/fastq/sample2.fq.gz</span></span>
 <span><span class="co">#&gt; Searching for barcodes...</span></span>
 <span><span class="co">#&gt; Number of reads processed: 100</span></span>
 <span><span class="co">#&gt; Number of reads where at least one barcode was found: 95</span></span>
@@ -549,9 +604,9 @@ demultiplexing:</p>
 <span><span class="co">#&gt; BC: NNNNNNNNNNNNNNNN</span></span>
 <span><span class="co">#&gt; UMI: NNNNNNNNNNNN</span></span>
 <span><span class="co">#&gt; polyT: TTTTTTTTT</span></span>
-<span><span class="co">#&gt; Setting known barcodes from /tmp/Rtmpwrao5I/file345355d3dd05/bc_allow.tsv</span></span>
+<span><span class="co">#&gt; Setting known barcodes from /tmp/Rtmp3cGsyz/file440e2d297f5d/bc_allow.tsv</span></span>
 <span><span class="co">#&gt; Number of known barcodes: 143</span></span>
-<span><span class="co">#&gt; Processing file: /tmp/Rtmpwrao5I/file345355d3dd05/fastq/sample3.fq.gz</span></span>
+<span><span class="co">#&gt; Processing file: /tmp/Rtmp3cGsyz/file440e2d297f5d/fastq/sample3.fq.gz</span></span>
 <span><span class="co">#&gt; Searching for barcodes...</span></span>
 <span><span class="co">#&gt; Number of reads processed: 193</span></span>
 <span><span class="co">#&gt; Number of reads where at least one barcode was found: 181</span></span>
@@ -560,20 +615,20 @@ demultiplexing:</p>
 <span><span class="co">#&gt; All done!</span></span>
 <span><span class="fu"><a href="../reference/plot_demultiplex.html">plot_demultiplex</a></span><span class="op">(</span><span class="va">mspipeline</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $reads_count_plot</span></span></code></pre></div>
-<p><img src="FLAMES_vignette_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
+<p><img src="FLAMES_vignette_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
 <pre><code><span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $knee_plot</span></span>
 <span><span class="co">#&gt; `geom_smooth()` using formula = 'y ~ x'</span></span></code></pre>
-<p><img src="FLAMES_vignette_files/figure-html/unnamed-chunk-6-2.png" width="700"></p>
+<p><img src="FLAMES_vignette_files/figure-html/unnamed-chunk-8-2.png" width="700"></p>
 <pre><code><span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $flank_editdistance_plot</span></span></code></pre>
-<p><img src="FLAMES_vignette_files/figure-html/unnamed-chunk-6-3.png" width="700"></p>
+<p><img src="FLAMES_vignette_files/figure-html/unnamed-chunk-8-3.png" width="700"></p>
 <pre><code><span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $barcode_editdistance_plot</span></span></code></pre>
-<p><img src="FLAMES_vignette_files/figure-html/unnamed-chunk-6-4.png" width="700"></p>
+<p><img src="FLAMES_vignette_files/figure-html/unnamed-chunk-8-4.png" width="700"></p>
 <pre><code><span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $cutadapt_plot</span></span></code></pre>
-<p><img src="FLAMES_vignette_files/figure-html/unnamed-chunk-6-5.png" width="700"></p>
+<p><img src="FLAMES_vignette_files/figure-html/unnamed-chunk-8-5.png" width="700"></p>
 </div>
 <div class="section level4">
 <h4 id="work-in-progress">Work in progress<a class="anchor" aria-label="anchor" href="#work-in-progress"></a>
@@ -624,104 +679,107 @@ when using these tools.</p>
 <span><span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; other attached packages:</span></span>
-<span><span class="co">#&gt; [1] FLAMES_2.3.2     BiocStyle_2.36.0</span></span>
+<span><span class="co">#&gt; [1] FLAMES_2.3.3     BiocStyle_2.36.0</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
-<span><span class="co">#&gt;   [1] splines_4.5.0               BiocIO_1.18.0              </span></span>
-<span><span class="co">#&gt;   [3] bitops_1.0-9                filelock_1.0.3             </span></span>
-<span><span class="co">#&gt;   [5] tibble_3.3.0                R.oo_1.27.1                </span></span>
-<span><span class="co">#&gt;   [7] polyclip_1.10-7             basilisk.utils_1.20.0      </span></span>
-<span><span class="co">#&gt;   [9] bambu_3.10.0                XML_3.99-0.18              </span></span>
-<span><span class="co">#&gt;  [11] httr2_1.1.2                 lifecycle_1.0.4            </span></span>
-<span><span class="co">#&gt;  [13] pwalign_1.4.0               edgeR_4.6.2                </span></span>
-<span><span class="co">#&gt;  [15] doParallel_1.0.17           vroom_1.6.5                </span></span>
-<span><span class="co">#&gt;  [17] MASS_7.3-65                 globals_0.18.0             </span></span>
-<span><span class="co">#&gt;  [19] lattice_0.22-7              magrittr_2.0.3             </span></span>
-<span><span class="co">#&gt;  [21] limma_3.64.1                sass_0.4.10                </span></span>
-<span><span class="co">#&gt;  [23] rmarkdown_2.29              jquerylib_0.1.4            </span></span>
-<span><span class="co">#&gt;  [25] yaml_2.3.10                 metapod_1.16.0             </span></span>
-<span><span class="co">#&gt;  [27] reticulate_1.42.0           cowplot_1.1.3              </span></span>
-<span><span class="co">#&gt;  [29] DBI_1.2.3                   RColorBrewer_1.1-3         </span></span>
-<span><span class="co">#&gt;  [31] abind_1.4-8                 ShortRead_1.66.0           </span></span>
-<span><span class="co">#&gt;  [33] GenomicRanges_1.60.0        purrr_1.0.4                </span></span>
-<span><span class="co">#&gt;  [35] R.utils_2.13.0              BiocGenerics_0.54.0        </span></span>
-<span><span class="co">#&gt;  [37] RCurl_1.98-1.17             yulab.utils_0.2.0          </span></span>
-<span><span class="co">#&gt;  [39] rappdirs_0.3.3              tweenr_2.0.3               </span></span>
-<span><span class="co">#&gt;  [41] circlize_0.4.16             GenomeInfoDbData_1.2.14    </span></span>
-<span><span class="co">#&gt;  [43] IRanges_2.42.0              S4Vectors_0.46.0           </span></span>
-<span><span class="co">#&gt;  [45] ggrepel_0.9.6               irlba_2.3.5.1              </span></span>
-<span><span class="co">#&gt;  [47] listenv_0.9.1               dqrng_0.4.1                </span></span>
-<span><span class="co">#&gt;  [49] parallelly_1.45.0           pkgdown_2.1.3.9000         </span></span>
-<span><span class="co">#&gt;  [51] DelayedMatrixStats_1.30.0   codetools_0.2-20           </span></span>
-<span><span class="co">#&gt;  [53] DropletUtils_1.28.0         DelayedArray_0.34.1        </span></span>
-<span><span class="co">#&gt;  [55] xml2_1.3.8                  ggforce_0.4.2              </span></span>
-<span><span class="co">#&gt;  [57] scuttle_1.18.0              tidyselect_1.2.1           </span></span>
-<span><span class="co">#&gt;  [59] shape_1.4.6.1               UCSC.utils_1.4.0           </span></span>
-<span><span class="co">#&gt;  [61] farver_2.1.2                viridis_0.6.5              </span></span>
-<span><span class="co">#&gt;  [63] ScaledMatrix_1.16.0         BiocFileCache_2.16.0       </span></span>
-<span><span class="co">#&gt;  [65] matrixStats_1.5.0           stats4_4.5.0               </span></span>
-<span><span class="co">#&gt;  [67] GenomicAlignments_1.44.0    jsonlite_2.0.0             </span></span>
-<span><span class="co">#&gt;  [69] GetoptLong_1.0.5            BiocNeighbors_2.2.0        </span></span>
-<span><span class="co">#&gt;  [71] scater_1.36.0               iterators_1.0.14           </span></span>
-<span><span class="co">#&gt;  [73] systemfonts_1.2.3           foreach_1.5.2              </span></span>
-<span><span class="co">#&gt;  [75] progress_1.2.3              tools_4.5.0                </span></span>
-<span><span class="co">#&gt;  [77] ragg_1.4.0                  Rcpp_1.0.14                </span></span>
-<span><span class="co">#&gt;  [79] glue_1.8.0                  gridExtra_2.3              </span></span>
-<span><span class="co">#&gt;  [81] SparseArray_1.8.0           mgcv_1.9-3                 </span></span>
-<span><span class="co">#&gt;  [83] xfun_0.52                   MatrixGenerics_1.20.0      </span></span>
-<span><span class="co">#&gt;  [85] GenomeInfoDb_1.44.0         dplyr_1.1.4                </span></span>
-<span><span class="co">#&gt;  [87] HDF5Array_1.36.0            withr_3.0.2                </span></span>
-<span><span class="co">#&gt;  [89] BiocManager_1.30.26         fastmap_1.2.0              </span></span>
-<span><span class="co">#&gt;  [91] basilisk_1.20.0             bluster_1.18.0             </span></span>
-<span><span class="co">#&gt;  [93] latticeExtra_0.6-30         rhdf5filters_1.20.0        </span></span>
-<span><span class="co">#&gt;  [95] digest_0.6.37               rsvd_1.0.5                 </span></span>
-<span><span class="co">#&gt;  [97] R6_2.6.1                    textshaping_1.0.1          </span></span>
-<span><span class="co">#&gt;  [99] colorspace_2.1-1            biomaRt_2.64.0             </span></span>
-<span><span class="co">#&gt; [101] jpeg_0.1-11                 dichromat_2.0-0.1          </span></span>
-<span><span class="co">#&gt; [103] RSQLite_2.4.1               R.methodsS3_1.8.2          </span></span>
-<span><span class="co">#&gt; [105] h5mread_1.0.1               tidyr_1.3.1                </span></span>
-<span><span class="co">#&gt; [107] generics_0.1.4              data.table_1.17.4          </span></span>
-<span><span class="co">#&gt; [109] rtracklayer_1.68.0          prettyunits_1.2.0          </span></span>
-<span><span class="co">#&gt; [111] httr_1.4.7                  htmlwidgets_1.6.4          </span></span>
-<span><span class="co">#&gt; [113] S4Arrays_1.8.1              scatterpie_0.2.4           </span></span>
-<span><span class="co">#&gt; [115] pkgconfig_2.0.3             gtable_0.3.6               </span></span>
-<span><span class="co">#&gt; [117] blob_1.2.4                  ComplexHeatmap_2.24.0      </span></span>
-<span><span class="co">#&gt; [119] hwriter_1.3.2.1             SingleCellExperiment_1.30.1</span></span>
-<span><span class="co">#&gt; [121] XVector_0.48.0              htmltools_0.5.8.1          </span></span>
-<span><span class="co">#&gt; [123] bookdown_0.43               clue_0.3-66                </span></span>
-<span><span class="co">#&gt; [125] scales_1.4.0                Biobase_2.68.0             </span></span>
-<span><span class="co">#&gt; [127] png_0.1-8                   SpatialExperiment_1.18.1   </span></span>
-<span><span class="co">#&gt; [129] scran_1.36.0                ggfun_0.1.8                </span></span>
-<span><span class="co">#&gt; [131] knitr_1.50                  tzdb_0.5.0                 </span></span>
-<span><span class="co">#&gt; [133] rjson_0.2.23                nlme_3.1-168               </span></span>
-<span><span class="co">#&gt; [135] curl_6.3.0                  cachem_1.1.0               </span></span>
-<span><span class="co">#&gt; [137] rhdf5_2.52.1                GlobalOptions_0.1.2        </span></span>
-<span><span class="co">#&gt; [139] stringr_1.5.1               parallel_4.5.0             </span></span>
-<span><span class="co">#&gt; [141] vipor_0.4.7                 AnnotationDbi_1.70.0       </span></span>
-<span><span class="co">#&gt; [143] restfulr_0.0.15             desc_1.4.3                 </span></span>
-<span><span class="co">#&gt; [145] pillar_1.10.2               grid_4.5.0                 </span></span>
-<span><span class="co">#&gt; [147] vctrs_0.6.5                 BiocSingular_1.24.0        </span></span>
-<span><span class="co">#&gt; [149] dbplyr_2.5.0                beachmat_2.24.0            </span></span>
-<span><span class="co">#&gt; [151] cluster_2.1.8.1             beeswarm_0.4.0             </span></span>
-<span><span class="co">#&gt; [153] evaluate_1.0.3              readr_2.1.5                </span></span>
-<span><span class="co">#&gt; [155] GenomicFeatures_1.60.0      magick_2.8.7               </span></span>
-<span><span class="co">#&gt; [157] cli_3.6.5                   locfit_1.5-9.12            </span></span>
-<span><span class="co">#&gt; [159] compiler_4.5.0              Rsamtools_2.24.0           </span></span>
-<span><span class="co">#&gt; [161] rlang_1.1.6                 crayon_1.5.3               </span></span>
-<span><span class="co">#&gt; [163] labeling_0.4.3              interp_1.1-6               </span></span>
-<span><span class="co">#&gt; [165] fs_1.6.6                    ggbeeswarm_0.7.2           </span></span>
-<span><span class="co">#&gt; [167] stringi_1.8.7               viridisLite_0.4.2          </span></span>
-<span><span class="co">#&gt; [169] deldir_2.0-4                BiocParallel_1.42.1        </span></span>
-<span><span class="co">#&gt; [171] txdbmaker_1.4.1             Biostrings_2.76.0          </span></span>
-<span><span class="co">#&gt; [173] Matrix_1.7-3                dir.expiry_1.16.0          </span></span>
-<span><span class="co">#&gt; [175] BSgenome_1.76.0             hms_1.1.3                  </span></span>
-<span><span class="co">#&gt; [177] sparseMatrixStats_1.20.0    bit64_4.6.0-1              </span></span>
-<span><span class="co">#&gt; [179] future_1.58.0               ggplot2_3.5.2              </span></span>
-<span><span class="co">#&gt; [181] Rhdf5lib_1.30.0             KEGGREST_1.48.0            </span></span>
-<span><span class="co">#&gt; [183] statmod_1.5.0               SummarizedExperiment_1.38.1</span></span>
-<span><span class="co">#&gt; [185] igraph_2.1.4                memoise_2.0.1              </span></span>
-<span><span class="co">#&gt; [187] bslib_0.9.0                 bit_4.6.0                  </span></span>
-<span><span class="co">#&gt; [189] xgboost_1.7.11.1</span></span></code></pre>
+<span><span class="co">#&gt;   [1] splines_4.5.0               later_1.4.2                </span></span>
+<span><span class="co">#&gt;   [3] BiocIO_1.18.0               bitops_1.0-9               </span></span>
+<span><span class="co">#&gt;   [5] filelock_1.0.3              tibble_3.3.0               </span></span>
+<span><span class="co">#&gt;   [7] R.oo_1.27.1                 polyclip_1.10-7            </span></span>
+<span><span class="co">#&gt;   [9] basilisk.utils_1.20.0       bambu_3.10.0               </span></span>
+<span><span class="co">#&gt;  [11] XML_3.99-0.18               httr2_1.1.2                </span></span>
+<span><span class="co">#&gt;  [13] lifecycle_1.0.4             pwalign_1.4.0              </span></span>
+<span><span class="co">#&gt;  [15] edgeR_4.6.2                 doParallel_1.0.17          </span></span>
+<span><span class="co">#&gt;  [17] processx_3.8.6              vroom_1.6.5                </span></span>
+<span><span class="co">#&gt;  [19] MASS_7.3-65                 globals_0.18.0             </span></span>
+<span><span class="co">#&gt;  [21] lattice_0.22-7              magrittr_2.0.3             </span></span>
+<span><span class="co">#&gt;  [23] limma_3.64.1                sass_0.4.10                </span></span>
+<span><span class="co">#&gt;  [25] rmarkdown_2.29              jquerylib_0.1.4            </span></span>
+<span><span class="co">#&gt;  [27] yaml_2.3.10                 metapod_1.16.0             </span></span>
+<span><span class="co">#&gt;  [29] reticulate_1.42.0           cowplot_1.1.3              </span></span>
+<span><span class="co">#&gt;  [31] DBI_1.2.3                   RColorBrewer_1.1-3         </span></span>
+<span><span class="co">#&gt;  [33] abind_1.4-8                 ShortRead_1.66.0           </span></span>
+<span><span class="co">#&gt;  [35] GenomicRanges_1.60.0        purrr_1.0.4                </span></span>
+<span><span class="co">#&gt;  [37] R.utils_2.13.0              BiocGenerics_0.54.0        </span></span>
+<span><span class="co">#&gt;  [39] RCurl_1.98-1.17             yulab.utils_0.2.0          </span></span>
+<span><span class="co">#&gt;  [41] rappdirs_0.3.3              tweenr_2.0.3               </span></span>
+<span><span class="co">#&gt;  [43] circlize_0.4.16             GenomeInfoDbData_1.2.14    </span></span>
+<span><span class="co">#&gt;  [45] IRanges_2.42.0              S4Vectors_0.46.0           </span></span>
+<span><span class="co">#&gt;  [47] ggrepel_0.9.6               irlba_2.3.5.1              </span></span>
+<span><span class="co">#&gt;  [49] listenv_0.9.1               dqrng_0.4.1                </span></span>
+<span><span class="co">#&gt;  [51] parallelly_1.45.0           pkgdown_2.1.3.9000         </span></span>
+<span><span class="co">#&gt;  [53] DelayedMatrixStats_1.30.0   codetools_0.2-20           </span></span>
+<span><span class="co">#&gt;  [55] DropletUtils_1.28.0         DelayedArray_0.34.1        </span></span>
+<span><span class="co">#&gt;  [57] xml2_1.3.8                  ggforce_0.4.2              </span></span>
+<span><span class="co">#&gt;  [59] scuttle_1.18.0              tidyselect_1.2.1           </span></span>
+<span><span class="co">#&gt;  [61] shape_1.4.6.1               UCSC.utils_1.4.0           </span></span>
+<span><span class="co">#&gt;  [63] farver_2.1.2                viridis_0.6.5              </span></span>
+<span><span class="co">#&gt;  [65] ScaledMatrix_1.16.0         BiocFileCache_2.16.0       </span></span>
+<span><span class="co">#&gt;  [67] matrixStats_1.5.0           stats4_4.5.0               </span></span>
+<span><span class="co">#&gt;  [69] GenomicAlignments_1.44.0    jsonlite_2.0.0             </span></span>
+<span><span class="co">#&gt;  [71] GetoptLong_1.0.5            BiocNeighbors_2.2.0        </span></span>
+<span><span class="co">#&gt;  [73] scater_1.36.0               iterators_1.0.14           </span></span>
+<span><span class="co">#&gt;  [75] systemfonts_1.2.3           foreach_1.5.2              </span></span>
+<span><span class="co">#&gt;  [77] progress_1.2.3              tools_4.5.0                </span></span>
+<span><span class="co">#&gt;  [79] ragg_1.4.0                  Rcpp_1.0.14                </span></span>
+<span><span class="co">#&gt;  [81] glue_1.8.0                  gridExtra_2.3              </span></span>
+<span><span class="co">#&gt;  [83] SparseArray_1.8.0           mgcv_1.9-3                 </span></span>
+<span><span class="co">#&gt;  [85] xfun_0.52                   MatrixGenerics_1.20.0      </span></span>
+<span><span class="co">#&gt;  [87] GenomeInfoDb_1.44.0         dplyr_1.1.4                </span></span>
+<span><span class="co">#&gt;  [89] HDF5Array_1.36.0            withr_3.0.2                </span></span>
+<span><span class="co">#&gt;  [91] BiocManager_1.30.26         fastmap_1.2.0              </span></span>
+<span><span class="co">#&gt;  [93] basilisk_1.20.0             bluster_1.18.0             </span></span>
+<span><span class="co">#&gt;  [95] latticeExtra_0.6-30         rhdf5filters_1.20.0        </span></span>
+<span><span class="co">#&gt;  [97] digest_0.6.37               rsvd_1.0.5                 </span></span>
+<span><span class="co">#&gt;  [99] R6_2.6.1                    textshaping_1.0.1          </span></span>
+<span><span class="co">#&gt; [101] colorspace_2.1-1            biomaRt_2.64.0             </span></span>
+<span><span class="co">#&gt; [103] jpeg_0.1-11                 dichromat_2.0-0.1          </span></span>
+<span><span class="co">#&gt; [105] RSQLite_2.4.1               R.methodsS3_1.8.2          </span></span>
+<span><span class="co">#&gt; [107] h5mread_1.0.1               tidyr_1.3.1                </span></span>
+<span><span class="co">#&gt; [109] generics_0.1.4              data.table_1.17.4          </span></span>
+<span><span class="co">#&gt; [111] rtracklayer_1.68.0          prettyunits_1.2.0          </span></span>
+<span><span class="co">#&gt; [113] httr_1.4.7                  htmlwidgets_1.6.4          </span></span>
+<span><span class="co">#&gt; [115] S4Arrays_1.8.1              scatterpie_0.2.4           </span></span>
+<span><span class="co">#&gt; [117] pkgconfig_2.0.3             gtable_0.3.6               </span></span>
+<span><span class="co">#&gt; [119] blob_1.2.4                  ComplexHeatmap_2.24.0      </span></span>
+<span><span class="co">#&gt; [121] hwriter_1.3.2.1             SingleCellExperiment_1.30.1</span></span>
+<span><span class="co">#&gt; [123] XVector_0.48.0              htmltools_0.5.8.1          </span></span>
+<span><span class="co">#&gt; [125] bookdown_0.43               clue_0.3-66                </span></span>
+<span><span class="co">#&gt; [127] scales_1.4.0                Biobase_2.68.0             </span></span>
+<span><span class="co">#&gt; [129] png_0.1-8                   nanonext_1.6.0             </span></span>
+<span><span class="co">#&gt; [131] SpatialExperiment_1.18.1    scran_1.36.0               </span></span>
+<span><span class="co">#&gt; [133] ggfun_0.1.8                 knitr_1.50                 </span></span>
+<span><span class="co">#&gt; [135] tzdb_0.5.0                  rjson_0.2.23               </span></span>
+<span><span class="co">#&gt; [137] nlme_3.1-168                curl_6.3.0                 </span></span>
+<span><span class="co">#&gt; [139] crew_1.2.1                  cachem_1.1.0               </span></span>
+<span><span class="co">#&gt; [141] rhdf5_2.52.1                GlobalOptions_0.1.2        </span></span>
+<span><span class="co">#&gt; [143] stringr_1.5.1               parallel_4.5.0             </span></span>
+<span><span class="co">#&gt; [145] vipor_0.4.7                 AnnotationDbi_1.70.0       </span></span>
+<span><span class="co">#&gt; [147] restfulr_0.0.15             desc_1.4.3                 </span></span>
+<span><span class="co">#&gt; [149] pillar_1.10.2               grid_4.5.0                 </span></span>
+<span><span class="co">#&gt; [151] vctrs_0.6.5                 promises_1.3.3             </span></span>
+<span><span class="co">#&gt; [153] BiocSingular_1.24.0         dbplyr_2.5.0               </span></span>
+<span><span class="co">#&gt; [155] beachmat_2.24.0             cluster_2.1.8.1            </span></span>
+<span><span class="co">#&gt; [157] beeswarm_0.4.0              evaluate_1.0.3             </span></span>
+<span><span class="co">#&gt; [159] readr_2.1.5                 GenomicFeatures_1.60.0     </span></span>
+<span><span class="co">#&gt; [161] magick_2.8.7                cli_3.6.5                  </span></span>
+<span><span class="co">#&gt; [163] locfit_1.5-9.12             compiler_4.5.0             </span></span>
+<span><span class="co">#&gt; [165] Rsamtools_2.24.0            rlang_1.1.6                </span></span>
+<span><span class="co">#&gt; [167] crayon_1.5.3                labeling_0.4.3             </span></span>
+<span><span class="co">#&gt; [169] interp_1.1-6                ps_1.9.1                   </span></span>
+<span><span class="co">#&gt; [171] fs_1.6.6                    ggbeeswarm_0.7.2           </span></span>
+<span><span class="co">#&gt; [173] stringi_1.8.7               viridisLite_0.4.2          </span></span>
+<span><span class="co">#&gt; [175] deldir_2.0-4                BiocParallel_1.42.1        </span></span>
+<span><span class="co">#&gt; [177] txdbmaker_1.4.1             Biostrings_2.76.0          </span></span>
+<span><span class="co">#&gt; [179] Matrix_1.7-3                dir.expiry_1.16.0          </span></span>
+<span><span class="co">#&gt; [181] BSgenome_1.76.0             hms_1.1.3                  </span></span>
+<span><span class="co">#&gt; [183] sparseMatrixStats_1.20.0    bit64_4.6.0-1              </span></span>
+<span><span class="co">#&gt; [185] future_1.58.0               ggplot2_3.5.2              </span></span>
+<span><span class="co">#&gt; [187] Rhdf5lib_1.30.0             KEGGREST_1.48.0            </span></span>
+<span><span class="co">#&gt; [189] statmod_1.5.0               SummarizedExperiment_1.38.1</span></span>
+<span><span class="co">#&gt; [191] mirai_2.3.0                 igraph_2.1.4               </span></span>
+<span><span class="co">#&gt; [193] memoise_2.0.1               bslib_0.9.0                </span></span>
+<span><span class="co">#&gt; [195] bit_4.6.0                   xgboost_1.7.11.1</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>

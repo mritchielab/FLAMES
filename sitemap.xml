@@ -17,6 +17,8 @@
 <url><loc>https://mritchielab.github.io/FLAMES/reference/blaze.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/bulk_long_pipeline.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/combine_sce.html</loc></url>
+<url><loc>https://mritchielab.github.io/FLAMES/reference/controllers-set.html</loc></url>
+<url><loc>https://mritchielab.github.io/FLAMES/reference/controllers.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/convolution_filter.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/create_config.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/create_sce_from_dir.html</loc></url>
@@ -38,6 +40,7 @@
 <url><loc>https://mritchielab.github.io/FLAMES/reference/get_coverage.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/gff2bed.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/index.html</loc></url>
+<url><loc>https://mritchielab.github.io/FLAMES/reference/index_genome.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/minimap2_align.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/mutation_positions.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/mutation_positions_single.html</loc></url>

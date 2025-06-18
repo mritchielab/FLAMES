@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">FLAMES</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.3.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.3.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -30,7 +30,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Pipeline for Multi-sample Single Cell Data (deprecated)</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mritchielab/FLAMES/blob/devel/R/sc_long_multisample_pipeline.R" class="external-link"><code>R/sc_long_multisample_pipeline.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mritchielab/FLAMES/blob/devel/R/methods-MultiSampleSCPipeline.R" class="external-link"><code>R/methods-MultiSampleSCPipeline.R</code></a></small>
       <div class="d-none name"><code>sc_long_multisample_pipeline.Rd</code></div>
     </div>
 
@@ -138,8 +138,8 @@
 <span class="r-in"><span>  barcodes_file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">bc_allow</span>, <span class="fl">4</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> sc_long_multisample_pipeline is deprecated, please use MultiSampleSCPipeline instead.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> No config file provided, creating a default config in /tmp/RtmpMWOJmh/file28867d2572e6 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/RtmpMWOJmh/file28867d2572e6/config_file_10374.json </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> No config file provided, creating a default config in /tmp/Rtmp84lyyk/file37f6185a54e8 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/Rtmp84lyyk/file37f6185a54e8/config_file_14326.json </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Configured steps: </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	barcode_demultiplex: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	genome_alignment: TRUE</span>
@@ -148,7 +148,7 @@
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	read_realignment: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	transcript_quantification: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> samtools not found, will use Rsamtools package instead</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: barcode_demultiplex @ Thu Jun 12 10:31:37 2025 ────────────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: barcode_demultiplex @ Wed Jun 18 02:49:32 2025 ────────────────</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> FLEXIPLEX 0.96.2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Setting max barcode edit distance to 2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Setting max flanking sequence edit distance to 8</span>
@@ -159,13 +159,13 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> BC: NNNNNNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> UMI: NNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> polyT: TTTTTTTTT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpMWOJmh/file28867d2572e6/bc_allow.tsv</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/Rtmp84lyyk/file37f6185a54e8/bc_allow.tsv</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of known barcodes: 143</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/RtmpMWOJmh/file28867d2572e6/fastq/sample1.fq.gz</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/Rtmp84lyyk/file37f6185a54e8/fastq/sample1.fq.gz</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/RtmpMWOJmh/file28867d2572e6/fastq/sample2.fq.gz</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/Rtmp84lyyk/file37f6185a54e8/fastq/sample2.fq.gz</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/RtmpMWOJmh/file28867d2572e6/fastq/sample3.fq.gz</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/Rtmp84lyyk/file37f6185a54e8/fastq/sample3.fq.gz</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads processed: 393</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads where at least one barcode was found: 368</span>
@@ -182,9 +182,9 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> BC: NNNNNNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> UMI: NNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> polyT: TTTTTTTTT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpMWOJmh/file28867d2572e6/bc_allow.tsv</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/Rtmp84lyyk/file37f6185a54e8/bc_allow.tsv</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of known barcodes: 143</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/RtmpMWOJmh/file28867d2572e6/fastq/sample1.fq.gz</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/Rtmp84lyyk/file37f6185a54e8/fastq/sample1.fq.gz</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads processed: 100</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads where at least one barcode was found: 92</span>
@@ -201,9 +201,9 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> BC: NNNNNNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> UMI: NNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> polyT: TTTTTTTTT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpMWOJmh/file28867d2572e6/bc_allow.tsv</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/Rtmp84lyyk/file37f6185a54e8/bc_allow.tsv</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of known barcodes: 143</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/RtmpMWOJmh/file28867d2572e6/fastq/sample2.fq.gz</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/Rtmp84lyyk/file37f6185a54e8/fastq/sample2.fq.gz</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads processed: 100</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads where at least one barcode was found: 95</span>
@@ -220,44 +220,44 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> BC: NNNNNNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> UMI: NNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> polyT: TTTTTTTTT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpMWOJmh/file28867d2572e6/bc_allow.tsv</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/Rtmp84lyyk/file37f6185a54e8/bc_allow.tsv</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of known barcodes: 143</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/RtmpMWOJmh/file28867d2572e6/fastq/sample3.fq.gz</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/Rtmp84lyyk/file37f6185a54e8/fastq/sample3.fq.gz</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads processed: 193</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads where at least one barcode was found: 181</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads with exactly one barcode match: 179</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of chimera reads: 0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> All done!</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: genome_alignment @ Thu Jun 12 10:31:38 2025 ───────────────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: genome_alignment @ Wed Jun 18 02:49:32 2025 ───────────────────</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Creating junction bed file from GFF3 annotation.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample /tmp/RtmpMWOJmh/file28867d2572e6/sampleA_matched_reads.fastq.gz -&gt; /tmp/RtmpMWOJmh/file28867d2572e6/sampleA_align2genome.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample /tmp/Rtmp84lyyk/file37f6185a54e8/sampleA_matched_reads.fastq.gz -&gt; /tmp/Rtmp84lyyk/file37f6185a54e8/sampleA_align2genome.bam</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Your fastq file appears to have tags, but you did not provide the -y option to minimap2 to include the tags in the output.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sorting BAM files by genome coordinates with 8 threads...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Indexing bam files</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample /tmp/RtmpMWOJmh/file28867d2572e6/sample1_matched_reads.fastq.gz -&gt; /tmp/RtmpMWOJmh/file28867d2572e6/sample1_align2genome.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample /tmp/Rtmp84lyyk/file37f6185a54e8/sample1_matched_reads.fastq.gz -&gt; /tmp/Rtmp84lyyk/file37f6185a54e8/sample1_align2genome.bam</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Your fastq file appears to have tags, but you did not provide the -y option to minimap2 to include the tags in the output.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sorting BAM files by genome coordinates with 8 threads...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Indexing bam files</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample /tmp/RtmpMWOJmh/file28867d2572e6/sample2_matched_reads.fastq.gz -&gt; /tmp/RtmpMWOJmh/file28867d2572e6/sample2_align2genome.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample /tmp/Rtmp84lyyk/file37f6185a54e8/sample2_matched_reads.fastq.gz -&gt; /tmp/Rtmp84lyyk/file37f6185a54e8/sample2_align2genome.bam</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Your fastq file appears to have tags, but you did not provide the -y option to minimap2 to include the tags in the output.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sorting BAM files by genome coordinates with 8 threads...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Indexing bam files</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample /tmp/RtmpMWOJmh/file28867d2572e6/sample3_matched_reads.fastq.gz -&gt; /tmp/RtmpMWOJmh/file28867d2572e6/sample3_align2genome.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample /tmp/Rtmp84lyyk/file37f6185a54e8/sample3_matched_reads.fastq.gz -&gt; /tmp/Rtmp84lyyk/file37f6185a54e8/sample3_align2genome.bam</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Your fastq file appears to have tags, but you did not provide the -y option to minimap2 to include the tags in the output.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sorting BAM files by genome coordinates with 8 threads...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Indexing bam files</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: gene_quantification @ Thu Jun 12 10:31:38 2025 ────────────────</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10:31:38 AM Thu Jun 12 2025 quantify genes </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using BAM(s): <span style="color: #0000BB;">/tmp/RtmpMWOJmh/file28867d2572e6/sampleA_align2genome.bam</span>,</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">/tmp/RtmpMWOJmh/file28867d2572e6/sample1_align2genome.bam</span>,</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">/tmp/RtmpMWOJmh/file28867d2572e6/sample2_align2genome.bam</span>, and</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">/tmp/RtmpMWOJmh/file28867d2572e6/sample3_align2genome.bam</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: isoform_identification @ Thu Jun 12 10:31:39 2025 ─────────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: gene_quantification @ Wed Jun 18 02:49:33 2025 ────────────────</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 02:49:33 AM Wed Jun 18 2025 quantify genes </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Using BAM(s): <span style="color: #0000BB;">/tmp/Rtmp84lyyk/file37f6185a54e8/sampleA_align2genome.bam</span>,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">/tmp/Rtmp84lyyk/file37f6185a54e8/sample1_align2genome.bam</span>,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">/tmp/Rtmp84lyyk/file37f6185a54e8/sample2_align2genome.bam</span>, and</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">/tmp/Rtmp84lyyk/file37f6185a54e8/sample3_align2genome.bam</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: isoform_identification @ Wed Jun 18 02:49:34 2025 ─────────────</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Import genomic features from the file as a GRanges object ... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> OK</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Prepare the 'metadata' data frame ... </span>
@@ -265,26 +265,26 @@
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Make the TxDb object ... </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>genome version information is not available for this TxDb object</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> OK</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: read_realignment @ Thu Jun 12 10:31:40 2025 ───────────────────</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Checking for fastq file(s) /tmp/RtmpMWOJmh/file28867d2572e6/fastq, /tmp/RtmpMWOJmh/file28867d2572e6/fastq/sample1.fq.gz, /tmp/RtmpMWOJmh/file28867d2572e6/fastq/sample2.fq.gz, /tmp/RtmpMWOJmh/file28867d2572e6/fastq/sample3.fq.gz</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: read_realignment @ Wed Jun 18 02:49:35 2025 ───────────────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Checking for fastq file(s) /tmp/Rtmp84lyyk/file37f6185a54e8/fastq, /tmp/Rtmp84lyyk/file37f6185a54e8/fastq/sample1.fq.gz, /tmp/Rtmp84lyyk/file37f6185a54e8/fastq/sample2.fq.gz, /tmp/Rtmp84lyyk/file37f6185a54e8/fastq/sample3.fq.gz</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	files found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Checking for fastq file(s) /tmp/RtmpMWOJmh/file28867d2572e6/sampleA_matched_reads.fastq.gz, /tmp/RtmpMWOJmh/file28867d2572e6/sample1_matched_reads.fastq.gz, /tmp/RtmpMWOJmh/file28867d2572e6/sample2_matched_reads.fastq.gz, /tmp/RtmpMWOJmh/file28867d2572e6/sample3_matched_reads.fastq.gz</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Checking for fastq file(s) /tmp/Rtmp84lyyk/file37f6185a54e8/sampleA_matched_reads.fastq.gz, /tmp/Rtmp84lyyk/file37f6185a54e8/sample1_matched_reads.fastq.gz, /tmp/Rtmp84lyyk/file37f6185a54e8/sample2_matched_reads.fastq.gz, /tmp/Rtmp84lyyk/file37f6185a54e8/sample3_matched_reads.fastq.gz</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	files found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Checking for fastq file(s) /tmp/RtmpMWOJmh/file28867d2572e6/sampleA_matched_reads_dedup.fastq.gz, /tmp/RtmpMWOJmh/file28867d2572e6/sample1_matched_reads_dedup.fastq.gz, /tmp/RtmpMWOJmh/file28867d2572e6/sample2_matched_reads_dedup.fastq.gz, /tmp/RtmpMWOJmh/file28867d2572e6/sample3_matched_reads_dedup.fastq.gz</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Checking for fastq file(s) /tmp/Rtmp84lyyk/file37f6185a54e8/sampleA_matched_reads_dedup.fastq.gz, /tmp/Rtmp84lyyk/file37f6185a54e8/sample1_matched_reads_dedup.fastq.gz, /tmp/Rtmp84lyyk/file37f6185a54e8/sample2_matched_reads_dedup.fastq.gz, /tmp/Rtmp84lyyk/file37f6185a54e8/sample3_matched_reads_dedup.fastq.gz</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	files found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample /tmp/RtmpMWOJmh/file28867d2572e6/sampleA_matched_reads_dedup.fastq.gz -&gt; /tmp/RtmpMWOJmh/file28867d2572e6/sampleA_realign2transcript.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample /tmp/Rtmp84lyyk/file37f6185a54e8/sampleA_matched_reads_dedup.fastq.gz -&gt; /tmp/Rtmp84lyyk/file37f6185a54e8/sampleA_realign2transcript.bam</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sorting BAM files by 8 with CB threads...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample /tmp/RtmpMWOJmh/file28867d2572e6/sample1_matched_reads_dedup.fastq.gz -&gt; /tmp/RtmpMWOJmh/file28867d2572e6/sample1_realign2transcript.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample /tmp/Rtmp84lyyk/file37f6185a54e8/sample1_matched_reads_dedup.fastq.gz -&gt; /tmp/Rtmp84lyyk/file37f6185a54e8/sample1_realign2transcript.bam</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sorting BAM files by 8 with CB threads...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample /tmp/RtmpMWOJmh/file28867d2572e6/sample2_matched_reads_dedup.fastq.gz -&gt; /tmp/RtmpMWOJmh/file28867d2572e6/sample2_realign2transcript.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample /tmp/Rtmp84lyyk/file37f6185a54e8/sample2_matched_reads_dedup.fastq.gz -&gt; /tmp/Rtmp84lyyk/file37f6185a54e8/sample2_realign2transcript.bam</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sorting BAM files by 8 with CB threads...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample /tmp/RtmpMWOJmh/file28867d2572e6/sample3_matched_reads_dedup.fastq.gz -&gt; /tmp/RtmpMWOJmh/file28867d2572e6/sample3_realign2transcript.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample /tmp/Rtmp84lyyk/file37f6185a54e8/sample3_matched_reads_dedup.fastq.gz -&gt; /tmp/Rtmp84lyyk/file37f6185a54e8/sample3_realign2transcript.bam</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sorting BAM files by 8 with CB threads...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: transcript_quantification @ Thu Jun 12 10:31:41 2025 ──────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: transcript_quantification @ Wed Jun 18 02:49:35 2025 ──────────</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Import genomic features from the file as a GRanges object ... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> OK</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Prepare the 'metadata' data frame ... </span>
@@ -341,7 +341,7 @@
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Make the TxDb object ... </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>genome version information is not available for this TxDb object</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> OK</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Pipeline saved to /tmp/RtmpMWOJmh/file28867d2572e6/pipeline.rds</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Pipeline saved to /tmp/Rtmp84lyyk/file37f6185a54e8/pipeline.rds</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

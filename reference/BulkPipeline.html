@@ -13,7 +13,7 @@ arguments."><meta property="og:image" content="https://mritchielab.github.io/FLA
 
     <a class="navbar-brand me-2" href="../index.html">FLAMES</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.3.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.3.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,7 +36,7 @@ arguments."><meta property="og:image" content="https://mritchielab.github.io/FLA
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Pipeline for bulk long read RNA-seq data processing</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mritchielab/FLAMES/blob/devel/R/bulk_long_pipeline.R" class="external-link"><code>R/bulk_long_pipeline.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mritchielab/FLAMES/blob/devel/R/methods-BulkPipeline.R" class="external-link"><code>R/methods-BulkPipeline.R</code></a></small>
       <div class="d-none name"><code>BulkPipeline.Rd</code></div>
     </div>
 
@@ -55,8 +55,10 @@ arguments.</p>
 <span>  <span class="va">fastq</span>,</span>
 <span>  <span class="va">annotation</span>,</span>
 <span>  <span class="va">genome_fa</span>,</span>
+<span>  <span class="va">genome_mmi</span>,</span>
 <span>  <span class="va">minimap2</span>,</span>
-<span>  <span class="va">samtools</span></span>
+<span>  <span class="va">samtools</span>,</span>
+<span>  <span class="va">controllers</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -85,6 +87,10 @@ will be processed as an individual sample.</p></dd>
 <dd><p>The file path to the reference genome in FASTA format.</p></dd>
 
 
+<dt id="arg-genome-mmi">genome_mmi<a class="anchor" aria-label="anchor" href="#arg-genome-mmi"></a></dt>
+<dd><p>(optional) The file path to minimap2's index reference genome.</p></dd>
+
+
 <dt id="arg-minimap-">minimap2<a class="anchor" aria-label="anchor" href="#arg-minimap-"></a></dt>
 <dd><p>(optional) The path to the minimap2 binary. If not provided, FLAMES will
 use a copy from bioconda via <code>basilisk</code>.</p></dd>
@@ -94,6 +100,10 @@ use a copy from bioconda via <code>basilisk</code>.</p></dd>
 <dd><p>(optional) The path to the samtools binary. If not provided, FLAMES will
 use a copy from bioconda via <code>basilisk</code>.
 provided, FLAMES will use a copy from bioconda via <code>basilisk</code>.</p></dd>
+
+
+<dt id="arg-controllers">controllers<a class="anchor" aria-label="anchor" href="#arg-controllers"></a></dt>
+<dd><p>(optional, <strong>experimental</strong>) A <code>crew_class_controller</code> object for running certain steps</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -137,13 +147,19 @@ can be modified by the JSON configuration file (<code>config_file</code>).</p>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">"fastq"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">ShortRead</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ShortRead/man/readFastq.html" class="external-link">writeFastq</a></span><span class="op">(</span><span class="va">reads</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">100</span><span class="op">]</span>,</span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">"fastq/sample1.fq.gz"</span><span class="op">)</span>, mode <span class="op">=</span> <span class="st">"w"</span>, full <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">"fastq/sample1.fq.gz"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  mode <span class="op">=</span> <span class="st">"w"</span>, full <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">reads</span> <span class="op">&lt;-</span> <span class="va">reads</span><span class="op">[</span><span class="op">-</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">100</span><span class="op">)</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="fu">ShortRead</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ShortRead/man/readFastq.html" class="external-link">writeFastq</a></span><span class="op">(</span><span class="va">reads</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">100</span><span class="op">]</span>,</span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">"fastq/sample2.fq.gz"</span><span class="op">)</span>, mode <span class="op">=</span> <span class="st">"w"</span>, full <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">"fastq/sample2.fq.gz"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  mode <span class="op">=</span> <span class="st">"w"</span>, full <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">reads</span> <span class="op">&lt;-</span> <span class="va">reads</span><span class="op">[</span><span class="op">-</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">100</span><span class="op">)</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="fu">ShortRead</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ShortRead/man/readFastq.html" class="external-link">writeFastq</a></span><span class="op">(</span><span class="va">reads</span>,</span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">"fastq/sample3.fq.gz"</span><span class="op">)</span>, mode <span class="op">=</span> <span class="st">"w"</span>, full <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">"fastq/sample3.fq.gz"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  mode <span class="op">=</span> <span class="st">"w"</span>, full <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># prepare the reference genome</span></span></span>
 <span class="r-in"><span><span class="va">genome_fa</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">"rps24.fa"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">R.utils</span><span class="fu">::</span><span class="fu"><a href="https://henrikbengtsson.github.io/R.utils/reference/compressFile.html" class="external-link">gunzip</a></span><span class="op">(</span></span></span>
@@ -161,7 +177,7 @@ can be modified by the JSON configuration file (<code>config_file</code>).</p>
 <span class="r-in"><span>  config_file <span class="op">=</span> <span class="fu"><a href="create_config.html">create_config</a></span><span class="op">(</span><span class="va">outdir</span>, type <span class="op">=</span> <span class="st">"sc_3end"</span>, threads <span class="op">=</span> <span class="fl">1</span>, no_flank <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  outdir <span class="op">=</span> <span class="va">outdir</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/RtmpMWOJmh/file288619ce4a38/config_file_10374.json </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/Rtmp84lyyk/file37f61ab3fbd2/config_file_14326.json </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Configured steps: </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	genome_alignment: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	isoform_identification: TRUE</span>
@@ -169,21 +185,21 @@ can be modified by the JSON configuration file (<code>config_file</code>).</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	transcript_quantification: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> samtools not found, will use Rsamtools package instead</span>
 <span class="r-in"><span><span class="va">ppl</span> <span class="op">&lt;-</span> <span class="fu"><a href="run_FLAMES.html">run_FLAMES</a></span><span class="op">(</span><span class="va">ppl</span><span class="op">)</span> <span class="co"># run the pipeline</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: genome_alignment @ Thu Jun 12 10:30:03 2025 ───────────────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: genome_alignment @ Wed Jun 18 02:47:55 2025 ───────────────────</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Creating junction bed file from GFF3 annotation.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample sample1 -&gt; /tmp/RtmpMWOJmh/file288619ce4a38/sample1_align2genome.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample sample1 -&gt; /tmp/Rtmp84lyyk/file37f61ab3fbd2/sample1_align2genome.bam</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sorting BAM files by genome coordinates with 1 threads...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Indexing bam files</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample sample2 -&gt; /tmp/RtmpMWOJmh/file288619ce4a38/sample2_align2genome.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample sample2 -&gt; /tmp/Rtmp84lyyk/file37f61ab3fbd2/sample2_align2genome.bam</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sorting BAM files by genome coordinates with 1 threads...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Indexing bam files</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample sample3 -&gt; /tmp/RtmpMWOJmh/file288619ce4a38/sample3_align2genome.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample sample3 -&gt; /tmp/Rtmp84lyyk/file37f61ab3fbd2/sample3_align2genome.bam</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sorting BAM files by genome coordinates with 1 threads...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Indexing bam files</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: isoform_identification @ Thu Jun 12 10:30:03 2025 ─────────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: isoform_identification @ Wed Jun 18 02:47:56 2025 ─────────────</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Import genomic features from the file as a GRanges object ... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> OK</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Prepare the 'metadata' data frame ... </span>
@@ -191,17 +207,17 @@ can be modified by the JSON configuration file (<code>config_file</code>).</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Make the TxDb object ... </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>genome version information is not available for this TxDb object</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> OK</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: read_realignment @ Thu Jun 12 10:30:06 2025 ───────────────────</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample sample1 -&gt; /tmp/RtmpMWOJmh/file288619ce4a38/sample1_realign2transcript.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: read_realignment @ Wed Jun 18 02:47:58 2025 ───────────────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample sample1 -&gt; /tmp/Rtmp84lyyk/file37f61ab3fbd2/sample1_realign2transcript.bam</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Skipped sorting BAM files.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample sample2 -&gt; /tmp/RtmpMWOJmh/file288619ce4a38/sample2_realign2transcript.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample sample2 -&gt; /tmp/Rtmp84lyyk/file37f61ab3fbd2/sample2_realign2transcript.bam</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Skipped sorting BAM files.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample sample3 -&gt; /tmp/RtmpMWOJmh/file288619ce4a38/sample3_realign2transcript.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample sample3 -&gt; /tmp/Rtmp84lyyk/file37f61ab3fbd2/sample3_realign2transcript.bam</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Skipped sorting BAM files.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: transcript_quantification @ Thu Jun 12 10:30:06 2025 ──────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: transcript_quantification @ Wed Jun 18 02:47:59 2025 ──────────</span>
 <span class="r-in"><span><span class="fu"><a href="experiment.html">experiment</a></span><span class="op">(</span><span class="va">ppl</span><span class="op">)</span> <span class="co"># get the result as SummarizedExperiment</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> class: SummarizedExperiment </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> dim: 10 3 </span>
