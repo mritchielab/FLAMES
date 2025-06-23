@@ -64,8 +64,7 @@
 
 
 <dl><dt id="arg-fastq">fastq<a class="anchor" aria-label="anchor" href="#arg-fastq"></a></dt>
-<dd><p>character vector of paths to FASTQ files or folders, if
-named, the names will be used as sample names, otherwise the file names will be used</p></dd>
+<dd><p>A path to a FASTQ file or a directory containing FASTQ files.</p></dd>
 
 
 <dt id="arg-barcodes-file">barcodes_file<a class="anchor" aria-label="anchor" href="#arg-barcodes-file"></a></dt>
@@ -81,14 +80,11 @@ named, the names will be used as sample names, otherwise the file names will be 
 
 
 <dt id="arg-reads-out">reads_out<a class="anchor" aria-label="anchor" href="#arg-reads-out"></a></dt>
-<dd><p>path to output FASTQ file; if multiple samples are processed,
-the sample name will be appended to this argument, e.g. provide <code>path/out.fq</code> for single
-sample, and <code>path/prefix</code> for multiple samples.</p></dd>
+<dd><p>path to output FASTQ file</p></dd>
 
 
 <dt id="arg-stats-out">stats_out<a class="anchor" aria-label="anchor" href="#arg-stats-out"></a></dt>
-<dd><p>path of output stats file; similar to <code>reads_out</code>, e.g. provide
-<code>path/stats.tsv</code> for single sample, and <code>path/prefix</code> for multiple samples.</p></dd>
+<dd><p>path of output stats file</p></dd>
 
 
 <dt id="arg-threads">threads<a class="anchor" aria-label="anchor" href="#arg-threads"></a></dt>
@@ -130,10 +126,7 @@ are to be discarded</p></dd>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>This function demultiplexes reads by searching for flanking sequences (adaptors)
-around the barcode sequence, and then matching against allowed barcodes. For single
-sample, either provide a single FASTQ file or a folder containing FASTQ files. For
-multiple samples, provide a vector of paths (either to FASTQ files or folders containing
-FASTQ files). Gzipped file input are supported but the output will be uncompressed.</p>
+around the barcode sequence, and then matching against allowed barcodes.</p>
     </div>
 
     <div class="section level2">
@@ -145,10 +138,9 @@ FASTQ files). Gzipped file input are supported but the output will be uncompress
 <span class="r-in"><span>  filename <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"bc_allow.tsv.gz"</span>, package <span class="op">=</span> <span class="st">"FLAMES"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  destname <span class="op">=</span> <span class="va">bc_allow</span>, remove <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="co"># single sample</span></span></span>
 <span class="r-in"><span><span class="fu">find_barcode</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  fastq <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"fastq"</span>, <span class="st">"musc_rps24.fastq.gz"</span>, package <span class="op">=</span> <span class="st">"FLAMES"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  stats_out <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">"bc_stat"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  stats_out <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">"bc_stat.tsv.gz"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  reads_out <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">"demultiplexed.fastq.gz"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  barcodes_file <span class="op">=</span> <span class="va">bc_allow</span>, </span></span>
 <span class="r-in"><span>  TSO_seq <span class="op">=</span> <span class="st">"AAGCAGTGGTATCAACGCAGAGTACATGGG"</span>, TSO_prime <span class="op">=</span> <span class="fl">5</span>,</span></span>
@@ -164,7 +156,7 @@ FASTQ files). Gzipped file input are supported but the output will be uncompress
 <span class="r-out co"><span class="r-pr">#&gt;</span> BC: NNNNNNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> UMI: NNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> polyT: TTTTTTTTT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/Rtmp2gYYrb/file367c49566419/bc_allow.tsv</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpA5lNG6/file329064c67719/bc_allow.tsv</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of known barcodes: 143</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
@@ -173,28 +165,7 @@ FASTQ files). Gzipped file input are supported but the output will be uncompress
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads with exactly one barcode match: 364</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of chimera reads: 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> All done!</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $musc_rps24</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $musc_rps24$cutadapt</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> read1_with_adapter              input             output </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                248                372                248 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $musc_rps24$reads_tb</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 372 × 8</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Read  CellBarcode FlankEditDist BarcodeEditDist UMI   TooShort Outfile Sample</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> 5040… CGGGTCAGTA…             1               0 CCGG… FALSE    /tmp/R… musc_…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> d54e… CGGACTGAGT…             1               0 GGGA… FALSE    /tmp/R… musc_…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> 94bf… CTGTGCTTCC…             1               2 TTCT… FALSE    /tmp/R… musc_…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> d644… GTCGTAATCC…             7               0 GGTA… FALSE    /tmp/R… musc_…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> 055d… TTTATGCAGA…             1               0 ATTC… FALSE    /tmp/R… musc_…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> 66cb… GTAACTGAGA…             2               0 TGAG… FALSE    /tmp/R… musc_…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> e427… CGAACATGTC…             2               0 ATAC… FALSE    /tmp/R… musc_…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> 5f74… ACCGTAACAA…             3               1 CCTC… FALSE    /tmp/R… musc_…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> f164… GACTAACTCC…             3               1 GTTC… FALSE    /tmp/R… musc_…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> c7ae… CATCGAACAG…             2               1 TTAA… FALSE    /tmp/R… musc_…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 362 more rows</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $musc_rps24$read_counts</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $read_counts</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                       total reads </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                               393 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                               demultiplexed reads </span>
@@ -210,62 +181,149 @@ FASTQ files). Gzipped file input are supported but the output will be uncompress
 <span class="r-out co"><span class="r-pr">#&gt;</span>               both strands multiple barcode reads </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                                 1 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $stats_out</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/RtmpA5lNG6/file329064c67719/bc_stat.tsv.gz"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"><span><span class="co"># multi-sample</span></span></span>
-<span class="r-in"><span><span class="va">fastq_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">fastq_dir</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.copy</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"fastq"</span>, <span class="st">"musc_rps24.fastq.gz"</span>, package <span class="op">=</span> <span class="st">"FLAMES"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">fastq_dir</span>, <span class="st">"musc_rps24.fastq.gz"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
-<span class="r-in"><span><span class="va">sampled_lines</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readLines.html" class="external-link">readLines</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">fastq_dir</span>, <span class="st">"musc_rps24.fastq.gz"</span><span class="op">)</span>, n <span class="op">=</span> <span class="fl">400</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/writeLines.html" class="external-link">writeLines</a></span><span class="op">(</span><span class="va">sampled_lines</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">fastq_dir</span>, <span class="st">"copy.fastq"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">find_barcode</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="co"># you can mix folders and files. each path will be considered as a sample</span></span></span>
-<span class="r-in"><span>  fastq <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">fastq_dir</span>, <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"fastq"</span>, <span class="st">"musc_rps24.fastq.gz"</span>, package <span class="op">=</span> <span class="st">"FLAMES"</span><span class="op">)</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  stats_out <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="st">"bc_stat"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  reads_out <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">outdir</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"demultiplexed1.fastq.gz"</span>, <span class="st">"demultiplexed2.fastq.gz"</span><span class="op">)</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  barcodes_file <span class="op">=</span> <span class="va">bc_allow</span>, TSO_seq <span class="op">=</span> <span class="st">"CCCATGTACTCTGCGTTGATACCACTGCTT"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> FLEXIPLEX 0.96.2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting max barcode edit distance to 2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting max flanking sequence edit distance to 8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting read IDs to be  replaced</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting number of threads to 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Search pattern: </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> primer: CTACACGACGCTCTTCCGATCT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> BC: NNNNNNNNNNNNNNNN</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> UMI: NNNNNNNNNNNN</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> polyT: TTTTTTTTT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/Rtmp2gYYrb/file367c49566419/bc_allow.tsv</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of known barcodes: 143</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/Rtmp2gYYrb/file367c5bd947fc/copy.fastq</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/Rtmp2gYYrb/file367c5bd947fc/musc_rps24.fastq.gz</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads processed: 493</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads where at least one barcode was found: 460</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads with exactly one barcode match: 455</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of chimera reads: 2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> All done!</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> FLEXIPLEX 0.96.2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting max barcode edit distance to 2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting max flanking sequence edit distance to 8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting read IDs to be  replaced</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting number of threads to 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Search pattern: </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> primer: CTACACGACGCTCTTCCGATCT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> BC: NNNNNNNNNNNNNNNN</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> UMI: NNNNNNNNNNNN</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> polyT: TTTTTTTTT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/Rtmp2gYYrb/file367c49566419/bc_allow.tsv</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of known barcodes: 143</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads processed: 393</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads where at least one barcode was found: 368</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads with exactly one barcode match: 364</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of chimera reads: 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> All done!</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$tag</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Cutadapt report"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$schema_version</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0 3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$cutadapt_version</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "4.9"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$python_version</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "3.11.9"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$command_line_arguments</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] "-g"                                                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [2] "AAGCAGTGGTATCAACGCAGAGTACATGGG"                                   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [3] "-o"                                                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [4] "/tmp/RtmpA5lNG6/file329064c67719/demultiplexed.fastq.gz"          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [5] "/tmp/RtmpA5lNG6/file329064c67719/untrimmed_demultiplexed.fastq.gz"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [6] "--json"                                                           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7] "/tmp/RtmpA5lNG6/file329064c67719/file329018b09ffd.json"           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [8] "--untrimmed-output"                                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [9] "/tmp/RtmpA5lNG6/file329064c67719/noTSO_demultiplexed.fastq.gz"    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [10] "--minimum-length"                                                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [11] "10"                                                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$cores</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$input</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$input$path1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/RtmpA5lNG6/file329064c67719/untrimmed_demultiplexed.fastq.gz"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$input$path2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$input$paired</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$read_counts</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$read_counts$input</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 372</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$read_counts$filtered</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$read_counts$filtered$too_short</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$read_counts$filtered$too_long</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$read_counts$filtered$too_many_n</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$read_counts$filtered$too_many_expected_errors</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$read_counts$filtered$casava_filtered</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$read_counts$filtered$discard_trimmed</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$read_counts$filtered$discard_untrimmed</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$read_counts$output</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 248</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$read_counts$reverse_complemented</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$read_counts$read1_with_adapter</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 248</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$read_counts$read2_with_adapter</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$basepair_counts</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$basepair_counts$input</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 248786</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$basepair_counts$input_read1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 248786</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$basepair_counts$input_read2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$basepair_counts$quality_trimmed</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$basepair_counts$quality_trimmed_read1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$basepair_counts$quality_trimmed_read2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$basepair_counts$poly_a_trimmed</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$basepair_counts$poly_a_trimmed_read1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$basepair_counts$poly_a_trimmed_read2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$basepair_counts$output</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 154283</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$basepair_counts$output_read1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 154283</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$basepair_counts$output_read2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$adapters_read1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   name total_matches on_reverse_complement linked five_prime_end.type</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1    1           248                    NA  FALSE  regular_five_prime</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          five_prime_end.sequence five_prime_end.error_rate</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 AAGCAGTGGTATCAACGCAGAGTACATGGG                       0.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   five_prime_end.indels five_prime_end.error_lengths five_prime_end.matches</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                  TRUE                 9, 19, 2....                    248</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   five_prime_end.adjacent_bases five_prime_end.dominant_adjacent_base</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                            NA                                    NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   five_prime_end.trimmed_lengths three_prime_end</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                   c(3, 16,....              NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$adapters_read2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$poly_a_trimmed_read1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$poly_a_trimmed_read2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

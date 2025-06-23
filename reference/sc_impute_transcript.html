@@ -81,10 +81,10 @@ The "counts" assay is used to obtain logcounts but left unchanged.</p>
 <span class="r-in"><span><span class="fu">SingleCellExperiment</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/dge.html" class="external-link">counts</a></span><span class="op">(</span><span class="fu">SingleCellExperiment</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/altExps.html" class="external-link">altExp</a></span><span class="op">(</span><span class="va">sce</span><span class="op">)</span><span class="op">)</span><span class="op">[</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="cn">NA</span></span></span>
 <span class="r-in"><span><span class="fu">SingleCellExperiment</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/dge.html" class="external-link">counts</a></span><span class="op">(</span><span class="fu">SingleCellExperiment</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/altExps.html" class="external-link">altExp</a></span><span class="op">(</span><span class="va">sce</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]   NA   NA    2    3    4    3    2    7    2     2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,]   NA   NA    1    4    7    6    3    6    3     6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [3,]   NA   NA    9    7    3    3    5    4    3     7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [4,]   NA   NA    6    4    8    8    7    3    5     7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]   NA   NA    4    5    3    5    5    6    8     8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,]   NA   NA    9    4    6    5    5    9    6     8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3,]   NA   NA    4    5    4    7    3    3    7     6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [4,]   NA   NA    3    4    3    4    6    7    4     6</span>
 <span class="r-in"><span><span class="va">imputed_sce</span> <span class="op">&lt;-</span> <span class="fu">sc_impute_transcript</span><span class="op">(</span><span class="va">sce</span>, k <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>more singular values/vectors requested than available</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>You're computing too large a percentage of total singular values, use a standard svd instead.</span>
@@ -92,15 +92,15 @@ The "counts" assay is used to obtain logcounts but left unchanged.</p>
 <span class="r-in"><span><span class="fu">SingleCellExperiment</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/assays.html" class="external-link">logcounts</a></span><span class="op">(</span><span class="fu">SingleCellExperiment</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/altExps.html" class="external-link">altExp</a></span><span class="op">(</span><span class="va">imputed_sce</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4 x 10 Matrix of class "dgeMatrix"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          [,1]     [,2]     [,3]     [,4]     [,5]     [,6]     [,7]     [,8]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 1.921494 1.991101 1.624491 2.044394 2.140481 1.930737 1.680721 2.918863</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 2.292805 2.421382 1.029747 2.369234 2.800312 2.727920 2.107294 2.727920</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [3,] 2.574183 2.482931 3.375039 3.051662 1.830587 1.930737 2.703700 2.247928</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [4,] 2.821076 2.786734 2.857981 2.369234 2.966833 3.087463 3.124425 1.930737</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 2.635667 2.641791 2.405992 2.801619 2.330917 2.613307 2.735066 2.622930</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 2.915353 2.910800 3.416164 2.530515 3.179909 2.613307 2.735066 3.127633</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3,] 2.503190 2.468487 2.405992 2.801619 2.672425 3.029747 2.135777 1.839960</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [4,] 2.479205 2.508794 2.078951 2.530515 2.330917 2.349150 2.961526 2.811471</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          [,9]    [,10]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 1.957772 1.435386</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 2.413302 2.612031</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [3,] 2.413302 2.800312</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [4,] 3.037653 2.800312</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 2.978196 2.836501</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 2.622930 2.836501</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3,] 2.811471 2.487266</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [4,] 2.150560 2.487266</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
