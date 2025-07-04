@@ -89,7 +89,7 @@ is desired.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">ppl</span> <span class="op">&lt;-</span> <span class="fu"><a href="example_pipeline.html">example_pipeline</a></span><span class="op">(</span><span class="st">"BulkPipeline"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/RtmphULbKa/file347c6de91426/config_file_13436.json </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/Rtmp3Wjsxa/file358a54a180fa/config_file_13706.json </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Configured steps: </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	genome_alignment: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	isoform_identification: TRUE</span>
@@ -98,7 +98,7 @@ is desired.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> samtools not found, will use Rsamtools package instead</span>
 <span class="r-in"><span><span class="fu"><a href="steps.html">steps</a></span><span class="op">(</span><span class="va">ppl</span><span class="op">)</span><span class="op">[</span><span class="st">"isoform_identification"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="va">ppl</span> <span class="op">&lt;-</span> <span class="fu"><a href="run_step.html">run_step</a></span><span class="op">(</span><span class="va">ppl</span>, <span class="st">"read_realignment"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: read_realignment @ Wed Jul  2 03:13:05 2025 ───────────────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: read_realignment @ Fri Jul  4 03:19:23 2025 ───────────────────</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using reference annotation for transcriptome assembly.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Import genomic features from the file as a GRanges object ... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> OK</span>
@@ -109,13 +109,13 @@ is desired.</p>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span>   stop_codon. This information was ignored.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>genome version information is not available for this TxDb object</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> OK</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample sample1 -&gt; /tmp/RtmphULbKa/file347c6de91426/sample1_realign2transcript.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample sample1 -&gt; /tmp/Rtmp3Wjsxa/file358a54a180fa/sample1_realign2transcript.bam</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Skipped sorting BAM files.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample sample2 -&gt; /tmp/RtmphULbKa/file347c6de91426/sample2_realign2transcript.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample sample2 -&gt; /tmp/Rtmp3Wjsxa/file358a54a180fa/sample2_realign2transcript.bam</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Skipped sorting BAM files.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample sample3 -&gt; /tmp/RtmphULbKa/file347c6de91426/sample3_realign2transcript.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample sample3 -&gt; /tmp/Rtmp3Wjsxa/file358a54a180fa/sample3_realign2transcript.bam</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Skipped sorting BAM files.</span>
 <span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">get_coverage</span><span class="op">(</span><span class="va">ppl</span><span class="op">@</span><span class="va">transcriptome_bam</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
