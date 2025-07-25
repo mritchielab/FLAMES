@@ -77,11 +77,31 @@
 <pre><code><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://bioconductor.github.io/BiocManager/" class="external-link">"BiocManager"</a></span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span></span>
 <span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"mritchielab/FLAMES"</span><span class="op">)</span></span></code></pre>
+<div class="section level3">
+<h3 id="warning-installing-source-packages-inside-a-conda-environment-might-cause-various-issues">⚠️ Installing source packages inside a conda environment might cause various issues<a class="anchor" aria-label="anchor" href="#warning-installing-source-packages-inside-a-conda-environment-might-cause-various-issues"></a>
+</h3>
+<p>Please consider using Docker or Singularity instead if you cannot install FLAMES in your native R environment.</p>
+</div>
+<div class="section level3">
+<h3 id="docker">Docker<a class="anchor" aria-label="anchor" href="#docker"></a>
+</h3>
+<pre><code>docker pull ghcr.io/mritchielab/flames:0191765
+# To start a Rstudio server with FLAMES installed, run:
+docker run -it -p 8787:8787 ghcr.io/mritchielab/flames:0191765
+# Or if you prefer the terminal:
+docker run -it --user rstudio ghcr.io/mritchielab/flames:0191765 /bin/bash</code></pre>
+</div>
+<div class="section level3">
+<h3 id="singularity">Singularity<a class="anchor" aria-label="anchor" href="#singularity"></a>
+</h3>
+<pre><code>singularity pull flames.sif docker://ghcr.io/mritchielab/flames:0191765
+singularity shell -e --no-home --writable-tmpfs flames.sif</code></pre>
+</div>
 </div>
 <div class="section level2">
 <h2 id="documentation">Documentation<a class="anchor" aria-label="anchor" href="#documentation"></a>
 </h2>
-<p>Function references can be found <a href="https://mritchielab.github.io/FLAMES/reference/index.html">here</a>.</p>
+<p>Function reference manual can be found <a href="https://mritchielab.github.io/FLAMES/reference/index.html">here</a>.</p>
 <p><a href="https://github.com/ChangqingW/IgniteRNAseq" class="external-link">IgniteRNAseq</a> is a workflow package and its rendered vignette can be found <a href="https://changqingw.github.io/IgniteRNAseq/articles/FLAMESWorkflow.html" class="external-link">here</a>.</p>
 <p>A Long read single cell analysis tutorial using both single-sample and multi-sample modes is available <a href="https://sefi196.github.io/FLAMESv2_LR_sc_tutorial/" class="external-link">here</a>.</p>
 </div>

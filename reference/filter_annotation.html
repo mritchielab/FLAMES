@@ -55,7 +55,8 @@ coverage plots.</p>
 
 <dl><dt id="arg-annotation">annotation<a class="anchor" aria-label="anchor" href="#arg-annotation"></a></dt>
 <dd><p>path to the GTF annotation file, or the parsed GenomicRanges
-object.</p></dd>
+object with a valid <code>transcript_id</code> column, and each Range representing
+a transcript.</p></dd>
 
 
 <dt id="arg-keep">keep<a class="anchor" aria-label="anchor" href="#arg-keep"></a></dt>
@@ -75,25 +76,48 @@ genes that contains a sinlge transcript).</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">filtered_annotation</span> <span class="op">&lt;-</span> <span class="fu">filter_annotation</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"rps24.gtf.gz"</span>, package <span class="op">=</span> <span class="st">'FLAMES'</span><span class="op">)</span>, keep <span class="op">=</span> <span class="st">'tes_differ'</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Import genomic features from the file as a GRanges object ... </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> OK</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Prepare the 'metadata' data frame ... </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> OK</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Make the TxDb object ... </span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The "phase" metadata column contains non-NA values for features of type</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span>   stop_codon. This information was ignored.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>genome version information is not available for this TxDb object</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> OK</span>
 <span class="r-in"><span><span class="va">filtered_annotation</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> GRanges object with 6 ranges and 2 metadata columns:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       seqnames    ranges strand |     tx_id              tx_name</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt; | &lt;integer&gt;          &lt;character&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [1]    chr14   19-5159      + |         1 ENSMUST00000225994.1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [2]    chr14   32-3389      + |         6 ENSMUST00000225117.1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [3]    chr14   68-5124      + |         7 ENSMUST00000224568.1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [4]    chr14   86-1118      + |         8 ENSMUST00000224549.1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [5]    chr14  160-2761      + |         9 ENSMUST00000224569.1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [6]    chr14  450-1290      + |        10 ENSMUST00000224699.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> GRanges object with 6 ranges and 18 metadata columns:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       seqnames    ranges strand |   source       type     score     phase</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt; | &lt;factor&gt;   &lt;factor&gt; &lt;numeric&gt; &lt;integer&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1]    chr14   19-5159      + |   HAVANA transcript        NA      &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [2]    chr14   32-3389      + |   HAVANA transcript        NA      &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [3]    chr14   68-5124      + |   HAVANA transcript        NA      &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [4]    chr14   86-1118      + |   HAVANA transcript        NA      &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [5]    chr14  160-2761      + |   HAVANA transcript        NA      &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [6]    chr14  450-1290      + |   HAVANA transcript        NA      &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                     gene_id        transcript_id      gene_type   gene_name</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                 &lt;character&gt;          &lt;character&gt;    &lt;character&gt; &lt;character&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1] ENSMUSG00000025290.17 ENSMUST00000225994.1 protein_coding       Rps24</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [2] ENSMUSG00000025290.17 ENSMUST00000225117.1 protein_coding       Rps24</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [3] ENSMUSG00000025290.17 ENSMUST00000224568.1 protein_coding       Rps24</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [4] ENSMUSG00000025290.17 ENSMUST00000224549.1 protein_coding       Rps24</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [5] ENSMUSG00000025290.17 ENSMUST00000224569.1 protein_coding       Rps24</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [6] ENSMUSG00000025290.17 ENSMUST00000224699.1 protein_coding       Rps24</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            transcript_type transcript_name       level           protein_id</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                &lt;character&gt;     &lt;character&gt; &lt;character&gt;          &lt;character&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1]      retained_intron       Rps24-212           2                 &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [2] processed_transcript       Rps24-211           2                 &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [3]       protein_coding       Rps24-207           2 ENSMUSP00000153637.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [4] processed_transcript       Rps24-206           2                 &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [5] processed_transcript       Rps24-208           2                 &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [6] processed_transcript       Rps24-209           2                 &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       transcript_support_level      mgi_id         tag      ccdsid</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                    &lt;character&gt; &lt;character&gt; &lt;character&gt; &lt;character&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1]                     &lt;NA&gt;   MGI:98147        &lt;NA&gt;        &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [2]                     &lt;NA&gt;   MGI:98147        &lt;NA&gt;        &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [3]                     &lt;NA&gt;   MGI:98147       basic        &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [4]                     &lt;NA&gt;   MGI:98147 mRNA_end_NF        &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [5]                     &lt;NA&gt;   MGI:98147        &lt;NA&gt;        &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [6]                     &lt;NA&gt;   MGI:98147 mRNA_end_NF        &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                havana_gene    havana_transcript</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                &lt;character&gt;          &lt;character&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1] OTTMUSG00000068639.1 OTTMUST00000165910.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [2] OTTMUSG00000068639.1 OTTMUST00000165914.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [3] OTTMUSG00000068639.1 OTTMUST00000165915.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [4] OTTMUSG00000068639.1 OTTMUST00000165916.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [5] OTTMUSG00000068639.1 OTTMUST00000165917.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [6] OTTMUSG00000068639.1 OTTMUST00000165918.1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   -------</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   seqinfo: 1 sequence from an unspecified genome; no seqlengths</span>
 <span class="r-in"><span></span></span>
