@@ -121,8 +121,8 @@
 <span class="r-in"><span>  outdir <span class="op">=</span> <span class="va">outdir</span>,</span></span>
 <span class="r-in"><span>  barcodes_file <span class="op">=</span> <span class="va">bc_allow</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> No config file provided, creating a default config in /tmp/RtmpKkcLxE/fileacff5a885f03 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/RtmpKkcLxE/fileacff5a885f03/config_file_44287.json </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> No config file provided, creating a default config in /tmp/Rtmp2Id2GK/file356618d8eaec </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/Rtmp2Id2GK/file356618d8eaec/config_file_13670.json </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Configured steps: </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	barcode_demultiplex: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	genome_alignment: TRUE</span>
@@ -131,7 +131,7 @@
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	read_realignment: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	transcript_quantification: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> samtools not found, will use Rsamtools package instead</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: barcode_demultiplex @ Fri Jul 25 05:03:57 2025 ────────────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: barcode_demultiplex @ Fri Jul 25 06:26:47 2025 ────────────────</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> FLEXIPLEX 0.96.2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Setting max barcode edit distance to 2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Setting max flanking sequence edit distance to 8</span>
@@ -142,7 +142,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> BC: NNNNNNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> UMI: NNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> polyT: TTTTTTTTT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpKkcLxE/fileacff5a885f03/bc_allow.tsv</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/Rtmp2Id2GK/file356618d8eaec/bc_allow.tsv</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of known barcodes: 143</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
@@ -151,28 +151,28 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads with exactly one barcode match: 364</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of chimera reads: 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> All done!</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: genome_alignment @ Fri Jul 25 05:03:57 2025 ───────────────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: genome_alignment @ Fri Jul 25 06:26:47 2025 ───────────────────</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Creating junction bed file from GFF3 annotation.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample /tmp/RtmpKkcLxE/fileacff5a885f03/matched_reads.fastq.gz -&gt; /tmp/RtmpKkcLxE/fileacff5a885f03/align2genome.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample /tmp/Rtmp2Id2GK/file356618d8eaec/matched_reads.fastq.gz -&gt; /tmp/Rtmp2Id2GK/file356618d8eaec/align2genome.bam</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sorting BAM files by genome coordinates with 8 threads...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Indexing bam files</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: gene_quantification @ Fri Jul 25 05:03:57 2025 ────────────────</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 05:03:57 AM Fri Jul 25 2025 quantify genes </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using BAM(s): <span style="color: #0000BB;">/tmp/RtmpKkcLxE/fileacff5a885f03/align2genome.bam</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: isoform_identification @ Fri Jul 25 05:03:58 2025 ─────────────</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: read_realignment @ Fri Jul 25 05:03:58 2025 ───────────────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: gene_quantification @ Fri Jul 25 06:26:48 2025 ────────────────</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 06:26:48 AM Fri Jul 25 2025 quantify genes </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Using BAM(s): <span style="color: #0000BB;">/tmp/Rtmp2Id2GK/file356618d8eaec/align2genome.bam</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: isoform_identification @ Fri Jul 25 06:26:48 2025 ─────────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: read_realignment @ Fri Jul 25 06:26:48 2025 ───────────────────</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Checking for fastq file(s) /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	files found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Checking for fastq file(s) /tmp/RtmpKkcLxE/fileacff5a885f03/matched_reads.fastq.gz</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Checking for fastq file(s) /tmp/Rtmp2Id2GK/file356618d8eaec/matched_reads.fastq.gz</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	files found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Checking for fastq file(s) /tmp/RtmpKkcLxE/fileacff5a885f03/matched_reads_dedup.fastq.gz</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Checking for fastq file(s) /tmp/Rtmp2Id2GK/file356618d8eaec/matched_reads_dedup.fastq.gz</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	files found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample /tmp/RtmpKkcLxE/fileacff5a885f03/matched_reads_dedup.fastq.gz -&gt; /tmp/RtmpKkcLxE/fileacff5a885f03/realign2transcript.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample /tmp/Rtmp2Id2GK/file356618d8eaec/matched_reads_dedup.fastq.gz -&gt; /tmp/Rtmp2Id2GK/file356618d8eaec/realign2transcript.bam</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sorting BAM files by 8 with CB threads...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: transcript_quantification @ Fri Jul 25 05:03:58 2025 ──────────</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Pipeline saved to /tmp/RtmpKkcLxE/fileacff5a885f03/pipeline.rds</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: transcript_quantification @ Fri Jul 25 06:26:49 2025 ──────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Pipeline saved to /tmp/Rtmp2Id2GK/file356618d8eaec/pipeline.rds</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
