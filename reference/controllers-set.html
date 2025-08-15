@@ -71,11 +71,12 @@ session.</p></dd>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">pipeline</span> <span class="op">&lt;-</span> <span class="fu"><a href="example_pipeline.html">example_pipeline</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/Rtmpb54elt/file35663f0dc3a8/config_file_13670.json </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/Rtmp6P2Z4H/file66da2d7c175/config_file_26330.json </span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>You have set to use oarfish quantification without gene quantification. Oarfish currently does not collapse UMIs, and gene quantification performs UMI collapsing. You may want to set do_gene_quantification to TRUE for more accurate results.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Configured steps: </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	barcode_demultiplex: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	genome_alignment: TRUE</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	gene_quantification: TRUE</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	gene_quantification: FALSE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	isoform_identification: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	read_realignment: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	transcript_quantification: TRUE</span>

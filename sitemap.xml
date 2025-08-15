@@ -43,6 +43,8 @@
 <url><loc>https://mritchielab.github.io/FLAMES/reference/gff2bed.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/index.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/index_genome.html</loc></url>
+<url><loc>https://mritchielab.github.io/FLAMES/reference/load_config.html</loc></url>
+<url><loc>https://mritchielab.github.io/FLAMES/reference/merge_configs_recursive.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/minimap2_align.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/mutation_positions.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/mutation_positions_single.html</loc></url>
@@ -70,6 +72,7 @@
 <url><loc>https://mritchielab.github.io/FLAMES/reference/scmixology_lib10.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/scmixology_lib10_transcripts.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/scmixology_lib90.html</loc></url>
+<url><loc>https://mritchielab.github.io/FLAMES/reference/set_nested_param.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/show-FLAMESPipeline.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/steps-set.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/steps.html</loc></url>

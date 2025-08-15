@@ -30,7 +30,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Create Configuration File From Arguments</h1>
-      <small class="dont-index">Source: <a href="https://github.com/mritchielab/FLAMES/blob/devel/R/create_config.R" class="external-link"><code>R/create_config.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mritchielab/FLAMES/blob/devel/R/config_functions.R" class="external-link"><code>R/config_functions.R</code></a></small>
       <div class="d-none name"><code>create_config.Rd</code></div>
     </div>
 
@@ -48,7 +48,7 @@
 
 
 <dl><dt id="arg-outdir">outdir<a class="anchor" aria-label="anchor" href="#arg-outdir"></a></dt>
-<dd><p>the destination directory for the configuratio nfile</p></dd>
+<dd><p>the destination directory for the configuration file</p></dd>
 
 
 <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
@@ -63,86 +63,58 @@
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Configuration parameters.</p><dl><dt>seed</dt>
+<dd><p>Configuration parameters (using dot for nested parameters)</p><dl><dt>seed</dt>
 <dd><p>- Integer. Seed for minimap2.</p></dd>
 
  <dt>threads</dt>
 <dd><p>- Number of threads to use.</p></dd>
 
  <dt>do_barcode_demultiplex</dt>
-<dd><p>- Boolean. Specifies whether to run the barcode demultiplexing step.</p></dd>
+<dd><p>- Boolean. Specifies whether to run the
+ barcode demultiplexing step.</p></dd>
 
  <dt>do_genome_alignment</dt>
-<dd><p>- Boolean. Specifies whether to run the genome alignment step. <code>TRUE</code> is recommended</p></dd>
+<dd><p>- Boolean. Specifies whether to run the genome
+ alignment step. <code>TRUE</code> is recommended</p></dd>
 
  <dt>do_gene_quantification</dt>
-<dd><p>- Boolean. Specifies whether to run gene quantification using the genome alignment results. <code>TRUE</code> is recommended</p></dd>
+<dd><p>- Boolean. Specifies whether to run gene
+ quantification using the genome alignment results. <code>TRUE</code> is
+ recommended</p></dd>
 
  <dt>do_isoform_identification</dt>
-<dd><p>- Boolean. Specifies whether to run the isoform identification step. <code>TRUE</code> is recommended</p></dd>
+<dd><p>- Boolean. Specifies whether to run the
+ isoform identification step. <code>TRUE</code> is recommended</p></dd>
 
  <dt>bambu_isoform_identification</dt>
-<dd><p>- Boolean. Whether to use Bambu for isoform identification.</p></dd>
+<dd><p>- Boolean. Whether to use Bambu for
+ isoform identification.</p></dd>
 
  <dt>multithread_isoform_identification</dt>
-<dd><p>- Boolean. Whether to use FLAMES' new multithreaded Cpp implementation for isoform identification.</p></dd>
+<dd><p>- Boolean. Whether to use FLAMES'
+ new multithreaded Cpp implementation for isoform identification.</p></dd>
 
  <dt>do_read_realignment</dt>
-<dd><p>- Boolean. Specifies whether to run the read realignment step. <code>TRUE</code> is recommended</p></dd>
+<dd><p>- Boolean. Specifies whether to run the read
+ realignment step. <code>TRUE</code> is recommended</p></dd>
 
  <dt>do_transcript_quantification</dt>
-<dd><p>- Boolean. Specifies whether to run the transcript quantification step. <code>TRUE</code> is recommended</p></dd>
+<dd><p>- Boolean. Specifies whether to run the
+ transcript quantification step. <code>TRUE</code> is recommended</p></dd>
 
- <dt>barcode_parameters</dt>
-<dd><p>- List. Parameters for barcode demultiplexing passed to <code>find_barcode</code> (except <code>fastq</code>, <code>barcodes_file</code>, <code>stats_out</code>, <code>reads_out</code>) and <code>threads</code>, which are set by the pipeline, see <code><a href="find_barcode.html">?find_barcode</a></code> for more details.</p></dd>
+ <dt>barcode_parameters.max_bc_editdistance</dt>
+<dd><p>- Maximum edit distance for
+ barcode matching</p></dd>
 
- <dt>generate_raw_isoform</dt>
-<dd><p>- Boolean. Whether to generate all isoforms for debugging purpose.</p></dd>
+ <dt>barcode_parameters.pattern.primer</dt>
+<dd><p>- Primer sequence pattern</p></dd>
 
- <dt>max_dist</dt>
-<dd><p>- Maximum distance allowed when merging splicing sites in isoform consensus clustering.</p></dd>
+ <dt>isoform_parameters.max_dist</dt>
+<dd><p>- Maximum distance allowed when merging
+ splicing sites</p></dd>
 
- <dt>max_ts_dist</dt>
-<dd><p>- Maximum distance allowed when merging transcript start/end position in isoform consensus clustering.</p></dd>
-
- <dt>max_splice_match_dist</dt>
-<dd><p>- Maximum distance allowed when merging splice site called from the data and the reference annotation.</p></dd>
-
- <dt>min_fl_exon_len</dt>
-<dd><p>- Minimum length for the first exon outside the gene body in reference annotation. This is to correct the alignment artifact</p></dd>
-
- <dt>max_site_per_splice</dt>
-<dd><p>- Maximum transcript start/end site combinations allowed per splice chain</p></dd>
-
- <dt>min_sup_cnt</dt>
-<dd><p>- Minimum number of read support an isoform decrease this number will significantly increase the number of isoform detected.</p></dd>
-
- <dt>min_cnt_pct</dt>
-<dd><p>- Minimum percentage of count for an isoform relative to total count for the same gene.</p></dd>
-
- <dt>min_sup_pct</dt>
-<dd><p>- Minimum percentage of count for an splice chain that support a given transcript start/end site combination.</p></dd>
-
- <dt>strand_specific</dt>
-<dd><p>- 0, 1 or -1. 1 indicates if reads are in the same strand as mRNA, -1 indicates reads are reverse complemented, 0 indicates reads are not strand specific.</p></dd>
-
- <dt>remove_incomp_reads</dt>
-<dd><p>- The strenge of truncated isoform filtering. larger number means more stringent filtering.</p></dd>
-
- <dt>use_junctions</dt>
-<dd><p>- whether to use known splice junctions to help correct the alignment results</p></dd>
-
- <dt>no_flank</dt>
-<dd><p>- Boolean. for synthetic spike-in data. refer to Minimap2 document for detail</p></dd>
-
- <dt>use_annotation</dt>
-<dd><p>- Boolean. whether to use reference to help annotate known isoforms</p></dd>
-
- <dt>min_tr_coverage</dt>
-<dd><p>- Minimum percentage of isoform coverage for a read to be aligned to that isoform</p></dd>
-
- <dt>min_read_coverage</dt>
-<dd><p>- Minimum percentage of read coverage for a read to be uniquely aligned to that isoform</p></dd>
+ <dt>...</dt>
+<dd><p>- Other nested parameters, using dot to indicate nested section</p></dd>
 
 
 </dl></dd>
@@ -154,9 +126,15 @@
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Create a list object containing the arguments supplied in a format usable for the FLAMES pipeline.
-Also writes the object to a JSON file, which is located with the prefix 'config_' in the supplied <code>outdir</code>.
-Default values from <code>extdata/config_sclr_nanopore_3end.json</code> will be used for unprovided parameters.</p>
+    <p>Create a list object containing the arguments supplied in a format
+usable for the FLAMES pipeline, and writes the object to a JSON file, which
+is located with the prefix 'config_' in the supplied <code>outdir</code>. Default
+values from <code>extdata/config_sclr_nanopore_3end.json</code> will be used for
+unprovided parameters.</p>
+<p>Parameters can be specified using dot to indicate nested sections, e.g.,
+<code>barcode_parameters.max_bc_editdistance = 3</code> or
+<code>barcode_parameters.pattern.primer = "ATCG"</code>. Alternatively, you can
+open the created config file and edit it manually.</p>
     </div>
 
     <div class="section level2">
@@ -164,7 +142,16 @@ Default values from <code>extdata/config_sclr_nanopore_3end.json</code> will be 
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># create the default configuration file</span></span></span>
 <span class="r-in"><span><span class="va">outdir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">config</span> <span class="op">&lt;-</span> <span class="fu">create_config</span><span class="op">(</span><span class="va">outdir</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/Rtmpb54elt/config_file_13670.json </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/Rtmp6P2Z4H/config_file_26330.json </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># create config with custom parameters including nested ones</span></span></span>
+<span class="r-in"><span><span class="va">config</span> <span class="op">&lt;-</span> <span class="fu">create_config</span><span class="op">(</span><span class="va">outdir</span>,</span></span>
+<span class="r-in"><span>  threads <span class="op">=</span> <span class="fl">16</span>,</span></span>
+<span class="r-in"><span>  barcode_parameters.max_bc_editdistance <span class="op">=</span> <span class="fl">3</span>,</span></span>
+<span class="r-in"><span>  barcode_parameters.pattern.primer <span class="op">=</span> <span class="st">"ATCGATCG"</span>,</span></span>
+<span class="r-in"><span>  isoform_parameters.min_sup_cnt <span class="op">=</span> <span class="fl">10</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/Rtmp6P2Z4H/config_file_26330.json </span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
