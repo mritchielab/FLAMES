@@ -9,7 +9,7 @@ colLabels as cluster labels."><meta property="og:image" content="https://mritchi
 
     <a class="navbar-brand me-2" href="../index.html">FLAMES</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.3.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.3.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -160,9 +160,12 @@ are selected for testing with one of the following methods:</p><dl><dt>trascript
 <span class="r-in"><span>  annotation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"rps24.gtf.gz"</span>, package <span class="op">=</span> <span class="st">"FLAMES"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  outdir <span class="op">=</span> <span class="va">outdir</span>,</span></span>
 <span class="r-in"><span>  barcodes_file <span class="op">=</span> <span class="va">bc_allow</span>,</span></span>
-<span class="r-in"><span>  config_file <span class="op">=</span> <span class="fu"><a href="create_config.html">create_config</a></span><span class="op">(</span><span class="va">outdir</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  config_file <span class="op">=</span> <span class="fu"><a href="create_config.html">create_config</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="va">outdir</span>,</span></span>
+<span class="r-in"><span>    pipeline_parameters.demultiplexer <span class="op">=</span> <span class="st">"flexiplex"</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/RtmpsElfg4/file9a3f392ffd7d/config_file_39487.json </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/RtmpdufN84/file7a1853b5d2f6/config_file_31256.json </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Configured steps: </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	barcode_demultiplex: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	genome_alignment: TRUE</span>
@@ -171,7 +174,8 @@ are selected for testing with one of the following methods:</p><dl><dt>trascript
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	read_realignment: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	transcript_quantification: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> samtools not found, will use Rsamtools package instead</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: barcode_demultiplex @ Mon Aug 18 07:33:25 2025 ────────────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: barcode_demultiplex @ Tue Aug 19 07:47:20 2025 ────────────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Using flexiplex for barcode demultiplexing.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> FLEXIPLEX 0.96.2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Setting max barcode edit distance to 2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Setting max flanking sequence edit distance to 8</span>
@@ -182,7 +186,7 @@ are selected for testing with one of the following methods:</p><dl><dt>trascript
 <span class="r-out co"><span class="r-pr">#&gt;</span> BC: NNNNNNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> UMI: NNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> polyT: TTTTTTTTT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpsElfg4/file9a3f392ffd7d/bc_allow.tsv</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpdufN84/file7a1853b5d2f6/bc_allow.tsv</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of known barcodes: 143</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
@@ -191,28 +195,39 @@ are selected for testing with one of the following methods:</p><dl><dt>trascript
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads with exactly one barcode match: 364</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of chimera reads: 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> All done!</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: genome_alignment @ Mon Aug 18 07:33:25 2025 ───────────────────</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Reads	Barcodes</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10	2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9	2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8	5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7	4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6	3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5	7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4	14</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3	14</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2	29</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1	57</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: genome_alignment @ Tue Aug 19 07:47:20 2025 ───────────────────</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Creating junction bed file from GFF3 annotation.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample /tmp/RtmpsElfg4/file9a3f392ffd7d/matched_reads.fastq.gz -&gt; /tmp/RtmpsElfg4/file9a3f392ffd7d/align2genome.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample /tmp/RtmpdufN84/file7a1853b5d2f6/matched_reads.fastq.gz -&gt; /tmp/RtmpdufN84/file7a1853b5d2f6/align2genome.bam</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sorting BAM files by genome coordinates with 8 threads...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Indexing bam files</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: gene_quantification @ Mon Aug 18 07:33:26 2025 ────────────────</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 07:33:26 AM Mon Aug 18 2025 quantify genes </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using BAM(s): <span style="color: #0000BB;">/tmp/RtmpsElfg4/file9a3f392ffd7d/align2genome.bam</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: isoform_identification @ Mon Aug 18 07:33:26 2025 ─────────────</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: read_realignment @ Mon Aug 18 07:33:26 2025 ───────────────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: gene_quantification @ Tue Aug 19 07:47:20 2025 ────────────────</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 07:47:20 AM Tue Aug 19 2025 quantify genes </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Using BAM(s): <span style="color: #0000BB;">/tmp/RtmpdufN84/file7a1853b5d2f6/align2genome.bam</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: isoform_identification @ Tue Aug 19 07:47:20 2025 ─────────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: read_realignment @ Tue Aug 19 07:47:21 2025 ───────────────────</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Checking for fastq file(s) /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	files found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Checking for fastq file(s) /tmp/RtmpsElfg4/file9a3f392ffd7d/matched_reads.fastq.gz</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Checking for fastq file(s) /tmp/RtmpdufN84/file7a1853b5d2f6/matched_reads.fastq.gz</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	files found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Checking for fastq file(s) /tmp/RtmpsElfg4/file9a3f392ffd7d/matched_reads_dedup.fastq.gz</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Checking for fastq file(s) /tmp/RtmpdufN84/file7a1853b5d2f6/matched_reads_dedup.fastq.gz</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	files found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample /tmp/RtmpsElfg4/file9a3f392ffd7d/matched_reads_dedup.fastq.gz -&gt; /tmp/RtmpsElfg4/file9a3f392ffd7d/realign2transcript.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample /tmp/RtmpdufN84/file7a1853b5d2f6/matched_reads_dedup.fastq.gz -&gt; /tmp/RtmpdufN84/file7a1853b5d2f6/realign2transcript.bam</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sorting BAM files by 8 with CB threads...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: transcript_quantification @ Mon Aug 18 07:33:26 2025 ──────────</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Pipeline saved to /tmp/RtmpsElfg4/file9a3f392ffd7d/pipeline.rds</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: transcript_quantification @ Tue Aug 19 07:47:21 2025 ──────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Pipeline saved to /tmp/RtmpdufN84/file7a1853b5d2f6/pipeline.rds</span>
 <span class="r-in"><span><span class="va">group_anno</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>barcode_seq <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">sce</span><span class="op">)</span>, groups <span class="op">=</span> <span class="fu">SingleCellExperiment</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/dge.html" class="external-link">counts</a></span><span class="op">(</span><span class="va">sce</span><span class="op">)</span><span class="op">[</span><span class="st">"ENSMUST00000169826.2"</span>, <span class="op">]</span> <span class="op">&gt;</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">SingleCellExperiment</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/colLabels.html" class="external-link">colLabels</a></span><span class="op">(</span><span class="va">sce</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">group_anno</span><span class="op">$</span><span class="va">groups</span></span></span>
 <span class="r-in"><span><span class="co"># DTU with permutation testing:</span></span></span>
