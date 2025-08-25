@@ -190,7 +190,7 @@ it can be resumed by calling <code>resume_FLAMES(pipeline)</code></p>
 <span class="r-in"><span>  genome_fa <span class="op">=</span> <span class="va">genome_fa</span>,</span></span>
 <span class="r-in"><span>  barcodes_file <span class="op">=</span> <span class="va">bc_allow</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/RtmpOvoAc5/file78d63d086850/config_file_30934.json </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/RtmpyvgB0f/file76e33fb2a1dc/config_file_30435.json </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>You have set to use oarfish quantification without gene quantification. Oarfish currently does not collapse UMIs, and gene quantification performs UMI collapsing. You may want to set do_gene_quantification to TRUE for more accurate results.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Configured steps: </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	barcode_demultiplex: TRUE</span>
@@ -201,7 +201,7 @@ it can be resumed by calling <code>resume_FLAMES(pipeline)</code></p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	transcript_quantification: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> samtools not found, will use Rsamtools package instead</span>
 <span class="r-in"><span><span class="va">ppl</span> <span class="op">&lt;-</span> <span class="fu"><a href="run_FLAMES.html">run_FLAMES</a></span><span class="op">(</span><span class="va">ppl</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: barcode_demultiplex @ Mon Aug 25 02:10:45 2025 ────────────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: barcode_demultiplex @ Mon Aug 25 09:34:47 2025 ────────────────</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using flexiplex for barcode demultiplexing.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> FLEXIPLEX 0.96.2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Setting max barcode edit distance to 2</span>
@@ -213,7 +213,7 @@ it can be resumed by calling <code>resume_FLAMES(pipeline)</code></p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> BC: NNNNNNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> UMI: NNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> polyT: TTTTTTTTT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpOvoAc5/file78d63d086850/bc_allow.tsv</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpyvgB0f/file76e33fb2a1dc/bc_allow.tsv</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of known barcodes: 143</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
@@ -233,25 +233,25 @@ it can be resumed by calling <code>resume_FLAMES(pipeline)</code></p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3	14</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2	29</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1	57</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: genome_alignment @ Mon Aug 25 02:10:45 2025 ───────────────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: genome_alignment @ Mon Aug 25 09:34:47 2025 ───────────────────</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Creating junction bed file from GFF3 annotation.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample /tmp/RtmpOvoAc5/file78d63d086850/matched_reads.fastq.gz -&gt; /tmp/RtmpOvoAc5/file78d63d086850/align2genome.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample /tmp/RtmpyvgB0f/file76e33fb2a1dc/matched_reads.fastq.gz -&gt; /tmp/RtmpyvgB0f/file76e33fb2a1dc/align2genome.bam</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sorting BAM files by genome coordinates with 8 threads...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Indexing bam files</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: isoform_identification @ Mon Aug 25 02:10:45 2025 ─────────────</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: read_realignment @ Mon Aug 25 02:10:45 2025 ───────────────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: isoform_identification @ Mon Aug 25 09:34:48 2025 ─────────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: read_realignment @ Mon Aug 25 09:34:48 2025 ───────────────────</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Checking for fastq file(s) /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	files found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Checking for fastq file(s) /tmp/RtmpOvoAc5/file78d63d086850/matched_reads.fastq.gz</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Checking for fastq file(s) /tmp/RtmpyvgB0f/file76e33fb2a1dc/matched_reads.fastq.gz</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	files found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Checking for fastq file(s) /tmp/RtmpOvoAc5/file78d63d086850/matched_reads_dedup.fastq.gz</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Checking for fastq file(s) /tmp/RtmpyvgB0f/file76e33fb2a1dc/matched_reads_dedup.fastq.gz</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	files not found</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Oarfish does not support UMI deduplication, you should deduplicate reads before running Oarfish</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample /tmp/RtmpOvoAc5/file78d63d086850/matched_reads.fastq.gz -&gt; /tmp/RtmpOvoAc5/file78d63d086850/realign2transcript.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample /tmp/RtmpyvgB0f/file76e33fb2a1dc/matched_reads.fastq.gz -&gt; /tmp/RtmpyvgB0f/file76e33fb2a1dc/realign2transcript.bam</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sorting BAM files by 8 with CB threads...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: transcript_quantification @ Mon Aug 25 02:10:45 2025 ──────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: transcript_quantification @ Mon Aug 25 09:34:48 2025 ──────────</span>
 <span class="r-in"><span><span class="fu"><a href="experiment.html">experiment</a></span><span class="op">(</span><span class="va">ppl</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> class: SingleCellExperiment </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> dim: 10 137 </span>
@@ -261,7 +261,7 @@ it can be resumed by calling <code>resume_FLAMES(pipeline)</code></p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   ENSMUSG00000025290.17_19_5159_2 ... ENSMUST00000169826.2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   ENSMUST00000225023.1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> rowData names(6): transcript_id source ... rank gene_id</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> colnames(137): AACTCTTGTCACCTAA AACCATGAGTCGTTTG ... TTGTAGGTCAGTGTTG</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> colnames(137): AACCATGAGTCGTTTG AACTCTTGTCACCTAA ... TTGTAGGTCAGTGTTG</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   TTTATGCAGACTAGAT</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> colData names(0):</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> reducedDimNames(0):</span>

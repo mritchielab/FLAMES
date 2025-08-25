@@ -40,7 +40,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">blaze</span><span class="op">(</span><span class="va">expect_cells</span>, <span class="va">fq_in</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">blaze</span><span class="op">(</span><span class="va">expect_cells</span>, <span class="va">fq_in</span>, additional_args <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -53,6 +53,10 @@
 
 <dt id="arg-fq-in">fq_in<a class="anchor" aria-label="anchor" href="#arg-fq-in"></a></dt>
 <dd><p>File path to the fastq file used as a query sequence file</p></dd>
+
+
+<dt id="arg-additional-args">additional_args<a class="anchor" aria-label="anchor" href="#arg-additional-args"></a></dt>
+<dd><p>Additional command line style arguments to be passed to BLAZE. E.g. c("–10x-kit-version", "3v3")</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -80,16 +84,16 @@ The details of the output files can be found at https://github.com/shimlab/BLAZE
 <span class="r-in"><span>  overwrite<span class="op">=</span><span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $`output-prefix`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/RtmpOvoAc5/file78d63099342e/"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/RtmpyvgB0f/file76e3695473e6/"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $`output-fastq`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/RtmpOvoAc5/file78d63099342e/output.fastq"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/RtmpyvgB0f/file76e3695473e6/output.fastq"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $overwrite</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Running BLAZE...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Argument:  --expect-cells  10 --overwrite --minimal_stdout  --output-prefix /tmp/RtmpOvoAc5/file78d63099342e/ --output-fastq /tmp/RtmpOvoAc5/file78d63099342e/output.fastq /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Argument:  --expect-cells  10 --overwrite --minimal_stdout  --output-prefix /tmp/RtmpyvgB0f/file76e3695473e6/ --output-fastq /tmp/RtmpyvgB0f/file76e3695473e6/output.fastq  /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz </span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
