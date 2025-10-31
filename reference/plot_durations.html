@@ -65,7 +65,7 @@ of each pipeline step using ggplot2.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">pipeline</span> <span class="op">&lt;-</span> <span class="fu"><a href="example_pipeline.html">example_pipeline</a></span><span class="op">(</span><span class="st">"BulkPipeline"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/RtmpXoUSS6/file9b287e1cfd48/config_file_39720.json </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/RtmpM0tt18/filea709637feacf/config_file_42761.json </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Configured steps: </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	genome_alignment: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	isoform_identification: TRUE</span>
@@ -73,32 +73,32 @@ of each pipeline step using ggplot2.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	transcript_quantification: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> samtools not found, will use Rsamtools package instead</span>
 <span class="r-in"><span><span class="va">pipeline</span> <span class="op">&lt;-</span> <span class="fu"><a href="run_FLAMES.html">run_FLAMES</a></span><span class="op">(</span><span class="va">pipeline</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: genome_alignment @ Fri Sep 12 07:59:34 2025 ───────────────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: genome_alignment @ Fri Oct 31 05:40:50 2025 ───────────────────</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Creating junction bed file from GFF3 annotation.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample sample1 -&gt; /tmp/RtmpXoUSS6/file9b287e1cfd48/sample1_align2genome.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample sample1 -&gt; /tmp/RtmpM0tt18/filea709637feacf/sample1_align2genome.bam</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sorting BAM files by genome coordinates with 1 threads...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Indexing bam files</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample sample2 -&gt; /tmp/RtmpXoUSS6/file9b287e1cfd48/sample2_align2genome.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample sample2 -&gt; /tmp/RtmpM0tt18/filea709637feacf/sample2_align2genome.bam</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sorting BAM files by genome coordinates with 1 threads...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Indexing bam files</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample sample3 -&gt; /tmp/RtmpXoUSS6/file9b287e1cfd48/sample3_align2genome.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample sample3 -&gt; /tmp/RtmpM0tt18/filea709637feacf/sample3_align2genome.bam</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sorting BAM files by genome coordinates with 1 threads...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Indexing bam files</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: isoform_identification @ Fri Sep 12 07:59:34 2025 ─────────────</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: read_realignment @ Fri Sep 12 07:59:35 2025 ───────────────────</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample sample1 -&gt; /tmp/RtmpXoUSS6/file9b287e1cfd48/sample1_realign2transcript.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: isoform_identification @ Fri Oct 31 05:40:51 2025 ─────────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: read_realignment @ Fri Oct 31 05:40:51 2025 ───────────────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample sample1 -&gt; /tmp/RtmpM0tt18/filea709637feacf/sample1_realign2transcript.bam</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Skipped sorting BAM files.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample sample2 -&gt; /tmp/RtmpXoUSS6/file9b287e1cfd48/sample2_realign2transcript.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample sample2 -&gt; /tmp/RtmpM0tt18/filea709637feacf/sample2_realign2transcript.bam</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Skipped sorting BAM files.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample sample3 -&gt; /tmp/RtmpXoUSS6/file9b287e1cfd48/sample3_realign2transcript.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample sample3 -&gt; /tmp/RtmpM0tt18/filea709637feacf/sample3_realign2transcript.bam</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Skipped sorting BAM files.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: transcript_quantification @ Fri Sep 12 07:59:35 2025 ──────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: transcript_quantification @ Fri Oct 31 05:40:51 2025 ──────────</span>
 <span class="r-in"><span><span class="fu">plot_durations</span><span class="op">(</span><span class="va">pipeline</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plot_durations-1.png" alt="" width="700" height="433"></span>
 </code></pre></div>

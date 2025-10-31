@@ -63,7 +63,7 @@ controller corresponds to a step in the pipeline.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">pipeline</span> <span class="op">&lt;-</span> <span class="fu"><a href="example_pipeline.html">example_pipeline</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"MultiSampleSCPipeline"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/RtmpXoUSS6/file9b2851e5a030/config_file_39720.json </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/RtmpM0tt18/filea70954b47119/config_file_42761.json </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Configured steps: </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	barcode_demultiplex: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	genome_alignment: TRUE</span>
@@ -76,9 +76,7 @@ controller corresponds to a step in the pipeline.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $default</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;crew_class_controller&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Public:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     autoscale: function (controllers = NULL) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     autoscaling: active binding</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     backlog: active binding</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     autoscale: function (loop = later::current_loop(), controllers = NULL) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     backup: active binding</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     cancel: function (names = character(0L), all = FALSE) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     client: active binding</span>
@@ -92,36 +90,36 @@ controller corresponds to a step in the pipeline.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     initialize: function (client = NULL, launcher = NULL, reset_globals = NULL, </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     launch: function (n = 1L, controllers = NULL) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     launcher: active binding</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     loop: active binding</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     map: function (command, iterate, data = list(), globals = list(), </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     nonempty: function (controllers = NULL) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     pids: function (controllers = NULL) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     pop: function (scale = TRUE, collect = NULL, throttle = TRUE, error = NULL, </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     pop_backlog: function (controllers = NULL) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     popped: active binding</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     promise: function (mode = "one", seconds_interval = 1, scale = NULL, throttle = NULL, </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     private: environment</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     profile: active binding</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     push: function (command, data = list(), globals = list(), substitute = TRUE, </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     push_backlog: function (name, controller = NULL) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     pushed: active binding</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     queue: active binding</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     queue_backlog: active binding</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     queue_resolved: active binding</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     reset_globals: active binding</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     reset_options: active binding</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     reset_packages: active binding</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     resolved: function (controllers = NULL) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     saturated: function (collect = NULL, throttle = NULL, controller = NULL) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     scale: function (throttle = TRUE, controllers = NULL) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     self: crew_class_controller, R6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     size: function (controllers = NULL) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     start: function (controllers = NULL) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     started: function (controllers = NULL) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     summary: function (controllers = NULL) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     tasks: active binding</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     terminate: function (controllers = NULL) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     unpopped: function (controllers = NULL) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     unresolved: function (controllers = NULL) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     validate: function () </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     wait: function (mode = "all", seconds_interval = NULL, seconds_timeout = Inf, </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     walk: function (command, iterate, data = list(), globals = list(), </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Private:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     .autoscaling: FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     .backlog: NULL</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     .backup: NULL</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     .client: crew_class_client, R6</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     .crash_log: environment</span>
@@ -129,22 +127,18 @@ controller corresponds to a step in the pipeline.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     .error: NULL</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     .garbage_collection: FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     .launcher: crew_class_launcher_local, crew_class_launcher, R6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     .loop: NULL</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     .name_new_task: function (name) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     .popped: 0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     .push_task: function (name, task) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     .pushed: 0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     .queue: NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     .queue_backlog: NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     .queue_resolved: NULL</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     .register_started: function () </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     .reset_globals: TRUE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     .reset_options: FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     .reset_packages: FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     .resolve: function (force) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     .resolved: -1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     .scan_crash: function (name, task) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     .summary: NULL</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     .tasks: environment</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     .wait_all_once: function () </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     .wait_one_once: function () </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
     </div>

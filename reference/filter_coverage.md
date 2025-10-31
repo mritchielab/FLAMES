@@ -1,0 +1,67 @@
+# Filter transcript coverage
+
+Filter the transcript coverage by applying a filter function to the
+coverage values.
+
+## Usage
+
+``` r
+filter_coverage(x, filter_fn = convolution_filter)
+```
+
+## Arguments
+
+- x:
+
+  The tibble returned by
+  [`get_coverage`](https://mritchielab.github.io/FLAMES/reference/get_coverage.md),
+  or a BAM file path, or a GAlignments object.
+
+- filter_fn:
+
+  The filter function to apply to the coverage values. The function
+  should take a numeric vector of coverage values and return a logical
+  value (TRUE if the transcript passes the filter, FALSE otherwise). The
+  default filter function is
+  [`convolution_filter`](https://mritchielab.github.io/FLAMES/reference/convolution_filter.md),
+  which filters out transcripts with sharp drops / rises in coverage.
+
+## Value
+
+a tibble of the transcript information and coverages, with transcipts
+that pass the filter
+
+## Examples
+
+``` r
+ppl <- example_pipeline("BulkPipeline")
+#> Writing configuration parameters to:  /tmp/RtmpM0tt18/filea7095d3f2c8f/config_file_42761.json 
+#> Configured steps: 
+#>  genome_alignment: TRUE
+#>  isoform_identification: TRUE
+#>  read_realignment: TRUE
+#>  transcript_quantification: TRUE
+#> samtools not found, will use Rsamtools package instead
+steps(ppl)["isoform_identification"] <- FALSE
+ppl <- run_step(ppl, "read_realignment")
+#> ── Running step: read_realignment @ Fri Oct 31 05:40:25 2025 ───────────────────
+#> Using reference annotation for transcriptome assembly.
+#> Realigning sample sample1 -> /tmp/RtmpM0tt18/filea7095d3f2c8f/sample1_realign2transcript.bam
+#> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
+#> Skipped sorting BAM files.
+#> Realigning sample sample2 -> /tmp/RtmpM0tt18/filea7095d3f2c8f/sample2_realign2transcript.bam
+#> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
+#> Skipped sorting BAM files.
+#> Realigning sample sample3 -> /tmp/RtmpM0tt18/filea7095d3f2c8f/sample3_realign2transcript.bam
+#> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
+#> Skipped sorting BAM files.
+x <- get_coverage(ppl@transcriptome_bam[[1]])
+nrow(x)
+#> [1] 1
+filter_coverage(x) |>
+  nrow()
+#> 1 transcripts found in the BAM file.
+#> 0(0%) transcripts failed the filter.
+#> Failed transcripts account for 0 reads, out of 83(0%) reads in total.
+#> [1] 1
+```

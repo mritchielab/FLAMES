@@ -1,0 +1,66 @@
+# Get pipeline results
+
+This function returns the results of the pipeline as a
+`SummarizedExperiment` object, a `SingleCellExperiment` object, or a
+list of `SingleCellExperiment` objects, depending on the pipeline type.
+
+## Usage
+
+``` r
+experiment(pipeline)
+
+# S4 method for class 'FLAMES.Pipeline'
+experiment(pipeline)
+```
+
+## Arguments
+
+- pipeline:
+
+  A FLAMES.Pipeline object.
+
+## Value
+
+A `SummarizedExperiment` object, a `SingleCellExperiment` object, or a
+list of `SingleCellExperiment` objects.
+
+## Examples
+
+``` r
+pipeline <- example_pipeline(type = "BulkPipeline")
+#> Writing configuration parameters to:  /tmp/RtmpM0tt18/filea709792a5989/config_file_42761.json 
+#> Configured steps: 
+#>  genome_alignment: TRUE
+#>  isoform_identification: TRUE
+#>  read_realignment: TRUE
+#>  transcript_quantification: TRUE
+#> samtools not found, will use Rsamtools package instead
+pipeline <- run_FLAMES(pipeline)
+#> ── Running step: genome_alignment @ Fri Oct 31 05:40:23 2025 ───────────────────
+#> Creating junction bed file from GFF3 annotation.
+#> Aligning sample sample1 -> /tmp/RtmpM0tt18/filea709792a5989/sample1_align2genome.bam
+#> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
+#> Sorting BAM files by genome coordinates with 1 threads...
+#> Indexing bam files
+#> Aligning sample sample2 -> /tmp/RtmpM0tt18/filea709792a5989/sample2_align2genome.bam
+#> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
+#> Sorting BAM files by genome coordinates with 1 threads...
+#> Indexing bam files
+#> Aligning sample sample3 -> /tmp/RtmpM0tt18/filea709792a5989/sample3_align2genome.bam
+#> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
+#> Sorting BAM files by genome coordinates with 1 threads...
+#> Indexing bam files
+#> ── Running step: isoform_identification @ Fri Oct 31 05:40:23 2025 ─────────────
+#> ── Running step: read_realignment @ Fri Oct 31 05:40:23 2025 ───────────────────
+#> Realigning sample sample1 -> /tmp/RtmpM0tt18/filea709792a5989/sample1_realign2transcript.bam
+#> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
+#> Skipped sorting BAM files.
+#> Realigning sample sample2 -> /tmp/RtmpM0tt18/filea709792a5989/sample2_realign2transcript.bam
+#> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
+#> Skipped sorting BAM files.
+#> Realigning sample sample3 -> /tmp/RtmpM0tt18/filea709792a5989/sample3_realign2transcript.bam
+#> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
+#> Skipped sorting BAM files.
+#> ── Running step: transcript_quantification @ Fri Oct 31 05:40:24 2025 ──────────
+se <- experiment(pipeline)
+```

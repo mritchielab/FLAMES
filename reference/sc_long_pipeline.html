@@ -125,7 +125,7 @@
 <span class="r-in"><span>    pipeline_parameters.demultiplexer <span class="op">=</span> <span class="st">"flexiplex"</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/RtmpXoUSS6/file9b285127baf4/config_file_39720.json </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/RtmpM0tt18/filea709269a191f/config_file_42761.json </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Configured steps: </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	barcode_demultiplex: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	genome_alignment: TRUE</span>
@@ -134,7 +134,7 @@
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	read_realignment: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	transcript_quantification: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> samtools not found, will use Rsamtools package instead</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: barcode_demultiplex @ Fri Sep 12 08:00:21 2025 ────────────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: barcode_demultiplex @ Fri Oct 31 05:41:39 2025 ────────────────</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using flexiplex for barcode demultiplexing.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> FLEXIPLEX 0.96.2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Setting max barcode edit distance to 2</span>
@@ -146,7 +146,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> BC: NNNNNNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> UMI: NNNNNNNNNNNN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> polyT: TTTTTTTTT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpXoUSS6/file9b285127baf4/bc_allow.tsv</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpM0tt18/filea709269a191f/bc_allow.tsv</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of known barcodes: 143</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
@@ -166,28 +166,28 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3	14</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2	29</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1	57</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: genome_alignment @ Fri Sep 12 08:00:21 2025 ───────────────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: genome_alignment @ Fri Oct 31 05:41:39 2025 ───────────────────</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Creating junction bed file from GFF3 annotation.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample /tmp/RtmpXoUSS6/file9b285127baf4/matched_reads.fastq.gz -&gt; /tmp/RtmpXoUSS6/file9b285127baf4/align2genome.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample /tmp/RtmpM0tt18/filea709269a191f/matched_reads.fastq.gz -&gt; /tmp/RtmpM0tt18/filea709269a191f/align2genome.bam</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sorting BAM files by genome coordinates with 8 threads...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Indexing bam files</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: gene_quantification @ Fri Sep 12 08:00:21 2025 ────────────────</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 08:00:21 AM Fri Sep 12 2025 quantify genes </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using BAM(s): <span style="color: #0000BB;">/tmp/RtmpXoUSS6/file9b285127baf4/align2genome.bam</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: isoform_identification @ Fri Sep 12 08:00:21 2025 ─────────────</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: read_realignment @ Fri Sep 12 08:00:22 2025 ───────────────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: gene_quantification @ Fri Oct 31 05:41:40 2025 ────────────────</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 05:41:40 AM Fri Oct 31 2025 quantify genes </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Using BAM(s): <span style="color: #0000BB;">/tmp/RtmpM0tt18/filea709269a191f/align2genome.bam</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: isoform_identification @ Fri Oct 31 05:41:40 2025 ─────────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: read_realignment @ Fri Oct 31 05:41:40 2025 ───────────────────</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Checking for fastq file(s) /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	files found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Checking for fastq file(s) /tmp/RtmpXoUSS6/file9b285127baf4/matched_reads.fastq.gz</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Checking for fastq file(s) /tmp/RtmpM0tt18/filea709269a191f/matched_reads.fastq.gz</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	files found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Checking for fastq file(s) /tmp/RtmpXoUSS6/file9b285127baf4/matched_reads_dedup.fastq.gz</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Checking for fastq file(s) /tmp/RtmpM0tt18/filea709269a191f/matched_reads_dedup.fastq.gz</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	files found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample /tmp/RtmpXoUSS6/file9b285127baf4/matched_reads_dedup.fastq.gz -&gt; /tmp/RtmpXoUSS6/file9b285127baf4/realign2transcript.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample /tmp/RtmpM0tt18/filea709269a191f/matched_reads_dedup.fastq.gz -&gt; /tmp/RtmpM0tt18/filea709269a191f/realign2transcript.bam</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sorting BAM files by 8 with CB threads...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: transcript_quantification @ Fri Sep 12 08:00:22 2025 ──────────</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Pipeline saved to /tmp/RtmpXoUSS6/file9b285127baf4/pipeline.rds</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: transcript_quantification @ Fri Oct 31 05:41:40 2025 ──────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Pipeline saved to /tmp/RtmpM0tt18/filea709269a191f/pipeline.rds</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
