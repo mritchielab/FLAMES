@@ -165,7 +165,7 @@ ppl <- SingleCellPipeline(
   genome_fa = genome_fa,
   barcodes_file = bc_allow
 )
-#> Writing configuration parameters to:  /tmp/RtmpaNKtnp/file80d049f51b39/config_file_32976.json 
+#> Writing configuration parameters to:  /tmp/RtmpmJ8vO7/file80d04c50bbf6/config_file_32976.json 
 #> Warning: You have set to use oarfish quantification without gene quantification. Oarfish currently does not collapse UMIs, and gene quantification performs UMI collapsing. You may want to set do_gene_quantification to TRUE for more accurate results.
 #> Configured steps: 
 #>  barcode_demultiplex: TRUE
@@ -176,7 +176,7 @@ ppl <- SingleCellPipeline(
 #>  transcript_quantification: TRUE
 #> samtools not found, will use Rsamtools package instead
 ppl <- run_FLAMES(ppl)
-#> ── Running step: barcode_demultiplex @ Fri Oct 31 06:43:02 2025 ────────────────
+#> ── Running step: barcode_demultiplex @ Fri Oct 31 06:51:13 2025 ────────────────
 #> Using flexiplex for barcode demultiplexing.
 #> FLEXIPLEX 0.96.2
 #> Setting max barcode edit distance to 2
@@ -188,7 +188,7 @@ ppl <- run_FLAMES(ppl)
 #> BC: NNNNNNNNNNNNNNNN
 #> UMI: NNNNNNNNNNNN
 #> polyT: TTTTTTTTT
-#> Setting known barcodes from /tmp/RtmpaNKtnp/file80d049f51b39/bc_allow.tsv
+#> Setting known barcodes from /tmp/RtmpmJ8vO7/file80d04c50bbf6/bc_allow.tsv
 #> Number of known barcodes: 143
 #> Processing file: /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz
 #> Searching for barcodes...
@@ -208,25 +208,25 @@ ppl <- run_FLAMES(ppl)
 #> 3    14
 #> 2    29
 #> 1    57
-#> ── Running step: genome_alignment @ Fri Oct 31 06:43:02 2025 ───────────────────
+#> ── Running step: genome_alignment @ Fri Oct 31 06:51:13 2025 ───────────────────
 #> Creating junction bed file from GFF3 annotation.
-#> Aligning sample /tmp/RtmpaNKtnp/file80d049f51b39/matched_reads.fastq.gz -> /tmp/RtmpaNKtnp/file80d049f51b39/align2genome.bam
+#> Aligning sample /tmp/RtmpmJ8vO7/file80d04c50bbf6/matched_reads.fastq.gz -> /tmp/RtmpmJ8vO7/file80d04c50bbf6/align2genome.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by genome coordinates with 8 threads...
 #> Indexing bam files
-#> ── Running step: isoform_identification @ Fri Oct 31 06:43:02 2025 ─────────────
-#> ── Running step: read_realignment @ Fri Oct 31 06:43:03 2025 ───────────────────
+#> ── Running step: isoform_identification @ Fri Oct 31 06:51:14 2025 ─────────────
+#> ── Running step: read_realignment @ Fri Oct 31 06:51:14 2025 ───────────────────
 #> Checking for fastq file(s) /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz
 #>  files found
-#> Checking for fastq file(s) /tmp/RtmpaNKtnp/file80d049f51b39/matched_reads.fastq.gz
+#> Checking for fastq file(s) /tmp/RtmpmJ8vO7/file80d04c50bbf6/matched_reads.fastq.gz
 #>  files found
-#> Checking for fastq file(s) /tmp/RtmpaNKtnp/file80d049f51b39/matched_reads_dedup.fastq.gz
+#> Checking for fastq file(s) /tmp/RtmpmJ8vO7/file80d04c50bbf6/matched_reads_dedup.fastq.gz
 #>  files not found
 #> Warning: Oarfish does not support UMI deduplication, you should deduplicate reads before running Oarfish
-#> Realigning sample /tmp/RtmpaNKtnp/file80d049f51b39/matched_reads.fastq.gz -> /tmp/RtmpaNKtnp/file80d049f51b39/realign2transcript.bam
+#> Realigning sample /tmp/RtmpmJ8vO7/file80d04c50bbf6/matched_reads.fastq.gz -> /tmp/RtmpmJ8vO7/file80d04c50bbf6/realign2transcript.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by 8 with CB threads...
-#> ── Running step: transcript_quantification @ Fri Oct 31 06:43:03 2025 ──────────
+#> ── Running step: transcript_quantification @ Fri Oct 31 06:51:14 2025 ──────────
 experiment(ppl)
 #> class: SingleCellExperiment 
 #> dim: 10 137 
@@ -236,8 +236,8 @@ experiment(ppl)
 #>   ENSMUSG00000025290.17_19_5159_2 ... ENSMUST00000169826.2
 #>   ENSMUST00000225023.1
 #> rowData names(6): transcript_id source ... rank gene_id
-#> colnames(137): AACTCTTGTCACCTAA AACCATGAGTCGTTTG ... TTTATGCAGACTAGAT
-#>   TTGTAGGTCTTACCTA
+#> colnames(137): AACTCTTGTCACCTAA AACCATGAGTCGTTTG ... TTGTAGGTCAGTGTTG
+#>   TTTATGCAGACTAGAT
 #> colData names(0):
 #> reducedDimNames(0):
 #> mainExpName: NULL

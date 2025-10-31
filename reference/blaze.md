@@ -53,14 +53,14 @@ blaze(
   overwrite=TRUE
 )
 #> $`output-prefix`
-#> [1] "/tmp/RtmpaNKtnp/file80d027f6b63b/"
+#> [1] "/tmp/RtmpmJ8vO7/file80d0611cbd77/"
 #> 
 #> $`output-fastq`
-#> [1] "/tmp/RtmpaNKtnp/file80d027f6b63b/output.fastq"
+#> [1] "/tmp/RtmpmJ8vO7/file80d0611cbd77/output.fastq"
 #> 
 #> $overwrite
 #> [1] TRUE
 #> 
 #> Running BLAZE...
-#> Argument:  --expect-cells  10 --overwrite --minimal_stdout  --output-prefix /tmp/RtmpaNKtnp/file80d027f6b63b/ --output-fastq /tmp/RtmpaNKtnp/file80d027f6b63b/output.fastq  /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz 
+#> Argument:  --expect-cells  10 --overwrite --minimal_stdout  --output-prefix /tmp/RtmpmJ8vO7/file80d0611cbd77/ --output-fastq /tmp/RtmpmJ8vO7/file80d0611cbd77/output.fastq  /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz 
 ```

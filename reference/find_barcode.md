@@ -121,7 +121,7 @@ find_barcode(
 #> BC: NNNNNNNNNNNNNNNN
 #> UMI: NNNNNNNNNNNN
 #> polyT: TTTTTTTTT
-#> Setting known barcodes from /tmp/RtmpaNKtnp/file80d01712335e/bc_allow.tsv
+#> Setting known barcodes from /tmp/RtmpmJ8vO7/file80d077fc3326/bc_allow.tsv
 #> Number of known barcodes: 143
 #> Processing file: /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz
 #> Searching for barcodes...
@@ -158,7 +158,7 @@ find_barcode(
 #>                                                 1 
 #> 
 #> $stats_out
-#> [1] "/tmp/RtmpaNKtnp/file80d01712335e/bc_stat.tsv.gz"
+#> [1] "/tmp/RtmpmJ8vO7/file80d077fc3326/bc_stat.tsv.gz"
 #> 
 #> $cutadapt
 #> $cutadapt$tag
@@ -177,12 +177,12 @@ find_barcode(
 #>  [1] "-g"                                                               
 #>  [2] "AAGCAGTGGTATCAACGCAGAGTACATGGG"                                   
 #>  [3] "-o"                                                               
-#>  [4] "/tmp/RtmpaNKtnp/file80d01712335e/demultiplexed.fastq.gz"          
-#>  [5] "/tmp/RtmpaNKtnp/file80d01712335e/untrimmed_demultiplexed.fastq.gz"
+#>  [4] "/tmp/RtmpmJ8vO7/file80d077fc3326/demultiplexed.fastq.gz"          
+#>  [5] "/tmp/RtmpmJ8vO7/file80d077fc3326/untrimmed_demultiplexed.fastq.gz"
 #>  [6] "--json"                                                           
-#>  [7] "/tmp/RtmpaNKtnp/file80d01712335e/file80d015f4419c.json"           
+#>  [7] "/tmp/RtmpmJ8vO7/file80d077fc3326/file80d072cd0089.json"           
 #>  [8] "--untrimmed-output"                                               
-#>  [9] "/tmp/RtmpaNKtnp/file80d01712335e/noTSO_demultiplexed.fastq.gz"    
+#>  [9] "/tmp/RtmpmJ8vO7/file80d077fc3326/noTSO_demultiplexed.fastq.gz"    
 #> [10] "--minimum-length"                                                 
 #> [11] "10"                                                               
 #> 
@@ -191,7 +191,7 @@ find_barcode(
 #> 
 #> $cutadapt$input
 #> $cutadapt$input$path1
-#> [1] "/tmp/RtmpaNKtnp/file80d01712335e/untrimmed_demultiplexed.fastq.gz"
+#> [1] "/tmp/RtmpmJ8vO7/file80d077fc3326/untrimmed_demultiplexed.fastq.gz"
 #> 
 #> $cutadapt$input$path2
 #> NULL

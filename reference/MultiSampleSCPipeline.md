@@ -157,7 +157,7 @@ ppl <- MultiSampleSCPipeline(
   genome_fa = genome_fa,
   barcodes_file = rep(bc_allow, 4)
 )
-#> Writing configuration parameters to:  /tmp/RtmpaNKtnp/file80d0174f3545/config_file_32976.json 
+#> Writing configuration parameters to:  /tmp/RtmpmJ8vO7/file80d07ee82204/config_file_32976.json 
 #> Configured steps: 
 #>  barcode_demultiplex: TRUE
 #>  genome_alignment: TRUE
@@ -167,7 +167,7 @@ ppl <- MultiSampleSCPipeline(
 #>  transcript_quantification: TRUE
 #> samtools not found, will use Rsamtools package instead
 ppl <- run_FLAMES(ppl)
-#> ── Running step: barcode_demultiplex @ Fri Oct 31 06:42:56 2025 ────────────────
+#> ── Running step: barcode_demultiplex @ Fri Oct 31 06:51:07 2025 ────────────────
 #> Using flexiplex for barcode demultiplexing.
 #> FLEXIPLEX 0.96.2
 #> Setting max barcode edit distance to 2
@@ -179,13 +179,13 @@ ppl <- run_FLAMES(ppl)
 #> BC: NNNNNNNNNNNNNNNN
 #> UMI: NNNNNNNNNNNN
 #> polyT: TTTTTTTTT
-#> Setting known barcodes from /tmp/RtmpaNKtnp/file80d0174f3545/bc_allow.tsv
+#> Setting known barcodes from /tmp/RtmpmJ8vO7/file80d07ee82204/bc_allow.tsv
 #> Number of known barcodes: 143
-#> Processing file: /tmp/RtmpaNKtnp/file80d0174f3545/fastq/sample1.fq.gz
+#> Processing file: /tmp/RtmpmJ8vO7/file80d07ee82204/fastq/sample1.fq.gz
 #> Searching for barcodes...
-#> Processing file: /tmp/RtmpaNKtnp/file80d0174f3545/fastq/sample2.fq.gz
+#> Processing file: /tmp/RtmpmJ8vO7/file80d07ee82204/fastq/sample2.fq.gz
 #> Searching for barcodes...
-#> Processing file: /tmp/RtmpaNKtnp/file80d0174f3545/fastq/sample3.fq.gz
+#> Processing file: /tmp/RtmpmJ8vO7/file80d07ee82204/fastq/sample3.fq.gz
 #> Searching for barcodes...
 #> Number of reads processed: 393
 #> Number of reads where at least one barcode was found: 368
@@ -213,9 +213,9 @@ ppl <- run_FLAMES(ppl)
 #> BC: NNNNNNNNNNNNNNNN
 #> UMI: NNNNNNNNNNNN
 #> polyT: TTTTTTTTT
-#> Setting known barcodes from /tmp/RtmpaNKtnp/file80d0174f3545/bc_allow.tsv
+#> Setting known barcodes from /tmp/RtmpmJ8vO7/file80d07ee82204/bc_allow.tsv
 #> Number of known barcodes: 143
-#> Processing file: /tmp/RtmpaNKtnp/file80d0174f3545/fastq/sample1.fq.gz
+#> Processing file: /tmp/RtmpmJ8vO7/file80d07ee82204/fastq/sample1.fq.gz
 #> Searching for barcodes...
 #> Number of reads processed: 100
 #> Number of reads where at least one barcode was found: 92
@@ -237,9 +237,9 @@ ppl <- run_FLAMES(ppl)
 #> BC: NNNNNNNNNNNNNNNN
 #> UMI: NNNNNNNNNNNN
 #> polyT: TTTTTTTTT
-#> Setting known barcodes from /tmp/RtmpaNKtnp/file80d0174f3545/bc_allow.tsv
+#> Setting known barcodes from /tmp/RtmpmJ8vO7/file80d07ee82204/bc_allow.tsv
 #> Number of known barcodes: 143
-#> Processing file: /tmp/RtmpaNKtnp/file80d0174f3545/fastq/sample2.fq.gz
+#> Processing file: /tmp/RtmpmJ8vO7/file80d07ee82204/fastq/sample2.fq.gz
 #> Searching for barcodes...
 #> Number of reads processed: 100
 #> Number of reads where at least one barcode was found: 95
@@ -261,9 +261,9 @@ ppl <- run_FLAMES(ppl)
 #> BC: NNNNNNNNNNNNNNNN
 #> UMI: NNNNNNNNNNNN
 #> polyT: TTTTTTTTT
-#> Setting known barcodes from /tmp/RtmpaNKtnp/file80d0174f3545/bc_allow.tsv
+#> Setting known barcodes from /tmp/RtmpmJ8vO7/file80d07ee82204/bc_allow.tsv
 #> Number of known barcodes: 143
-#> Processing file: /tmp/RtmpaNKtnp/file80d0174f3545/fastq/sample3.fq.gz
+#> Processing file: /tmp/RtmpmJ8vO7/file80d07ee82204/fastq/sample3.fq.gz
 #> Searching for barcodes...
 #> Number of reads processed: 193
 #> Number of reads where at least one barcode was found: 181
@@ -278,51 +278,51 @@ ppl <- run_FLAMES(ppl)
 #> 3    10
 #> 2    27
 #> 1    53
-#> ── Running step: genome_alignment @ Fri Oct 31 06:42:57 2025 ───────────────────
+#> ── Running step: genome_alignment @ Fri Oct 31 06:51:08 2025 ───────────────────
 #> Creating junction bed file from GFF3 annotation.
-#> Aligning sample /tmp/RtmpaNKtnp/file80d0174f3545/sampleA_matched_reads.fastq.gz -> /tmp/RtmpaNKtnp/file80d0174f3545/sampleA_align2genome.bam
+#> Aligning sample /tmp/RtmpmJ8vO7/file80d07ee82204/sampleA_matched_reads.fastq.gz -> /tmp/RtmpmJ8vO7/file80d07ee82204/sampleA_align2genome.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by genome coordinates with 1 threads...
 #> Indexing bam files
-#> Aligning sample /tmp/RtmpaNKtnp/file80d0174f3545/sample1_matched_reads.fastq.gz -> /tmp/RtmpaNKtnp/file80d0174f3545/sample1_align2genome.bam
+#> Aligning sample /tmp/RtmpmJ8vO7/file80d07ee82204/sample1_matched_reads.fastq.gz -> /tmp/RtmpmJ8vO7/file80d07ee82204/sample1_align2genome.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by genome coordinates with 1 threads...
 #> Indexing bam files
-#> Aligning sample /tmp/RtmpaNKtnp/file80d0174f3545/sample2_matched_reads.fastq.gz -> /tmp/RtmpaNKtnp/file80d0174f3545/sample2_align2genome.bam
+#> Aligning sample /tmp/RtmpmJ8vO7/file80d07ee82204/sample2_matched_reads.fastq.gz -> /tmp/RtmpmJ8vO7/file80d07ee82204/sample2_align2genome.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by genome coordinates with 1 threads...
 #> Indexing bam files
-#> Aligning sample /tmp/RtmpaNKtnp/file80d0174f3545/sample3_matched_reads.fastq.gz -> /tmp/RtmpaNKtnp/file80d0174f3545/sample3_align2genome.bam
+#> Aligning sample /tmp/RtmpmJ8vO7/file80d07ee82204/sample3_matched_reads.fastq.gz -> /tmp/RtmpmJ8vO7/file80d07ee82204/sample3_align2genome.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by genome coordinates with 1 threads...
 #> Indexing bam files
-#> ── Running step: gene_quantification @ Fri Oct 31 06:42:58 2025 ────────────────
-#> 06:42:58 AM Fri Oct 31 2025 quantify genes 
-#> Using BAM(s): /tmp/RtmpaNKtnp/file80d0174f3545/sampleA_align2genome.bam,
-#> /tmp/RtmpaNKtnp/file80d0174f3545/sample1_align2genome.bam,
-#> /tmp/RtmpaNKtnp/file80d0174f3545/sample2_align2genome.bam, and
-#> /tmp/RtmpaNKtnp/file80d0174f3545/sample3_align2genome.bam
-#> ── Running step: isoform_identification @ Fri Oct 31 06:42:59 2025 ─────────────
-#> ── Running step: read_realignment @ Fri Oct 31 06:42:59 2025 ───────────────────
-#> Checking for fastq file(s) /tmp/RtmpaNKtnp/file80d0174f3545/fastq, /tmp/RtmpaNKtnp/file80d0174f3545/fastq/sample1.fq.gz, /tmp/RtmpaNKtnp/file80d0174f3545/fastq/sample2.fq.gz, /tmp/RtmpaNKtnp/file80d0174f3545/fastq/sample3.fq.gz
+#> ── Running step: gene_quantification @ Fri Oct 31 06:51:09 2025 ────────────────
+#> 06:51:09 AM Fri Oct 31 2025 quantify genes 
+#> Using BAM(s): /tmp/RtmpmJ8vO7/file80d07ee82204/sampleA_align2genome.bam,
+#> /tmp/RtmpmJ8vO7/file80d07ee82204/sample1_align2genome.bam,
+#> /tmp/RtmpmJ8vO7/file80d07ee82204/sample2_align2genome.bam, and
+#> /tmp/RtmpmJ8vO7/file80d07ee82204/sample3_align2genome.bam
+#> ── Running step: isoform_identification @ Fri Oct 31 06:51:10 2025 ─────────────
+#> ── Running step: read_realignment @ Fri Oct 31 06:51:10 2025 ───────────────────
+#> Checking for fastq file(s) /tmp/RtmpmJ8vO7/file80d07ee82204/fastq, /tmp/RtmpmJ8vO7/file80d07ee82204/fastq/sample1.fq.gz, /tmp/RtmpmJ8vO7/file80d07ee82204/fastq/sample2.fq.gz, /tmp/RtmpmJ8vO7/file80d07ee82204/fastq/sample3.fq.gz
 #>  files found
-#> Checking for fastq file(s) /tmp/RtmpaNKtnp/file80d0174f3545/sampleA_matched_reads.fastq.gz, /tmp/RtmpaNKtnp/file80d0174f3545/sample1_matched_reads.fastq.gz, /tmp/RtmpaNKtnp/file80d0174f3545/sample2_matched_reads.fastq.gz, /tmp/RtmpaNKtnp/file80d0174f3545/sample3_matched_reads.fastq.gz
+#> Checking for fastq file(s) /tmp/RtmpmJ8vO7/file80d07ee82204/sampleA_matched_reads.fastq.gz, /tmp/RtmpmJ8vO7/file80d07ee82204/sample1_matched_reads.fastq.gz, /tmp/RtmpmJ8vO7/file80d07ee82204/sample2_matched_reads.fastq.gz, /tmp/RtmpmJ8vO7/file80d07ee82204/sample3_matched_reads.fastq.gz
 #>  files found
-#> Checking for fastq file(s) /tmp/RtmpaNKtnp/file80d0174f3545/sampleA_matched_reads_dedup.fastq.gz, /tmp/RtmpaNKtnp/file80d0174f3545/sample1_matched_reads_dedup.fastq.gz, /tmp/RtmpaNKtnp/file80d0174f3545/sample2_matched_reads_dedup.fastq.gz, /tmp/RtmpaNKtnp/file80d0174f3545/sample3_matched_reads_dedup.fastq.gz
+#> Checking for fastq file(s) /tmp/RtmpmJ8vO7/file80d07ee82204/sampleA_matched_reads_dedup.fastq.gz, /tmp/RtmpmJ8vO7/file80d07ee82204/sample1_matched_reads_dedup.fastq.gz, /tmp/RtmpmJ8vO7/file80d07ee82204/sample2_matched_reads_dedup.fastq.gz, /tmp/RtmpmJ8vO7/file80d07ee82204/sample3_matched_reads_dedup.fastq.gz
 #>  files found
-#> Realigning sample /tmp/RtmpaNKtnp/file80d0174f3545/sampleA_matched_reads_dedup.fastq.gz -> /tmp/RtmpaNKtnp/file80d0174f3545/sampleA_realign2transcript.bam
+#> Realigning sample /tmp/RtmpmJ8vO7/file80d07ee82204/sampleA_matched_reads_dedup.fastq.gz -> /tmp/RtmpmJ8vO7/file80d07ee82204/sampleA_realign2transcript.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by 1 with CB threads...
-#> Realigning sample /tmp/RtmpaNKtnp/file80d0174f3545/sample1_matched_reads_dedup.fastq.gz -> /tmp/RtmpaNKtnp/file80d0174f3545/sample1_realign2transcript.bam
+#> Realigning sample /tmp/RtmpmJ8vO7/file80d07ee82204/sample1_matched_reads_dedup.fastq.gz -> /tmp/RtmpmJ8vO7/file80d07ee82204/sample1_realign2transcript.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by 1 with CB threads...
-#> Realigning sample /tmp/RtmpaNKtnp/file80d0174f3545/sample2_matched_reads_dedup.fastq.gz -> /tmp/RtmpaNKtnp/file80d0174f3545/sample2_realign2transcript.bam
+#> Realigning sample /tmp/RtmpmJ8vO7/file80d07ee82204/sample2_matched_reads_dedup.fastq.gz -> /tmp/RtmpmJ8vO7/file80d07ee82204/sample2_realign2transcript.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by 1 with CB threads...
-#> Realigning sample /tmp/RtmpaNKtnp/file80d0174f3545/sample3_matched_reads_dedup.fastq.gz -> /tmp/RtmpaNKtnp/file80d0174f3545/sample3_realign2transcript.bam
+#> Realigning sample /tmp/RtmpmJ8vO7/file80d07ee82204/sample3_matched_reads_dedup.fastq.gz -> /tmp/RtmpmJ8vO7/file80d07ee82204/sample3_realign2transcript.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by 1 with CB threads...
-#> ── Running step: transcript_quantification @ Fri Oct 31 06:43:00 2025 ──────────
+#> ── Running step: transcript_quantification @ Fri Oct 31 06:51:11 2025 ──────────
 experiment(ppl)
 #> $sampleA
 #> class: SingleCellExperiment 
