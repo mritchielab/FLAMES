@@ -144,7 +144,7 @@ MultiSampleSCPipeline <- function(
 
   if (steps["barcode_demultiplex"] &&
     config$pipeline_parameters$demultiplexer == "BLAZE" &&
-    is.na(pipeline@expect_cell_number)) {
+    any(is.na(pipeline@expect_cell_number))) {
     stop("demultiplexer set to 'BLAZE', which requires 'expect_cell_number' to be provided.")
   }
 
