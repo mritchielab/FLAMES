@@ -116,7 +116,7 @@ open the created config file and edit it manually.
 # create the default configuration file
 outdir <- tempdir()
 config <- create_config(outdir)
-#> Writing configuration parameters to:  /tmp/RtmpM0tt18/config_file_42761.json 
+#> Writing configuration parameters to:  /tmp/Rtmpbzssfl/config_file_42761.json 
 
 # create config with custom parameters including nested ones
 config <- create_config(outdir,
@@ -128,5 +128,5 @@ config <- create_config(outdir,
   # via supplying additional CLI arguments
   additional_arguments.oarfish = c("--model-coverage")
 )
-#> Writing configuration parameters to:  /tmp/RtmpM0tt18/config_file_42761.json 
+#> Writing configuration parameters to:  /tmp/Rtmpbzssfl/config_file_42761.json 
 ```

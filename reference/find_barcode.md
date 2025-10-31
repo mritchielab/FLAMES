@@ -121,7 +121,7 @@ find_barcode(
 #> BC: NNNNNNNNNNNNNNNN
 #> UMI: NNNNNNNNNNNN
 #> polyT: TTTTTTTTT
-#> Setting known barcodes from /tmp/RtmpM0tt18/filea7097371e454/bc_allow.tsv
+#> Setting known barcodes from /tmp/Rtmpbzssfl/filea7093b46ccea/bc_allow.tsv
 #> Number of known barcodes: 143
 #> Processing file: /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz
 #> Searching for barcodes...
@@ -158,7 +158,7 @@ find_barcode(
 #>                                                 1 
 #> 
 #> $stats_out
-#> [1] "/tmp/RtmpM0tt18/filea7097371e454/bc_stat.tsv.gz"
+#> [1] "/tmp/Rtmpbzssfl/filea7093b46ccea/bc_stat.tsv.gz"
 #> 
 #> $cutadapt
 #> $cutadapt$tag
@@ -177,12 +177,12 @@ find_barcode(
 #>  [1] "-g"                                                               
 #>  [2] "AAGCAGTGGTATCAACGCAGAGTACATGGG"                                   
 #>  [3] "-o"                                                               
-#>  [4] "/tmp/RtmpM0tt18/filea7097371e454/demultiplexed.fastq.gz"          
-#>  [5] "/tmp/RtmpM0tt18/filea7097371e454/untrimmed_demultiplexed.fastq.gz"
+#>  [4] "/tmp/Rtmpbzssfl/filea7093b46ccea/demultiplexed.fastq.gz"          
+#>  [5] "/tmp/Rtmpbzssfl/filea7093b46ccea/untrimmed_demultiplexed.fastq.gz"
 #>  [6] "--json"                                                           
-#>  [7] "/tmp/RtmpM0tt18/filea7097371e454/filea70936d10932.json"           
+#>  [7] "/tmp/Rtmpbzssfl/filea7093b46ccea/filea7095b7282e2.json"           
 #>  [8] "--untrimmed-output"                                               
-#>  [9] "/tmp/RtmpM0tt18/filea7097371e454/noTSO_demultiplexed.fastq.gz"    
+#>  [9] "/tmp/Rtmpbzssfl/filea7093b46ccea/noTSO_demultiplexed.fastq.gz"    
 #> [10] "--minimum-length"                                                 
 #> [11] "10"                                                               
 #> 
@@ -191,7 +191,7 @@ find_barcode(
 #> 
 #> $cutadapt$input
 #> $cutadapt$input$path1
-#> [1] "/tmp/RtmpM0tt18/filea7097371e454/untrimmed_demultiplexed.fastq.gz"
+#> [1] "/tmp/Rtmpbzssfl/filea7093b46ccea/untrimmed_demultiplexed.fastq.gz"
 #> 
 #> $cutadapt$input$path2
 #> NULL

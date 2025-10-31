@@ -52,7 +52,7 @@ columns:
 
 ``` r
 ppl <- example_pipeline("BulkPipeline")
-#> Writing configuration parameters to:  /tmp/RtmpM0tt18/filea7094392e533/config_file_42761.json 
+#> Writing configuration parameters to:  /tmp/Rtmpbzssfl/filea709223994/config_file_42761.json 
 #> Configured steps: 
 #>  genome_alignment: TRUE
 #>  isoform_identification: TRUE
@@ -61,15 +61,15 @@ ppl <- example_pipeline("BulkPipeline")
 #> samtools not found, will use Rsamtools package instead
 steps(ppl)["isoform_identification"] <- FALSE
 ppl <- run_step(ppl, "read_realignment")
-#> ── Running step: read_realignment @ Fri Oct 31 05:40:40 2025 ───────────────────
+#> ── Running step: read_realignment @ Fri Oct 31 06:02:04 2025 ───────────────────
 #> Using reference annotation for transcriptome assembly.
-#> Realigning sample sample1 -> /tmp/RtmpM0tt18/filea7094392e533/sample1_realign2transcript.bam
+#> Realigning sample sample1 -> /tmp/Rtmpbzssfl/filea709223994/sample1_realign2transcript.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Skipped sorting BAM files.
-#> Realigning sample sample2 -> /tmp/RtmpM0tt18/filea7094392e533/sample2_realign2transcript.bam
+#> Realigning sample sample2 -> /tmp/Rtmpbzssfl/filea709223994/sample2_realign2transcript.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Skipped sorting BAM files.
-#> Realigning sample sample3 -> /tmp/RtmpM0tt18/filea7094392e533/sample3_realign2transcript.bam
+#> Realigning sample sample3 -> /tmp/Rtmpbzssfl/filea709223994/sample3_realign2transcript.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Skipped sorting BAM files.
 x <- get_coverage(ppl@transcriptome_bam[[1]])

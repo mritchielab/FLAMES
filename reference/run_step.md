@@ -43,7 +43,7 @@ to resume a pipeline from the last completed step.
 
 ``` r
 pipeline <- example_pipeline("BulkPipeline")
-#> Writing configuration parameters to:  /tmp/RtmpM0tt18/filea7093c982e13/config_file_42761.json 
+#> Writing configuration parameters to:  /tmp/Rtmpbzssfl/filea7093292a5f1/config_file_42761.json 
 #> Configured steps: 
 #>  genome_alignment: TRUE
 #>  isoform_identification: TRUE
@@ -51,17 +51,17 @@ pipeline <- example_pipeline("BulkPipeline")
 #>  transcript_quantification: TRUE
 #> samtools not found, will use Rsamtools package instead
 pipeline <- run_step(pipeline, "genome_alignment")
-#> ── Running step: genome_alignment @ Fri Oct 31 05:41:22 2025 ───────────────────
+#> ── Running step: genome_alignment @ Fri Oct 31 06:02:45 2025 ───────────────────
 #> Creating junction bed file from GFF3 annotation.
-#> Aligning sample sample1 -> /tmp/RtmpM0tt18/filea7093c982e13/sample1_align2genome.bam
+#> Aligning sample sample1 -> /tmp/Rtmpbzssfl/filea7093292a5f1/sample1_align2genome.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by genome coordinates with 1 threads...
 #> Indexing bam files
-#> Aligning sample sample2 -> /tmp/RtmpM0tt18/filea7093c982e13/sample2_align2genome.bam
+#> Aligning sample sample2 -> /tmp/Rtmpbzssfl/filea7093292a5f1/sample2_align2genome.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by genome coordinates with 1 threads...
 #> Indexing bam files
-#> Aligning sample sample3 -> /tmp/RtmpM0tt18/filea7093c982e13/sample3_align2genome.bam
+#> Aligning sample sample3 -> /tmp/Rtmpbzssfl/filea7093292a5f1/sample3_align2genome.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by genome coordinates with 1 threads...
 #> Indexing bam files

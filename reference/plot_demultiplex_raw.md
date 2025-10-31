@@ -65,11 +65,11 @@ find_barcode(
 #> BC: NNNNNNNNNNNNNNNN
 #> UMI: NNNNNNNNNNNN
 #> polyT: TTTTTTTTT
-#> Setting known barcodes from /tmp/RtmpM0tt18/filea7092e1b163/bc_allow.tsv
+#> Setting known barcodes from /tmp/Rtmpbzssfl/filea70923571884/bc_allow.tsv
 #> Number of known barcodes: 143
-#> Processing file: /tmp/RtmpM0tt18/filea7094f096a3b/copy.fastq
+#> Processing file: /tmp/Rtmpbzssfl/filea7091526abef/copy.fastq
 #> Searching for barcodes...
-#> Processing file: /tmp/RtmpM0tt18/filea7094f096a3b/musc_rps24.fastq.gz
+#> Processing file: /tmp/Rtmpbzssfl/filea7091526abef/musc_rps24.fastq.gz
 #> Searching for barcodes...
 #> Number of reads processed: 493
 #> Number of reads where at least one barcode was found: 460

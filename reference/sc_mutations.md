@@ -44,7 +44,7 @@ pct, pos, seqname.
 
 ``` r
 ppl <- example_pipeline("SingleCellPipeline")
-#> Writing configuration parameters to:  /tmp/RtmpM0tt18/filea709255ff853/config_file_42761.json 
+#> Writing configuration parameters to:  /tmp/Rtmpbzssfl/filea709b1cd8c6/config_file_42761.json 
 #> Warning: You have set to use oarfish quantification without gene quantification. Oarfish currently does not collapse UMIs, and gene quantification performs UMI collapsing. You may want to set do_gene_quantification to TRUE for more accurate results.
 #> Configured steps: 
 #>  barcode_demultiplex: TRUE
@@ -55,7 +55,7 @@ ppl <- example_pipeline("SingleCellPipeline")
 #>  transcript_quantification: TRUE
 #> samtools not found, will use Rsamtools package instead
 ppl <- run_step(ppl, "barcode_demultiplex")
-#> ── Running step: barcode_demultiplex @ Fri Oct 31 05:41:41 2025 ────────────────
+#> ── Running step: barcode_demultiplex @ Fri Oct 31 06:03:04 2025 ────────────────
 #> Using flexiplex for barcode demultiplexing.
 #> FLEXIPLEX 0.96.2
 #> Setting max barcode edit distance to 2
@@ -67,7 +67,7 @@ ppl <- run_step(ppl, "barcode_demultiplex")
 #> BC: NNNNNNNNNNNNNNNN
 #> UMI: NNNNNNNNNNNN
 #> polyT: TTTTTTTTT
-#> Setting known barcodes from /tmp/RtmpM0tt18/filea709255ff853/bc_allow.tsv
+#> Setting known barcodes from /tmp/Rtmpbzssfl/filea709b1cd8c6/bc_allow.tsv
 #> Number of known barcodes: 143
 #> Processing file: /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz
 #> Searching for barcodes...
@@ -88,9 +88,9 @@ ppl <- run_step(ppl, "barcode_demultiplex")
 #> 2    29
 #> 1    57
 ppl <- run_step(ppl, "genome_alignment")
-#> ── Running step: genome_alignment @ Fri Oct 31 05:41:42 2025 ───────────────────
+#> ── Running step: genome_alignment @ Fri Oct 31 06:03:04 2025 ───────────────────
 #> Creating junction bed file from GFF3 annotation.
-#> Aligning sample /tmp/RtmpM0tt18/filea709255ff853/matched_reads.fastq.gz -> /tmp/RtmpM0tt18/filea709255ff853/align2genome.bam
+#> Aligning sample /tmp/Rtmpbzssfl/filea709b1cd8c6/matched_reads.fastq.gz -> /tmp/Rtmpbzssfl/filea709b1cd8c6/align2genome.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by genome coordinates with 8 threads...
 #> Indexing bam files
@@ -100,10 +100,10 @@ snps_tb <- sc_mutations(
   positions = c(1260, 2714), # positions of interest
   indel = FALSE
 )
-#> 05:41:42 Got 1 bam file, parallelizing over each position ...
+#> 06:03:04 Got 1 bam file, parallelizing over each position ...
 #>   |                                                                              |                                                                      |   0%  |                                                                              |===================================                                   |  50%  |                                                                              |======================================================================| 100%
 #> 
-#> 05:41:43 Merging results ...
+#> 06:03:06 Merging results ...
 head(snps_tb)
 #> # A tibble: 6 × 7
 #>   allele barcode          allele_count cell_total_reads   pct   pos seqname

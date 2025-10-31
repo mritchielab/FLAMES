@@ -38,7 +38,7 @@ a list of ggplot objects:
 ``` r
 pipeline <- example_pipeline("MultiSampleSCPipeline") |>
   run_step("barcode_demultiplex")
-#> Writing configuration parameters to:  /tmp/RtmpM0tt18/filea70974240cf2/config_file_42761.json 
+#> Writing configuration parameters to:  /tmp/Rtmpbzssfl/filea7094be7ff30/config_file_42761.json 
 #> Configured steps: 
 #>  barcode_demultiplex: TRUE
 #>  genome_alignment: TRUE
@@ -47,7 +47,7 @@ pipeline <- example_pipeline("MultiSampleSCPipeline") |>
 #>  read_realignment: TRUE
 #>  transcript_quantification: TRUE
 #> samtools not found, will use Rsamtools package instead
-#> ── Running step: barcode_demultiplex @ Fri Oct 31 05:40:46 2025 ────────────────
+#> ── Running step: barcode_demultiplex @ Fri Oct 31 06:02:10 2025 ────────────────
 #> Using flexiplex for barcode demultiplexing.
 #> FLEXIPLEX 0.96.2
 #> Setting max barcode edit distance to 2
@@ -59,13 +59,13 @@ pipeline <- example_pipeline("MultiSampleSCPipeline") |>
 #> BC: NNNNNNNNNNNNNNNN
 #> UMI: NNNNNNNNNNNN
 #> polyT: TTTTTTTTT
-#> Setting known barcodes from /tmp/RtmpM0tt18/filea70974240cf2/bc_allow.tsv
+#> Setting known barcodes from /tmp/Rtmpbzssfl/filea7094be7ff30/bc_allow.tsv
 #> Number of known barcodes: 143
-#> Processing file: /tmp/RtmpM0tt18/filea70974240cf2/fastq/sample1.fq.gz
+#> Processing file: /tmp/Rtmpbzssfl/filea7094be7ff30/fastq/sample1.fq.gz
 #> Searching for barcodes...
-#> Processing file: /tmp/RtmpM0tt18/filea70974240cf2/fastq/sample2.fq.gz
+#> Processing file: /tmp/Rtmpbzssfl/filea7094be7ff30/fastq/sample2.fq.gz
 #> Searching for barcodes...
-#> Processing file: /tmp/RtmpM0tt18/filea70974240cf2/fastq/sample3.fq.gz
+#> Processing file: /tmp/Rtmpbzssfl/filea7094be7ff30/fastq/sample3.fq.gz
 #> Searching for barcodes...
 #> Number of reads processed: 393
 #> Number of reads where at least one barcode was found: 368
@@ -93,9 +93,9 @@ pipeline <- example_pipeline("MultiSampleSCPipeline") |>
 #> BC: NNNNNNNNNNNNNNNN
 #> UMI: NNNNNNNNNNNN
 #> polyT: TTTTTTTTT
-#> Setting known barcodes from /tmp/RtmpM0tt18/filea70974240cf2/bc_allow.tsv
+#> Setting known barcodes from /tmp/Rtmpbzssfl/filea7094be7ff30/bc_allow.tsv
 #> Number of known barcodes: 143
-#> Processing file: /tmp/RtmpM0tt18/filea70974240cf2/fastq/sample1.fq.gz
+#> Processing file: /tmp/Rtmpbzssfl/filea7094be7ff30/fastq/sample1.fq.gz
 #> Searching for barcodes...
 #> Number of reads processed: 100
 #> Number of reads where at least one barcode was found: 92
@@ -117,9 +117,9 @@ pipeline <- example_pipeline("MultiSampleSCPipeline") |>
 #> BC: NNNNNNNNNNNNNNNN
 #> UMI: NNNNNNNNNNNN
 #> polyT: TTTTTTTTT
-#> Setting known barcodes from /tmp/RtmpM0tt18/filea70974240cf2/bc_allow.tsv
+#> Setting known barcodes from /tmp/Rtmpbzssfl/filea7094be7ff30/bc_allow.tsv
 #> Number of known barcodes: 143
-#> Processing file: /tmp/RtmpM0tt18/filea70974240cf2/fastq/sample2.fq.gz
+#> Processing file: /tmp/Rtmpbzssfl/filea7094be7ff30/fastq/sample2.fq.gz
 #> Searching for barcodes...
 #> Number of reads processed: 100
 #> Number of reads where at least one barcode was found: 95
@@ -141,9 +141,9 @@ pipeline <- example_pipeline("MultiSampleSCPipeline") |>
 #> BC: NNNNNNNNNNNNNNNN
 #> UMI: NNNNNNNNNNNN
 #> polyT: TTTTTTTTT
-#> Setting known barcodes from /tmp/RtmpM0tt18/filea70974240cf2/bc_allow.tsv
+#> Setting known barcodes from /tmp/Rtmpbzssfl/filea7094be7ff30/bc_allow.tsv
 #> Number of known barcodes: 143
-#> Processing file: /tmp/RtmpM0tt18/filea70974240cf2/fastq/sample3.fq.gz
+#> Processing file: /tmp/Rtmpbzssfl/filea7094be7ff30/fastq/sample3.fq.gz
 #> Searching for barcodes...
 #> Number of reads processed: 193
 #> Number of reads where at least one barcode was found: 181
