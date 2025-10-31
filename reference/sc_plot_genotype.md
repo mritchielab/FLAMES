@@ -57,7 +57,7 @@ A ggplot2 object with the genotype plotted on the reduced dimension.
 ``` r
 ppl <- example_pipeline("SingleCellPipeline") |>
   run_FLAMES()
-#> Writing configuration parameters to:  /tmp/Rtmpbzssfl/filea70971bdc23e/config_file_42761.json 
+#> Writing configuration parameters to:  /tmp/RtmpaNKtnp/file80d05ad3bd27/config_file_32976.json 
 #> Warning: You have set to use oarfish quantification without gene quantification. Oarfish currently does not collapse UMIs, and gene quantification performs UMI collapsing. You may want to set do_gene_quantification to TRUE for more accurate results.
 #> Configured steps: 
 #>  barcode_demultiplex: TRUE
@@ -67,7 +67,7 @@ ppl <- example_pipeline("SingleCellPipeline") |>
 #>  read_realignment: TRUE
 #>  transcript_quantification: TRUE
 #> samtools not found, will use Rsamtools package instead
-#> ── Running step: barcode_demultiplex @ Fri Oct 31 06:03:06 2025 ────────────────
+#> ── Running step: barcode_demultiplex @ Fri Oct 31 06:44:36 2025 ────────────────
 #> Using flexiplex for barcode demultiplexing.
 #> FLEXIPLEX 0.96.2
 #> Setting max barcode edit distance to 2
@@ -79,7 +79,7 @@ ppl <- example_pipeline("SingleCellPipeline") |>
 #> BC: NNNNNNNNNNNNNNNN
 #> UMI: NNNNNNNNNNNN
 #> polyT: TTTTTTTTT
-#> Setting known barcodes from /tmp/Rtmpbzssfl/filea70971bdc23e/bc_allow.tsv
+#> Setting known barcodes from /tmp/RtmpaNKtnp/file80d05ad3bd27/bc_allow.tsv
 #> Number of known barcodes: 143
 #> Processing file: /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz
 #> Searching for barcodes...
@@ -99,25 +99,25 @@ ppl <- example_pipeline("SingleCellPipeline") |>
 #> 3    14
 #> 2    29
 #> 1    57
-#> ── Running step: genome_alignment @ Fri Oct 31 06:03:06 2025 ───────────────────
+#> ── Running step: genome_alignment @ Fri Oct 31 06:44:36 2025 ───────────────────
 #> Creating junction bed file from GFF3 annotation.
-#> Aligning sample /tmp/Rtmpbzssfl/filea70971bdc23e/matched_reads.fastq.gz -> /tmp/Rtmpbzssfl/filea70971bdc23e/align2genome.bam
+#> Aligning sample /tmp/RtmpaNKtnp/file80d05ad3bd27/matched_reads.fastq.gz -> /tmp/RtmpaNKtnp/file80d05ad3bd27/align2genome.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by genome coordinates with 8 threads...
 #> Indexing bam files
-#> ── Running step: isoform_identification @ Fri Oct 31 06:03:06 2025 ─────────────
-#> ── Running step: read_realignment @ Fri Oct 31 06:03:07 2025 ───────────────────
+#> ── Running step: isoform_identification @ Fri Oct 31 06:44:36 2025 ─────────────
+#> ── Running step: read_realignment @ Fri Oct 31 06:44:36 2025 ───────────────────
 #> Checking for fastq file(s) /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz
 #>  files found
-#> Checking for fastq file(s) /tmp/Rtmpbzssfl/filea70971bdc23e/matched_reads.fastq.gz
+#> Checking for fastq file(s) /tmp/RtmpaNKtnp/file80d05ad3bd27/matched_reads.fastq.gz
 #>  files found
-#> Checking for fastq file(s) /tmp/Rtmpbzssfl/filea70971bdc23e/matched_reads_dedup.fastq.gz
+#> Checking for fastq file(s) /tmp/RtmpaNKtnp/file80d05ad3bd27/matched_reads_dedup.fastq.gz
 #>  files not found
 #> Warning: Oarfish does not support UMI deduplication, you should deduplicate reads before running Oarfish
-#> Realigning sample /tmp/Rtmpbzssfl/filea70971bdc23e/matched_reads.fastq.gz -> /tmp/Rtmpbzssfl/filea70971bdc23e/realign2transcript.bam
+#> Realigning sample /tmp/RtmpaNKtnp/file80d05ad3bd27/matched_reads.fastq.gz -> /tmp/RtmpaNKtnp/file80d05ad3bd27/realign2transcript.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by 8 with CB threads...
-#> ── Running step: transcript_quantification @ Fri Oct 31 06:03:07 2025 ──────────
+#> ── Running step: transcript_quantification @ Fri Oct 31 06:44:37 2025 ──────────
 sce <- experiment(ppl) |>
  scuttle::logNormCounts() |>
  scater::runPCA() |>
@@ -129,10 +129,10 @@ snps_tb <- sc_mutations(
   seqnames = "chr14",
   positions = 2714
 )
-#> 06:03:12 Got 1 bam file, parallelizing over each position ...
+#> 06:44:42 Got 1 bam file, parallelizing over each position ...
 #>   |                                                                              |                                                                      |   0%  |                                                                              |======================================================================| 100%
 #> 
-#> 06:03:13 Merging results ...
+#> 06:44:43 Merging results ...
 genotype_tb <- sc_genotype(
   snps_tb, ref = "C", alt = "T", seqname = "chr14", pos = 2714,
   alt_min_count = 2, alt_min_pct = 0.5, ref_min_count = 1, ref_min_pct = 1

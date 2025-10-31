@@ -31,7 +31,7 @@ An pipeline of class \`FLAMES.Pipeline\` with the updated steps.
 
 ``` r
 ppl <- example_pipeline()
-#> Writing configuration parameters to:  /tmp/Rtmpbzssfl/filea709319cae05/config_file_42761.json 
+#> Writing configuration parameters to:  /tmp/RtmpaNKtnp/file80d06b39cfb2/config_file_32976.json 
 #> Warning: You have set to use oarfish quantification without gene quantification. Oarfish currently does not collapse UMIs, and gene quantification performs UMI collapsing. You may want to set do_gene_quantification to TRUE for more accurate results.
 #> Configured steps: 
 #>  barcode_demultiplex: TRUE
@@ -50,13 +50,13 @@ steps(ppl) <- c(
   transcript_quantification = TRUE
 )
 ppl
-#> → A FLAMES.SingleCellPipeline outputting to /tmp/Rtmpbzssfl/filea709319cae05
+#> → A FLAMES.SingleCellPipeline outputting to /tmp/RtmpaNKtnp/file80d06b39cfb2
 #> 
 #> ── Inputs 
 #> ✔ fastq: ...ibrary/FLAMES/extdata/fastq/musc_rps24.fastq.gz
 #> ✔ annotation: /__w/_temp/Library/FLAMES/extdata/rps24.gtf.gz
-#> ✔ genome_fa: /tmp/Rtmpbzssfl/filea709319cae05/rps24.fa
-#> ✔ barcodes_file: /tmp/Rtmpbzssfl/filea709319cae05/bc_allow.tsv
+#> ✔ genome_fa: /tmp/RtmpaNKtnp/file80d06b39cfb2/rps24.fa
+#> ✔ barcodes_file: /tmp/RtmpaNKtnp/file80d06b39cfb2/bc_allow.tsv
 #> 
 #> ── Outputs 
 #> ℹ demultiplexed_fastq: matched_reads.fastq.gz
@@ -73,13 +73,13 @@ ppl
 # or partially change a step:
 steps(ppl)["read_realignment"] <- TRUE
 ppl
-#> → A FLAMES.SingleCellPipeline outputting to /tmp/Rtmpbzssfl/filea709319cae05
+#> → A FLAMES.SingleCellPipeline outputting to /tmp/RtmpaNKtnp/file80d06b39cfb2
 #> 
 #> ── Inputs 
 #> ✔ fastq: ...ibrary/FLAMES/extdata/fastq/musc_rps24.fastq.gz
 #> ✔ annotation: /__w/_temp/Library/FLAMES/extdata/rps24.gtf.gz
-#> ✔ genome_fa: /tmp/Rtmpbzssfl/filea709319cae05/rps24.fa
-#> ✔ barcodes_file: /tmp/Rtmpbzssfl/filea709319cae05/bc_allow.tsv
+#> ✔ genome_fa: /tmp/RtmpaNKtnp/file80d06b39cfb2/rps24.fa
+#> ✔ barcodes_file: /tmp/RtmpaNKtnp/file80d06b39cfb2/bc_allow.tsv
 #> 
 #> ── Outputs 
 #> ℹ demultiplexed_fastq: matched_reads.fastq.gz

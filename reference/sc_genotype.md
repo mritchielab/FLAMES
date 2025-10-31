@@ -75,7 +75,7 @@ allele_count_alt, pct_alt, genotype.
 example(sc_mutations)
 #> 
 #> sc_mtt> ppl <- example_pipeline("SingleCellPipeline")
-#> Writing configuration parameters to:  /tmp/Rtmpbzssfl/filea7091786a850/config_file_42761.json 
+#> Writing configuration parameters to:  /tmp/RtmpaNKtnp/file80d021a81103/config_file_32976.json 
 #> Warning: You have set to use oarfish quantification without gene quantification. Oarfish currently does not collapse UMIs, and gene quantification performs UMI collapsing. You may want to set do_gene_quantification to TRUE for more accurate results.
 #> Configured steps: 
 #>  barcode_demultiplex: TRUE
@@ -87,7 +87,7 @@ example(sc_mutations)
 #> samtools not found, will use Rsamtools package instead
 #> 
 #> sc_mtt> ppl <- run_step(ppl, "barcode_demultiplex")
-#> ── Running step: barcode_demultiplex @ Fri Oct 31 06:02:53 2025 ────────────────
+#> ── Running step: barcode_demultiplex @ Fri Oct 31 06:44:23 2025 ────────────────
 #> Using flexiplex for barcode demultiplexing.
 #> FLEXIPLEX 0.96.2
 #> Setting max barcode edit distance to 2
@@ -99,7 +99,7 @@ example(sc_mutations)
 #> BC: NNNNNNNNNNNNNNNN
 #> UMI: NNNNNNNNNNNN
 #> polyT: TTTTTTTTT
-#> Setting known barcodes from /tmp/Rtmpbzssfl/filea7091786a850/bc_allow.tsv
+#> Setting known barcodes from /tmp/RtmpaNKtnp/file80d021a81103/bc_allow.tsv
 #> Number of known barcodes: 143
 #> Processing file: /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz
 #> Searching for barcodes...
@@ -121,9 +121,9 @@ example(sc_mutations)
 #> 1    57
 #> 
 #> sc_mtt> ppl <- run_step(ppl, "genome_alignment")
-#> ── Running step: genome_alignment @ Fri Oct 31 06:02:53 2025 ───────────────────
+#> ── Running step: genome_alignment @ Fri Oct 31 06:44:23 2025 ───────────────────
 #> Creating junction bed file from GFF3 annotation.
-#> Aligning sample /tmp/Rtmpbzssfl/filea7091786a850/matched_reads.fastq.gz -> /tmp/Rtmpbzssfl/filea7091786a850/align2genome.bam
+#> Aligning sample /tmp/RtmpaNKtnp/file80d021a81103/matched_reads.fastq.gz -> /tmp/RtmpaNKtnp/file80d021a81103/align2genome.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by genome coordinates with 8 threads...
 #> Indexing bam files
@@ -134,10 +134,10 @@ example(sc_mutations)
 #> sc_mtt+   positions = c(1260, 2714), # positions of interest
 #> sc_mtt+   indel = FALSE
 #> sc_mtt+ )
-#> 06:02:54 Got 1 bam file, parallelizing over each position ...
+#> 06:44:24 Got 1 bam file, parallelizing over each position ...
 #>   |                                                                              |                                                                      |   0%  |                                                                              |===================================                                   |  50%  |                                                                              |======================================================================| 100%
 #> 
-#> 06:02:55 Merging results ...
+#> 06:44:25 Merging results ...
 #> 
 #> sc_mtt> head(snps_tb)
 #> # A tibble: 6 × 7

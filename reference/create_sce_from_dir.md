@@ -59,7 +59,7 @@ sce <- sc_long_pipeline(
     oarfish_quantification = FALSE
   )
 )
-#> Writing configuration parameters to:  /tmp/Rtmpbzssfl/filea709381ccce4/config_file_42761.json 
+#> Writing configuration parameters to:  /tmp/RtmpaNKtnp/file80d029aedcc7/config_file_32976.json 
 #> Configured steps: 
 #>  barcode_demultiplex: TRUE
 #>  genome_alignment: TRUE
@@ -68,7 +68,7 @@ sce <- sc_long_pipeline(
 #>  read_realignment: TRUE
 #>  transcript_quantification: TRUE
 #> samtools not found, will use Rsamtools package instead
-#> ── Running step: barcode_demultiplex @ Fri Oct 31 06:01:41 2025 ────────────────
+#> ── Running step: barcode_demultiplex @ Fri Oct 31 06:43:12 2025 ────────────────
 #> Using flexiplex for barcode demultiplexing.
 #> FLEXIPLEX 0.96.2
 #> Setting max barcode edit distance to 2
@@ -80,7 +80,7 @@ sce <- sc_long_pipeline(
 #> BC: NNNNNNNNNNNNNNNN
 #> UMI: NNNNNNNNNNNN
 #> polyT: TTTTTTTTT
-#> Setting known barcodes from /tmp/Rtmpbzssfl/filea709381ccce4/bc_allow.tsv
+#> Setting known barcodes from /tmp/RtmpaNKtnp/file80d029aedcc7/bc_allow.tsv
 #> Number of known barcodes: 143
 #> Processing file: /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz
 #> Searching for barcodes...
@@ -100,33 +100,33 @@ sce <- sc_long_pipeline(
 #> 3    14
 #> 2    29
 #> 1    57
-#> ── Running step: genome_alignment @ Fri Oct 31 06:01:41 2025 ───────────────────
+#> ── Running step: genome_alignment @ Fri Oct 31 06:43:12 2025 ───────────────────
 #> Creating junction bed file from GFF3 annotation.
-#> Aligning sample /tmp/Rtmpbzssfl/filea709381ccce4/matched_reads.fastq.gz -> /tmp/Rtmpbzssfl/filea709381ccce4/align2genome.bam
+#> Aligning sample /tmp/RtmpaNKtnp/file80d029aedcc7/matched_reads.fastq.gz -> /tmp/RtmpaNKtnp/file80d029aedcc7/align2genome.bam
 #> Your fastq file appears to have tags, but you did not provide the -y option to minimap2 to include the tags in the output.
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by genome coordinates with 8 threads...
 #> Indexing bam files
-#> ── Running step: gene_quantification @ Fri Oct 31 06:01:42 2025 ────────────────
-#> 06:01:42 AM Fri Oct 31 2025 quantify genes 
-#> Using BAM(s): /tmp/Rtmpbzssfl/filea709381ccce4/align2genome.bam
-#> ── Running step: isoform_identification @ Fri Oct 31 06:01:43 2025 ─────────────
-#> ── Running step: read_realignment @ Fri Oct 31 06:01:43 2025 ───────────────────
+#> ── Running step: gene_quantification @ Fri Oct 31 06:43:13 2025 ────────────────
+#> 06:43:13 AM Fri Oct 31 2025 quantify genes 
+#> Using BAM(s): /tmp/RtmpaNKtnp/file80d029aedcc7/align2genome.bam
+#> ── Running step: isoform_identification @ Fri Oct 31 06:43:14 2025 ─────────────
+#> ── Running step: read_realignment @ Fri Oct 31 06:43:14 2025 ───────────────────
 #> Checking for fastq file(s) /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz
 #>  files found
-#> Checking for fastq file(s) /tmp/Rtmpbzssfl/filea709381ccce4/matched_reads.fastq.gz
+#> Checking for fastq file(s) /tmp/RtmpaNKtnp/file80d029aedcc7/matched_reads.fastq.gz
 #>  files found
-#> Checking for fastq file(s) /tmp/Rtmpbzssfl/filea709381ccce4/matched_reads_dedup.fastq.gz
+#> Checking for fastq file(s) /tmp/RtmpaNKtnp/file80d029aedcc7/matched_reads_dedup.fastq.gz
 #>  files found
-#> Realigning sample /tmp/Rtmpbzssfl/filea709381ccce4/matched_reads_dedup.fastq.gz -> /tmp/Rtmpbzssfl/filea709381ccce4/realign2transcript.bam
+#> Realigning sample /tmp/RtmpaNKtnp/file80d029aedcc7/matched_reads_dedup.fastq.gz -> /tmp/RtmpaNKtnp/file80d029aedcc7/realign2transcript.bam
 #> Your fastq file appears to have tags, but you did not provide the -y option to minimap2 to include the tags in the output.
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by genome coordinates with 8 threads...
 #> Indexing bam files
-#> ── Running step: transcript_quantification @ Fri Oct 31 06:01:44 2025 ──────────
-#> 06:01:44 AM Fri Oct 31 2025 quantify transcripts 
+#> ── Running step: transcript_quantification @ Fri Oct 31 06:43:15 2025 ──────────
+#> 06:43:15 AM Fri Oct 31 2025 quantify transcripts 
 #> Warning: Annotation in GFF format may cause errors. Please consider using GTF formats.
 #> Found realignment file(s):   realign2transcript.bam
-#> Pipeline saved to /tmp/Rtmpbzssfl/filea709381ccce4/pipeline.rds
+#> Pipeline saved to /tmp/RtmpaNKtnp/file80d029aedcc7/pipeline.rds
 sce_2 <- create_sce_from_dir(outdir, annotation)
 ```
