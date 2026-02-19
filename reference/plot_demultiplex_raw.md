@@ -55,25 +55,23 @@ find_barcode(
   barcodes_file = bc_allow, TSO_seq = "CCCATGTACTCTGCGTTGATACCACTGCTT"
 ) |>
   plot_demultiplex_raw()
-#> FLEXIPLEX 0.96.2
-#> Setting max barcode edit distance to 2
-#> Setting max flanking sequence edit distance to 8
-#> Setting read IDs to be  replaced
-#> Setting number of threads to 1
-#> Search pattern: 
-#> primer: CTACACGACGCTCTTCCGATCT
-#> BC: NNNNNNNNNNNNNNNN
-#> UMI: NNNNNNNNNNNN
-#> polyT: TTTTTTTTT
-#> Setting known barcodes from /tmp/RtmpmJ8vO7/file80d0359b4ee8/bc_allow.tsv
+#> Converting legacy `pattern` argument to `segments`...
+#> Loading known barcodes from /tmp/RtmpjRxi1E/file95d2757f0f94/bc_allow.tsv
 #> Number of known barcodes: 143
-#> Processing file: /tmp/RtmpmJ8vO7/file80d04f4eacfa/copy.fastq
+#> FLEXIPLEX 1.02.6
+#> Setting max flanking sequence edit distance to 8
+#> Setting number of threads to 1
+#> Search pattern:
+#> primer: CTACACGACGCTCTTCCGATCT
+#> CB: NNNNNNNNNNNNNNNN
+#> UB: NNNNNNNNNNNN
+#> polyT: TTTTTTTTT
+#> Processing file: /tmp/RtmpjRxi1E/file95d27838180c/copy.fastq
 #> Searching for barcodes...
-#> Processing file: /tmp/RtmpmJ8vO7/file80d04f4eacfa/musc_rps24.fastq.gz
+#> Processing file: /tmp/RtmpjRxi1E/file95d27838180c/musc_rps24.fastq.gz
 #> Searching for barcodes...
 #> Number of reads processed: 493
 #> Number of reads where at least one barcode was found: 460
-#> Number of reads with exactly one barcode match: 455
 #> Number of chimera reads: 2
 #> All done!
 #> Reads    Barcodes
@@ -98,9 +96,6 @@ find_barcode(
 
 #> 
 #> $flank_editdistance_plot
-
-#> 
-#> $barcode_editdistance_plot
 
 #> 
 #> $cutadapt_plot

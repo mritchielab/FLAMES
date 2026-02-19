@@ -73,7 +73,7 @@ multi-sample modes is available
 
 ## Common issues
 
-- **basilisk / reticulate errors**  
+- **basilisk / reticulate errors**\
   If you encounter errors from Python code execution, you could try
   adding `basilisk::setBasiliskFork(FALSE)` before running FLAMES.
 

@@ -35,7 +35,7 @@ that pass the filter
 
 ``` r
 ppl <- example_pipeline("BulkPipeline")
-#> Writing configuration parameters to:  /tmp/RtmpmJ8vO7/file80d03f6746d6/config_file_32976.json 
+#> Writing configuration parameters to:  /tmp/RtmpjRxi1E/file95d25515d78f/config_file_38354.json 
 #> Configured steps: 
 #>  genome_alignment: TRUE
 #>  isoform_identification: TRUE
@@ -44,24 +44,24 @@ ppl <- example_pipeline("BulkPipeline")
 #> samtools not found, will use Rsamtools package instead
 steps(ppl)["isoform_identification"] <- FALSE
 ppl <- run_step(ppl, "read_realignment")
-#> ── Running step: read_realignment @ Fri Oct 31 06:51:32 2025 ───────────────────
+#> ── Running step: read_realignment @ Thu Feb 19 01:55:44 2026 ───────────────────
 #> Using reference annotation for transcriptome assembly.
-#> Realigning sample sample1 -> /tmp/RtmpmJ8vO7/file80d03f6746d6/sample1_realign2transcript.bam
+#> Realigning sample sample1 -> /tmp/RtmpjRxi1E/file95d25515d78f/sample1_realign2transcript.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Skipped sorting BAM files.
-#> Realigning sample sample2 -> /tmp/RtmpmJ8vO7/file80d03f6746d6/sample2_realign2transcript.bam
+#> Realigning sample sample2 -> /tmp/RtmpjRxi1E/file95d25515d78f/sample2_realign2transcript.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Skipped sorting BAM files.
-#> Realigning sample sample3 -> /tmp/RtmpmJ8vO7/file80d03f6746d6/sample3_realign2transcript.bam
+#> Realigning sample sample3 -> /tmp/RtmpjRxi1E/file95d25515d78f/sample3_realign2transcript.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Skipped sorting BAM files.
 x <- get_coverage(ppl@transcriptome_bam[[1]])
 nrow(x)
-#> [1] 1
+#> [1] 2
 filter_coverage(x) |>
   nrow()
-#> 1 transcripts found in the BAM file.
+#> 2 transcripts found in the BAM file.
 #> 0(0%) transcripts failed the filter.
-#> Failed transcripts account for 0 reads, out of 83(0%) reads in total.
-#> [1] 1
+#> Failed transcripts account for 0 reads, out of 221(0%) reads in total.
+#> [1] 2
 ```

@@ -5,7 +5,15 @@ Uses BLAZE to generate barcode list and assign reads to cell barcodes.
 ## Usage
 
 ``` r
-blaze(expect_cells, fq_in, additional_args = NULL, ...)
+blaze(
+  expect_cells,
+  fq_in,
+  outdir,
+  fq_out,
+  sample_name = "",
+  additional_args = NULL,
+  ...
+)
 ```
 
 ## Arguments
@@ -19,6 +27,19 @@ blaze(expect_cells, fq_in, additional_args = NULL, ...)
 
   File path to the fastq file used as a query sequence file
 
+- outdir:
+
+  Output directory to save BLAZE results.
+
+- fq_out:
+
+  File path to save the output fastq file containing reads assigned to
+  cell barcodes.
+
+- sample_name:
+
+  Sample name prefix for output files. Default is an empty string.
+
 - additional_args:
 
   Additional command line style arguments to be passed to BLAZE. E.g.
@@ -27,12 +48,10 @@ blaze(expect_cells, fq_in, additional_args = NULL, ...)
 - ...:
 
   Additional BLAZE configuration parameters. E.g., setting
-  \`'output-prefix'='some_prefix'\` is equivalent to specifying
-  \`–output-prefix some_prefix\` in BLAZE; Similarly, \`overwrite=TRUE\`
-  is equivalent to switch on the \`–overwrite\` option. Note that the
-  specified parameters will override the parameters specified in the
-  configuration file. All available options can be found at
-  https://github.com/shimlab/BLAZE.
+  \`overwrite=TRUE\` is equivalent to switch on the \`–overwrite\`
+  option. Note that the specified parameters will override the
+  parameters specified in the configuration file. All available options
+  can be found at https://github.com/shimlab/BLAZE.
 
 ## Value
 
@@ -48,19 +67,14 @@ dir.create(outdir)
 fastq <- system.file("extdata", "fastq", "musc_rps24.fastq.gz", package = "FLAMES")
 blaze(
   expect_cells = 10, fastq,
-  "output-prefix" = file.path(outdir, ""),
-  "output-fastq" = file.path(outdir, "output.fastq"),
-  overwrite=TRUE
+  outdir = outdir,
+  fq_out = file.path(outdir, "blaze_matched_reads.fastq.gz"),
+  overwrite = TRUE
 )
-#> $`output-prefix`
-#> [1] "/tmp/RtmpmJ8vO7/file80d0611cbd77/"
-#> 
-#> $`output-fastq`
-#> [1] "/tmp/RtmpmJ8vO7/file80d0611cbd77/output.fastq"
-#> 
 #> $overwrite
 #> [1] TRUE
 #> 
 #> Running BLAZE...
-#> Argument:  --expect-cells  10 --overwrite --minimal_stdout  --output-prefix /tmp/RtmpmJ8vO7/file80d0611cbd77/ --output-fastq /tmp/RtmpmJ8vO7/file80d0611cbd77/output.fastq  /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz 
+#> Argument:  --expect-cells  10 --output-prefix  /tmp/RtmpjRxi1E/file95d25274c5f4/ --output-fastq  matched_reads.fastq.gz --overwrite --minimal_stdout   /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz 
+#> NULL
 ```

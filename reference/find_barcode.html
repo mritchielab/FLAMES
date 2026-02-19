@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">FLAMES</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.5.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.5.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,20 +42,22 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">find_barcode</span><span class="op">(</span></span>
 <span>  <span class="va">fastq</span>,</span>
-<span>  <span class="va">barcodes_file</span>,</span>
-<span>  max_bc_editdistance <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  <span class="va">segments</span>,</span>
+<span>  <span class="va">barcode_groups</span>,</span>
+<span>  <span class="va">barcodes_files</span>,</span>
 <span>  max_flank_editdistance <span class="op">=</span> <span class="fl">8</span>,</span>
 <span>  <span class="va">reads_out</span>,</span>
 <span>  <span class="va">stats_out</span>,</span>
 <span>  threads <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  pattern <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>primer <span class="op">=</span> <span class="st">"CTACACGACGCTCTTCCGATCT"</span>, BC <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"N"</span>, <span class="fl">16</span><span class="op">)</span>, collapse <span class="op">=</span></span>
-<span>    <span class="st">""</span><span class="op">)</span>, UMI <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"N"</span>, <span class="fl">12</span><span class="op">)</span>, collapse <span class="op">=</span> <span class="st">""</span><span class="op">)</span>, polyT <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"T"</span>, <span class="fl">9</span><span class="op">)</span>, collapse</span>
-<span>    <span class="op">=</span> <span class="st">""</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  TSO_seq <span class="op">=</span> <span class="st">""</span>,</span>
 <span>  TSO_prime <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  strand <span class="op">=</span> <span class="st">"+"</span>,</span>
 <span>  cutadapt_minimum_length <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  full_length_only <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  full_length_only <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  pattern <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>primer <span class="op">=</span> <span class="st">"CTACACGACGCTCTTCCGATCT"</span>, BC <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"N"</span>, <span class="fl">16</span><span class="op">)</span>, collapse <span class="op">=</span></span>
+<span>    <span class="st">""</span><span class="op">)</span>, UMI <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"N"</span>, <span class="fl">12</span><span class="op">)</span>, collapse <span class="op">=</span> <span class="st">""</span><span class="op">)</span>, polyT <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"T"</span>, <span class="fl">9</span><span class="op">)</span>, collapse</span>
+<span>    <span class="op">=</span> <span class="st">""</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  max_bc_editdistance <span class="op">=</span> <span class="fl">2</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -67,12 +69,18 @@
 <dd><p>A path to a FASTQ file or a directory containing FASTQ files.</p></dd>
 
 
-<dt id="arg-barcodes-file">barcodes_file<a class="anchor" aria-label="anchor" href="#arg-barcodes-file"></a></dt>
+<dt id="arg-segments">segments<a class="anchor" aria-label="anchor" href="#arg-segments"></a></dt>
+<dd><p>a list of <code>FlexiplexSegment</code> objects defining the structure of
+the barcode and flanking sequences</p></dd>
+
+
+<dt id="arg-barcode-groups">barcode_groups<a class="anchor" aria-label="anchor" href="#arg-barcode-groups"></a></dt>
+<dd><p>a list of <code>FlexiplexGroup</code> objects defining groups of barcodes
+for multi-segment matching, or an empty list if not used.</p></dd>
+
+
+<dt id="arg-barcodes-files">barcodes_files<a class="anchor" aria-label="anchor" href="#arg-barcodes-files"></a></dt>
 <dd><p>path to file containing barcode allow-list, with one barcode in each line</p></dd>
-
-
-<dt id="arg-max-bc-editdistance">max_bc_editdistance<a class="anchor" aria-label="anchor" href="#arg-max-bc-editdistance"></a></dt>
-<dd><p>max edit distances for the barcode sequence</p></dd>
 
 
 <dt id="arg-max-flank-editdistance">max_flank_editdistance<a class="anchor" aria-label="anchor" href="#arg-max-flank-editdistance"></a></dt>
@@ -89,10 +97,6 @@
 
 <dt id="arg-threads">threads<a class="anchor" aria-label="anchor" href="#arg-threads"></a></dt>
 <dd><p>number of threads to be used</p></dd>
-
-
-<dt id="arg-pattern">pattern<a class="anchor" aria-label="anchor" href="#arg-pattern"></a></dt>
-<dd><p>named character vector defining the barcode pattern</p></dd>
 
 
 <dt id="arg-tso-seq">TSO_seq<a class="anchor" aria-label="anchor" href="#arg-tso-seq"></a></dt>
@@ -115,6 +119,14 @@ after barcode matching if '-')</p></dd>
 <dt id="arg-full-length-only">full_length_only<a class="anchor" aria-label="anchor" href="#arg-full-length-only"></a></dt>
 <dd><p>boolean, when TSO sequence is provided, whether reads without TSO
 are to be discarded</p></dd>
+
+
+<dt id="arg-pattern">pattern<a class="anchor" aria-label="anchor" href="#arg-pattern"></a></dt>
+<dd><p>named character vector defining the barcode pattern</p></dd>
+
+
+<dt id="arg-max-bc-editdistance">max_bc_editdistance<a class="anchor" aria-label="anchor" href="#arg-max-bc-editdistance"></a></dt>
+<dd><p>max edit distances for the barcode sequence</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -146,23 +158,21 @@ around the barcode sequence, and then matching against allowed barcodes.</p>
 <span class="r-in"><span>  TSO_seq <span class="op">=</span> <span class="st">"AAGCAGTGGTATCAACGCAGAGTACATGGG"</span>, TSO_prime <span class="op">=</span> <span class="fl">5</span>,</span></span>
 <span class="r-in"><span>  strand <span class="op">=</span> <span class="st">'-'</span>, cutadapt_minimum_length <span class="op">=</span> <span class="fl">10</span>, full_length_only <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> FLEXIPLEX 0.96.2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting max barcode edit distance to 2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting max flanking sequence edit distance to 8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting read IDs to be  replaced</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting number of threads to 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Search pattern: </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> primer: CTACACGACGCTCTTCCGATCT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> BC: NNNNNNNNNNNNNNNN</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> UMI: NNNNNNNNNNNN</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> polyT: TTTTTTTTT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpmJ8vO7/file80d077fc3326/bc_allow.tsv</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Converting legacy `pattern` argument to `segments`...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Loading known barcodes from /tmp/RtmpjRxi1E/file95d23b091741/bc_allow.tsv</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of known barcodes: 143</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> FLEXIPLEX 1.02.6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting max flanking sequence edit distance to 8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting number of threads to 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Search pattern:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> primer: CTACACGACGCTCTTCCGATCT</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> CB: NNNNNNNNNNNNNNNN</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> UB: NNNNNNNNNNNN</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> polyT: TTTTTTTTT</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads processed: 393</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads where at least one barcode was found: 368</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads with exactly one barcode match: 364</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of chimera reads: 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> All done!</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Reads	Barcodes</span>
@@ -177,23 +187,11 @@ around the barcode sequence, and then matching against allowed barcodes.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2	29</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1	57</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $read_counts</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                       total reads </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                               393 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                               demultiplexed reads </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                               368 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                single match reads </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                               364 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> single strand single barcode multi-matching reads </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                 0 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              single strand multiple barcode reads </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                 3 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 both strands single barcode reads </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                 0 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>               both strands multiple barcode reads </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                 1 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         total reads demultiplexed reads  single match reads       chimera reads </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                 393                 368                 364                   1 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $stats_out</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/RtmpmJ8vO7/file80d077fc3326/bc_stat.tsv.gz"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/RtmpjRxi1E/file95d23b091741/bc_stat.tsv.gz"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$tag</span>
@@ -212,12 +210,12 @@ around the barcode sequence, and then matching against allowed barcodes.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1] "-g"                                                               </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [2] "AAGCAGTGGTATCAACGCAGAGTACATGGG"                                   </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [3] "-o"                                                               </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [4] "/tmp/RtmpmJ8vO7/file80d077fc3326/demultiplexed.fastq.gz"          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [5] "/tmp/RtmpmJ8vO7/file80d077fc3326/untrimmed_demultiplexed.fastq.gz"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [4] "/tmp/RtmpjRxi1E/file95d23b091741/demultiplexed.fastq.gz"          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [5] "/tmp/RtmpjRxi1E/file95d23b091741/untrimmed_demultiplexed.fastq.gz"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [6] "--json"                                                           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [7] "/tmp/RtmpmJ8vO7/file80d077fc3326/file80d072cd0089.json"           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7] "/tmp/RtmpjRxi1E/file95d23b091741/file95d238619d16.json"           </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [8] "--untrimmed-output"                                               </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [9] "/tmp/RtmpmJ8vO7/file80d077fc3326/noTSO_demultiplexed.fastq.gz"    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [9] "/tmp/RtmpjRxi1E/file95d23b091741/noTSO_demultiplexed.fastq.gz"    </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [10] "--minimum-length"                                                 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [11] "10"                                                               </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -226,7 +224,7 @@ around the barcode sequence, and then matching against allowed barcodes.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$input</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$input$path1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/RtmpmJ8vO7/file80d077fc3326/untrimmed_demultiplexed.fastq.gz"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/RtmpjRxi1E/file95d23b091741/untrimmed_demultiplexed.fastq.gz"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$input$path2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
@@ -277,10 +275,10 @@ around the barcode sequence, and then matching against allowed barcodes.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$basepair_counts</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$basepair_counts$input</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 248786</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 251665</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$basepair_counts$input_read1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 248786</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 251665</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$basepair_counts$input_read2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
@@ -304,10 +302,10 @@ around the barcode sequence, and then matching against allowed barcodes.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$basepair_counts$output</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 154283</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 156234</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$basepair_counts$output_read1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 154283</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 156234</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt$basepair_counts$output_read2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
@@ -346,7 +344,7 @@ around the barcode sequence, and then matching against allowed barcodes.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.9000.</p>
 </div>
 
     </footer></div>

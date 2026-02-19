@@ -25,7 +25,7 @@ A list containing the configuration of the pipeline.
 
 ``` r
 pipeline <- example_pipeline(type = "BulkPipeline")
-#> Writing configuration parameters to:  /tmp/RtmpmJ8vO7/file80d0184b0556/config_file_32976.json 
+#> Writing configuration parameters to:  /tmp/RtmpjRxi1E/file95d23e54a288/config_file_38354.json 
 #> Configured steps: 
 #>  genome_alignment: TRUE
 #>  isoform_identification: TRUE
@@ -86,19 +86,20 @@ config(pipeline)
 #> $barcode_parameters$max_flank_editdistance
 #> [1] 8
 #> 
-#> $barcode_parameters$pattern
-#> $barcode_parameters$pattern$primer
-#> [1] "CTACACGACGCTCTTCCGATCT"
+#> $barcode_parameters$segments
+#>      type                pattern   name bc_list_name group buffer_size
+#> 1   FIXED CTACACGACGCTCTTCCGATCT primer         <NA>  <NA>          NA
+#> 2 MATCHED       NNNNNNNNNNNNNNNN     CB           CB                 5
+#> 3  RANDOM           NNNNNNNNNNNN     UB         <NA>  <NA>          NA
+#> 4   FIXED              TTTTTTTTT  polyT         <NA>  <NA>          NA
+#>   max_edit_distance
+#> 1                NA
+#> 2                 2
+#> 3                NA
+#> 4                NA
 #> 
-#> $barcode_parameters$pattern$BC
-#> [1] "NNNNNNNNNNNNNNNN"
-#> 
-#> $barcode_parameters$pattern$UMI
-#> [1] "NNNNNNNNNNNN"
-#> 
-#> $barcode_parameters$pattern$polyT
-#> [1] "TTTTTTTTT"
-#> 
+#> $barcode_parameters$barcode_groups
+#> list()
 #> 
 #> $barcode_parameters$strand
 #> [1] "-"

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">FLAMES</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.5.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.5.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -67,7 +67,7 @@
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">pipeline</span> <span class="op">&lt;-</span> <span class="fu"><a href="example_pipeline.html">example_pipeline</a></span><span class="op">(</span><span class="st">"MultiSampleSCPipeline"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="run_step.html">run_step</a></span><span class="op">(</span><span class="st">"barcode_demultiplex"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/RtmpmJ8vO7/file80d05e2b564b/config_file_32976.json </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Writing configuration parameters to:  /tmp/RtmpjRxi1E/file95d26f6ab3bf/config_file_38354.json </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Configured steps: </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	barcode_demultiplex: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	genome_alignment: TRUE</span>
@@ -76,29 +76,117 @@
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	read_realignment: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	transcript_quantification: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> samtools not found, will use Rsamtools package instead</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: barcode_demultiplex @ Fri Oct 31 06:51:52 2025 ────────────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: barcode_demultiplex @ Thu Feb 19 01:56:05 2026 ────────────────</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using flexiplex for barcode demultiplexing.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> FLEXIPLEX 0.96.2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting max barcode edit distance to 2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting max flanking sequence edit distance to 8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting read IDs to be  replaced</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting number of threads to 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Search pattern: </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> primer: CTACACGACGCTCTTCCGATCT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> BC: NNNNNNNNNNNNNNNN</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> UMI: NNNNNNNNNNNN</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> polyT: TTTTTTTTT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpmJ8vO7/file80d05e2b564b/bc_allow.tsv</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Loading known barcodes from /tmp/RtmpjRxi1E/file95d26f6ab3bf/bc_allow.tsv</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of known barcodes: 143</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/RtmpmJ8vO7/file80d05e2b564b/fastq/sample1.fq.gz</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> FLEXIPLEX 1.02.6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting max flanking sequence edit distance to 8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting number of threads to 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Search pattern:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> primer: CTACACGACGCTCTTCCGATCT</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> CB: NNNNNNNNNNNNNNNN</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> UB: NNNNNNNNNNNN</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> polyT: TTTTTTTTT</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/RtmpjRxi1E/file95d26f6ab3bf/fastq/sample1.fq.gz</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/RtmpmJ8vO7/file80d05e2b564b/fastq/sample2.fq.gz</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/RtmpjRxi1E/file95d26f6ab3bf/fastq/sample2.fq.gz</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/RtmpmJ8vO7/file80d05e2b564b/fastq/sample3.fq.gz</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/RtmpjRxi1E/file95d26f6ab3bf/fastq/sample3.fq.gz</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads processed: 993</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads where at least one barcode was found: 928</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of chimera reads: 3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> All done!</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Reads	Barcodes</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28	1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26	1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24	1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21	1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20	2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19	3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18	1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17	3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16	2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14	2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13	1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12	6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11	4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10	4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9	7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8	5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7	4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6	13</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5	14</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4	3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3	39</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2	15</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1	5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Loading known barcodes from /tmp/RtmpjRxi1E/file95d26f6ab3bf/bc_allow.tsv</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of known barcodes: 143</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> FLEXIPLEX 1.02.6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting max flanking sequence edit distance to 8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting number of threads to 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Search pattern:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> primer: CTACACGACGCTCTTCCGATCT</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> CB: NNNNNNNNNNNNNNNN</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> UB: NNNNNNNNNNNN</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> polyT: TTTTTTTTT</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/RtmpjRxi1E/file95d26f6ab3bf/fastq/sample1.fq.gz</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads processed: 300</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads where at least one barcode was found: 279</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of chimera reads: 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> All done!</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Reads	Barcodes</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9	2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7	2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6	2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5	8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4	9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3	16</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2	31</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1	52</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Loading known barcodes from /tmp/RtmpjRxi1E/file95d26f6ab3bf/bc_allow.tsv</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of known barcodes: 143</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> FLEXIPLEX 1.02.6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting max flanking sequence edit distance to 8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting number of threads to 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Search pattern:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> primer: CTACACGACGCTCTTCCGATCT</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> CB: NNNNNNNNNNNNNNNN</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> UB: NNNNNNNNNNNN</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> polyT: TTTTTTTTT</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/RtmpjRxi1E/file95d26f6ab3bf/fastq/sample2.fq.gz</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads processed: 300</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads where at least one barcode was found: 281</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of chimera reads: 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> All done!</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Reads	Barcodes</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9	1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8	2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7	3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6	3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5	5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4	11</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3	14</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2	22</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1	64</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Loading known barcodes from /tmp/RtmpjRxi1E/file95d26f6ab3bf/bc_allow.tsv</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of known barcodes: 143</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> FLEXIPLEX 1.02.6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting max flanking sequence edit distance to 8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Setting number of threads to 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Search pattern:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> primer: CTACACGACGCTCTTCCGATCT</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> CB: NNNNNNNNNNNNNNNN</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> UB: NNNNNNNNNNNN</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> polyT: TTTTTTTTT</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/RtmpjRxi1E/file95d26f6ab3bf/fastq/sample3.fq.gz</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads processed: 393</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads where at least one barcode was found: 368</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads with exactly one barcode match: 364</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of chimera reads: 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> All done!</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Reads	Barcodes</span>
@@ -112,81 +200,6 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3	14</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2	29</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1	57</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> FLEXIPLEX 0.96.2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting max barcode edit distance to 2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting max flanking sequence edit distance to 8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting read IDs to be  replaced</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting number of threads to 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Search pattern: </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> primer: CTACACGACGCTCTTCCGATCT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> BC: NNNNNNNNNNNNNNNN</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> UMI: NNNNNNNNNNNN</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> polyT: TTTTTTTTT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpmJ8vO7/file80d05e2b564b/bc_allow.tsv</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of known barcodes: 143</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/RtmpmJ8vO7/file80d05e2b564b/fastq/sample1.fq.gz</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads processed: 100</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads where at least one barcode was found: 92</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads with exactly one barcode match: 91</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of chimera reads: 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> All done!</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Reads	Barcodes</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4	1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3	9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2	9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1	44</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> FLEXIPLEX 0.96.2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting max barcode edit distance to 2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting max flanking sequence edit distance to 8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting read IDs to be  replaced</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting number of threads to 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Search pattern: </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> primer: CTACACGACGCTCTTCCGATCT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> BC: NNNNNNNNNNNNNNNN</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> UMI: NNNNNNNNNNNN</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> polyT: TTTTTTTTT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpmJ8vO7/file80d05e2b564b/bc_allow.tsv</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of known barcodes: 143</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/RtmpmJ8vO7/file80d05e2b564b/fastq/sample2.fq.gz</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads processed: 100</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads where at least one barcode was found: 95</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads with exactly one barcode match: 94</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of chimera reads: 0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> All done!</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Reads	Barcodes</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4	2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3	3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2	16</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1	47</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> FLEXIPLEX 0.96.2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting max barcode edit distance to 2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting max flanking sequence edit distance to 8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting read IDs to be  replaced</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting number of threads to 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Search pattern: </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> primer: CTACACGACGCTCTTCCGATCT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> BC: NNNNNNNNNNNNNNNN</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> UMI: NNNNNNNNNNNN</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> polyT: TTTTTTTTT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Setting known barcodes from /tmp/RtmpmJ8vO7/file80d05e2b564b/bc_allow.tsv</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of known barcodes: 143</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing file: /tmp/RtmpmJ8vO7/file80d05e2b564b/fastq/sample3.fq.gz</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Searching for barcodes...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads processed: 193</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads where at least one barcode was found: 181</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of reads with exactly one barcode match: 179</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of chimera reads: 0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> All done!</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Reads	Barcodes</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7	1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6	1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5	1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4	7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3	10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2	27</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1	53</span>
 <span class="r-in"><span><span class="fu">plot_demultiplex</span><span class="op">(</span><span class="va">pipeline</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $reads_count_plot</span>
 <span class="r-plt img"><img src="plot_demultiplex-1.png" alt="" width="700" height="433"></span>
@@ -198,11 +211,8 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> $flank_editdistance_plot</span>
 <span class="r-plt img"><img src="plot_demultiplex-3.png" alt="" width="700" height="433"></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $barcode_editdistance_plot</span>
-<span class="r-plt img"><img src="plot_demultiplex-4.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $cutadapt_plot</span>
-<span class="r-plt img"><img src="plot_demultiplex-5.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="plot_demultiplex-4.png" alt="" width="700" height="433"></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
     </div>
@@ -215,7 +225,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.9000.</p>
 </div>
 
     </footer></div>

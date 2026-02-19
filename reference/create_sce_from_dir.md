@@ -59,7 +59,7 @@ sce <- sc_long_pipeline(
     oarfish_quantification = FALSE
   )
 )
-#> Writing configuration parameters to:  /tmp/RtmpmJ8vO7/file80d0586f6d37/config_file_32976.json 
+#> Writing configuration parameters to:  /tmp/RtmpjRxi1E/file95d22c7f3549/config_file_38354.json 
 #> Configured steps: 
 #>  barcode_demultiplex: TRUE
 #>  genome_alignment: TRUE
@@ -68,25 +68,22 @@ sce <- sc_long_pipeline(
 #>  read_realignment: TRUE
 #>  transcript_quantification: TRUE
 #> samtools not found, will use Rsamtools package instead
-#> ── Running step: barcode_demultiplex @ Fri Oct 31 06:51:23 2025 ────────────────
+#> ── Running step: barcode_demultiplex @ Thu Feb 19 01:55:31 2026 ────────────────
 #> Using flexiplex for barcode demultiplexing.
-#> FLEXIPLEX 0.96.2
-#> Setting max barcode edit distance to 2
-#> Setting max flanking sequence edit distance to 8
-#> Setting read IDs to be  replaced
-#> Setting number of threads to 8
-#> Search pattern: 
-#> primer: CTACACGACGCTCTTCCGATCT
-#> BC: NNNNNNNNNNNNNNNN
-#> UMI: NNNNNNNNNNNN
-#> polyT: TTTTTTTTT
-#> Setting known barcodes from /tmp/RtmpmJ8vO7/file80d0586f6d37/bc_allow.tsv
+#> Loading known barcodes from /tmp/RtmpjRxi1E/file95d22c7f3549/bc_allow.tsv
 #> Number of known barcodes: 143
+#> FLEXIPLEX 1.02.6
+#> Setting max flanking sequence edit distance to 8
+#> Setting number of threads to 8
+#> Search pattern:
+#> primer: CTACACGACGCTCTTCCGATCT
+#> CB: NNNNNNNNNNNNNNNN
+#> UB: NNNNNNNNNNNN
+#> polyT: TTTTTTTTT
 #> Processing file: /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz
 #> Searching for barcodes...
 #> Number of reads processed: 393
 #> Number of reads where at least one barcode was found: 368
-#> Number of reads with exactly one barcode match: 364
 #> Number of chimera reads: 1
 #> All done!
 #> Reads    Barcodes
@@ -100,33 +97,33 @@ sce <- sc_long_pipeline(
 #> 3    14
 #> 2    29
 #> 1    57
-#> ── Running step: genome_alignment @ Fri Oct 31 06:51:23 2025 ───────────────────
+#> ── Running step: genome_alignment @ Thu Feb 19 01:55:32 2026 ───────────────────
 #> Creating junction bed file from GFF3 annotation.
-#> Aligning sample /tmp/RtmpmJ8vO7/file80d0586f6d37/matched_reads.fastq.gz -> /tmp/RtmpmJ8vO7/file80d0586f6d37/align2genome.bam
+#> Aligning sample /tmp/RtmpjRxi1E/file95d22c7f3549/matched_reads.fastq.gz -> /tmp/RtmpjRxi1E/file95d22c7f3549/align2genome.bam
 #> Your fastq file appears to have tags, but you did not provide the -y option to minimap2 to include the tags in the output.
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by genome coordinates with 8 threads...
 #> Indexing bam files
-#> ── Running step: gene_quantification @ Fri Oct 31 06:51:24 2025 ────────────────
-#> 06:51:24 AM Fri Oct 31 2025 quantify genes 
-#> Using BAM(s): /tmp/RtmpmJ8vO7/file80d0586f6d37/align2genome.bam
-#> ── Running step: isoform_identification @ Fri Oct 31 06:51:25 2025 ─────────────
-#> ── Running step: read_realignment @ Fri Oct 31 06:51:25 2025 ───────────────────
+#> ── Running step: gene_quantification @ Thu Feb 19 01:55:32 2026 ────────────────
+#> 01:55:32 AM Thu Feb 19 2026 quantify genes 
+#> Using BAM(s): /tmp/RtmpjRxi1E/file95d22c7f3549/align2genome.bam
+#> ── Running step: isoform_identification @ Thu Feb 19 01:55:33 2026 ─────────────
+#> ── Running step: read_realignment @ Thu Feb 19 01:55:34 2026 ───────────────────
 #> Checking for fastq file(s) /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz
 #>  files found
-#> Checking for fastq file(s) /tmp/RtmpmJ8vO7/file80d0586f6d37/matched_reads.fastq.gz
+#> Checking for fastq file(s) /tmp/RtmpjRxi1E/file95d22c7f3549/matched_reads.fastq.gz
 #>  files found
-#> Checking for fastq file(s) /tmp/RtmpmJ8vO7/file80d0586f6d37/matched_reads_dedup.fastq.gz
+#> Checking for fastq file(s) /tmp/RtmpjRxi1E/file95d22c7f3549/matched_reads_dedup.fastq.gz
 #>  files found
-#> Realigning sample /tmp/RtmpmJ8vO7/file80d0586f6d37/matched_reads_dedup.fastq.gz -> /tmp/RtmpmJ8vO7/file80d0586f6d37/realign2transcript.bam
+#> Realigning sample /tmp/RtmpjRxi1E/file95d22c7f3549/matched_reads_dedup.fastq.gz -> /tmp/RtmpjRxi1E/file95d22c7f3549/realign2transcript.bam
 #> Your fastq file appears to have tags, but you did not provide the -y option to minimap2 to include the tags in the output.
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by genome coordinates with 8 threads...
 #> Indexing bam files
-#> ── Running step: transcript_quantification @ Fri Oct 31 06:51:26 2025 ──────────
-#> 06:51:26 AM Fri Oct 31 2025 quantify transcripts 
+#> ── Running step: transcript_quantification @ Thu Feb 19 01:55:34 2026 ──────────
+#> 01:55:34 AM Thu Feb 19 2026 quantify transcripts 
 #> Warning: Annotation in GFF format may cause errors. Please consider using GTF formats.
 #> Found realignment file(s):   realign2transcript.bam
-#> Pipeline saved to /tmp/RtmpmJ8vO7/file80d0586f6d37/pipeline.rds
+#> Pipeline saved to /tmp/RtmpjRxi1E/file95d22c7f3549/pipeline.rds
 sce_2 <- create_sce_from_dir(outdir, annotation)
 ```

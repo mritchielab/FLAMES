@@ -7,20 +7,22 @@ demultiplex reads with flexiplex
 ``` r
 find_barcode(
   fastq,
-  barcodes_file,
-  max_bc_editdistance = 2,
+  segments,
+  barcode_groups,
+  barcodes_files,
   max_flank_editdistance = 8,
   reads_out,
   stats_out,
   threads = 1,
-  pattern = c(primer = "CTACACGACGCTCTTCCGATCT", BC = paste0(rep("N", 16), collapse =
-    ""), UMI = paste0(rep("N", 12), collapse = ""), polyT = paste0(rep("T", 9), collapse
-    = "")),
   TSO_seq = "",
   TSO_prime = 3,
   strand = "+",
   cutadapt_minimum_length = 1,
-  full_length_only = FALSE
+  full_length_only = FALSE,
+  pattern = c(primer = "CTACACGACGCTCTTCCGATCT", BC = paste0(rep("N", 16), collapse =
+    ""), UMI = paste0(rep("N", 12), collapse = ""), polyT = paste0(rep("T", 9), collapse
+    = "")),
+  max_bc_editdistance = 2
 )
 ```
 
@@ -30,14 +32,20 @@ find_barcode(
 
   A path to a FASTQ file or a directory containing FASTQ files.
 
-- barcodes_file:
+- segments:
+
+  a list of `FlexiplexSegment` objects defining the structure of the
+  barcode and flanking sequences
+
+- barcode_groups:
+
+  a list of `FlexiplexGroup` objects defining groups of barcodes for
+  multi-segment matching, or an empty list if not used.
+
+- barcodes_files:
 
   path to file containing barcode allow-list, with one barcode in each
   line
-
-- max_bc_editdistance:
-
-  max edit distances for the barcode sequence
 
 - max_flank_editdistance:
 
@@ -54,10 +62,6 @@ find_barcode(
 - threads:
 
   number of threads to be used
-
-- pattern:
-
-  named character vector defining the barcode pattern
 
 - TSO_seq:
 
@@ -80,6 +84,14 @@ find_barcode(
 
   boolean, when TSO sequence is provided, whether reads without TSO are
   to be discarded
+
+- pattern:
+
+  named character vector defining the barcode pattern
+
+- max_bc_editdistance:
+
+  max edit distances for the barcode sequence
 
 ## Value
 
@@ -111,23 +123,21 @@ find_barcode(
   TSO_seq = "AAGCAGTGGTATCAACGCAGAGTACATGGG", TSO_prime = 5,
   strand = '-', cutadapt_minimum_length = 10, full_length_only = TRUE
 )
-#> FLEXIPLEX 0.96.2
-#> Setting max barcode edit distance to 2
-#> Setting max flanking sequence edit distance to 8
-#> Setting read IDs to be  replaced
-#> Setting number of threads to 1
-#> Search pattern: 
-#> primer: CTACACGACGCTCTTCCGATCT
-#> BC: NNNNNNNNNNNNNNNN
-#> UMI: NNNNNNNNNNNN
-#> polyT: TTTTTTTTT
-#> Setting known barcodes from /tmp/RtmpmJ8vO7/file80d077fc3326/bc_allow.tsv
+#> Converting legacy `pattern` argument to `segments`...
+#> Loading known barcodes from /tmp/RtmpjRxi1E/file95d23b091741/bc_allow.tsv
 #> Number of known barcodes: 143
+#> FLEXIPLEX 1.02.6
+#> Setting max flanking sequence edit distance to 8
+#> Setting number of threads to 1
+#> Search pattern:
+#> primer: CTACACGACGCTCTTCCGATCT
+#> CB: NNNNNNNNNNNNNNNN
+#> UB: NNNNNNNNNNNN
+#> polyT: TTTTTTTTT
 #> Processing file: /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz
 #> Searching for barcodes...
 #> Number of reads processed: 393
 #> Number of reads where at least one barcode was found: 368
-#> Number of reads with exactly one barcode match: 364
 #> Number of chimera reads: 1
 #> All done!
 #> Reads    Barcodes
@@ -142,23 +152,11 @@ find_barcode(
 #> 2    29
 #> 1    57
 #> $read_counts
-#>                                       total reads 
-#>                                               393 
-#>                               demultiplexed reads 
-#>                                               368 
-#>                                single match reads 
-#>                                               364 
-#> single strand single barcode multi-matching reads 
-#>                                                 0 
-#>              single strand multiple barcode reads 
-#>                                                 3 
-#>                 both strands single barcode reads 
-#>                                                 0 
-#>               both strands multiple barcode reads 
-#>                                                 1 
+#>         total reads demultiplexed reads  single match reads       chimera reads 
+#>                 393                 368                 364                   1 
 #> 
 #> $stats_out
-#> [1] "/tmp/RtmpmJ8vO7/file80d077fc3326/bc_stat.tsv.gz"
+#> [1] "/tmp/RtmpjRxi1E/file95d23b091741/bc_stat.tsv.gz"
 #> 
 #> $cutadapt
 #> $cutadapt$tag
@@ -177,12 +175,12 @@ find_barcode(
 #>  [1] "-g"                                                               
 #>  [2] "AAGCAGTGGTATCAACGCAGAGTACATGGG"                                   
 #>  [3] "-o"                                                               
-#>  [4] "/tmp/RtmpmJ8vO7/file80d077fc3326/demultiplexed.fastq.gz"          
-#>  [5] "/tmp/RtmpmJ8vO7/file80d077fc3326/untrimmed_demultiplexed.fastq.gz"
+#>  [4] "/tmp/RtmpjRxi1E/file95d23b091741/demultiplexed.fastq.gz"          
+#>  [5] "/tmp/RtmpjRxi1E/file95d23b091741/untrimmed_demultiplexed.fastq.gz"
 #>  [6] "--json"                                                           
-#>  [7] "/tmp/RtmpmJ8vO7/file80d077fc3326/file80d072cd0089.json"           
+#>  [7] "/tmp/RtmpjRxi1E/file95d23b091741/file95d238619d16.json"           
 #>  [8] "--untrimmed-output"                                               
-#>  [9] "/tmp/RtmpmJ8vO7/file80d077fc3326/noTSO_demultiplexed.fastq.gz"    
+#>  [9] "/tmp/RtmpjRxi1E/file95d23b091741/noTSO_demultiplexed.fastq.gz"    
 #> [10] "--minimum-length"                                                 
 #> [11] "10"                                                               
 #> 
@@ -191,7 +189,7 @@ find_barcode(
 #> 
 #> $cutadapt$input
 #> $cutadapt$input$path1
-#> [1] "/tmp/RtmpmJ8vO7/file80d077fc3326/untrimmed_demultiplexed.fastq.gz"
+#> [1] "/tmp/RtmpjRxi1E/file95d23b091741/untrimmed_demultiplexed.fastq.gz"
 #> 
 #> $cutadapt$input$path2
 #> NULL
@@ -242,10 +240,10 @@ find_barcode(
 #> 
 #> $cutadapt$basepair_counts
 #> $cutadapt$basepair_counts$input
-#> [1] 248786
+#> [1] 251665
 #> 
 #> $cutadapt$basepair_counts$input_read1
-#> [1] 248786
+#> [1] 251665
 #> 
 #> $cutadapt$basepair_counts$input_read2
 #> NULL
@@ -269,10 +267,10 @@ find_barcode(
 #> NULL
 #> 
 #> $cutadapt$basepair_counts$output
-#> [1] 154283
+#> [1] 156234
 #> 
 #> $cutadapt$basepair_counts$output_read1
-#> [1] 154283
+#> [1] 156234
 #> 
 #> $cutadapt$basepair_counts$output_read2
 #> NULL

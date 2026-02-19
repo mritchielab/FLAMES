@@ -8,12 +8,10 @@ https://davidsongroup.github.io/flexiplex
 
 ``` r
 flexiplex(
-  reads_in,
-  barcodes_file,
-  bc_as_readid,
-  max_bc_editdistance,
+  r_segments,
+  r_barcode_groups,
   max_flank_editdistance,
-  pattern,
+  reads_in,
   reads_out,
   stats_out,
   bc_out,
@@ -24,29 +22,21 @@ flexiplex(
 
 ## Arguments
 
-- reads_in:
+- r_segments:
 
-  Input FASTQ or FASTA file
+  List defining the barcode structure
 
-- barcodes_file:
+- r_barcode_groups:
 
-  barcode allow-list file
-
-- bc_as_readid:
-
-  bool, whether to add the demultiplexed barcode to the read ID field
-
-- max_bc_editdistance:
-
-  max edit distance for barcode '
+  List defining barcode groups
 
 - max_flank_editdistance:
 
-  max edit distance for the flanking sequences '
+  int, maximum edit distance for matching flanking sequences
 
-- pattern:
+- reads_in:
 
-  StringVector defining the barcode structure, see \[find_barcode\]
+  Input FASTQ or FASTA file
 
 - reads_out:
 
