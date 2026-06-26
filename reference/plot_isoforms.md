@@ -53,9 +53,8 @@ Otherwise, a grid of the plots is returned.
 
 This function takes a `SingleCellExperiment` object and plots the top
 isoforms of a gene, or a list of specified transcript ids. Either as a
-list of plots or together in a grid. This function wraps the
-[`ggbio::geom_alignment`](https://rdrr.io/pkg/ggbio/man/geom_alignment-method.html)
-function to plot the isoforms, and orders the isoforms by expression
+list of plots or together in a grid. This function plots transcript
+isoforms as exon-intron structures and orders the isoforms by expression
 levels (when specifying a gene) or by the order of the transcript_ids.
 
 ## Examples
@@ -63,9 +62,5 @@ levels (when specifying a gene) or by the order of the transcript_ids.
 ``` r
 data(scmixology_lib10_transcripts)
 plot_isoforms(scmixology_lib10_transcripts, gene_id = "ENSG00000108107")
-#> Constructing graphics...
-#> Constructing graphics...
-#> Constructing graphics...
-#> Constructing graphics...
 
 ```

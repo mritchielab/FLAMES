@@ -27,19 +27,18 @@ indicating whether the step is configured to be performed.
 
 ``` r
 ppl <- example_pipeline()
-#> Writing configuration parameters to:  /tmp/RtmpjRxi1E/file95d234cffe78/config_file_38354.json 
-#> Warning: You have set to use oarfish quantification without gene quantification. Oarfish currently does not collapse UMIs, and gene quantification performs UMI collapsing. You may want to set do_gene_quantification to TRUE for more accurate results.
+#> ℹ Writing configuration to: /tmp/Rtmp4nGYdi/filebc44323457b0/config_file_48196.json
 #> Configured steps: 
 #>  barcode_demultiplex: TRUE
 #>  genome_alignment: TRUE
-#>  gene_quantification: FALSE
+#>  gene_quantification: TRUE
 #>  isoform_identification: TRUE
 #>  read_realignment: TRUE
 #>  transcript_quantification: TRUE
 #> samtools not found, will use Rsamtools package instead
 steps(ppl)
 #>       barcode_demultiplex          genome_alignment       gene_quantification 
-#>                      TRUE                      TRUE                     FALSE 
+#>                      TRUE                      TRUE                      TRUE 
 #>    isoform_identification          read_realignment transcript_quantification 
 #>                      TRUE                      TRUE                      TRUE 
 ```

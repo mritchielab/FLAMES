@@ -57,19 +57,18 @@ A ggplot2 object with the genotype plotted on the reduced dimension.
 ``` r
 ppl <- example_pipeline("SingleCellPipeline") |>
   run_FLAMES()
-#> Writing configuration parameters to:  /tmp/RtmpjRxi1E/file95d2784ed24b/config_file_38354.json 
-#> Warning: You have set to use oarfish quantification without gene quantification. Oarfish currently does not collapse UMIs, and gene quantification performs UMI collapsing. You may want to set do_gene_quantification to TRUE for more accurate results.
+#> ℹ Writing configuration to: /tmp/Rtmp4nGYdi/filebc4465a58aad/config_file_48196.json
 #> Configured steps: 
 #>  barcode_demultiplex: TRUE
 #>  genome_alignment: TRUE
-#>  gene_quantification: FALSE
+#>  gene_quantification: TRUE
 #>  isoform_identification: TRUE
 #>  read_realignment: TRUE
 #>  transcript_quantification: TRUE
 #> samtools not found, will use Rsamtools package instead
-#> ── Running step: barcode_demultiplex @ Thu Feb 19 01:57:04 2026 ────────────────
+#> ── Running step: barcode_demultiplex @ Fri Jun 26 08:25:49 2026 ────────────────
 #> Using flexiplex for barcode demultiplexing.
-#> Loading known barcodes from /tmp/RtmpjRxi1E/file95d2784ed24b/bc_allow.tsv
+#> Loading known barcodes from /tmp/Rtmp4nGYdi/filebc4465a58aad/bc_allow.tsv
 #> Number of known barcodes: 143
 #> FLEXIPLEX 1.02.6
 #> Setting max flanking sequence edit distance to 8
@@ -79,6 +78,7 @@ ppl <- example_pipeline("SingleCellPipeline") |>
 #> CB: NNNNNNNNNNNNNNNN
 #> UB: NNNNNNNNNNNN
 #> polyT: TTTTTTTTT
+#> CB:Z: tag field: CB
 #> Processing file: /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz
 #> Searching for barcodes...
 #> Number of reads processed: 393
@@ -96,41 +96,43 @@ ppl <- example_pipeline("SingleCellPipeline") |>
 #> 3    14
 #> 2    29
 #> 1    57
-#> ── Running step: genome_alignment @ Thu Feb 19 01:57:04 2026 ───────────────────
+#> ── Running step: genome_alignment @ Fri Jun 26 08:25:50 2026 ───────────────────
 #> Creating junction bed file from GFF3 annotation.
-#> Aligning sample /tmp/RtmpjRxi1E/file95d2784ed24b/matched_reads.fastq.gz -> /tmp/RtmpjRxi1E/file95d2784ed24b/align2genome.bam
+#> Aligning sample /tmp/Rtmp4nGYdi/filebc4465a58aad/matched_reads.fastq.gz -> /tmp/Rtmp4nGYdi/filebc4465a58aad/align2genome.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by genome coordinates with 8 threads...
 #> Indexing bam files
-#> ── Running step: isoform_identification @ Thu Feb 19 01:57:04 2026 ─────────────
-#> ── Running step: read_realignment @ Thu Feb 19 01:57:05 2026 ───────────────────
+#> ── Running step: gene_quantification @ Fri Jun 26 08:25:50 2026 ────────────────
+#> 08:25:50 AM Fri Jun 26 2026 quantify genes 
+#> Using BAM(s): /tmp/Rtmp4nGYdi/filebc4465a58aad/align2genome.bam
+#> ── Running step: isoform_identification @ Fri Jun 26 08:25:50 2026 ─────────────
+#> ── Running step: read_realignment @ Fri Jun 26 08:25:51 2026 ───────────────────
 #> Checking for fastq file(s) /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz
 #>  files found
-#> Checking for fastq file(s) /tmp/RtmpjRxi1E/file95d2784ed24b/matched_reads.fastq.gz
+#> Checking for fastq file(s) /tmp/Rtmp4nGYdi/filebc4465a58aad/matched_reads.fastq.gz
 #>  files found
-#> Checking for fastq file(s) /tmp/RtmpjRxi1E/file95d2784ed24b/matched_reads_dedup.fastq.gz
-#>  files not found
-#> Warning: Oarfish does not support UMI deduplication, you should deduplicate reads before running Oarfish
-#> Realigning sample /tmp/RtmpjRxi1E/file95d2784ed24b/matched_reads.fastq.gz -> /tmp/RtmpjRxi1E/file95d2784ed24b/realign2transcript.bam
+#> Checking for fastq file(s) /tmp/Rtmp4nGYdi/filebc4465a58aad/matched_reads_dedup.fastq.gz
+#>  files found
+#> Realigning sample /tmp/Rtmp4nGYdi/filebc4465a58aad/matched_reads_dedup.fastq.gz -> /tmp/Rtmp4nGYdi/filebc4465a58aad/realign2transcript.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by 8 with CB threads...
-#> ── Running step: transcript_quantification @ Thu Feb 19 01:57:05 2026 ──────────
+#> ── Running step: transcript_quantification @ Fri Jun 26 08:25:51 2026 ──────────
 sce <- experiment(ppl) |>
- scuttle::logNormCounts() |>
+ scrapper::normalizeRnaCounts.se() |>
  scater::runPCA() |>
  scater::runUMAP()
+#> using unknown matrix fallback for 'dgTMatrix'
 #> Warning: more singular values/vectors requested than available
-#> using unknown matrix fallback for ' dgTMatrix '
-#> Warning: You're computing too large a percentage of total singular values, use a standard svd instead.
+#> using unknown matrix fallback for 'dgTMatrix'
 snps_tb <- sc_mutations(
   bam_path = ppl@genome_bam,
   seqnames = "chr14",
   positions = 2714
 )
-#> 01:57:10 Got 1 bam file, parallelizing over each position ...
+#> 08:25:56 Got 1 bam file, parallelizing over each position ...
 #>   |                                                                              |                                                                      |   0%  |                                                                              |======================================================================| 100%
 #> 
-#> 01:57:11 Merging results ...
+#> 08:25:57 Merging results ...
 genotype_tb <- sc_genotype(
   snps_tb, ref = "C", alt = "T", seqname = "chr14", pos = 2714,
   alt_min_count = 2, alt_min_pct = 0.5, ref_min_count = 1, ref_min_pct = 1

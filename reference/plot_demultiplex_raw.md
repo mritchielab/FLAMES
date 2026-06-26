@@ -52,11 +52,11 @@ find_barcode(
   fastq = fastq_dir,
   stats_out = file.path(outdir, "bc_stat.tsv.gz"),
   reads_out = file.path(outdir, "demultiplexed.fq"),
-  barcodes_file = bc_allow, TSO_seq = "CCCATGTACTCTGCGTTGATACCACTGCTT"
+  barcodes_files = bc_allow, TSO_seq = "CCCATGTACTCTGCGTTGATACCACTGCTT"
 ) |>
   plot_demultiplex_raw()
 #> Converting legacy `pattern` argument to `segments`...
-#> Loading known barcodes from /tmp/RtmpjRxi1E/file95d2757f0f94/bc_allow.tsv
+#> Loading known barcodes from /tmp/Rtmp4nGYdi/filebc444fd3733a/bc_allow.tsv
 #> Number of known barcodes: 143
 #> FLEXIPLEX 1.02.6
 #> Setting max flanking sequence edit distance to 8
@@ -66,9 +66,10 @@ find_barcode(
 #> CB: NNNNNNNNNNNNNNNN
 #> UB: NNNNNNNNNNNN
 #> polyT: TTTTTTTTT
-#> Processing file: /tmp/RtmpjRxi1E/file95d27838180c/copy.fastq
+#> CB:Z: tag field: CB
+#> Processing file: /tmp/Rtmp4nGYdi/filebc4427776ec5/copy.fastq
 #> Searching for barcodes...
-#> Processing file: /tmp/RtmpjRxi1E/file95d27838180c/musc_rps24.fastq.gz
+#> Processing file: /tmp/Rtmp4nGYdi/filebc4427776ec5/musc_rps24.fastq.gz
 #> Searching for barcodes...
 #> Number of reads processed: 493
 #> Number of reads where at least one barcode was found: 460

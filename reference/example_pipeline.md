@@ -38,23 +38,22 @@ for multi sample single cell pipelines.
 
 ``` r
 example_pipeline("SingleCellPipeline")
-#> Writing configuration parameters to:  /tmp/RtmpjRxi1E/file95d237d75c17/config_file_38354.json 
-#> Warning: You have set to use oarfish quantification without gene quantification. Oarfish currently does not collapse UMIs, and gene quantification performs UMI collapsing. You may want to set do_gene_quantification to TRUE for more accurate results.
+#> ℹ Writing configuration to: /tmp/Rtmp4nGYdi/filebc44b24d89c/config_file_48196.json
 #> Configured steps: 
 #>  barcode_demultiplex: TRUE
 #>  genome_alignment: TRUE
-#>  gene_quantification: FALSE
+#>  gene_quantification: TRUE
 #>  isoform_identification: TRUE
 #>  read_realignment: TRUE
 #>  transcript_quantification: TRUE
 #> samtools not found, will use Rsamtools package instead
-#> → A FLAMES.SingleCellPipeline outputting to /tmp/RtmpjRxi1E/file95d237d75c17
+#> → A FLAMES.SingleCellPipeline outputting to /tmp/Rtmp4nGYdi/filebc44b24d89c
 #> 
 #> ── Inputs 
 #> ✔ fastq: ...ibrary/FLAMES/extdata/fastq/musc_rps24.fastq.gz
 #> ✔ annotation: /__w/_temp/Library/FLAMES/extdata/rps24.gtf.gz
-#> ✔ genome_fa: /tmp/RtmpjRxi1E/file95d237d75c17/rps24.fa
-#> ✔ barcodes_file: /tmp/RtmpjRxi1E/file95d237d75c17/bc_allow.tsv
+#> ✔ genome_fa: /tmp/Rtmp4nGYdi/filebc44b24d89c/rps24.fa
+#> ✔ barcodes_file: /tmp/Rtmp4nGYdi/filebc44b24d89c/bc_allow.tsv
 #> 
 #> ── Outputs 
 #> ℹ demultiplexed_fastq: matched_reads.fastq.gz
@@ -66,6 +65,7 @@ example_pipeline("SingleCellPipeline")
 #> ── Pipeline Steps 
 #> ℹ barcode_demultiplex (pending)
 #> ℹ genome_alignment (pending)
+#> ℹ gene_quantification (pending)
 #> ℹ isoform_identification (pending)
 #> ℹ read_realignment (pending)
 #> ℹ transcript_quantification (pending)

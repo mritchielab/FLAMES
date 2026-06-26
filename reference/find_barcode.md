@@ -34,76 +34,129 @@ find_barcode(
 
 - segments:
 
-  a list of `FlexiplexSegment` objects defining the structure of the
-  barcode and flanking sequences
+  A list of
+  [`barcode_segment`](https://mritchielab.github.io/FLAMES/reference/barcode_segment.md)
+  (`FlexiplexSegment`) objects describing the read structure. May also
+  be a data frame with columns `type`, `pattern`, `name`, and optionally
+  `bc_list_name`, `group`, `buffer_size`, and `max_edit_distance` (as
+  produced by `jsonlite` when reading a config file). When omitted, the
+  legacy `pattern` argument is used instead.
 
 - barcode_groups:
 
-  a list of `FlexiplexGroup` objects defining groups of barcodes for
-  multi-segment matching, or an empty list if not used.
+  A list of
+  [`barcode_group`](https://mritchielab.github.io/FLAMES/reference/barcode_group.md)
+  (`FlexiplexGroup`) objects for multi-segment barcode matching.
+  Required only when `MATCHED_SPLIT` segments are present; pass an empty
+  list [`list()`](https://rdrr.io/r/base/list.html) otherwise.
 
 - barcodes_files:
 
-  path to file containing barcode allow-list, with one barcode in each
-  line
+  Path(s) to barcode allow-list file(s), one barcode per line. Can be:
+
+  - A single unnamed character string — used for all `MATCHED` segments
+    and barcode groups.
+
+  - A named character vector — names must match the `bc_list` keys set
+    in
+    [`barcode_segment`](https://mritchielab.github.io/FLAMES/reference/barcode_segment.md)
+    and the `bc_list_name` keys set in
+    [`barcode_group`](https://mritchielab.github.io/FLAMES/reference/barcode_group.md).
 
 - max_flank_editdistance:
 
-  max edit distances for the flanking sequences (primer and polyT)
+  Maximum edit distance for matching the fixed flanking sequences (e.g.
+  primer, poly-T tail). Default: `8`.
 
 - reads_out:
 
-  path to output FASTQ file
+  Path to output FASTQ file containing demultiplexed reads with barcode
+  information added to the read header.
 
 - stats_out:
 
-  path of output stats file
+  Path to output TSV (optionally gzip-compressed) file with per-read
+  demultiplex results.
 
 - threads:
 
-  number of threads to be used
+  Number of threads to use. Default: `1`.
 
 - TSO_seq:
 
-  TSO sequence to be trimmed
+  TSO (template-switching oligo) sequence to trim from reads using
+  cutadapt. Set to `""` (default) to skip TSO trimming.
 
 - TSO_prime:
 
-  either 3 (when `TSO_seq` is on 3' the end) or 5 (on 5' end)
+  Either `5` or `3`, indicating whether `TSO_seq` is located at the 5'
+  or 3' end of the read after barcode demultiplexing.
 
 - strand:
 
-  strand of the barcode pattern, either '+' or '-' (read will be reverse
-  complemented after barcode matching if '-')
+  Strand of the barcode pattern, either `"+"` or `"-"`. When `"-"`,
+  reads are reverse-complemented after barcode matching so that the
+  transcript sequence is in the sense direction. Default: `"+"`.
 
 - cutadapt_minimum_length:
 
-  minimum read length after TSO trimming (cutadapt's –minimum-length)
+  Minimum read length (in nucleotides) to retain after TSO trimming
+  (passed to cutadapt's `--minimum-length`). Default: `1`.
 
 - full_length_only:
 
-  boolean, when TSO sequence is provided, whether reads without TSO are
-  to be discarded
+  Logical. When `TSO_seq` is provided, whether to discard reads that do
+  not contain the TSO (i.e. keep only full-length reads). Default:
+  `FALSE`.
 
 - pattern:
 
-  named character vector defining the barcode pattern
+  **Deprecated.** Named character vector defining the barcode structure
+  (legacy interface). Use `segments` instead. Entries named `"BC"` are
+  treated as `MATCHED` segments, `"UMI"` as `RANDOM`, and all others as
+  `FIXED`.
 
 - max_bc_editdistance:
 
-  max edit distances for the barcode sequence
+  **Deprecated.** Maximum edit distance for barcode matching when using
+  the legacy `pattern` argument.
 
 ## Value
 
-a list containing: `reads_tb` (tibble of read demultiplexed information)
-and `input`, `output`, `read1_with_adapter` from cutadapt report (if TSO
-trimming is performed)
+A list containing:
+
+- `read_counts`: a named integer vector with `total reads`,
+  `demultiplexed reads`, and `single match reads`.
+
+- `stats_out`: the path to the demultiplex stats file.
+
+- `cutadapt`: (only when TSO trimming is performed) the parsed cutadapt
+  JSON report.
 
 ## Details
 
 This function demultiplexes reads by searching for flanking sequences
-(adaptors) around the barcode sequence, and then matching against
-allowed barcodes.
+(adaptors) around the barcode sequence, and then matching against an
+allowed barcode list.
+
+The read structure is described by a list of
+[`barcode_segment`](https://mritchielab.github.io/FLAMES/reference/barcode_segment.md)
+objects passed to `segments`. Each segment describes one component of
+the read (e.g. a fixed primer, a cell barcode, a UMI, a poly-T tail).
+Use
+[`barcode_segment`](https://mritchielab.github.io/FLAMES/reference/barcode_segment.md)
+to construct segments and, for combinatorial multi-segment barcodes,
+[`barcode_group`](https://mritchielab.github.io/FLAMES/reference/barcode_group.md)
+to define groups.
+
+For backward compatibility, the legacy `pattern` argument (a named
+character vector) is still accepted when `segments` is not supplied.
+
+## See also
+
+[`barcode_segment`](https://mritchielab.github.io/FLAMES/reference/barcode_segment.md),
+[`barcode_group`](https://mritchielab.github.io/FLAMES/reference/barcode_group.md),
+[`plot_demultiplex_raw`](https://mritchielab.github.io/FLAMES/reference/plot_demultiplex_raw.md)
 
 ## Examples
 
@@ -115,16 +168,25 @@ R.utils::gunzip(
   filename = system.file("extdata", "bc_allow.tsv.gz", package = "FLAMES"),
   destname = bc_allow, remove = FALSE
 )
+
+# Modern interface: define segments explicitly
 find_barcode(
   fastq = system.file("extdata", "fastq", "musc_rps24.fastq.gz", package = "FLAMES"),
+  segments = list(
+    barcode_segment("FIXED",   "CTACACGACGCTCTTCCGATCT", "primer"),
+    barcode_segment("MATCHED", "NNNNNNNNNNNNNNNN", "CB",
+                    bc_list = "CB", buffer_size = 5, max_edit_distance = 2),
+    barcode_segment("RANDOM",  "NNNNNNNNNNNN", "UB"),
+    barcode_segment("FIXED",   "TTTTTTTTT", "polyT")
+  ),
+  barcode_groups = list(),
+  barcodes_files = c(CB = bc_allow),
   stats_out = file.path(outdir, "bc_stat.tsv.gz"),
   reads_out = file.path(outdir, "demultiplexed.fastq.gz"),
-  barcodes_file = bc_allow, 
   TSO_seq = "AAGCAGTGGTATCAACGCAGAGTACATGGG", TSO_prime = 5,
   strand = '-', cutadapt_minimum_length = 10, full_length_only = TRUE
 )
-#> Converting legacy `pattern` argument to `segments`...
-#> Loading known barcodes from /tmp/RtmpjRxi1E/file95d23b091741/bc_allow.tsv
+#> Loading known barcodes from /tmp/Rtmp4nGYdi/filebc445d9d090b/bc_allow.tsv
 #> Number of known barcodes: 143
 #> FLEXIPLEX 1.02.6
 #> Setting max flanking sequence edit distance to 8
@@ -134,6 +196,7 @@ find_barcode(
 #> CB: NNNNNNNNNNNNNNNN
 #> UB: NNNNNNNNNNNN
 #> polyT: TTTTTTTTT
+#> CB:Z: tag field: CB
 #> Processing file: /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz
 #> Searching for barcodes...
 #> Number of reads processed: 393
@@ -156,7 +219,7 @@ find_barcode(
 #>                 393                 368                 364                   1 
 #> 
 #> $stats_out
-#> [1] "/tmp/RtmpjRxi1E/file95d23b091741/bc_stat.tsv.gz"
+#> [1] "/tmp/Rtmp4nGYdi/filebc445d9d090b/bc_stat.tsv.gz"
 #> 
 #> $cutadapt
 #> $cutadapt$tag
@@ -175,12 +238,12 @@ find_barcode(
 #>  [1] "-g"                                                               
 #>  [2] "AAGCAGTGGTATCAACGCAGAGTACATGGG"                                   
 #>  [3] "-o"                                                               
-#>  [4] "/tmp/RtmpjRxi1E/file95d23b091741/demultiplexed.fastq.gz"          
-#>  [5] "/tmp/RtmpjRxi1E/file95d23b091741/untrimmed_demultiplexed.fastq.gz"
+#>  [4] "/tmp/Rtmp4nGYdi/filebc445d9d090b/demultiplexed.fastq.gz"          
+#>  [5] "/tmp/Rtmp4nGYdi/filebc445d9d090b/untrimmed_demultiplexed.fastq.gz"
 #>  [6] "--json"                                                           
-#>  [7] "/tmp/RtmpjRxi1E/file95d23b091741/file95d238619d16.json"           
+#>  [7] "/tmp/Rtmp4nGYdi/filebc445d9d090b/filebc444978f443.json"           
 #>  [8] "--untrimmed-output"                                               
-#>  [9] "/tmp/RtmpjRxi1E/file95d23b091741/noTSO_demultiplexed.fastq.gz"    
+#>  [9] "/tmp/Rtmp4nGYdi/filebc445d9d090b/noTSO_demultiplexed.fastq.gz"    
 #> [10] "--minimum-length"                                                 
 #> [11] "10"                                                               
 #> 
@@ -189,7 +252,7 @@ find_barcode(
 #> 
 #> $cutadapt$input
 #> $cutadapt$input$path1
-#> [1] "/tmp/RtmpjRxi1E/file95d23b091741/untrimmed_demultiplexed.fastq.gz"
+#> [1] "/tmp/Rtmp4nGYdi/filebc445d9d090b/untrimmed_demultiplexed.fastq.gz"
 #> 
 #> $cutadapt$input$path2
 #> NULL

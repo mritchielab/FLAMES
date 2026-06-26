@@ -25,7 +25,7 @@ A list containing the configuration of the pipeline.
 
 ``` r
 pipeline <- example_pipeline(type = "BulkPipeline")
-#> Writing configuration parameters to:  /tmp/RtmpjRxi1E/file95d23e54a288/config_file_38354.json 
+#> ℹ Writing configuration to: /tmp/Rtmp4nGYdi/filebc4432873674/config_file_48196.json
 #> Configured steps: 
 #>  genome_alignment: TRUE
 #>  isoform_identification: TRUE

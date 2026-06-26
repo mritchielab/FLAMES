@@ -51,24 +51,26 @@ SingleCellExperiment::altExp(sce, "transcript") <- long_read
 SingleCellExperiment::counts(SingleCellExperiment::altExp(sce))[,1:2] <- NA
 SingleCellExperiment::counts(SingleCellExperiment::altExp(sce))
 #>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
-#> [1,]   NA   NA    2    8    3    4    5    5    5     8
-#> [2,]   NA   NA    7    5    3    7    4    3    8     5
-#> [3,]   NA   NA    3    3    5    7    3    9    6     8
-#> [4,]   NA   NA    2    3    6    7    4    1    4     5
+#> [1,]   NA   NA    1    1    4    2    8    4    4     3
+#> [2,]   NA   NA    6    5    7    3    5    6    4     6
+#> [3,]   NA   NA    6    3    5    6    9    4    2     8
+#> [4,]   NA   NA    4    7    6    7    2    8    5     4
 imputed_sce <- sc_impute_transcript(sce, k = 4)
 #> Warning: more singular values/vectors requested than available
-#> Warning: You're computing too large a percentage of total singular values, use a standard svd instead.
+#> Warning: 'buildSNNGraph' is deprecated.
+#> Use 'bluster::makeSNNGraph' instead.
+#> See help("Deprecated")
 #> Imputing transcript counts ...
 SingleCellExperiment::logcounts(SingleCellExperiment::altExp(imputed_sce))
 #> 4 x 10 Matrix of class "dgeMatrix"
 #>          [,1]     [,2]     [,3]     [,4]     [,5]     [,6]     [,7]     [,8]
-#> [1,] 2.513033 2.482428 1.934112 3.219678 2.165203 2.056584 2.842350 2.697354
-#> [2,] 2.616786 2.568155 3.442943 2.631656 2.165203 2.707083 2.569856 2.101538
-#> [3,] 2.589690 2.699316 2.387402 2.042091 2.767406 2.707083 2.233620 3.442943
-#> [4,] 2.269120 2.162505 1.934112 2.042091 2.994686 2.707083 2.569856 1.068480
+#> [1,] 1.828722 1.963206 1.097413 1.144658 2.177193 1.656623 2.898853 2.177193
+#> [2,] 2.664177 2.629179 2.970529 2.818582 2.840921 2.080373 2.332410 2.651704
+#> [3,] 2.601905 2.545380 2.970529 2.211888 2.433870 2.898853 3.047124 2.177193
+#> [4,] 2.709185 2.664554 2.474780 3.244364 2.651704 3.093344 1.386581 3.008174
 #>          [,9]    [,10]
-#> [1,] 2.404216 2.823122
-#> [2,] 2.976284 2.262456
-#> [3,] 2.621096 2.823122
-#> [4,] 2.148863 2.262456
+#> [1,] 2.624491 1.913744
+#> [2,] 2.624491 2.708345
+#> [3,] 1.841302 3.067114
+#> [4,] 2.898853 2.229734
 ```

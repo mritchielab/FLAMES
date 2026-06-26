@@ -34,12 +34,11 @@ An updated FLAMES.Pipeline object with the specified controllers.
 
 ``` r
 pipeline <- example_pipeline()
-#> Writing configuration parameters to:  /tmp/RtmpjRxi1E/file95d2d6e58c0/config_file_38354.json 
-#> Warning: You have set to use oarfish quantification without gene quantification. Oarfish currently does not collapse UMIs, and gene quantification performs UMI collapsing. You may want to set do_gene_quantification to TRUE for more accurate results.
+#> ℹ Writing configuration to: /tmp/Rtmp4nGYdi/filebc444d791ab1/config_file_48196.json
 #> Configured steps: 
 #>  barcode_demultiplex: TRUE
 #>  genome_alignment: TRUE
-#>  gene_quantification: FALSE
+#>  gene_quantification: TRUE
 #>  isoform_identification: TRUE
 #>  read_realignment: TRUE
 #>  transcript_quantification: TRUE

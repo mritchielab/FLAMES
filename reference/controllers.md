@@ -26,7 +26,7 @@ corresponds to a step in the pipeline.
 
 ``` r
 pipeline <- example_pipeline(type = "MultiSampleSCPipeline")
-#> Writing configuration parameters to:  /tmp/RtmpjRxi1E/file95d226f38733/config_file_38354.json 
+#> ℹ Writing configuration to: /tmp/Rtmp4nGYdi/filebc441961f7fc/config_file_48196.json
 #> Configured steps: 
 #>  barcode_demultiplex: TRUE
 #>  genome_alignment: TRUE
@@ -39,7 +39,7 @@ controllers(pipeline) # get the controllers
 #> $default
 #> <crew_class_controller>
 #>   Public:
-#>     autoscale: function (loop = later::current_loop(), controllers = NULL) 
+#>     autoscale: function (loop = later::global_loop(), controllers = NULL) 
 #>     backup: active binding
 #>     cancel: function (names = character(0L), all = FALSE) 
 #>     client: active binding
@@ -63,6 +63,7 @@ controllers(pipeline) # get the controllers
 #>     profile: active binding
 #>     push: function (command, data = list(), globals = list(), substitute = TRUE, 
 #>     push_backlog: function (name, controller = NULL) 
+#>     pushed: active binding
 #>     queue_backlog: active binding
 #>     queue_resolved: active binding
 #>     reset_globals: active binding
@@ -76,6 +77,7 @@ controllers(pipeline) # get the controllers
 #>     start: function (controllers = NULL) 
 #>     started: function (controllers = NULL) 
 #>     summary: function (controllers = NULL) 
+#>     synced: function (controllers = NULL) 
 #>     tasks: active binding
 #>     terminate: function (controllers = NULL) 
 #>     unresolved: function (controllers = NULL) 
@@ -92,6 +94,7 @@ controllers(pipeline) # get the controllers
 #>     .launcher: crew_class_launcher_local, crew_class_launcher, R6
 #>     .loop: NULL
 #>     .name_new_task: function (name) 
+#>     .pushed: NULL
 #>     .queue_backlog: NULL
 #>     .queue_resolved: NULL
 #>     .register_started: function () 
@@ -99,6 +102,7 @@ controllers(pipeline) # get the controllers
 #>     .reset_options: FALSE
 #>     .reset_packages: FALSE
 #>     .resolve: function (force) 
+#>     .resolve_race: function () 
 #>     .scan_crash: function (name, task) 
 #>     .summary: NULL
 #>     .tasks: environment

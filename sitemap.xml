@@ -14,6 +14,8 @@
 <url><loc>https://mritchielab.github.io/FLAMES/reference/addRowRanges.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/add_gene_counts.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/annotation_to_fasta.html</loc></url>
+<url><loc>https://mritchielab.github.io/FLAMES/reference/barcode_group.html</loc></url>
+<url><loc>https://mritchielab.github.io/FLAMES/reference/barcode_segment.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/blaze.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/bulk_long_pipeline.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/combine_sce.html</loc></url>
@@ -37,6 +39,7 @@
 <url><loc>https://mritchielab.github.io/FLAMES/reference/filter_coverage.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/find_barcode.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/find_bin.html</loc></url>
+<url><loc>https://mritchielab.github.io/FLAMES/reference/find_diversity.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/find_isoform.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/find_variants.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/flexiplex.html</loc></url>
@@ -67,7 +70,6 @@
 <url><loc>https://mritchielab.github.io/FLAMES/reference/run_FLAMES.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/run_step.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/sc_DTU_analysis.html</loc></url>
-<url><loc>https://mritchielab.github.io/FLAMES/reference/sc_gene_entropy.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/sc_genotype.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/sc_impute_transcript.html</loc></url>
 <url><loc>https://mritchielab.github.io/FLAMES/reference/sc_long_multisample_pipeline.html</loc></url>

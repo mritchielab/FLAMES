@@ -6,7 +6,7 @@ named `gene`.
 ## Usage
 
 ``` r
-add_gene_counts(sce, gene_count_file)
+add_gene_counts(sce, gene_count_stem)
 ```
 
 ## Arguments
@@ -15,14 +15,17 @@ add_gene_counts(sce, gene_count_file)
 
   A `SingleCellExperiment` object.
 
-- gene_count_file:
+- gene_count_stem:
 
-  The file path to the gene count file. If missing, the function will
-  try to find the gene count file in the output directory.
+  The file path stem for the gene count MTX files. The function expects
+  three files: `<gene_count_stem>.mtx` (count matrix in Matrix Market
+  format), `<gene_count_stem>_features.tsv` (gene names, one per line),
+  and `<gene_count_stem>_barcodes.tsv` (barcode names, one per line).
 
 ## Value
 
-A `SingleCellExperiment` object with gene counts added.
+A `SingleCellExperiment` object with gene counts added as
+`altExps(sce)$gene`.
 
 ## Examples
 
@@ -32,14 +35,17 @@ sce <- SingleCellExperiment::SingleCellExperiment(
   assays = list(counts = matrix(0, nrow = 10, ncol = 10))
 )
 colnames(sce) <- paste0("cell", 1:10)
-# Set up a mock gene count file
-gene_count_file <- tempfile()
-gene_mtx <- matrix(1:10, nrow = 2, ncol = 5)
+# Write mock gene count MTX files
+gene_count_stem <- file.path(tempdir(), "gene_count")
+gene_mtx <- Matrix::Matrix(1:10, nrow = 2, ncol = 5, sparse = TRUE)
 colnames(gene_mtx) <- paste0("cell", 1:5)
 rownames(gene_mtx) <- c("gene1", "gene2")
-write.csv(gene_mtx, gene_count_file)
+Matrix::writeMM(gene_mtx, paste0(gene_count_stem, ".mtx"))
+#> NULL
+writeLines(rownames(gene_mtx), paste0(gene_count_stem, "_features.tsv"))
+writeLines(colnames(gene_mtx), paste0(gene_count_stem, "_barcodes.tsv"))
 # Add gene counts to the SingleCellExperiment object
-sce <- add_gene_counts(sce, gene_count_file)
+sce <- add_gene_counts(sce, gene_count_stem)
 # verify the gene counts are added
 SingleCellExperiment::altExps(sce)$gene
 #> class: SingleCellExperiment 

@@ -69,7 +69,7 @@ a ggplot2 object of the coverage plot(s)
 
 ``` r
 ppl <- example_pipeline("BulkPipeline")
-#> Writing configuration parameters to:  /tmp/RtmpjRxi1E/file95d2591bcc54/config_file_38354.json 
+#> ℹ Writing configuration to: /tmp/Rtmp4nGYdi/filebc442d3c1d8c/config_file_48196.json
 #> Configured steps: 
 #>  genome_alignment: TRUE
 #>  isoform_identification: TRUE
@@ -78,15 +78,15 @@ ppl <- example_pipeline("BulkPipeline")
 #> samtools not found, will use Rsamtools package instead
 steps(ppl)["isoform_identification"] <- FALSE
 ppl <- run_step(ppl, "read_realignment")
-#> ── Running step: read_realignment @ Thu Feb 19 01:56:02 2026 ───────────────────
+#> ── Running step: read_realignment @ Fri Jun 26 08:24:51 2026 ───────────────────
 #> Using reference annotation for transcriptome assembly.
-#> Realigning sample sample1 -> /tmp/RtmpjRxi1E/file95d2591bcc54/sample1_realign2transcript.bam
+#> Realigning sample sample1 -> /tmp/Rtmp4nGYdi/filebc442d3c1d8c/sample1_realign2transcript.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Skipped sorting BAM files.
-#> Realigning sample sample2 -> /tmp/RtmpjRxi1E/file95d2591bcc54/sample2_realign2transcript.bam
+#> Realigning sample sample2 -> /tmp/Rtmp4nGYdi/filebc442d3c1d8c/sample2_realign2transcript.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Skipped sorting BAM files.
-#> Realigning sample sample3 -> /tmp/RtmpjRxi1E/file95d2591bcc54/sample3_realign2transcript.bam
+#> Realigning sample sample3 -> /tmp/Rtmp4nGYdi/filebc442d3c1d8c/sample3_realign2transcript.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Skipped sorting BAM files.
 # Plot the coverages directly from the BAM file
@@ -100,9 +100,9 @@ plot_coverage(ppl@transcriptome_bam[[1]])
 coverage <- get_coverage(ppl@transcriptome_bam[[1]]) |>
   dplyr::filter(read_counts > 2) |> # Filter out transcripts with read counts < 3
   filter_coverage(filter_fn = convolution_filter) # Filter out transcripts with sharp drops / rises
-#> 3 transcripts found in the BAM file.
+#> 2 transcripts found in the BAM file.
 #> 0(0%) transcripts failed the filter.
-#> Failed transcripts account for 0 reads, out of 224(0%) reads in total.
+#> Failed transcripts account for 0 reads, out of 217(0%) reads in total.
 # Plot the filtered coverages
 plot_coverage(coverage, detailed = TRUE)
 #> Using quantiles to bin transcripts.
@@ -111,9 +111,9 @@ plot_coverage(coverage, detailed = TRUE)
 
 # filtering function can also be passed directly to plot_coverage
 plot_coverage(ppl@transcriptome_bam[[1]], filter_fn = convolution_filter)
-#> 3 transcripts found in the BAM file.
+#> 2 transcripts found in the BAM file.
 #> 0(0%) transcripts failed the filter.
-#> Failed transcripts account for 0 reads, out of 224(0%) reads in total.
+#> Failed transcripts account for 0 reads, out of 217(0%) reads in total.
 #> Using quantiles to bin transcripts.
 #> The number of transcripts is less than the inflection index, returning equal weights for the current bin.
 #> The number of transcripts is less than the inflection index, returning equal weights for the current bin.

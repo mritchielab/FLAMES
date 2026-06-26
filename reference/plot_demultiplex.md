@@ -38,7 +38,7 @@ a list of ggplot objects:
 ``` r
 pipeline <- example_pipeline("MultiSampleSCPipeline") |>
   run_step("barcode_demultiplex")
-#> Writing configuration parameters to:  /tmp/RtmpjRxi1E/file95d26f6ab3bf/config_file_38354.json 
+#> ℹ Writing configuration to: /tmp/Rtmp4nGYdi/filebc447a72298d/config_file_48196.json
 #> Configured steps: 
 #>  barcode_demultiplex: TRUE
 #>  genome_alignment: TRUE
@@ -47,9 +47,9 @@ pipeline <- example_pipeline("MultiSampleSCPipeline") |>
 #>  read_realignment: TRUE
 #>  transcript_quantification: TRUE
 #> samtools not found, will use Rsamtools package instead
-#> ── Running step: barcode_demultiplex @ Thu Feb 19 01:56:05 2026 ────────────────
+#> ── Running step: barcode_demultiplex @ Fri Jun 26 08:24:54 2026 ────────────────
 #> Using flexiplex for barcode demultiplexing.
-#> Loading known barcodes from /tmp/RtmpjRxi1E/file95d26f6ab3bf/bc_allow.tsv
+#> Loading known barcodes from /tmp/Rtmp4nGYdi/filebc447a72298d/bc_allow.tsv
 #> Number of known barcodes: 143
 #> FLEXIPLEX 1.02.6
 #> Setting max flanking sequence edit distance to 8
@@ -59,41 +59,43 @@ pipeline <- example_pipeline("MultiSampleSCPipeline") |>
 #> CB: NNNNNNNNNNNNNNNN
 #> UB: NNNNNNNNNNNN
 #> polyT: TTTTTTTTT
-#> Processing file: /tmp/RtmpjRxi1E/file95d26f6ab3bf/fastq/sample1.fq.gz
+#> CB:Z: tag field: CB
+#> Processing file: /tmp/Rtmp4nGYdi/filebc447a72298d/fastq/sample1.fq.gz
 #> Searching for barcodes...
-#> Processing file: /tmp/RtmpjRxi1E/file95d26f6ab3bf/fastq/sample2.fq.gz
+#> Processing file: /tmp/Rtmp4nGYdi/filebc447a72298d/fastq/sample2.fq.gz
 #> Searching for barcodes...
-#> Processing file: /tmp/RtmpjRxi1E/file95d26f6ab3bf/fastq/sample3.fq.gz
+#> Processing file: /tmp/Rtmp4nGYdi/filebc447a72298d/fastq/sample3.fq.gz
 #> Searching for barcodes...
 #> Number of reads processed: 993
-#> Number of reads where at least one barcode was found: 928
-#> Number of chimera reads: 3
+#> Number of reads where at least one barcode was found: 932
+#> Number of chimera reads: 2
 #> All done!
 #> Reads    Barcodes
 #> 28   1
-#> 26   1
-#> 24   1
-#> 21   1
+#> 27   1
+#> 23   1
+#> 22   1
+#> 21   3
 #> 20   2
-#> 19   3
+#> 19   2
 #> 18   1
-#> 17   3
-#> 16   2
+#> 17   1
+#> 15   1
 #> 14   2
-#> 13   1
-#> 12   6
-#> 11   4
-#> 10   4
-#> 9    7
+#> 13   3
+#> 12   3
+#> 11   6
+#> 10   5
+#> 9    6
 #> 8    5
-#> 7    4
-#> 6    13
+#> 7    5
+#> 6    9
 #> 5    14
-#> 4    3
-#> 3    39
-#> 2    15
-#> 1    5
-#> Loading known barcodes from /tmp/RtmpjRxi1E/file95d26f6ab3bf/bc_allow.tsv
+#> 4    7
+#> 3    36
+#> 2    20
+#> 1    2
+#> Loading known barcodes from /tmp/Rtmp4nGYdi/filebc447a72298d/bc_allow.tsv
 #> Number of known barcodes: 143
 #> FLEXIPLEX 1.02.6
 #> Setting max flanking sequence edit distance to 8
@@ -103,48 +105,51 @@ pipeline <- example_pipeline("MultiSampleSCPipeline") |>
 #> CB: NNNNNNNNNNNNNNNN
 #> UB: NNNNNNNNNNNN
 #> polyT: TTTTTTTTT
-#> Processing file: /tmp/RtmpjRxi1E/file95d26f6ab3bf/fastq/sample1.fq.gz
+#> CB:Z: tag field: CB
+#> Processing file: /tmp/Rtmp4nGYdi/filebc447a72298d/fastq/sample1.fq.gz
 #> Searching for barcodes...
 #> Number of reads processed: 300
-#> Number of reads where at least one barcode was found: 279
+#> Number of reads where at least one barcode was found: 281
+#> Number of chimera reads: 0
+#> All done!
+#> Reads    Barcodes
+#> 9    1
+#> 8    1
+#> 7    5
+#> 6    5
+#> 5    2
+#> 4    7
+#> 3    18
+#> 2    24
+#> 1    62
+#> Loading known barcodes from /tmp/Rtmp4nGYdi/filebc447a72298d/bc_allow.tsv
+#> Number of known barcodes: 143
+#> FLEXIPLEX 1.02.6
+#> Setting max flanking sequence edit distance to 8
+#> Setting number of threads to 1
+#> Search pattern:
+#> primer: CTACACGACGCTCTTCCGATCT
+#> CB: NNNNNNNNNNNNNNNN
+#> UB: NNNNNNNNNNNN
+#> polyT: TTTTTTTTT
+#> CB:Z: tag field: CB
+#> Processing file: /tmp/Rtmp4nGYdi/filebc447a72298d/fastq/sample2.fq.gz
+#> Searching for barcodes...
+#> Number of reads processed: 300
+#> Number of reads where at least one barcode was found: 283
 #> Number of chimera reads: 1
 #> All done!
 #> Reads    Barcodes
 #> 9    2
+#> 8    1
 #> 7    2
-#> 6    2
-#> 5    8
-#> 4    9
-#> 3    16
-#> 2    31
-#> 1    52
-#> Loading known barcodes from /tmp/RtmpjRxi1E/file95d26f6ab3bf/bc_allow.tsv
-#> Number of known barcodes: 143
-#> FLEXIPLEX 1.02.6
-#> Setting max flanking sequence edit distance to 8
-#> Setting number of threads to 1
-#> Search pattern:
-#> primer: CTACACGACGCTCTTCCGATCT
-#> CB: NNNNNNNNNNNNNNNN
-#> UB: NNNNNNNNNNNN
-#> polyT: TTTTTTTTT
-#> Processing file: /tmp/RtmpjRxi1E/file95d26f6ab3bf/fastq/sample2.fq.gz
-#> Searching for barcodes...
-#> Number of reads processed: 300
-#> Number of reads where at least one barcode was found: 281
-#> Number of chimera reads: 1
-#> All done!
-#> Reads    Barcodes
-#> 9    1
-#> 8    2
-#> 7    3
-#> 6    3
-#> 5    5
+#> 6    5
+#> 5    3
 #> 4    11
-#> 3    14
-#> 2    22
-#> 1    64
-#> Loading known barcodes from /tmp/RtmpjRxi1E/file95d26f6ab3bf/bc_allow.tsv
+#> 3    17
+#> 2    26
+#> 1    53
+#> Loading known barcodes from /tmp/Rtmp4nGYdi/filebc447a72298d/bc_allow.tsv
 #> Number of known barcodes: 143
 #> FLEXIPLEX 1.02.6
 #> Setting max flanking sequence edit distance to 8
@@ -154,7 +159,8 @@ pipeline <- example_pipeline("MultiSampleSCPipeline") |>
 #> CB: NNNNNNNNNNNNNNNN
 #> UB: NNNNNNNNNNNN
 #> polyT: TTTTTTTTT
-#> Processing file: /tmp/RtmpjRxi1E/file95d26f6ab3bf/fastq/sample3.fq.gz
+#> CB:Z: tag field: CB
+#> Processing file: /tmp/Rtmp4nGYdi/filebc447a72298d/fastq/sample3.fq.gz
 #> Searching for barcodes...
 #> Number of reads processed: 393
 #> Number of reads where at least one barcode was found: 368

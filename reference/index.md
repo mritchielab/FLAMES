@@ -48,6 +48,10 @@
 
 - [`find_barcode()`](https://mritchielab.github.io/FLAMES/reference/find_barcode.md)
   : Match Cell Barcodes
+- [`barcode_segment()`](https://mritchielab.github.io/FLAMES/reference/barcode_segment.md)
+  : Create a Flexiplex barcode segment
+- [`barcode_group()`](https://mritchielab.github.io/FLAMES/reference/barcode_group.md)
+  : Create a Flexiplex barcode group
 - [`blaze()`](https://mritchielab.github.io/FLAMES/reference/blaze.md) :
   BLAZE Assign reads to cell barcodes.
 - [`flexiplex()`](https://mritchielab.github.io/FLAMES/reference/flexiplex.md)
@@ -133,7 +137,7 @@
 
 ## Analysis of single-cell data
 
-- [`sc_gene_entropy()`](https://mritchielab.github.io/FLAMES/reference/sc_gene_entropy.md)
+- [`find_diversity()`](https://mritchielab.github.io/FLAMES/reference/find_diversity.md)
   : Compute Gene Isoform Entropy Matrix
 - [`sc_DTU_analysis()`](https://mritchielab.github.io/FLAMES/reference/sc_DTU_analysis.md)
   : FLAMES Differential Transcript Usage Analysis

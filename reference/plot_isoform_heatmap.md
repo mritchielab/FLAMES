@@ -87,11 +87,8 @@ the isoform visualizations along genomic coordinates.
 ``` r
 data(scmixology_lib10_transcripts)
 scmixology_lib10_transcripts |>
-  scuttle::logNormCounts() |>
+  scrapper::normalizeRnaCounts.se() |>
   plot_isoform_heatmap(gene = "ENSG00000108107")
-#> Constructing graphics...
-#> Constructing graphics...
-#> Constructing graphics...
-#> Constructing graphics...
+#> using unknown matrix fallback for 'data.frame'
 
 ```

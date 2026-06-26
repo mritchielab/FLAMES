@@ -20,11 +20,11 @@ create_config(outdir, type = "sc_3end", ...)
 
   "sc_3end"
 
-  :   \- config for 10x 3' end ONT reads
+  : \- config for 10x 3' end ONT reads
 
   "SIRV"
 
-  :   \- config for the SIRV example reads
+  : \- config for the SIRV example reads
 
 - ...:
 
@@ -32,66 +32,66 @@ create_config(outdir, type = "sc_3end", ...)
 
   seed
 
-  :   \- Integer. Seed for minimap2.
+  : \- Integer. Seed for minimap2.
 
   threads
 
-  :   \- Number of threads to use.
+  : \- Number of threads to use.
 
   do_barcode_demultiplex
 
-  :   \- Boolean. Specifies whether to run the barcode demultiplexing
-      step.
+  : \- Boolean. Specifies whether to run the barcode demultiplexing
+    step.
 
   do_genome_alignment
 
-  :   \- Boolean. Specifies whether to run the genome alignment step.
-      `TRUE` is recommended
+  : \- Boolean. Specifies whether to run the genome alignment step.
+    `TRUE` is recommended
 
   do_gene_quantification
 
-  :   \- Boolean. Specifies whether to run gene quantification using the
-      genome alignment results. `TRUE` is recommended
+  : \- Boolean. Specifies whether to run gene quantification using the
+    genome alignment results. `TRUE` is recommended
 
   do_isoform_identification
 
-  :   \- Boolean. Specifies whether to run the isoform identification
-      step. `TRUE` is recommended
+  : \- Boolean. Specifies whether to run the isoform identification
+    step. `TRUE` is recommended
 
   bambu_isoform_identification
 
-  :   \- Boolean. Whether to use Bambu for isoform identification.
+  : \- Boolean. Whether to use Bambu for isoform identification.
 
   multithread_isoform_identification
 
-  :   \- Boolean. Whether to use FLAMES' new multithreaded Cpp
-      implementation for isoform identification.
+  : \- Boolean. Whether to use FLAMES' new multithreaded Cpp
+    implementation for isoform identification.
 
   do_read_realignment
 
-  :   \- Boolean. Specifies whether to run the read realignment step.
-      `TRUE` is recommended
+  : \- Boolean. Specifies whether to run the read realignment step.
+    `TRUE` is recommended
 
   do_transcript_quantification
 
-  :   \- Boolean. Specifies whether to run the transcript quantification
-      step. `TRUE` is recommended
+  : \- Boolean. Specifies whether to run the transcript quantification
+    step. `TRUE` is recommended
 
   barcode_parameters.max_bc_editdistance
 
-  :   \- Maximum edit distance for barcode matching
+  : \- Maximum edit distance for barcode matching
 
   barcode_parameters.pattern.primer
 
-  :   \- Primer sequence pattern
+  : \- Primer sequence pattern
 
   isoform_parameters.max_dist
 
-  :   \- Maximum distance allowed when merging splicing sites
+  : \- Maximum distance allowed when merging splicing sites
 
   ...
 
-  :   \- Other nested parameters, using dot to indicate nested section
+  : \- Other nested parameters, using dot to indicate nested section
 
 ## Value
 
@@ -105,10 +105,13 @@ which is located with the prefix 'config\_' in the supplied `outdir`.
 Default values from `extdata/config_sclr_nanopore_3end.json` will be
 used for unprovided parameters.
 
-Parameters can be specified using dot to indicate nested sections, e.g.,
-`barcode_parameters.max_bc_editdistance = 3` or
-`barcode_parameters.pattern.primer = "ATCG"`. Alternatively, you can
-open the created config file and edit it manually.
+Simple scalar parameters can be set via the `...` argument using dot
+notation (e.g. `barcode_parameters.max_bc_editdistance = 3`). For
+complex structured parameters such as `barcode_parameters.segments`
+(which is a JSON array of objects), it is strongly recommended to call
+`create_config(outdir)` first to generate the default JSON file, then
+open that file in a text editor and modify the `segments` array
+directly. See the FLAMES vignette for a worked example.
 
 ## Examples
 
@@ -116,7 +119,7 @@ open the created config file and edit it manually.
 # create the default configuration file
 outdir <- tempdir()
 config <- create_config(outdir)
-#> Writing configuration parameters to:  /tmp/RtmpjRxi1E/config_file_38354.json 
+#> ℹ Writing configuration to: /tmp/Rtmp4nGYdi/config_file_48196.json
 
 # create config with custom parameters including nested ones
 config <- create_config(outdir,
@@ -128,5 +131,5 @@ config <- create_config(outdir,
   # via supplying additional CLI arguments
   additional_arguments.oarfish = c("--model-coverage")
 )
-#> Writing configuration parameters to:  /tmp/RtmpjRxi1E/config_file_38354.json 
+#> ℹ Writing configuration to: /tmp/Rtmp4nGYdi/config_file_48196.json
 ```

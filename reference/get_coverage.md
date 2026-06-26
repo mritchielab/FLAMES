@@ -52,7 +52,7 @@ columns:
 
 ``` r
 ppl <- example_pipeline("BulkPipeline")
-#> Writing configuration parameters to:  /tmp/RtmpjRxi1E/file95d2143a903f/config_file_38354.json 
+#> ℹ Writing configuration to: /tmp/Rtmp4nGYdi/filebc4441071c06/config_file_48196.json
 #> Configured steps: 
 #>  genome_alignment: TRUE
 #>  isoform_identification: TRUE
@@ -61,25 +61,24 @@ ppl <- example_pipeline("BulkPipeline")
 #> samtools not found, will use Rsamtools package instead
 steps(ppl)["isoform_identification"] <- FALSE
 ppl <- run_step(ppl, "read_realignment")
-#> ── Running step: read_realignment @ Thu Feb 19 01:55:58 2026 ───────────────────
+#> ── Running step: read_realignment @ Fri Jun 26 08:24:47 2026 ───────────────────
 #> Using reference annotation for transcriptome assembly.
-#> Realigning sample sample1 -> /tmp/RtmpjRxi1E/file95d2143a903f/sample1_realign2transcript.bam
+#> Realigning sample sample1 -> /tmp/Rtmp4nGYdi/filebc4441071c06/sample1_realign2transcript.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Skipped sorting BAM files.
-#> Realigning sample sample2 -> /tmp/RtmpjRxi1E/file95d2143a903f/sample2_realign2transcript.bam
+#> Realigning sample sample2 -> /tmp/Rtmp4nGYdi/filebc4441071c06/sample2_realign2transcript.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Skipped sorting BAM files.
-#> Realigning sample sample3 -> /tmp/RtmpjRxi1E/file95d2143a903f/sample3_realign2transcript.bam
+#> Realigning sample sample3 -> /tmp/Rtmp4nGYdi/filebc4441071c06/sample3_realign2transcript.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Skipped sorting BAM files.
 x <- get_coverage(ppl@transcriptome_bam[[1]])
 head(x)
-#> # A tibble: 3 × 103
+#> # A tibble: 2 × 103
 #>   transcript   coverage_1 coverage_2 coverage_3 coverage_4 coverage_5 coverage_6
 #>   <chr>             <dbl>      <dbl>      <dbl>      <dbl>      <dbl>      <dbl>
-#> 1 ENSMUST0000…      0.503      0.902      0.959      0.979      0.979      0.979
-#> 2 ENSMUST0000…      0.455      0.636      0.727      0.727      0.818      0.909
-#> 3 ENSMUST0000…      0.7        0.9        1          1          1          1    
+#> 1 ENSMUST0000…      0.462      0.915      0.965      0.980      0.980      0.980
+#> 2 ENSMUST0000…      0.7        0.85       0.95       0.95       0.95       0.95 
 #> # ℹ 96 more variables: coverage_7 <dbl>, coverage_8 <dbl>, coverage_9 <dbl>,
 #> #   coverage_10 <dbl>, coverage_11 <dbl>, coverage_12 <dbl>, coverage_13 <dbl>,
 #> #   coverage_14 <dbl>, coverage_15 <dbl>, coverage_16 <dbl>, coverage_17 <dbl>,

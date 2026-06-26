@@ -31,12 +31,11 @@ An pipeline of class \`FLAMES.Pipeline\` with the updated steps.
 
 ``` r
 ppl <- example_pipeline()
-#> Writing configuration parameters to:  /tmp/RtmpjRxi1E/file95d2786f878/config_file_38354.json 
-#> Warning: You have set to use oarfish quantification without gene quantification. Oarfish currently does not collapse UMIs, and gene quantification performs UMI collapsing. You may want to set do_gene_quantification to TRUE for more accurate results.
+#> ℹ Writing configuration to: /tmp/Rtmp4nGYdi/filebc44767c1b7d/config_file_48196.json
 #> Configured steps: 
 #>  barcode_demultiplex: TRUE
 #>  genome_alignment: TRUE
-#>  gene_quantification: FALSE
+#>  gene_quantification: TRUE
 #>  isoform_identification: TRUE
 #>  read_realignment: TRUE
 #>  transcript_quantification: TRUE
@@ -50,13 +49,13 @@ steps(ppl) <- c(
   transcript_quantification = TRUE
 )
 ppl
-#> → A FLAMES.SingleCellPipeline outputting to /tmp/RtmpjRxi1E/file95d2786f878
+#> → A FLAMES.SingleCellPipeline outputting to /tmp/Rtmp4nGYdi/filebc44767c1b7d
 #> 
 #> ── Inputs 
 #> ✔ fastq: ...ibrary/FLAMES/extdata/fastq/musc_rps24.fastq.gz
 #> ✔ annotation: /__w/_temp/Library/FLAMES/extdata/rps24.gtf.gz
-#> ✔ genome_fa: /tmp/RtmpjRxi1E/file95d2786f878/rps24.fa
-#> ✔ barcodes_file: /tmp/RtmpjRxi1E/file95d2786f878/bc_allow.tsv
+#> ✔ genome_fa: /tmp/Rtmp4nGYdi/filebc44767c1b7d/rps24.fa
+#> ✔ barcodes_file: /tmp/Rtmp4nGYdi/filebc44767c1b7d/bc_allow.tsv
 #> 
 #> ── Outputs 
 #> ℹ demultiplexed_fastq: matched_reads.fastq.gz
@@ -73,13 +72,13 @@ ppl
 # or partially change a step:
 steps(ppl)["read_realignment"] <- TRUE
 ppl
-#> → A FLAMES.SingleCellPipeline outputting to /tmp/RtmpjRxi1E/file95d2786f878
+#> → A FLAMES.SingleCellPipeline outputting to /tmp/Rtmp4nGYdi/filebc44767c1b7d
 #> 
 #> ── Inputs 
 #> ✔ fastq: ...ibrary/FLAMES/extdata/fastq/musc_rps24.fastq.gz
 #> ✔ annotation: /__w/_temp/Library/FLAMES/extdata/rps24.gtf.gz
-#> ✔ genome_fa: /tmp/RtmpjRxi1E/file95d2786f878/rps24.fa
-#> ✔ barcodes_file: /tmp/RtmpjRxi1E/file95d2786f878/bc_allow.tsv
+#> ✔ genome_fa: /tmp/Rtmp4nGYdi/filebc44767c1b7d/rps24.fa
+#> ✔ barcodes_file: /tmp/Rtmp4nGYdi/filebc44767c1b7d/bc_allow.tsv
 #> 
 #> ── Outputs 
 #> ℹ demultiplexed_fastq: matched_reads.fastq.gz
