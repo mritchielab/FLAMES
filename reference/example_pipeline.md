@@ -38,7 +38,7 @@ for multi sample single cell pipelines.
 
 ``` r
 example_pipeline("SingleCellPipeline")
-#> ℹ Writing configuration to: /tmp/Rtmp4nGYdi/filebc44b24d89c/config_file_48196.json
+#> ℹ Writing configuration to: /tmp/RtmpnC89xy/filebc15763dd5e2/config_file_48149.json
 #> Configured steps: 
 #>  barcode_demultiplex: TRUE
 #>  genome_alignment: TRUE
@@ -47,13 +47,13 @@ example_pipeline("SingleCellPipeline")
 #>  read_realignment: TRUE
 #>  transcript_quantification: TRUE
 #> samtools not found, will use Rsamtools package instead
-#> → A FLAMES.SingleCellPipeline outputting to /tmp/Rtmp4nGYdi/filebc44b24d89c
+#> → A FLAMES.SingleCellPipeline outputting to /tmp/RtmpnC89xy/filebc15763dd5e2
 #> 
 #> ── Inputs 
 #> ✔ fastq: ...ibrary/FLAMES/extdata/fastq/musc_rps24.fastq.gz
 #> ✔ annotation: /__w/_temp/Library/FLAMES/extdata/rps24.gtf.gz
-#> ✔ genome_fa: /tmp/Rtmp4nGYdi/filebc44b24d89c/rps24.fa
-#> ✔ barcodes_file: /tmp/Rtmp4nGYdi/filebc44b24d89c/bc_allow.tsv
+#> ✔ genome_fa: /tmp/RtmpnC89xy/filebc15763dd5e2/rps24.fa
+#> ✔ barcodes_file: /tmp/RtmpnC89xy/filebc15763dd5e2/bc_allow.tsv
 #> 
 #> ── Outputs 
 #> ℹ demultiplexed_fastq: matched_reads.fastq.gz

@@ -31,7 +31,7 @@ An pipeline of class \`FLAMES.Pipeline\` with the updated steps.
 
 ``` r
 ppl <- example_pipeline()
-#> ℹ Writing configuration to: /tmp/Rtmp4nGYdi/filebc44767c1b7d/config_file_48196.json
+#> ℹ Writing configuration to: /tmp/RtmpnC89xy/filebc15739d8484/config_file_48149.json
 #> Configured steps: 
 #>  barcode_demultiplex: TRUE
 #>  genome_alignment: TRUE
@@ -49,13 +49,13 @@ steps(ppl) <- c(
   transcript_quantification = TRUE
 )
 ppl
-#> → A FLAMES.SingleCellPipeline outputting to /tmp/Rtmp4nGYdi/filebc44767c1b7d
+#> → A FLAMES.SingleCellPipeline outputting to /tmp/RtmpnC89xy/filebc15739d8484
 #> 
 #> ── Inputs 
 #> ✔ fastq: ...ibrary/FLAMES/extdata/fastq/musc_rps24.fastq.gz
 #> ✔ annotation: /__w/_temp/Library/FLAMES/extdata/rps24.gtf.gz
-#> ✔ genome_fa: /tmp/Rtmp4nGYdi/filebc44767c1b7d/rps24.fa
-#> ✔ barcodes_file: /tmp/Rtmp4nGYdi/filebc44767c1b7d/bc_allow.tsv
+#> ✔ genome_fa: /tmp/RtmpnC89xy/filebc15739d8484/rps24.fa
+#> ✔ barcodes_file: /tmp/RtmpnC89xy/filebc15739d8484/bc_allow.tsv
 #> 
 #> ── Outputs 
 #> ℹ demultiplexed_fastq: matched_reads.fastq.gz
@@ -72,13 +72,13 @@ ppl
 # or partially change a step:
 steps(ppl)["read_realignment"] <- TRUE
 ppl
-#> → A FLAMES.SingleCellPipeline outputting to /tmp/Rtmp4nGYdi/filebc44767c1b7d
+#> → A FLAMES.SingleCellPipeline outputting to /tmp/RtmpnC89xy/filebc15739d8484
 #> 
 #> ── Inputs 
 #> ✔ fastq: ...ibrary/FLAMES/extdata/fastq/musc_rps24.fastq.gz
 #> ✔ annotation: /__w/_temp/Library/FLAMES/extdata/rps24.gtf.gz
-#> ✔ genome_fa: /tmp/Rtmp4nGYdi/filebc44767c1b7d/rps24.fa
-#> ✔ barcodes_file: /tmp/Rtmp4nGYdi/filebc44767c1b7d/bc_allow.tsv
+#> ✔ genome_fa: /tmp/RtmpnC89xy/filebc15739d8484/rps24.fa
+#> ✔ barcodes_file: /tmp/RtmpnC89xy/filebc15739d8484/bc_allow.tsv
 #> 
 #> ── Outputs 
 #> ℹ demultiplexed_fastq: matched_reads.fastq.gz

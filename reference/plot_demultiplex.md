@@ -38,7 +38,7 @@ a list of ggplot objects:
 ``` r
 pipeline <- example_pipeline("MultiSampleSCPipeline") |>
   run_step("barcode_demultiplex")
-#> ℹ Writing configuration to: /tmp/Rtmp4nGYdi/filebc447a72298d/config_file_48196.json
+#> ℹ Writing configuration to: /tmp/RtmpnC89xy/filebc15337b0ac5/config_file_48149.json
 #> Configured steps: 
 #>  barcode_demultiplex: TRUE
 #>  genome_alignment: TRUE
@@ -47,9 +47,9 @@ pipeline <- example_pipeline("MultiSampleSCPipeline") |>
 #>  read_realignment: TRUE
 #>  transcript_quantification: TRUE
 #> samtools not found, will use Rsamtools package instead
-#> ── Running step: barcode_demultiplex @ Fri Jun 26 08:24:54 2026 ────────────────
+#> ── Running step: barcode_demultiplex @ Thu Aug  6 04:49:06 2026 ────────────────
 #> Using flexiplex for barcode demultiplexing.
-#> Loading known barcodes from /tmp/Rtmp4nGYdi/filebc447a72298d/bc_allow.tsv
+#> Loading known barcodes from /tmp/RtmpnC89xy/filebc15337b0ac5/bc_allow.tsv
 #> Number of known barcodes: 143
 #> FLEXIPLEX 1.02.6
 #> Setting max flanking sequence edit distance to 8
@@ -60,11 +60,11 @@ pipeline <- example_pipeline("MultiSampleSCPipeline") |>
 #> UB: NNNNNNNNNNNN
 #> polyT: TTTTTTTTT
 #> CB:Z: tag field: CB
-#> Processing file: /tmp/Rtmp4nGYdi/filebc447a72298d/fastq/sample1.fq.gz
+#> Processing file: /tmp/RtmpnC89xy/filebc15337b0ac5/fastq/sample1.fq.gz
 #> Searching for barcodes...
-#> Processing file: /tmp/Rtmp4nGYdi/filebc447a72298d/fastq/sample2.fq.gz
+#> Processing file: /tmp/RtmpnC89xy/filebc15337b0ac5/fastq/sample2.fq.gz
 #> Searching for barcodes...
-#> Processing file: /tmp/Rtmp4nGYdi/filebc447a72298d/fastq/sample3.fq.gz
+#> Processing file: /tmp/RtmpnC89xy/filebc15337b0ac5/fastq/sample3.fq.gz
 #> Searching for barcodes...
 #> Number of reads processed: 993
 #> Number of reads where at least one barcode was found: 932
@@ -95,7 +95,7 @@ pipeline <- example_pipeline("MultiSampleSCPipeline") |>
 #> 3    36
 #> 2    20
 #> 1    2
-#> Loading known barcodes from /tmp/Rtmp4nGYdi/filebc447a72298d/bc_allow.tsv
+#> Loading known barcodes from /tmp/RtmpnC89xy/filebc15337b0ac5/bc_allow.tsv
 #> Number of known barcodes: 143
 #> FLEXIPLEX 1.02.6
 #> Setting max flanking sequence edit distance to 8
@@ -106,7 +106,7 @@ pipeline <- example_pipeline("MultiSampleSCPipeline") |>
 #> UB: NNNNNNNNNNNN
 #> polyT: TTTTTTTTT
 #> CB:Z: tag field: CB
-#> Processing file: /tmp/Rtmp4nGYdi/filebc447a72298d/fastq/sample1.fq.gz
+#> Processing file: /tmp/RtmpnC89xy/filebc15337b0ac5/fastq/sample1.fq.gz
 #> Searching for barcodes...
 #> Number of reads processed: 300
 #> Number of reads where at least one barcode was found: 281
@@ -122,7 +122,7 @@ pipeline <- example_pipeline("MultiSampleSCPipeline") |>
 #> 3    18
 #> 2    24
 #> 1    62
-#> Loading known barcodes from /tmp/Rtmp4nGYdi/filebc447a72298d/bc_allow.tsv
+#> Loading known barcodes from /tmp/RtmpnC89xy/filebc15337b0ac5/bc_allow.tsv
 #> Number of known barcodes: 143
 #> FLEXIPLEX 1.02.6
 #> Setting max flanking sequence edit distance to 8
@@ -133,7 +133,7 @@ pipeline <- example_pipeline("MultiSampleSCPipeline") |>
 #> UB: NNNNNNNNNNNN
 #> polyT: TTTTTTTTT
 #> CB:Z: tag field: CB
-#> Processing file: /tmp/Rtmp4nGYdi/filebc447a72298d/fastq/sample2.fq.gz
+#> Processing file: /tmp/RtmpnC89xy/filebc15337b0ac5/fastq/sample2.fq.gz
 #> Searching for barcodes...
 #> Number of reads processed: 300
 #> Number of reads where at least one barcode was found: 283
@@ -149,7 +149,7 @@ pipeline <- example_pipeline("MultiSampleSCPipeline") |>
 #> 3    17
 #> 2    26
 #> 1    53
-#> Loading known barcodes from /tmp/Rtmp4nGYdi/filebc447a72298d/bc_allow.tsv
+#> Loading known barcodes from /tmp/RtmpnC89xy/filebc15337b0ac5/bc_allow.tsv
 #> Number of known barcodes: 143
 #> FLEXIPLEX 1.02.6
 #> Setting max flanking sequence edit distance to 8
@@ -160,7 +160,7 @@ pipeline <- example_pipeline("MultiSampleSCPipeline") |>
 #> UB: NNNNNNNNNNNN
 #> polyT: TTTTTTTTT
 #> CB:Z: tag field: CB
-#> Processing file: /tmp/Rtmp4nGYdi/filebc447a72298d/fastq/sample3.fq.gz
+#> Processing file: /tmp/RtmpnC89xy/filebc15337b0ac5/fastq/sample3.fq.gz
 #> Searching for barcodes...
 #> Number of reads processed: 393
 #> Number of reads where at least one barcode was found: 368

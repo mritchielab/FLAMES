@@ -30,7 +30,7 @@ An pipeline of class \`FLAMES.Pipeline\` with the updated configuration.
 
 ``` r
 pipeline <- example_pipeline(type = "BulkPipeline")
-#> ℹ Writing configuration to: /tmp/Rtmp4nGYdi/filebc441bb2e7db/config_file_48196.json
+#> ℹ Writing configuration to: /tmp/RtmpnC89xy/filebc15130f8baa/config_file_48149.json
 #> Configured steps: 
 #>  genome_alignment: TRUE
 #>  isoform_identification: TRUE
@@ -39,5 +39,5 @@ pipeline <- example_pipeline(type = "BulkPipeline")
 #> samtools not found, will use Rsamtools package instead
 # Set a new configuration
 config(pipeline) <- create_config(outdir = tempdir())
-#> ℹ Writing configuration to: /tmp/Rtmp4nGYdi/config_file_48196.json
+#> ℹ Writing configuration to: /tmp/RtmpnC89xy/config_file_48149.json
 ```

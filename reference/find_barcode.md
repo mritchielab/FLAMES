@@ -186,7 +186,7 @@ find_barcode(
   TSO_seq = "AAGCAGTGGTATCAACGCAGAGTACATGGG", TSO_prime = 5,
   strand = '-', cutadapt_minimum_length = 10, full_length_only = TRUE
 )
-#> Loading known barcodes from /tmp/Rtmp4nGYdi/filebc445d9d090b/bc_allow.tsv
+#> Loading known barcodes from /tmp/RtmpnC89xy/filebc151efd760a/bc_allow.tsv
 #> Number of known barcodes: 143
 #> FLEXIPLEX 1.02.6
 #> Setting max flanking sequence edit distance to 8
@@ -219,7 +219,7 @@ find_barcode(
 #>                 393                 368                 364                   1 
 #> 
 #> $stats_out
-#> [1] "/tmp/Rtmp4nGYdi/filebc445d9d090b/bc_stat.tsv.gz"
+#> [1] "/tmp/RtmpnC89xy/filebc151efd760a/bc_stat.tsv.gz"
 #> 
 #> $cutadapt
 #> $cutadapt$tag
@@ -238,12 +238,12 @@ find_barcode(
 #>  [1] "-g"                                                               
 #>  [2] "AAGCAGTGGTATCAACGCAGAGTACATGGG"                                   
 #>  [3] "-o"                                                               
-#>  [4] "/tmp/Rtmp4nGYdi/filebc445d9d090b/demultiplexed.fastq.gz"          
-#>  [5] "/tmp/Rtmp4nGYdi/filebc445d9d090b/untrimmed_demultiplexed.fastq.gz"
+#>  [4] "/tmp/RtmpnC89xy/filebc151efd760a/demultiplexed.fastq.gz"          
+#>  [5] "/tmp/RtmpnC89xy/filebc151efd760a/untrimmed_demultiplexed.fastq.gz"
 #>  [6] "--json"                                                           
-#>  [7] "/tmp/Rtmp4nGYdi/filebc445d9d090b/filebc444978f443.json"           
+#>  [7] "/tmp/RtmpnC89xy/filebc151efd760a/filebc1575b94258.json"           
 #>  [8] "--untrimmed-output"                                               
-#>  [9] "/tmp/Rtmp4nGYdi/filebc445d9d090b/noTSO_demultiplexed.fastq.gz"    
+#>  [9] "/tmp/RtmpnC89xy/filebc151efd760a/noTSO_demultiplexed.fastq.gz"    
 #> [10] "--minimum-length"                                                 
 #> [11] "10"                                                               
 #> 
@@ -252,7 +252,7 @@ find_barcode(
 #> 
 #> $cutadapt$input
 #> $cutadapt$input$path1
-#> [1] "/tmp/Rtmp4nGYdi/filebc445d9d090b/untrimmed_demultiplexed.fastq.gz"
+#> [1] "/tmp/RtmpnC89xy/filebc151efd760a/untrimmed_demultiplexed.fastq.gz"
 #> 
 #> $cutadapt$input$path2
 #> NULL

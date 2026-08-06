@@ -34,7 +34,7 @@ An updated FLAMES.Pipeline object with the specified controllers.
 
 ``` r
 pipeline <- example_pipeline()
-#> ℹ Writing configuration to: /tmp/Rtmp4nGYdi/filebc444d791ab1/config_file_48196.json
+#> ℹ Writing configuration to: /tmp/RtmpnC89xy/filebc15790f2ade/config_file_48149.json
 #> Configured steps: 
 #>  barcode_demultiplex: TRUE
 #>  genome_alignment: TRUE

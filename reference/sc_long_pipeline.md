@@ -92,7 +92,7 @@ sce <- FLAMES::sc_long_pipeline(
     pipeline_parameters.demultiplexer = "flexiplex"
   )
 )
-#> ℹ Writing configuration to: /tmp/Rtmp4nGYdi/filebc442770b76d/config_file_48196.json
+#> ℹ Writing configuration to: /tmp/RtmpnC89xy/filebc1548aaa3c2/config_file_48149.json
 #> Configured steps: 
 #>  barcode_demultiplex: TRUE
 #>  genome_alignment: TRUE
@@ -101,9 +101,9 @@ sce <- FLAMES::sc_long_pipeline(
 #>  read_realignment: TRUE
 #>  transcript_quantification: TRUE
 #> samtools not found, will use Rsamtools package instead
-#> ── Running step: barcode_demultiplex @ Fri Jun 26 08:25:45 2026 ────────────────
+#> ── Running step: barcode_demultiplex @ Thu Aug  6 04:49:55 2026 ────────────────
 #> Using flexiplex for barcode demultiplexing.
-#> Loading known barcodes from /tmp/Rtmp4nGYdi/filebc442770b76d/bc_allow.tsv
+#> Loading known barcodes from /tmp/RtmpnC89xy/filebc1548aaa3c2/bc_allow.tsv
 #> Number of known barcodes: 143
 #> FLEXIPLEX 1.02.6
 #> Setting max flanking sequence edit distance to 8
@@ -131,26 +131,26 @@ sce <- FLAMES::sc_long_pipeline(
 #> 3    14
 #> 2    29
 #> 1    57
-#> ── Running step: genome_alignment @ Fri Jun 26 08:25:45 2026 ───────────────────
+#> ── Running step: genome_alignment @ Thu Aug  6 04:49:55 2026 ───────────────────
 #> Creating junction bed file from GFF3 annotation.
-#> Aligning sample /tmp/Rtmp4nGYdi/filebc442770b76d/matched_reads.fastq.gz -> /tmp/Rtmp4nGYdi/filebc442770b76d/align2genome.bam
+#> Aligning sample /tmp/RtmpnC89xy/filebc1548aaa3c2/matched_reads.fastq.gz -> /tmp/RtmpnC89xy/filebc1548aaa3c2/align2genome.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by genome coordinates with 8 threads...
 #> Indexing bam files
-#> ── Running step: gene_quantification @ Fri Jun 26 08:25:46 2026 ────────────────
-#> 08:25:46 AM Fri Jun 26 2026 quantify genes 
-#> Using BAM(s): /tmp/Rtmp4nGYdi/filebc442770b76d/align2genome.bam
-#> ── Running step: isoform_identification @ Fri Jun 26 08:25:46 2026 ─────────────
-#> ── Running step: read_realignment @ Fri Jun 26 08:25:46 2026 ───────────────────
+#> ── Running step: gene_quantification @ Thu Aug  6 04:49:56 2026 ────────────────
+#> 04:49:56 AM Thu Aug 06 2026 quantify genes 
+#> Using BAM(s): /tmp/RtmpnC89xy/filebc1548aaa3c2/align2genome.bam
+#> ── Running step: isoform_identification @ Thu Aug  6 04:49:56 2026 ─────────────
+#> ── Running step: read_realignment @ Thu Aug  6 04:49:56 2026 ───────────────────
 #> Checking for fastq file(s) /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz
 #>  files found
-#> Checking for fastq file(s) /tmp/Rtmp4nGYdi/filebc442770b76d/matched_reads.fastq.gz
+#> Checking for fastq file(s) /tmp/RtmpnC89xy/filebc1548aaa3c2/matched_reads.fastq.gz
 #>  files found
-#> Checking for fastq file(s) /tmp/Rtmp4nGYdi/filebc442770b76d/matched_reads_dedup.fastq.gz
+#> Checking for fastq file(s) /tmp/RtmpnC89xy/filebc1548aaa3c2/matched_reads_dedup.fastq.gz
 #>  files found
-#> Realigning sample /tmp/Rtmp4nGYdi/filebc442770b76d/matched_reads_dedup.fastq.gz -> /tmp/Rtmp4nGYdi/filebc442770b76d/realign2transcript.bam
+#> Realigning sample /tmp/RtmpnC89xy/filebc1548aaa3c2/matched_reads_dedup.fastq.gz -> /tmp/RtmpnC89xy/filebc1548aaa3c2/realign2transcript.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by 8 with CB threads...
-#> ── Running step: transcript_quantification @ Fri Jun 26 08:25:47 2026 ──────────
-#> Pipeline saved to /tmp/Rtmp4nGYdi/filebc442770b76d/pipeline.rds
+#> ── Running step: transcript_quantification @ Thu Aug  6 04:49:56 2026 ──────────
+#> Pipeline saved to /tmp/RtmpnC89xy/filebc1548aaa3c2/pipeline.rds
 ```

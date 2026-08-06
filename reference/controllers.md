@@ -26,7 +26,7 @@ corresponds to a step in the pipeline.
 
 ``` r
 pipeline <- example_pipeline(type = "MultiSampleSCPipeline")
-#> ℹ Writing configuration to: /tmp/Rtmp4nGYdi/filebc441961f7fc/config_file_48196.json
+#> ℹ Writing configuration to: /tmp/RtmpnC89xy/filebc1529ec8a3c/config_file_48149.json
 #> Configured steps: 
 #>  barcode_demultiplex: TRUE
 #>  genome_alignment: TRUE

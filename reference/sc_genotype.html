@@ -110,7 +110,7 @@ determines the genotype based on the allele counts and percentages.</p>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/example.html" class="external-link">example</a></span><span class="op">(</span><span class="va">sc_mutations</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> sc_mtt&gt; ppl &lt;- example_pipeline("SingleCellPipeline")</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Writing configuration to: /tmp/Rtmp4nGYdi/filebc445dc76002/config_file_48196.json</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Writing configuration to: /tmp/RtmpnC89xy/filebc1573661110/config_file_48149.json</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Configured steps: </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	barcode_demultiplex: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	genome_alignment: TRUE</span>
@@ -121,9 +121,9 @@ determines the genotype based on the allele counts and percentages.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> samtools not found, will use Rsamtools package instead</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> sc_mtt&gt; ppl &lt;- run_step(ppl, "barcode_demultiplex")</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: barcode_demultiplex @ Fri Jun 26 08:25:37 2026 ────────────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: barcode_demultiplex @ Thu Aug  6 04:49:47 2026 ────────────────</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using flexiplex for barcode demultiplexing.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Loading known barcodes from /tmp/Rtmp4nGYdi/filebc445dc76002/bc_allow.tsv</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Loading known barcodes from /tmp/RtmpnC89xy/filebc1573661110/bc_allow.tsv</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of known barcodes: 143</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> FLEXIPLEX 1.02.6</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Setting max flanking sequence edit distance to 8</span>
@@ -153,9 +153,9 @@ determines the genotype based on the allele counts and percentages.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1	57</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> sc_mtt&gt; ppl &lt;- run_step(ppl, "genome_alignment")</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: genome_alignment @ Fri Jun 26 08:25:37 2026 ───────────────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: genome_alignment @ Thu Aug  6 04:49:47 2026 ───────────────────</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Creating junction bed file from GFF3 annotation.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample /tmp/Rtmp4nGYdi/filebc445dc76002/matched_reads.fastq.gz -&gt; /tmp/Rtmp4nGYdi/filebc445dc76002/align2genome.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample /tmp/RtmpnC89xy/filebc1573661110/matched_reads.fastq.gz -&gt; /tmp/RtmpnC89xy/filebc1573661110/align2genome.bam</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sorting BAM files by genome coordinates with 8 threads...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Indexing bam files</span>
@@ -166,10 +166,10 @@ determines the genotype based on the allele counts and percentages.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> sc_mtt+   positions = c(1260, 2714), # positions of interest</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> sc_mtt+   indel = FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> sc_mtt+ )</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 08:25:37 Got 1 bam file, parallelizing over each position ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 04:49:47 Got 1 bam file, parallelizing over each position ...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |===================================                                   |  50%  |                                                                              |======================================================================| 100%</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 08:25:38 Merging results ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 04:49:48 Merging results ...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> sc_mtt&gt; head(snps_tb)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6 × 7</span></span>
@@ -228,7 +228,7 @@ determines the genotype based on the allele counts and percentages.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.9000.</p>
 </div>
 
     </footer></div>

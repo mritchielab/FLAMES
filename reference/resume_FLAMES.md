@@ -31,7 +31,7 @@ to run the entire pipeline.
 
 ``` r
 pipeline <- example_pipeline("BulkPipeline")
-#> ℹ Writing configuration to: /tmp/Rtmp4nGYdi/filebc4457795a7b/config_file_48196.json
+#> ℹ Writing configuration to: /tmp/RtmpnC89xy/filebc155fe29f59/config_file_48149.json
 #> Configured steps: 
 #>  genome_alignment: TRUE
 #>  isoform_identification: TRUE
@@ -39,32 +39,32 @@ pipeline <- example_pipeline("BulkPipeline")
 #>  transcript_quantification: TRUE
 #> samtools not found, will use Rsamtools package instead
 pipeline <- run_step(pipeline, "genome_alignment")
-#> ── Running step: genome_alignment @ Fri Jun 26 08:25:24 2026 ───────────────────
+#> ── Running step: genome_alignment @ Thu Aug  6 04:49:34 2026 ───────────────────
 #> Creating junction bed file from GFF3 annotation.
-#> Aligning sample sample1 -> /tmp/Rtmp4nGYdi/filebc4457795a7b/sample1_align2genome.bam
+#> Aligning sample sample1 -> /tmp/RtmpnC89xy/filebc155fe29f59/sample1_align2genome.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by genome coordinates with 1 threads...
 #> Indexing bam files
-#> Aligning sample sample2 -> /tmp/Rtmp4nGYdi/filebc4457795a7b/sample2_align2genome.bam
+#> Aligning sample sample2 -> /tmp/RtmpnC89xy/filebc155fe29f59/sample2_align2genome.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by genome coordinates with 1 threads...
 #> Indexing bam files
-#> Aligning sample sample3 -> /tmp/Rtmp4nGYdi/filebc4457795a7b/sample3_align2genome.bam
+#> Aligning sample sample3 -> /tmp/RtmpnC89xy/filebc155fe29f59/sample3_align2genome.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by genome coordinates with 1 threads...
 #> Indexing bam files
 pipeline <- resume_FLAMES(pipeline)
 #> Resuming pipeline from step: isoform_identification
-#> ── Running step: isoform_identification @ Fri Jun 26 08:25:25 2026 ─────────────
-#> ── Running step: read_realignment @ Fri Jun 26 08:25:25 2026 ───────────────────
-#> Realigning sample sample1 -> /tmp/Rtmp4nGYdi/filebc4457795a7b/sample1_realign2transcript.bam
+#> ── Running step: isoform_identification @ Thu Aug  6 04:49:35 2026 ─────────────
+#> ── Running step: read_realignment @ Thu Aug  6 04:49:35 2026 ───────────────────
+#> Realigning sample sample1 -> /tmp/RtmpnC89xy/filebc155fe29f59/sample1_realign2transcript.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Skipped sorting BAM files.
-#> Realigning sample sample2 -> /tmp/Rtmp4nGYdi/filebc4457795a7b/sample2_realign2transcript.bam
+#> Realigning sample sample2 -> /tmp/RtmpnC89xy/filebc155fe29f59/sample2_realign2transcript.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Skipped sorting BAM files.
-#> Realigning sample sample3 -> /tmp/Rtmp4nGYdi/filebc4457795a7b/sample3_realign2transcript.bam
+#> Realigning sample sample3 -> /tmp/RtmpnC89xy/filebc155fe29f59/sample3_realign2transcript.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Skipped sorting BAM files.
-#> ── Running step: transcript_quantification @ Fri Jun 26 08:25:27 2026 ──────────
+#> ── Running step: transcript_quantification @ Thu Aug  6 04:49:37 2026 ──────────
 ```
