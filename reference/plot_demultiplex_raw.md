@@ -56,7 +56,7 @@ find_barcode(
 ) |>
   plot_demultiplex_raw()
 #> Converting legacy `pattern` argument to `segments`...
-#> Loading known barcodes from /tmp/RtmpnC89xy/filebc1526c84268/bc_allow.tsv
+#> Loading known barcodes from /tmp/RtmpgehRKJ/filebbc047d6c0af/bc_allow.tsv
 #> Number of known barcodes: 143
 #> FLEXIPLEX 1.02.6
 #> Setting max flanking sequence edit distance to 8
@@ -67,9 +67,9 @@ find_barcode(
 #> UB: NNNNNNNNNNNN
 #> polyT: TTTTTTTTT
 #> CB:Z: tag field: CB
-#> Processing file: /tmp/RtmpnC89xy/filebc15a08b488/copy.fastq
+#> Processing file: /tmp/RtmpgehRKJ/filebbc046b60971/copy.fastq
 #> Searching for barcodes...
-#> Processing file: /tmp/RtmpnC89xy/filebc15a08b488/musc_rps24.fastq.gz
+#> Processing file: /tmp/RtmpgehRKJ/filebbc046b60971/musc_rps24.fastq.gz
 #> Searching for barcodes...
 #> Number of reads processed: 493
 #> Number of reads where at least one barcode was found: 460

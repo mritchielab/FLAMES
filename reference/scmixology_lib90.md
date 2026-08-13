@@ -12,7 +12,7 @@ Jun;16(6):479-487. PMID: 31133762
 ## Usage
 
 ``` r
-scmixology_lib90
+data(scmixology_lib90)
 ```
 
 ## Format

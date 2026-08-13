@@ -75,6 +75,6 @@ blaze(
 #> [1] TRUE
 #> 
 #> Running BLAZE...
-#> Argument:  --expect-cells  10 --output-prefix  /tmp/RtmpnC89xy/filebc15735a3f9e/ --output-fastq  matched_reads.fastq.gz --overwrite --minimal_stdout   /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz 
+#> Argument:  --expect-cells  10 --output-prefix  /tmp/RtmpgehRKJ/filebbc054663391/ --output-fastq  matched_reads.fastq.gz --overwrite --minimal_stdout   /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz 
 #> NULL
 ```

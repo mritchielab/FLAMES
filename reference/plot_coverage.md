@@ -69,7 +69,7 @@ a ggplot2 object of the coverage plot(s)
 
 ``` r
 ppl <- example_pipeline("BulkPipeline")
-#> ℹ Writing configuration to: /tmp/RtmpnC89xy/filebc1528cfc8f/config_file_48149.json
+#> ℹ Writing configuration to: /tmp/RtmpgehRKJ/filebbc01e151af6/config_file_48064.json
 #> Configured steps: 
 #>  genome_alignment: TRUE
 #>  isoform_identification: TRUE
@@ -78,15 +78,15 @@ ppl <- example_pipeline("BulkPipeline")
 #> samtools not found, will use Rsamtools package instead
 steps(ppl)["isoform_identification"] <- FALSE
 ppl <- run_step(ppl, "read_realignment")
-#> ── Running step: read_realignment @ Thu Aug  6 04:49:02 2026 ───────────────────
+#> ── Running step: read_realignment @ Thu Aug 13 10:10:10 2026 ───────────────────
 #> Using reference annotation for transcriptome assembly.
-#> Realigning sample sample1 -> /tmp/RtmpnC89xy/filebc1528cfc8f/sample1_realign2transcript.bam
+#> Realigning sample sample1 -> /tmp/RtmpgehRKJ/filebbc01e151af6/sample1_realign2transcript.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Skipped sorting BAM files.
-#> Realigning sample sample2 -> /tmp/RtmpnC89xy/filebc1528cfc8f/sample2_realign2transcript.bam
+#> Realigning sample sample2 -> /tmp/RtmpgehRKJ/filebbc01e151af6/sample2_realign2transcript.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Skipped sorting BAM files.
-#> Realigning sample sample3 -> /tmp/RtmpnC89xy/filebc1528cfc8f/sample3_realign2transcript.bam
+#> Realigning sample sample3 -> /tmp/RtmpgehRKJ/filebbc01e151af6/sample3_realign2transcript.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Skipped sorting BAM files.
 # Plot the coverages directly from the BAM file

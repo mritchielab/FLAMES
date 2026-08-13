@@ -76,7 +76,7 @@ positions <-
    mutations = variants,
    annotation = system.file("extdata", "rps24.gtf.gz", package = "FLAMES")
  )
-#> 04:49:01 Reading annotation ...
+#> 10:10:08 Reading annotation ...
 #>   |                                                                              |                                                                      |   0%  |                                                                              |======================================================================| 100%
 #> 
 ```

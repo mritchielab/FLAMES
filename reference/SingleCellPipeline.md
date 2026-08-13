@@ -82,35 +82,43 @@ SingleCellPipeline(
 
 A `FLAMES.SingleCellPipeline` object. The pipeline can be run using
 `run_FLAMES(pipeline)`. The results can be accessed with
-`experiment(pipeline)`. The pipeline also outputs a number of output
-files into the given `outdir` directory. Some of these output files
-include:
+`experiment(pipeline)`. The pipeline also writes a number of files into
+the given `outdir` directory, for example:
 
-- matched_reads.fastq:
+- matched_reads.fastq.gz:
 
-  \- fastq file with reads demultiplexed
+  \- demultiplexed reads (barcode/UMI in the read header)
 
 - align2genome.bam:
 
-  \- sorted BAM file with reads aligned to genome
+  \- sorted BAM file with reads aligned to the genome
 
-- matched_reads_dedup.fastq:
+- gene_count.mtx, gene_count_features.tsv, gene_count_barcodes.tsv:
 
-  \- demultiplexed and UMI-deduplicated fastq file
+  \- gene count matrix (Matrix Market format)
+
+- isoform_annotated.gtf:
+
+  \- updated annotation with novel isoforms (`.gff3` when not using
+  bambu)
 
 - transcript_assembly.fa:
 
-  \- transcript sequence from the isoforms
-
-- isoform_annotated.filtered.gff3:
-
-  \- isoforms in gff3 format (also contained in the
-  SingleCellExperiment)
+  \- transcript sequences from the isoforms
 
 - realign2transcript.bam:
 
-  \- sorted realigned BAM file using the transcript_assembly.fa as
-  reference
+  \- sorted realigned BAM file using transcript_assembly.fa as reference
+
+- experiment.rds:
+
+  \- the serialised SingleCellExperiment returned by
+  `experiment(pipeline)`
+
+See the *Expected output files* section of the FLAMES vignette
+([`vignette("FLAMES_vignette")`](https://mritchielab.github.io/FLAMES/articles/FLAMES_vignette.md))
+for the complete, per-step list (including the Oarfish and multi-sample
+variants).
 
 ## Details
 
@@ -165,7 +173,7 @@ ppl <- SingleCellPipeline(
   genome_fa = genome_fa,
   barcodes_file = bc_allow
 )
-#> ℹ Writing configuration to: /tmp/RtmpnC89xy/filebc1544690d4b/config_file_48149.json
+#> ℹ Writing configuration to: /tmp/RtmpgehRKJ/filebbc02864eb80/config_file_48064.json
 #> Warning: You have set to use oarfish quantification without gene quantification. Oarfish currently does not collapse UMIs, and gene quantification performs UMI collapsing. You may want to set do_gene_quantification to TRUE for more accurate results.
 #> Configured steps: 
 #>  barcode_demultiplex: TRUE
@@ -176,9 +184,10 @@ ppl <- SingleCellPipeline(
 #>  transcript_quantification: TRUE
 #> samtools not found, will use Rsamtools package instead
 ppl <- run_FLAMES(ppl)
-#> ── Running step: barcode_demultiplex @ Thu Aug  6 04:48:17 2026 ────────────────
+#> FLAMES version 2.7.1 (unknown source)
+#> ── Running step: barcode_demultiplex @ Thu Aug 13 10:09:22 2026 ────────────────
 #> Using flexiplex for barcode demultiplexing.
-#> Loading known barcodes from /tmp/RtmpnC89xy/filebc1544690d4b/bc_allow.tsv
+#> Loading known barcodes from /tmp/RtmpgehRKJ/filebbc02864eb80/bc_allow.tsv
 #> Number of known barcodes: 143
 #> FLEXIPLEX 1.02.6
 #> Setting max flanking sequence edit distance to 8
@@ -206,25 +215,25 @@ ppl <- run_FLAMES(ppl)
 #> 3    14
 #> 2    29
 #> 1    57
-#> ── Running step: genome_alignment @ Thu Aug  6 04:48:17 2026 ───────────────────
+#> ── Running step: genome_alignment @ Thu Aug 13 10:09:23 2026 ───────────────────
 #> Creating junction bed file from GFF3 annotation.
-#> Aligning sample /tmp/RtmpnC89xy/filebc1544690d4b/matched_reads.fastq.gz -> /tmp/RtmpnC89xy/filebc1544690d4b/align2genome.bam
+#> Aligning sample /tmp/RtmpgehRKJ/filebbc02864eb80/matched_reads.fastq.gz -> /tmp/RtmpgehRKJ/filebbc02864eb80/align2genome.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by genome coordinates with 8 threads...
 #> Indexing bam files
-#> ── Running step: isoform_identification @ Thu Aug  6 04:48:18 2026 ─────────────
-#> ── Running step: read_realignment @ Thu Aug  6 04:48:18 2026 ───────────────────
+#> ── Running step: isoform_identification @ Thu Aug 13 10:09:23 2026 ─────────────
+#> ── Running step: read_realignment @ Thu Aug 13 10:09:23 2026 ───────────────────
 #> Checking for fastq file(s) /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz
 #>  files found
-#> Checking for fastq file(s) /tmp/RtmpnC89xy/filebc1544690d4b/matched_reads.fastq.gz
+#> Checking for fastq file(s) /tmp/RtmpgehRKJ/filebbc02864eb80/matched_reads.fastq.gz
 #>  files found
-#> Checking for fastq file(s) /tmp/RtmpnC89xy/filebc1544690d4b/matched_reads_dedup.fastq.gz
+#> Checking for fastq file(s) /tmp/RtmpgehRKJ/filebbc02864eb80/matched_reads_dedup.fastq.gz
 #>  files not found
 #> Warning: Oarfish does not support UMI deduplication, you should deduplicate reads before running Oarfish
-#> Realigning sample /tmp/RtmpnC89xy/filebc1544690d4b/matched_reads.fastq.gz -> /tmp/RtmpnC89xy/filebc1544690d4b/realign2transcript.bam
+#> Realigning sample /tmp/RtmpgehRKJ/filebbc02864eb80/matched_reads.fastq.gz -> /tmp/RtmpgehRKJ/filebbc02864eb80/realign2transcript.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by 8 with CB threads...
-#> ── Running step: transcript_quantification @ Thu Aug  6 04:48:18 2026 ──────────
+#> ── Running step: transcript_quantification @ Thu Aug 13 10:09:23 2026 ──────────
 experiment(ppl)
 #> class: SingleCellExperiment 
 #> dim: 10 137 
@@ -234,7 +243,7 @@ experiment(ppl)
 #>   ENSMUSG00000025290.17_19_5159_2 ... ENSMUST00000169826.2
 #>   ENSMUST00000225023.1
 #> rowData names(6): transcript_id source ... rank gene_id
-#> colnames(137): AACTCTTGTCACCTAA AACCATGAGTCGTTTG ... TTGTAGGTCAGTGTTG
+#> colnames(137): AACCATGAGTCGTTTG AACTCTTGTCACCTAA ... TTGTAGGTCAGTGTTG
 #>   TTTATGCAGACTAGAT
 #> colData names(0):
 #> reducedDimNames(0):

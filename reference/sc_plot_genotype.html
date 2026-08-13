@@ -92,7 +92,7 @@
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">ppl</span> <span class="op">&lt;-</span> <span class="fu"><a href="example_pipeline.html">example_pipeline</a></span><span class="op">(</span><span class="st">"SingleCellPipeline"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="run_FLAMES.html">run_FLAMES</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Writing configuration to: /tmp/RtmpnC89xy/filebc1526028c7d/config_file_48149.json</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Writing configuration to: /tmp/RtmpgehRKJ/filebbc04a255084/config_file_48064.json</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Configured steps: </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	barcode_demultiplex: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	genome_alignment: TRUE</span>
@@ -101,9 +101,10 @@
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	read_realignment: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	transcript_quantification: TRUE</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> samtools not found, will use Rsamtools package instead</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: barcode_demultiplex @ Thu Aug  6 04:49:59 2026 ────────────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> FLAMES version 2.7.1 (unknown source)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: barcode_demultiplex @ Thu Aug 13 10:11:09 2026 ────────────────</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using flexiplex for barcode demultiplexing.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Loading known barcodes from /tmp/RtmpnC89xy/filebc1526028c7d/bc_allow.tsv</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Loading known barcodes from /tmp/RtmpgehRKJ/filebbc04a255084/bc_allow.tsv</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of known barcodes: 143</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> FLEXIPLEX 1.02.6</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Setting max flanking sequence edit distance to 8</span>
@@ -131,27 +132,27 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3	14</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2	29</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1	57</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: genome_alignment @ Thu Aug  6 04:50:00 2026 ───────────────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: genome_alignment @ Thu Aug 13 10:11:09 2026 ───────────────────</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Creating junction bed file from GFF3 annotation.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample /tmp/RtmpnC89xy/filebc1526028c7d/matched_reads.fastq.gz -&gt; /tmp/RtmpnC89xy/filebc1526028c7d/align2genome.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Aligning sample /tmp/RtmpgehRKJ/filebbc04a255084/matched_reads.fastq.gz -&gt; /tmp/RtmpgehRKJ/filebbc04a255084/align2genome.bam</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sorting BAM files by genome coordinates with 8 threads...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Indexing bam files</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: gene_quantification @ Thu Aug  6 04:50:00 2026 ────────────────</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 04:50:00 AM Thu Aug 06 2026 quantify genes </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using BAM(s): <span style="color: #0000BB;">/tmp/RtmpnC89xy/filebc1526028c7d/align2genome.bam</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: isoform_identification @ Thu Aug  6 04:50:00 2026 ─────────────</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: read_realignment @ Thu Aug  6 04:50:00 2026 ───────────────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: gene_quantification @ Thu Aug 13 10:11:10 2026 ────────────────</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:11:10 AM Thu Aug 13 2026 quantify genes </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Using BAM(s): <span style="color: #0000BB;">/tmp/RtmpgehRKJ/filebbc04a255084/align2genome.bam</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: isoform_identification @ Thu Aug 13 10:11:10 2026 ─────────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: read_realignment @ Thu Aug 13 10:11:10 2026 ───────────────────</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Checking for fastq file(s) /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	files found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Checking for fastq file(s) /tmp/RtmpnC89xy/filebc1526028c7d/matched_reads.fastq.gz</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Checking for fastq file(s) /tmp/RtmpgehRKJ/filebbc04a255084/matched_reads.fastq.gz</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	files found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Checking for fastq file(s) /tmp/RtmpnC89xy/filebc1526028c7d/matched_reads_dedup.fastq.gz</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Checking for fastq file(s) /tmp/RtmpgehRKJ/filebbc04a255084/matched_reads_dedup.fastq.gz</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 	files found</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample /tmp/RtmpnC89xy/filebc1526028c7d/matched_reads_dedup.fastq.gz -&gt; /tmp/RtmpnC89xy/filebc1526028c7d/realign2transcript.bam</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Realigning sample /tmp/RtmpgehRKJ/filebbc04a255084/matched_reads_dedup.fastq.gz -&gt; /tmp/RtmpgehRKJ/filebbc04a255084/realign2transcript.bam</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sorting BAM files by 8 with CB threads...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: transcript_quantification @ Thu Aug  6 04:50:01 2026 ──────────</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Running step: transcript_quantification @ Thu Aug 13 10:11:11 2026 ──────────</span>
 <span class="r-in"><span><span class="va">sce</span> <span class="op">&lt;-</span> <span class="fu"><a href="experiment.html">experiment</a></span><span class="op">(</span><span class="va">ppl</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span> <span class="fu">scrapper</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/scrapper/man/normalizeRnaCounts.se.html" class="external-link">normalizeRnaCounts.se</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span> <span class="fu">scater</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocSingular/man/runPCA.html" class="external-link">runPCA</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
@@ -164,10 +165,10 @@
 <span class="r-in"><span>  seqnames <span class="op">=</span> <span class="st">"chr14"</span>,</span></span>
 <span class="r-in"><span>  positions <span class="op">=</span> <span class="fl">2714</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 04:50:06 Got 1 bam file, parallelizing over each position ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 10:11:17 Got 1 bam file, parallelizing over each position ...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |======================================================================| 100%</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 04:50:07 Merging results ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 10:11:18 Merging results ...</span>
 <span class="r-in"><span><span class="va">genotype_tb</span> <span class="op">&lt;-</span> <span class="fu"><a href="sc_genotype.html">sc_genotype</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">snps_tb</span>, ref <span class="op">=</span> <span class="st">"C"</span>, alt <span class="op">=</span> <span class="st">"T"</span>, seqname <span class="op">=</span> <span class="st">"chr14"</span>, pos <span class="op">=</span> <span class="fl">2714</span>,</span></span>
 <span class="r-in"><span>  alt_min_count <span class="op">=</span> <span class="fl">2</span>, alt_min_pct <span class="op">=</span> <span class="fl">0.5</span>, ref_min_count <span class="op">=</span> <span class="fl">1</span>, ref_min_pct <span class="op">=</span> <span class="fl">1</span></span></span>

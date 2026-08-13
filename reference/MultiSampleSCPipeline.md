@@ -86,7 +86,12 @@ A `FLAMES.MultiSampleSCPipeline` object. The pipeline can be run using
 the
 [`run_FLAMES`](https://mritchielab.github.io/FLAMES/reference/run_FLAMES.md)
 function. The resulting list of SingleCellExperiment objects can be
-accessed using the `experiment` method.
+accessed using the `experiment` method. Per-sample output files in
+`outdir` are prefixed with the sample name (e.g.
+`<sample>_gene_count.mtx`); see the *Expected output files* section of
+the FLAMES vignette
+([`vignette("FLAMES_vignette")`](https://mritchielab.github.io/FLAMES/articles/FLAMES_vignette.md))
+for the full list.
 
 ## Details
 
@@ -157,7 +162,7 @@ ppl <- MultiSampleSCPipeline(
   genome_fa = genome_fa,
   barcodes_file = rep(bc_allow, 4)
 )
-#> ℹ Writing configuration to: /tmp/RtmpnC89xy/filebc15249f53f2/config_file_48149.json
+#> ℹ Writing configuration to: /tmp/RtmpgehRKJ/filebbc05ba1754e/config_file_48064.json
 #> Configured steps: 
 #>  barcode_demultiplex: TRUE
 #>  genome_alignment: TRUE
@@ -167,9 +172,10 @@ ppl <- MultiSampleSCPipeline(
 #>  transcript_quantification: TRUE
 #> samtools not found, will use Rsamtools package instead
 ppl <- run_FLAMES(ppl)
-#> ── Running step: barcode_demultiplex @ Thu Aug  6 04:48:11 2026 ────────────────
+#> FLAMES version 2.7.1 (unknown source)
+#> ── Running step: barcode_demultiplex @ Thu Aug 13 10:09:16 2026 ────────────────
 #> Using flexiplex for barcode demultiplexing.
-#> Loading known barcodes from /tmp/RtmpnC89xy/filebc15249f53f2/bc_allow.tsv
+#> Loading known barcodes from /tmp/RtmpgehRKJ/filebbc05ba1754e/bc_allow.tsv
 #> Number of known barcodes: 143
 #> FLEXIPLEX 1.02.6
 #> Setting max flanking sequence edit distance to 8
@@ -180,11 +186,11 @@ ppl <- run_FLAMES(ppl)
 #> UB: NNNNNNNNNNNN
 #> polyT: TTTTTTTTT
 #> CB:Z: tag field: CB
-#> Processing file: /tmp/RtmpnC89xy/filebc15249f53f2/fastq/sample1.fq.gz
+#> Processing file: /tmp/RtmpgehRKJ/filebbc05ba1754e/fastq/sample1.fq.gz
 #> Searching for barcodes...
-#> Processing file: /tmp/RtmpnC89xy/filebc15249f53f2/fastq/sample2.fq.gz
+#> Processing file: /tmp/RtmpgehRKJ/filebbc05ba1754e/fastq/sample2.fq.gz
 #> Searching for barcodes...
-#> Processing file: /tmp/RtmpnC89xy/filebc15249f53f2/fastq/sample3.fq.gz
+#> Processing file: /tmp/RtmpgehRKJ/filebbc05ba1754e/fastq/sample3.fq.gz
 #> Searching for barcodes...
 #> Number of reads processed: 393
 #> Number of reads where at least one barcode was found: 368
@@ -201,7 +207,7 @@ ppl <- run_FLAMES(ppl)
 #> 3    14
 #> 2    29
 #> 1    57
-#> Loading known barcodes from /tmp/RtmpnC89xy/filebc15249f53f2/bc_allow.tsv
+#> Loading known barcodes from /tmp/RtmpgehRKJ/filebbc05ba1754e/bc_allow.tsv
 #> Number of known barcodes: 143
 #> FLEXIPLEX 1.02.6
 #> Setting max flanking sequence edit distance to 8
@@ -212,7 +218,7 @@ ppl <- run_FLAMES(ppl)
 #> UB: NNNNNNNNNNNN
 #> polyT: TTTTTTTTT
 #> CB:Z: tag field: CB
-#> Processing file: /tmp/RtmpnC89xy/filebc15249f53f2/fastq/sample1.fq.gz
+#> Processing file: /tmp/RtmpgehRKJ/filebbc05ba1754e/fastq/sample1.fq.gz
 #> Searching for barcodes...
 #> Number of reads processed: 100
 #> Number of reads where at least one barcode was found: 92
@@ -223,7 +229,7 @@ ppl <- run_FLAMES(ppl)
 #> 3    9
 #> 2    9
 #> 1    44
-#> Loading known barcodes from /tmp/RtmpnC89xy/filebc15249f53f2/bc_allow.tsv
+#> Loading known barcodes from /tmp/RtmpgehRKJ/filebbc05ba1754e/bc_allow.tsv
 #> Number of known barcodes: 143
 #> FLEXIPLEX 1.02.6
 #> Setting max flanking sequence edit distance to 8
@@ -234,7 +240,7 @@ ppl <- run_FLAMES(ppl)
 #> UB: NNNNNNNNNNNN
 #> polyT: TTTTTTTTT
 #> CB:Z: tag field: CB
-#> Processing file: /tmp/RtmpnC89xy/filebc15249f53f2/fastq/sample2.fq.gz
+#> Processing file: /tmp/RtmpgehRKJ/filebbc05ba1754e/fastq/sample2.fq.gz
 #> Searching for barcodes...
 #> Number of reads processed: 100
 #> Number of reads where at least one barcode was found: 95
@@ -245,7 +251,7 @@ ppl <- run_FLAMES(ppl)
 #> 3    3
 #> 2    16
 #> 1    47
-#> Loading known barcodes from /tmp/RtmpnC89xy/filebc15249f53f2/bc_allow.tsv
+#> Loading known barcodes from /tmp/RtmpgehRKJ/filebbc05ba1754e/bc_allow.tsv
 #> Number of known barcodes: 143
 #> FLEXIPLEX 1.02.6
 #> Setting max flanking sequence edit distance to 8
@@ -256,7 +262,7 @@ ppl <- run_FLAMES(ppl)
 #> UB: NNNNNNNNNNNN
 #> polyT: TTTTTTTTT
 #> CB:Z: tag field: CB
-#> Processing file: /tmp/RtmpnC89xy/filebc15249f53f2/fastq/sample3.fq.gz
+#> Processing file: /tmp/RtmpgehRKJ/filebbc05ba1754e/fastq/sample3.fq.gz
 #> Searching for barcodes...
 #> Number of reads processed: 193
 #> Number of reads where at least one barcode was found: 181
@@ -270,51 +276,51 @@ ppl <- run_FLAMES(ppl)
 #> 3    10
 #> 2    27
 #> 1    53
-#> ── Running step: genome_alignment @ Thu Aug  6 04:48:12 2026 ───────────────────
+#> ── Running step: genome_alignment @ Thu Aug 13 10:09:17 2026 ───────────────────
 #> Creating junction bed file from GFF3 annotation.
-#> Aligning sample /tmp/RtmpnC89xy/filebc15249f53f2/sampleA_matched_reads.fastq.gz -> /tmp/RtmpnC89xy/filebc15249f53f2/sampleA_align2genome.bam
+#> Aligning sample /tmp/RtmpgehRKJ/filebbc05ba1754e/sampleA_matched_reads.fastq.gz -> /tmp/RtmpgehRKJ/filebbc05ba1754e/sampleA_align2genome.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by genome coordinates with 1 threads...
 #> Indexing bam files
-#> Aligning sample /tmp/RtmpnC89xy/filebc15249f53f2/sample1_matched_reads.fastq.gz -> /tmp/RtmpnC89xy/filebc15249f53f2/sample1_align2genome.bam
+#> Aligning sample /tmp/RtmpgehRKJ/filebbc05ba1754e/sample1_matched_reads.fastq.gz -> /tmp/RtmpgehRKJ/filebbc05ba1754e/sample1_align2genome.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by genome coordinates with 1 threads...
 #> Indexing bam files
-#> Aligning sample /tmp/RtmpnC89xy/filebc15249f53f2/sample2_matched_reads.fastq.gz -> /tmp/RtmpnC89xy/filebc15249f53f2/sample2_align2genome.bam
+#> Aligning sample /tmp/RtmpgehRKJ/filebbc05ba1754e/sample2_matched_reads.fastq.gz -> /tmp/RtmpgehRKJ/filebbc05ba1754e/sample2_align2genome.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by genome coordinates with 1 threads...
 #> Indexing bam files
-#> Aligning sample /tmp/RtmpnC89xy/filebc15249f53f2/sample3_matched_reads.fastq.gz -> /tmp/RtmpnC89xy/filebc15249f53f2/sample3_align2genome.bam
+#> Aligning sample /tmp/RtmpgehRKJ/filebbc05ba1754e/sample3_matched_reads.fastq.gz -> /tmp/RtmpgehRKJ/filebbc05ba1754e/sample3_align2genome.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by genome coordinates with 1 threads...
 #> Indexing bam files
-#> ── Running step: gene_quantification @ Thu Aug  6 04:48:13 2026 ────────────────
-#> 04:48:13 AM Thu Aug 06 2026 quantify genes 
-#> Using BAM(s): /tmp/RtmpnC89xy/filebc15249f53f2/sampleA_align2genome.bam,
-#> /tmp/RtmpnC89xy/filebc15249f53f2/sample1_align2genome.bam,
-#> /tmp/RtmpnC89xy/filebc15249f53f2/sample2_align2genome.bam, and
-#> /tmp/RtmpnC89xy/filebc15249f53f2/sample3_align2genome.bam
-#> ── Running step: isoform_identification @ Thu Aug  6 04:48:14 2026 ─────────────
-#> ── Running step: read_realignment @ Thu Aug  6 04:48:14 2026 ───────────────────
-#> Checking for fastq file(s) /tmp/RtmpnC89xy/filebc15249f53f2/fastq, /tmp/RtmpnC89xy/filebc15249f53f2/fastq/sample1.fq.gz, /tmp/RtmpnC89xy/filebc15249f53f2/fastq/sample2.fq.gz, /tmp/RtmpnC89xy/filebc15249f53f2/fastq/sample3.fq.gz
+#> ── Running step: gene_quantification @ Thu Aug 13 10:09:18 2026 ────────────────
+#> 10:09:18 AM Thu Aug 13 2026 quantify genes 
+#> Using BAM(s): /tmp/RtmpgehRKJ/filebbc05ba1754e/sampleA_align2genome.bam,
+#> /tmp/RtmpgehRKJ/filebbc05ba1754e/sample1_align2genome.bam,
+#> /tmp/RtmpgehRKJ/filebbc05ba1754e/sample2_align2genome.bam, and
+#> /tmp/RtmpgehRKJ/filebbc05ba1754e/sample3_align2genome.bam
+#> ── Running step: isoform_identification @ Thu Aug 13 10:09:19 2026 ─────────────
+#> ── Running step: read_realignment @ Thu Aug 13 10:09:19 2026 ───────────────────
+#> Checking for fastq file(s) /tmp/RtmpgehRKJ/filebbc05ba1754e/fastq, /tmp/RtmpgehRKJ/filebbc05ba1754e/fastq/sample1.fq.gz, /tmp/RtmpgehRKJ/filebbc05ba1754e/fastq/sample2.fq.gz, /tmp/RtmpgehRKJ/filebbc05ba1754e/fastq/sample3.fq.gz
 #>  files found
-#> Checking for fastq file(s) /tmp/RtmpnC89xy/filebc15249f53f2/sampleA_matched_reads.fastq.gz, /tmp/RtmpnC89xy/filebc15249f53f2/sample1_matched_reads.fastq.gz, /tmp/RtmpnC89xy/filebc15249f53f2/sample2_matched_reads.fastq.gz, /tmp/RtmpnC89xy/filebc15249f53f2/sample3_matched_reads.fastq.gz
+#> Checking for fastq file(s) /tmp/RtmpgehRKJ/filebbc05ba1754e/sampleA_matched_reads.fastq.gz, /tmp/RtmpgehRKJ/filebbc05ba1754e/sample1_matched_reads.fastq.gz, /tmp/RtmpgehRKJ/filebbc05ba1754e/sample2_matched_reads.fastq.gz, /tmp/RtmpgehRKJ/filebbc05ba1754e/sample3_matched_reads.fastq.gz
 #>  files found
-#> Checking for fastq file(s) /tmp/RtmpnC89xy/filebc15249f53f2/sampleA_matched_reads_dedup.fastq.gz, /tmp/RtmpnC89xy/filebc15249f53f2/sample1_matched_reads_dedup.fastq.gz, /tmp/RtmpnC89xy/filebc15249f53f2/sample2_matched_reads_dedup.fastq.gz, /tmp/RtmpnC89xy/filebc15249f53f2/sample3_matched_reads_dedup.fastq.gz
+#> Checking for fastq file(s) /tmp/RtmpgehRKJ/filebbc05ba1754e/sampleA_matched_reads_dedup.fastq.gz, /tmp/RtmpgehRKJ/filebbc05ba1754e/sample1_matched_reads_dedup.fastq.gz, /tmp/RtmpgehRKJ/filebbc05ba1754e/sample2_matched_reads_dedup.fastq.gz, /tmp/RtmpgehRKJ/filebbc05ba1754e/sample3_matched_reads_dedup.fastq.gz
 #>  files found
-#> Realigning sample /tmp/RtmpnC89xy/filebc15249f53f2/sampleA_matched_reads_dedup.fastq.gz -> /tmp/RtmpnC89xy/filebc15249f53f2/sampleA_realign2transcript.bam
+#> Realigning sample /tmp/RtmpgehRKJ/filebbc05ba1754e/sampleA_matched_reads_dedup.fastq.gz -> /tmp/RtmpgehRKJ/filebbc05ba1754e/sampleA_realign2transcript.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by 1 with CB threads...
-#> Realigning sample /tmp/RtmpnC89xy/filebc15249f53f2/sample1_matched_reads_dedup.fastq.gz -> /tmp/RtmpnC89xy/filebc15249f53f2/sample1_realign2transcript.bam
+#> Realigning sample /tmp/RtmpgehRKJ/filebbc05ba1754e/sample1_matched_reads_dedup.fastq.gz -> /tmp/RtmpgehRKJ/filebbc05ba1754e/sample1_realign2transcript.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by 1 with CB threads...
-#> Realigning sample /tmp/RtmpnC89xy/filebc15249f53f2/sample2_matched_reads_dedup.fastq.gz -> /tmp/RtmpnC89xy/filebc15249f53f2/sample2_realign2transcript.bam
+#> Realigning sample /tmp/RtmpgehRKJ/filebbc05ba1754e/sample2_matched_reads_dedup.fastq.gz -> /tmp/RtmpgehRKJ/filebbc05ba1754e/sample2_realign2transcript.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by 1 with CB threads...
-#> Realigning sample /tmp/RtmpnC89xy/filebc15249f53f2/sample3_matched_reads_dedup.fastq.gz -> /tmp/RtmpnC89xy/filebc15249f53f2/sample3_realign2transcript.bam
+#> Realigning sample /tmp/RtmpgehRKJ/filebbc05ba1754e/sample3_matched_reads_dedup.fastq.gz -> /tmp/RtmpgehRKJ/filebbc05ba1754e/sample3_realign2transcript.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by 1 with CB threads...
-#> ── Running step: transcript_quantification @ Thu Aug  6 04:48:15 2026 ──────────
+#> ── Running step: transcript_quantification @ Thu Aug 13 10:09:20 2026 ──────────
 experiment(ppl)
 #> $sampleA
 #> class: SingleCellExperiment 

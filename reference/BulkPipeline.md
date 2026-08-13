@@ -73,6 +73,12 @@ A `FLAMES.Pipeline` object. The pipeline could be run using
 [`run_FLAMES`](https://mritchielab.github.io/FLAMES/reference/run_FLAMES.md),
 and / or resumed using
 [`resume_FLAMES`](https://mritchielab.github.io/FLAMES/reference/resume_FLAMES.md).
+The results are accessed with `experiment(pipeline)`; the pipeline also
+writes its intermediate and final files into `outdir`. Bulk pipelines
+skip the barcode-demultiplexing and gene-quantification steps. See the
+*Expected output files* section of the FLAMES vignette
+([`vignette("FLAMES_vignette")`](https://mritchielab.github.io/FLAMES/articles/FLAMES_vignette.md))
+for the full list.
 
 ## Details
 
@@ -152,7 +158,7 @@ ppl <- BulkPipeline(
   config_file = create_config(outdir, type = "sc_3end", threads = 1, no_flank = TRUE),
   outdir = outdir
 )
-#> ℹ Writing configuration to: /tmp/RtmpnC89xy/filebc153fac2646/config_file_48149.json
+#> ℹ Writing configuration to: /tmp/RtmpgehRKJ/filebbc0569067b4/config_file_48064.json
 #> Configured steps: 
 #>  genome_alignment: TRUE
 #>  isoform_identification: TRUE
@@ -160,32 +166,33 @@ ppl <- BulkPipeline(
 #>  transcript_quantification: TRUE
 #> samtools not found, will use Rsamtools package instead
 ppl <- run_FLAMES(ppl) # run the pipeline
-#> ── Running step: genome_alignment @ Thu Aug  6 04:48:07 2026 ───────────────────
+#> FLAMES version 2.7.1 (unknown source)
+#> ── Running step: genome_alignment @ Thu Aug 13 10:09:12 2026 ───────────────────
 #> Creating junction bed file from GFF3 annotation.
-#> Aligning sample sample1 -> /tmp/RtmpnC89xy/filebc153fac2646/sample1_align2genome.bam
+#> Aligning sample sample1 -> /tmp/RtmpgehRKJ/filebbc0569067b4/sample1_align2genome.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by genome coordinates with 1 threads...
 #> Indexing bam files
-#> Aligning sample sample2 -> /tmp/RtmpnC89xy/filebc153fac2646/sample2_align2genome.bam
+#> Aligning sample sample2 -> /tmp/RtmpgehRKJ/filebbc0569067b4/sample2_align2genome.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by genome coordinates with 1 threads...
 #> Indexing bam files
-#> Aligning sample sample3 -> /tmp/RtmpnC89xy/filebc153fac2646/sample3_align2genome.bam
+#> Aligning sample sample3 -> /tmp/RtmpgehRKJ/filebbc0569067b4/sample3_align2genome.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by genome coordinates with 1 threads...
 #> Indexing bam files
-#> ── Running step: isoform_identification @ Thu Aug  6 04:48:08 2026 ─────────────
-#> ── Running step: read_realignment @ Thu Aug  6 04:48:09 2026 ───────────────────
-#> Realigning sample sample1 -> /tmp/RtmpnC89xy/filebc153fac2646/sample1_realign2transcript.bam
+#> ── Running step: isoform_identification @ Thu Aug 13 10:09:13 2026 ─────────────
+#> ── Running step: read_realignment @ Thu Aug 13 10:09:14 2026 ───────────────────
+#> Realigning sample sample1 -> /tmp/RtmpgehRKJ/filebbc0569067b4/sample1_realign2transcript.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Skipped sorting BAM files.
-#> Realigning sample sample2 -> /tmp/RtmpnC89xy/filebc153fac2646/sample2_realign2transcript.bam
+#> Realigning sample sample2 -> /tmp/RtmpgehRKJ/filebbc0569067b4/sample2_realign2transcript.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Skipped sorting BAM files.
-#> Realigning sample sample3 -> /tmp/RtmpnC89xy/filebc153fac2646/sample3_realign2transcript.bam
+#> Realigning sample sample3 -> /tmp/RtmpgehRKJ/filebbc0569067b4/sample3_realign2transcript.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Skipped sorting BAM files.
-#> ── Running step: transcript_quantification @ Thu Aug  6 04:48:09 2026 ──────────
+#> ── Running step: transcript_quantification @ Thu Aug 13 10:09:15 2026 ──────────
 experiment(ppl) # get the result as SummarizedExperiment
 #> class: SummarizedExperiment 
 #> dim: 10 3 

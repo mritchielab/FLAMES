@@ -27,7 +27,7 @@ indicating whether the step is configured to be performed.
 
 ``` r
 ppl <- example_pipeline()
-#> ℹ Writing configuration to: /tmp/RtmpnC89xy/filebc1571d490e/config_file_48149.json
+#> ℹ Writing configuration to: /tmp/RtmpgehRKJ/filebbc045f9b90e/config_file_48064.json
 #> Configured steps: 
 #>  barcode_demultiplex: TRUE
 #>  genome_alignment: TRUE

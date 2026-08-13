@@ -85,41 +85,43 @@
 <div class="section level3">
 <h3 id="docker">Docker<a class="anchor" aria-label="anchor" href="#docker"></a>
 </h3>
-<pre><code>docker pull ghcr.io/mritchielab/flames:20af1ce
+<pre><code># Latest build that passed CI checks:
+docker pull ghcr.io/mritchielab/flames:devel-latest
 # To start an R session:
-docker run -it ghcr.io/mritchielab/flames:20af1ce
+docker run -it ghcr.io/mritchielab/flames:devel-latest
 # Or a bash session:
-docker run -it ghcr.io/mritchielab/flames:20af1ce /bin/bash</code></pre>
+docker run -it ghcr.io/mritchielab/flames:devel-latest /bin/bash</code></pre>
+<p>For a reproducible pin, use a specific <code>devel-&lt;short-sha&gt;</code> tag from the <a href="https://github.com/mritchielab/FLAMES/pkgs/container/flames" class="external-link">list of available tags</a>.</p>
+<pre><code><span></span>
+<span><span class="co">### Singularity</span></span></code></pre>
+<p>singularity pull flames.sif docker://ghcr.io/mritchielab/flames:devel-latest # or devel-<short-sha> singularity shell -e –writable-tmpfs flames.sif</short-sha></p>
+<pre><code>
+
+## Documentation
+
+Function reference manual can be found [here](https://mritchielab.github.io/FLAMES/reference/index.html).
+
+[IgniteRNAseq](https://github.com/ChangqingW/IgniteRNAseq) is a workflow package and its rendered vignette can be found [here](https://changqingw.github.io/IgniteRNAseq/articles/FLAMESWorkflow.html).
+
+A Long read single cell analysis tutorial using both single-sample and multi-sample modes is available [here](https://sefi196.github.io/FLAMESv2_LR_sc_tutorial/).
+
+## Common issues
+
+- **basilisk / reticulate errors**
+If you encounter errors from Python code execution, you could try adding `basilisk::setBasiliskFork(FALSE)` before running FLAMES.
+
+- **Isoform identification with bambu**
+If you encounter errors during isoform identification using Bambu, you can try troubleshooting by setting the '''bambu_verbose''' parameter to TRUE. We have found the following steps helpful in resolving issues:
+
+1. Remove supplementary alignments from the genome BAM file.
+
+2. Divide the BAM file into smaller sections for easier processing.
+
+3. Remove unnecessary contigs from the genome.fa file.
+
+4. Use the HongYhong_fix branch of Bambu, which is better equipped for handling large files. You can install this version in R with the following command: </code></pre>
+<p>install_github(“GoekeLab/bambu”, ref=“HongYhong_fix”) ```</p>
 </div>
-<div class="section level3">
-<h3 id="singularity">Singularity<a class="anchor" aria-label="anchor" href="#singularity"></a>
-</h3>
-<pre><code>singularity pull flames.sif docker://ghcr.io/mritchielab/flames:20af1ce
-singularity shell -e --writable-tmpfs flames.sif</code></pre>
-</div>
-</div>
-<div class="section level2">
-<h2 id="documentation">Documentation<a class="anchor" aria-label="anchor" href="#documentation"></a>
-</h2>
-<p>Function reference manual can be found <a href="https://mritchielab.github.io/FLAMES/reference/index.html">here</a>.</p>
-<p><a href="https://github.com/ChangqingW/IgniteRNAseq" class="external-link">IgniteRNAseq</a> is a workflow package and its rendered vignette can be found <a href="https://changqingw.github.io/IgniteRNAseq/articles/FLAMESWorkflow.html" class="external-link">here</a>.</p>
-<p>A Long read single cell analysis tutorial using both single-sample and multi-sample modes is available <a href="https://sefi196.github.io/FLAMESv2_LR_sc_tutorial/" class="external-link">here</a>.</p>
-</div>
-<div class="section level2">
-<h2 id="common-issues">Common issues<a class="anchor" aria-label="anchor" href="#common-issues"></a>
-</h2>
-<ul>
-<li><p><strong>basilisk / reticulate errors</strong><br>
-If you encounter errors from Python code execution, you could try adding <code>basilisk::setBasiliskFork(FALSE)</code> before running FLAMES.</p></li>
-<li><p><strong>Isoform identification with bambu</strong> If you encounter errors during isoform identification using Bambu, you can try troubleshooting by setting the ’‘’bambu_verbose’’’ parameter to TRUE. We have found the following steps helpful in resolving issues:</p></li>
-</ul>
-<ol style="list-style-type: decimal">
-<li><p>Remove supplementary alignments from the genome BAM file.</p></li>
-<li><p>Divide the BAM file into smaller sections for easier processing.</p></li>
-<li><p>Remove unnecessary contigs from the genome.fa file.</p></li>
-<li><p>Use the HongYhong_fix branch of Bambu, which is better equipped for handling large files. You can install this version in R with the following command:</p></li>
-</ol>
-<pre><code><span><span class="fu">install_github</span><span class="op">(</span><span class="st">"GoekeLab/bambu"</span>, ref<span class="op">=</span><span class="st">"HongYhong_fix"</span><span class="op">)</span></span></code></pre>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">

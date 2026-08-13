@@ -9,7 +9,7 @@ sequencing. Genome Biology 22, 310 (2021).
 ## Usage
 
 ``` r
-scmixology_lib10_transcripts
+data(scmixology_lib10_transcripts)
 ```
 
 ## Format

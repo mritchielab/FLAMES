@@ -35,7 +35,7 @@ list of `SingleCellExperiment` objects.
 
 ``` r
 pipeline <- example_pipeline(type = "BulkPipeline")
-#> ℹ Writing configuration to: /tmp/RtmpnC89xy/filebc154395017b/config_file_48149.json
+#> ℹ Writing configuration to: /tmp/RtmpgehRKJ/filebbc07098599c/config_file_48064.json
 #> Configured steps: 
 #>  genome_alignment: TRUE
 #>  isoform_identification: TRUE

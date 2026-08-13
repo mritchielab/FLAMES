@@ -75,7 +75,7 @@ allele_count_alt, pct_alt, genotype.
 example(sc_mutations)
 #> 
 #> sc_mtt> ppl <- example_pipeline("SingleCellPipeline")
-#> ℹ Writing configuration to: /tmp/RtmpnC89xy/filebc1573661110/config_file_48149.json
+#> ℹ Writing configuration to: /tmp/RtmpgehRKJ/filebbc014ad3a8e/config_file_48064.json
 #> Configured steps: 
 #>  barcode_demultiplex: TRUE
 #>  genome_alignment: TRUE
@@ -86,9 +86,9 @@ example(sc_mutations)
 #> samtools not found, will use Rsamtools package instead
 #> 
 #> sc_mtt> ppl <- run_step(ppl, "barcode_demultiplex")
-#> ── Running step: barcode_demultiplex @ Thu Aug  6 04:49:47 2026 ────────────────
+#> ── Running step: barcode_demultiplex @ Thu Aug 13 10:10:56 2026 ────────────────
 #> Using flexiplex for barcode demultiplexing.
-#> Loading known barcodes from /tmp/RtmpnC89xy/filebc1573661110/bc_allow.tsv
+#> Loading known barcodes from /tmp/RtmpgehRKJ/filebbc014ad3a8e/bc_allow.tsv
 #> Number of known barcodes: 143
 #> FLEXIPLEX 1.02.6
 #> Setting max flanking sequence edit distance to 8
@@ -118,9 +118,9 @@ example(sc_mutations)
 #> 1    57
 #> 
 #> sc_mtt> ppl <- run_step(ppl, "genome_alignment")
-#> ── Running step: genome_alignment @ Thu Aug  6 04:49:47 2026 ───────────────────
+#> ── Running step: genome_alignment @ Thu Aug 13 10:10:57 2026 ───────────────────
 #> Creating junction bed file from GFF3 annotation.
-#> Aligning sample /tmp/RtmpnC89xy/filebc1573661110/matched_reads.fastq.gz -> /tmp/RtmpnC89xy/filebc1573661110/align2genome.bam
+#> Aligning sample /tmp/RtmpgehRKJ/filebbc014ad3a8e/matched_reads.fastq.gz -> /tmp/RtmpgehRKJ/filebbc014ad3a8e/align2genome.bam
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by genome coordinates with 8 threads...
 #> Indexing bam files
@@ -131,10 +131,10 @@ example(sc_mutations)
 #> sc_mtt+   positions = c(1260, 2714), # positions of interest
 #> sc_mtt+   indel = FALSE
 #> sc_mtt+ )
-#> 04:49:47 Got 1 bam file, parallelizing over each position ...
+#> 10:10:57 Got 1 bam file, parallelizing over each position ...
 #>   |                                                                              |                                                                      |   0%  |                                                                              |===================================                                   |  50%  |                                                                              |======================================================================| 100%
 #> 
-#> 04:49:48 Merging results ...
+#> 10:10:58 Merging results ...
 #> 
 #> sc_mtt> head(snps_tb)
 #> # A tibble: 6 × 7

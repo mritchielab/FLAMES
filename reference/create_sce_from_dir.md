@@ -59,7 +59,7 @@ sce <- sc_long_pipeline(
     oarfish_quantification = FALSE
   )
 )
-#> ℹ Writing configuration to: /tmp/RtmpnC89xy/filebc1553cd34fa/config_file_48149.json
+#> ℹ Writing configuration to: /tmp/RtmpgehRKJ/filebbc0b75dc5c/config_file_48064.json
 #> Configured steps: 
 #>  barcode_demultiplex: TRUE
 #>  genome_alignment: TRUE
@@ -68,9 +68,10 @@ sce <- sc_long_pipeline(
 #>  read_realignment: TRUE
 #>  transcript_quantification: TRUE
 #> samtools not found, will use Rsamtools package instead
-#> ── Running step: barcode_demultiplex @ Thu Aug  6 04:48:29 2026 ────────────────
+#> FLAMES version 2.7.1 (unknown source)
+#> ── Running step: barcode_demultiplex @ Thu Aug 13 10:09:35 2026 ────────────────
 #> Using flexiplex for barcode demultiplexing.
-#> Loading known barcodes from /tmp/RtmpnC89xy/filebc1553cd34fa/bc_allow.tsv
+#> Loading known barcodes from /tmp/RtmpgehRKJ/filebbc0b75dc5c/bc_allow.tsv
 #> Number of known barcodes: 143
 #> FLEXIPLEX 1.02.6
 #> Setting max flanking sequence edit distance to 8
@@ -98,33 +99,33 @@ sce <- sc_long_pipeline(
 #> 3    14
 #> 2    29
 #> 1    57
-#> ── Running step: genome_alignment @ Thu Aug  6 04:48:29 2026 ───────────────────
+#> ── Running step: genome_alignment @ Thu Aug 13 10:09:35 2026 ───────────────────
 #> Creating junction bed file from GFF3 annotation.
-#> Aligning sample /tmp/RtmpnC89xy/filebc1553cd34fa/matched_reads.fastq.gz -> /tmp/RtmpnC89xy/filebc1553cd34fa/align2genome.bam
+#> Aligning sample /tmp/RtmpgehRKJ/filebbc0b75dc5c/matched_reads.fastq.gz -> /tmp/RtmpgehRKJ/filebbc0b75dc5c/align2genome.bam
 #> Your fastq file appears to have tags, but you did not provide the -y option to minimap2 to include the tags in the output.
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by genome coordinates with 8 threads...
 #> Indexing bam files
-#> ── Running step: gene_quantification @ Thu Aug  6 04:48:29 2026 ────────────────
-#> 04:48:29 AM Thu Aug 06 2026 quantify genes 
-#> Using BAM(s): /tmp/RtmpnC89xy/filebc1553cd34fa/align2genome.bam
-#> ── Running step: isoform_identification @ Thu Aug  6 04:48:30 2026 ─────────────
-#> ── Running step: read_realignment @ Thu Aug  6 04:48:31 2026 ───────────────────
+#> ── Running step: gene_quantification @ Thu Aug 13 10:09:35 2026 ────────────────
+#> 10:09:35 AM Thu Aug 13 2026 quantify genes 
+#> Using BAM(s): /tmp/RtmpgehRKJ/filebbc0b75dc5c/align2genome.bam
+#> ── Running step: isoform_identification @ Thu Aug 13 10:09:36 2026 ─────────────
+#> ── Running step: read_realignment @ Thu Aug 13 10:09:37 2026 ───────────────────
 #> Checking for fastq file(s) /__w/_temp/Library/FLAMES/extdata/fastq/musc_rps24.fastq.gz
 #>  files found
-#> Checking for fastq file(s) /tmp/RtmpnC89xy/filebc1553cd34fa/matched_reads.fastq.gz
+#> Checking for fastq file(s) /tmp/RtmpgehRKJ/filebbc0b75dc5c/matched_reads.fastq.gz
 #>  files found
-#> Checking for fastq file(s) /tmp/RtmpnC89xy/filebc1553cd34fa/matched_reads_dedup.fastq.gz
+#> Checking for fastq file(s) /tmp/RtmpgehRKJ/filebbc0b75dc5c/matched_reads_dedup.fastq.gz
 #>  files found
-#> Realigning sample /tmp/RtmpnC89xy/filebc1553cd34fa/matched_reads_dedup.fastq.gz -> /tmp/RtmpnC89xy/filebc1553cd34fa/realign2transcript.bam
+#> Realigning sample /tmp/RtmpgehRKJ/filebbc0b75dc5c/matched_reads_dedup.fastq.gz -> /tmp/RtmpgehRKJ/filebbc0b75dc5c/realign2transcript.bam
 #> Your fastq file appears to have tags, but you did not provide the -y option to minimap2 to include the tags in the output.
 #> Warning: samtools not found, using Rsamtools instead, this could be slower and might fail for large BAM files.
 #> Sorting BAM files by genome coordinates with 8 threads...
 #> Indexing bam files
-#> ── Running step: transcript_quantification @ Thu Aug  6 04:48:31 2026 ──────────
-#> 04:48:31 AM Thu Aug 06 2026 quantify transcripts 
+#> ── Running step: transcript_quantification @ Thu Aug 13 10:09:37 2026 ──────────
+#> 10:09:37 AM Thu Aug 13 2026 quantify transcripts 
 #> Warning: Annotation in GFF format may cause errors. Please consider using GTF formats.
 #> Found realignment file(s):   realign2transcript.bam
-#> Pipeline saved to /tmp/RtmpnC89xy/filebc1553cd34fa/pipeline.rds
+#> Pipeline saved to /tmp/RtmpgehRKJ/filebbc0b75dc5c/pipeline.rds
 sce_2 <- create_sce_from_dir(outdir, annotation)
 ```

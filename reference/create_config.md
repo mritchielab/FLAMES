@@ -119,7 +119,7 @@ directly. See the FLAMES vignette for a worked example.
 # create the default configuration file
 outdir <- tempdir()
 config <- create_config(outdir)
-#> ℹ Writing configuration to: /tmp/RtmpnC89xy/config_file_48149.json
+#> ℹ Writing configuration to: /tmp/RtmpgehRKJ/config_file_48064.json
 
 # create config with custom parameters including nested ones
 config <- create_config(outdir,
@@ -131,5 +131,5 @@ config <- create_config(outdir,
   # via supplying additional CLI arguments
   additional_arguments.oarfish = c("--model-coverage")
 )
-#> ℹ Writing configuration to: /tmp/RtmpnC89xy/config_file_48149.json
+#> ℹ Writing configuration to: /tmp/RtmpgehRKJ/config_file_48064.json
 ```
